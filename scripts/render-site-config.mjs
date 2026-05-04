@@ -9,7 +9,7 @@ const outputPath = process.env.ROACHNET_SITE_CONFIG_OUTPUT || path.join(repoRoot
 const remotePublicConfigUrl =
   process.env.ROACHNET_PUBLIC_SITE_CONFIG_URL || 'https://accounts.roachnet.org/site-config.js'
 
-const releaseVersion = process.env.ROACHNET_RELEASE_VERSION || '1.0.3'
+const releaseVersion = process.env.ROACHNET_RELEASE_VERSION || '1.0.4'
 
 function parseAssignedJson(source) {
   const normalized = String(source || '').trim()

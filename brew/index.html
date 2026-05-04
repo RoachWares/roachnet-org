@@ -77,9 +77,9 @@
           </div>
 
           <p class="hero-footnote">Apple Silicon only. Assumes Homebrew is already installed. If it is not, <a href="https://brew.sh" target="_blank" rel="noreferrer">grab it first</a>. Same stack either way.</p>
-          <p class="download-meta">Current cask target: RoachNet 1.0.3 · <code>brew update &amp;&amp; brew tap --force AHGRoach/roachnet &amp;&amp; brew install --cask roachnet</code></p>
+          <p class="download-meta">Current cask target: RoachNet 1.0.4 · <code>brew update &amp;&amp; brew tap --force AHGRoach/roachnet &amp;&amp; brew install --cask roachnet</code></p>
           <p class="homebrew-note" id="homebrew-note">
-            The cask writes the contained config, fixes the unsigned app bundle for launch, and boots the runtime without leaning on host Homebrew libraries or whatever version drift showed up this week.
+            The cask writes the contained config, clears only the launch-blocking bundle metadata, and boots the runtime without leaning on host Homebrew libraries or whatever version drift showed up this week.
           </p>
         </div>
 
@@ -178,8 +178,8 @@
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
-            <span class="feature-card__eyebrow">Unsigned launch-safe</span>
-            <h3>Unsigned apps need to be re-signed before macOS will open them. The cask handles it so you do not have to play right-click → Open.</h3>
+            <span class="feature-card__eyebrow">Launch-safe</span>
+            <h3>The cask clears the quarantine and provenance flags on the app boundary and executable path without recursively grinding through the embedded runtime.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
@@ -200,6 +200,11 @@
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Same API surface</span>
             <h3>Same API routes as the Setup.app install. Only the bootstrap path and first-boot defaults differ.</h3>
+          </article>
+
+          <article class="support-card" role="listitem" data-reveal>
+            <span class="feature-card__eyebrow">Published digest</span>
+            <h3>macOS DMG SHA-256: <code>a92a605feba504bba846cdd4e461c7755b434c4a235e3f5b64b8dd462d72f8bc</code></h3>
           </article>
         </div>
 

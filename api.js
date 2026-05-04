@@ -41,7 +41,7 @@ const apiGroups = [
         ],
         response: ['JSON: { ok: true } or { ok: true, task } in dryRun mode', '409 if a setup task is already running'],
         implementation:
-          'Validates that no other setup task is active, stages the install in a temp root, copies the bundled source tree, links or stages contained OpenClaw and Ollama into the RoachNet folder, installs the bundled native app from InstallerAssets, smoke-tests /api/health, then promotes the staged tree or removes it on failure. The embedded setup runtime is packaged from the official portable Node build instead of a Homebrew-linked host binary, so the installer can boot on a clean Apple Silicon Mac without reaching into /opt/homebrew. Heavy AI payload hydration is deferred when needed so the installer can finish the real app handoff instead of stalling on a giant first-run model job.',
+          'Validates that no other setup task is active, stages the install in the user-selected RoachNet install path, copies the bundled source tree, links or stages contained OpenClaw and Ollama into that same RoachNet root, installs the bundled native app from InstallerAssets, smoke-tests /api/health, then promotes the staged tree or removes it on failure. The embedded setup runtime is packaged from the official portable Node build instead of a Homebrew-linked host binary, so the installer can boot on a clean Apple Silicon Mac without reaching into /opt/homebrew. Heavy AI payload hydration is deferred when needed so the installer can finish the real app handoff instead of stalling on a giant first-run model job.',
         usedBy: ['Primary install button in Setup.app'],
       },
       {
@@ -109,7 +109,7 @@ const apiGroups = [
           'Config writes: ~/Library/Application Support/roachnet/roachnet-installer.json and ~/.roachnet-setup.json',
         ],
         implementation:
-          'The cask copies the bundled native app out of the DMG, normalizes the copied app bundle as the real unsigned launch boundary, refreshes its local ad-hoc signature, creates the contained storage/bin roots, and writes the same installer config the native shell expects so the Homebrew install can skip Setup.app completely.',
+          'The cask copies the bundled native app out of the DMG, clears the launch-blocking quarantine and provenance flags on the app boundary and executable path without recursively walking the embedded runtime, creates the contained storage/bin roots, and writes the same installer config the native shell expects so the Homebrew install can skip Setup.app completely.',
         usedBy: ['Homebrew postflight hook', 'roachnet.org/brew docs page'],
       },
       {
@@ -194,9 +194,9 @@ const apiGroups = [
         handler: 'RoachNet-iOS release asset',
         request: ['No HTTP body. Static packaging contract for sideload tooling.'],
         response: [
-          'Release asset: https://github.com/AHGRoach/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.1.3-unsigned.ipa',
+          'Release asset: https://github.com/AHGRoach/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.1.4-unsigned.ipa',
           'Download the IPA and share it to SideStore on-device.',
-          'Version: 0.1.3',
+          'Version: 0.1.4',
           'Display name: RoachNetiOS',
         ],
         implementation:
@@ -250,6 +250,99 @@ const apiGroups = [
         implementation:
           'The function verifies the bearer token against Supabase Auth, scopes every thread/message lookup to that user id, stores the prompt, and either forwards the request to the user’s paired RoachClaw device or answers through hosted RoachBrain Cloud. The browser-local RoachBrain path stays available as a last-resort client fallback, but the normal no-device route now stays account-scoped on the server.',
         usedBy: ['roachnet.org/roachclaw hosted chat workspace'],
+      },
+    ],
+  },
+  {
+    id: 'roachclaw-local-context',
+    label: 'RoachClaw Local Context',
+    scope: 'native',
+    basePath: 'local://roachnet',
+    summary: 'Permissioned local context used by the native RoachClaw lane, floating panel, command bar, voice prompt path, and Dev inline assist.',
+    stack: 'RoachNet native shell -> WorkspaceModel -> RoachBrainStore -> RoachBrainWikiStore -> RoachClaw prompt builder',
+    callers: ['Native RoachClaw lane', 'Global RoachClaw panel', 'Command bar', 'Dev workspace inline assist', 'Voice prompt composer'],
+    endpoints: [
+      {
+        id: 'local-roachbrain-wiki',
+        method: 'LOCAL',
+        path: 'vault/roachbrain/wiki',
+        title: 'Compiled local RoachBrain wiki',
+        summary: 'Exports saved RoachBrain memory into Obsidian-readable Markdown pages and a manifest inside the selected RoachNet storage root.',
+        handler: 'RoachBrainWikiStore.rebuild',
+        request: [
+          'Input: saved RoachBrain memories',
+          'Input: selected RoachNet storage root',
+          'No cloud request is made by this export path',
+        ],
+        response: [
+          'raw/memories.json',
+          'pages/*.md',
+          'index.md',
+          'log.md',
+          'AGENTS.md',
+          'manifest.json',
+        ],
+        implementation:
+          'Every RoachBrain save can rebuild a local Markdown wiki under the user-selected RoachNet storage root. RoachClaw then receives a bounded context block from direct memory plus the compiled wiki so normal chat, agent tasks, and research prompts can ground themselves without pretending to have invisible access.',
+        usedBy: ['RoachClaw prompt context', 'Dev assistant prompt context', 'Obsidian-compatible vault reads'],
+      },
+      {
+        id: 'global-roachclaw-command',
+        method: 'LOCAL',
+        path: 'command-bar/open-global-roachclaw',
+        title: 'Open RoachClaw anywhere',
+        summary: 'Summons the floating RoachClaw panel from any native surface or command-bar invocation.',
+        handler: 'CommandBarTarget.openGlobalRoachClaw',
+        request: [
+          'Input: command palette selection or global shell button',
+          'Optional: staged prompt text',
+        ],
+        response: [
+          'Floating RoachClaw panel opens over the current surface',
+          'Existing prompt draft and context permissions stay intact',
+        ],
+        implementation:
+          'The command bar no longer has to switch the whole app into the full RoachClaw pane. It can open the floating panel over the current work surface, preserving the user’s active context and letting the same send, save, speak, and voice controls work everywhere.',
+        usedBy: ['Global command bar', 'Top chrome RoachClaw action', 'Collapsed sidebar action'],
+      },
+      {
+        id: 'voice-prompt-command',
+        method: 'LOCAL',
+        path: 'command-bar/start-voice-prompt',
+        title: 'Start voice prompt',
+        summary: 'Starts voice capture through the global RoachClaw panel and sends the transcript through the normal permissioned prompt path.',
+        handler: 'CommandBarTarget.togglePromptDictation',
+        request: [
+          'Input: command palette selection or RoachClaw microphone control',
+          'Requires microphone permission from macOS',
+        ],
+        response: [
+          'Dictation toggles in the active RoachClaw composer',
+          'Transcript remains editable before send',
+        ],
+        implementation:
+          'Voice requests use the same prompt draft, context permission toggles, selected model, and RoachBrain context as typed requests. This keeps RoachClaw usable as a normal chat assistant while still letting the user escalate into task work when they ask for it.',
+        usedBy: ['Full RoachClaw lane', 'Global RoachClaw panel', 'Command bar voice action'],
+      },
+      {
+        id: 'dev-inline-agent-context',
+        method: 'LOCAL',
+        path: 'dev/inline-assist',
+        title: 'Dev inline assist context',
+        summary: 'Feeds open-file, shell, RoachBrain memory, compiled wiki, and app-state context into inline coding assistance.',
+        handler: 'DevWorkspaceView.requestInlineSuggestion',
+        request: [
+          'Input: active file and selection',
+          'Input: terminal transcript summary',
+          'Input: permissioned app context and compiled RoachBrain wiki summary',
+        ],
+        response: [
+          'Inline suggestion text',
+          'Task-mode prompt when the user asks the assistant to inspect, act, verify, and record',
+        ],
+        implementation:
+          'The Dev surface now treats RoachClaw as an IDE assistant instead of a preset-command sidebar. It keeps normal direct asks simple, and only enters the inspect-act-verify loop when the user asks for real task work.',
+        usedBy: ['Dev workspace inline assistant', 'Dev assistant panel', 'RoachClaw-backed code suggestions'],
       },
     ],
   },

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-16T05:26:42.715Z",
+  "updatedAt": "2026-05-04T02:26:11.939Z",
   "featuredId": "base-atlas",
   "items": [
     {
@@ -35,7 +35,7 @@
       "id": "map-global-mini",
       "title": "Global Mini Atlas",
       "subtitle": "Fast world fallback basemap",
-      "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles",
+      "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles",
       "sizeBytes": 184137576,
       "status": "Travel-ready fallback",
       "accent": "cyan",
@@ -55,7 +55,7 @@
       "detailUrl": "./collections/maps.json",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles",
+        "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles",
         "filetype": "map"
       },
       "iconBand": "Maps",
@@ -67,7 +67,7 @@
       "id": "map-california-solo",
       "title": "California Solo",
       "subtitle": "One-state West Coast map shelf",
-      "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
+      "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
       "sizeBytes": 1185114056,
       "status": "High-detail state pack",
       "accent": "blue",
@@ -87,7 +87,7 @@
       "detailUrl": "./collections/maps.json",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
+        "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
         "filetype": "map"
       },
       "iconBand": "Maps",
@@ -99,7 +99,7 @@
       "id": "map-texas-solo",
       "title": "Texas Solo",
       "subtitle": "One-state South Central map shelf",
-      "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
+      "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
       "sizeBytes": 903490126,
       "status": "High-detail state pack",
       "accent": "bronze",
@@ -119,7 +119,7 @@
       "detailUrl": "./collections/maps.json",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
+        "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
         "filetype": "map"
       },
       "iconBand": "Maps",
@@ -131,7 +131,7 @@
       "id": "map-florida-solo",
       "title": "Florida Solo",
       "subtitle": "One-state coastal route shelf",
-      "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles",
+      "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles",
       "sizeBytes": 1072848714,
       "status": "High-detail state pack",
       "accent": "green",
@@ -151,7 +151,7 @@
       "detailUrl": "./collections/maps.json",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles",
+        "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles",
         "filetype": "map"
       },
       "iconBand": "Maps",
@@ -163,7 +163,7 @@
       "id": "map-new-york-solo",
       "title": "New York Solo",
       "subtitle": "One-state Northeast route shelf",
-      "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles",
+      "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles",
       "sizeBytes": 541225235,
       "status": "Dense corridor pack",
       "accent": "violet",
@@ -183,7 +183,7 @@
       "detailUrl": "./collections/maps.json",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles",
+        "url": "https://github.com/AHGRoach/RoachNet-Maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles",
         "filetype": "map"
       },
       "iconBand": "Maps",
