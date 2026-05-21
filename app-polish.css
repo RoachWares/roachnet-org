@@ -13535,3 +13535,293 @@ body:not([data-page="landing"]) :where(.surface-card, .feature-card, .pillar-car
 body:not([data-page="landing"]) .site-footer {
   padding-bottom: max(22px, env(safe-area-inset-bottom)) !important;
 }
+
+/* 2026-05 sitewide finishing pass: black-first signal field, cleaner chrome, no dead air. */
+:root {
+  --rn-site-green: 63, 255, 139;
+  --rn-site-purple: 145, 56, 216;
+  --rn-stage-black: #000;
+  --rn-stage-ink: #020304;
+  --rn-stage-panel: rgba(4, 7, 8, 0.72);
+  --rn-stage-border: rgba(255, 255, 255, 0.08);
+}
+
+html,
+body {
+  min-height: 100%;
+  background: var(--rn-stage-black) !important;
+}
+
+body:not([data-page="landing"]) {
+  position: relative;
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at var(--rn-pointer-x, 50vw) var(--rn-pointer-y, 18vh), rgba(var(--rn-site-green), 0.048), transparent 22rem),
+    radial-gradient(circle at calc(100% - var(--rn-pointer-x, 50vw)) 12vh, rgba(var(--rn-site-purple), 0.06), transparent 26rem),
+    linear-gradient(180deg, #000 0%, #020404 42%, #000 100%) !important;
+}
+
+body:not([data-page="landing"])::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.96), transparent 22%, transparent 74%, rgba(0, 0, 0, 0.96)),
+    radial-gradient(ellipse at 50% calc(18% + var(--rn-scroll-ratio, 0) * 46%), rgba(var(--rn-site-green), 0.05), transparent 34%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.018) 0 1px, transparent 1px 13px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+body:not([data-page="landing"]) > :not(.rn-dither-field):not(.rn-ambient-orbits):not(.rn-cursor-light):not(.rn-click-ripple) {
+  position: relative;
+  z-index: 1;
+}
+
+body:not([data-page="landing"]) .rn-dither-field {
+  opacity: 0.84 !important;
+  mix-blend-mode: screen;
+  filter: saturate(1.2) contrast(1.12) brightness(0.94);
+  transform-origin: 50% 42%;
+}
+
+body:not([data-page="landing"]) .rn-dither-field canvas {
+  image-rendering: pixelated;
+}
+
+body:not([data-page="landing"]) .rn-dither-field::before {
+  opacity: 0.8 !important;
+  background:
+    radial-gradient(circle at calc(16% + var(--rn-scroll-ratio, 0) * 20%) 14%, rgba(var(--rn-site-green), 0.08), transparent 18rem),
+    radial-gradient(circle at calc(86% - var(--rn-scroll-ratio, 0) * 18%) 18%, rgba(var(--rn-site-purple), 0.09), transparent 20rem),
+    conic-gradient(from calc(var(--rn-scroll-ratio, 0) * 1.25turn) at 54% 40%, transparent 0 18%, rgba(var(--rn-site-green), 0.06) 22%, transparent 31%, rgba(var(--rn-site-purple), 0.072) 44%, transparent 58%, rgba(var(--rn-site-green), 0.032) 72%, transparent 88%),
+    repeating-linear-gradient(116deg, transparent 0 58px, rgba(var(--rn-site-green), 0.035) 59px, transparent 60px 118px) !important;
+  animation: rn-site-signal-sweep 18s linear infinite;
+}
+
+body:not([data-page="landing"]) .rn-dither-field::after {
+  opacity: 0.82 !important;
+  background:
+    radial-gradient(circle at var(--rn-pointer-x, 50vw) var(--rn-pointer-y, 24vh), rgba(255, 255, 255, 0.055), transparent 12rem),
+    repeating-linear-gradient(0deg, transparent 0 9px, rgba(255, 255, 255, 0.024) 10px, transparent 11px 18px),
+    repeating-linear-gradient(45deg, transparent 0 42px, rgba(var(--rn-site-purple), 0.036) 43px, transparent 44px 84px),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.94), transparent 18%, transparent 72%, rgba(0, 0, 0, 0.97)) !important;
+}
+
+body:not([data-page="landing"]) .site-header,
+body[data-page="landing"] .rn-nav {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.54) 72%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(1.24);
+}
+
+body:not([data-page="landing"]) .site-header__panel,
+body[data-page="landing"] .rn-nav-inner {
+  border: 1px solid rgba(255, 255, 255, 0.075) !important;
+  background:
+    linear-gradient(180deg, rgba(11, 15, 16, 0.82), rgba(1, 2, 2, 0.7)),
+    radial-gradient(circle at var(--rn-pointer-x, 50vw) 0, rgba(var(--rn-site-green), 0.07), transparent 20rem) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(var(--rn-site-green), 0.06) !important;
+}
+
+body:not([data-page="landing"]) .site-header .site-nav,
+body:not([data-page="landing"]) .site-header__actions,
+body[data-page="landing"] .rn-nav-links,
+body[data-page="landing"] .rn-nav-cta {
+  position: relative;
+  overflow: auto hidden;
+  background:
+    linear-gradient(180deg, rgba(8, 10, 11, 0.8), rgba(0, 0, 0, 0.72)) !important;
+  border-color: rgba(255, 255, 255, 0.075) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    inset 0 -1px 0 rgba(var(--rn-site-green), 0.05) !important;
+}
+
+body:not([data-page="landing"]) .site-header .site-nav a,
+body:not([data-page="landing"]) .site-header__actions a,
+body[data-page="landing"] .rn-nav-link,
+body[data-page="landing"] .rn-nav-ghost,
+body[data-page="landing"] .rn-nav-primary {
+  transform: translate3d(var(--rn-magnet-x, 0), var(--rn-magnet-y, 0), 0) scale(var(--rn-nav-scale, 1));
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body:not([data-page="landing"]) .site-header .site-nav a:hover,
+body:not([data-page="landing"]) .site-header .site-nav a:focus-visible,
+body:not([data-page="landing"]) .site-header .site-nav a.is-current,
+body:not([data-page="landing"]) .site-header__actions a:hover,
+body:not([data-page="landing"]) .site-header__actions a:focus-visible,
+body[data-page="landing"] .rn-nav-link:hover,
+body[data-page="landing"] .rn-nav-link:focus-visible,
+body[data-page="landing"] .rn-nav-link.is-current,
+body[data-page="landing"] .rn-nav-ghost:hover,
+body[data-page="landing"] .rn-nav-ghost:focus-visible,
+body[data-page="landing"] .rn-nav-primary:hover,
+body[data-page="landing"] .rn-nav-primary:focus-visible {
+  --rn-nav-scale: 1.035;
+  color: #f7ffe9 !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(var(--rn-site-green), 0.16), transparent 52%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(var(--rn-site-purple), 0.06)) !important;
+  border-color: rgba(var(--rn-site-green), 0.28) !important;
+  box-shadow:
+    0 0 24px rgba(var(--rn-site-green), 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.045) !important;
+}
+
+body .site-header .site-nav .rn-nav-indicator,
+body .site-header__actions .rn-nav-indicator,
+body .rn-nav-links .rn-nav-indicator,
+body .rn-nav-cta .rn-nav-indicator {
+  background:
+    linear-gradient(90deg, rgba(var(--rn-site-green), 0.2), rgba(var(--rn-site-purple), 0.14)),
+    rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(var(--rn-site-green), 0.2) !important;
+  box-shadow: 0 0 24px rgba(var(--rn-site-green), 0.09) !important;
+}
+
+body:not([data-page="landing"]) :where(.surface-card, .feature-card, .pillar-card, .support-card, .download-hero-card, .download-side-card, .account-surface, .apps-card, .apps-row, .api-docs-route, .api-docs-detail__surface, .sitemap-card, .api-route-card)::before {
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 0%), rgba(var(--rn-site-green), 0.13), transparent 34%),
+    linear-gradient(120deg, transparent 0 30%, rgba(255, 255, 255, 0.075) 48%, transparent 66%) !important;
+}
+
+body:not([data-page="apps"]):not([data-page="landing"]) .screen-frame,
+body:not([data-page="apps"]):not([data-page="landing"]) .app-screen-shot,
+body:not([data-page="apps"]):not([data-page="landing"]) .surface-card__shot {
+  background:
+    linear-gradient(180deg, rgba(4, 6, 7, 0.82), rgba(0, 0, 0, 0.92)) !important;
+  border-color: rgba(255, 255, 255, 0.075) !important;
+}
+
+body:not([data-page="apps"]):not([data-page="landing"]) .screen-frame__image,
+body:not([data-page="apps"]):not([data-page="landing"]) .app-screen-shot img,
+body:not([data-page="apps"]):not([data-page="landing"]) .surface-card__shot img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  background: transparent !important;
+}
+
+body:not([data-page="apps"]):not([data-page="landing"]) .surface-card__shot,
+body[data-page="ios"] .ios-shot-card .app-screen-shot {
+  min-height: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+body:not([data-page="landing"]) .site-footer,
+body[data-page="landing"] .rn-footer {
+  margin-bottom: 0 !important;
+  background:
+    radial-gradient(circle at 18% 0, rgba(var(--rn-site-green), 0.065), transparent 24rem),
+    radial-gradient(circle at 84% 0, rgba(var(--rn-site-purple), 0.06), transparent 22rem),
+    linear-gradient(180deg, rgba(1, 2, 2, 0.92), #000) !important;
+}
+
+body:not([data-page="landing"]) .site-footer::after,
+body[data-page="landing"] .rn-footer::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-bottom: -1px;
+}
+
+@keyframes rn-site-signal-sweep {
+  0% {
+    transform: translate3d(-12px, 0, 0) rotate(-0.5deg);
+    filter: hue-rotate(0deg);
+  }
+
+  50% {
+    transform: translate3d(12px, -18px, 0) rotate(0.5deg);
+    filter: hue-rotate(8deg);
+  }
+
+  100% {
+    transform: translate3d(-12px, 0, 0) rotate(-0.5deg);
+    filter: hue-rotate(0deg);
+  }
+}
+
+@media (max-width: 760px) {
+  body:not([data-page="landing"])::before {
+    opacity: 0.5;
+  }
+
+  body:not([data-page="landing"]) .rn-dither-field {
+    opacity: 0.55 !important;
+  }
+
+  body:not([data-page="landing"]) .site-header__panel,
+  body[data-page="landing"] .rn-nav-inner {
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.44),
+      inset 0 1px 0 rgba(255, 255, 255, 0.075) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:not([data-page="landing"]) .rn-dither-field,
+  body:not([data-page="landing"]) .rn-dither-field::before,
+  body:not([data-page="landing"]) .rn-dither-field::after {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Wide desktop fill: keep the site from looking like a narrow strip on large displays. */
+@media (min-width: 1500px) {
+  body:not([data-page="landing"]) {
+    --rn-wide-shell: min(2320px, calc(100vw - clamp(56px, 5vw, 132px)));
+  }
+
+  body:not([data-page="landing"]) .site-header__panel,
+  body:not([data-page="landing"]) .page-shell,
+  body:not([data-page="landing"]) .api-docs-shell,
+  body:not([data-page="landing"]) .api-docs-main,
+  body:not([data-page="landing"]) .apps-store-shell,
+  body:not([data-page="landing"]) .account-shell,
+  body:not([data-page="landing"]) .account-page,
+  body:not([data-page="landing"]) .rc-shell,
+  body:not([data-page="landing"]) .site-footer {
+    width: var(--rn-wide-shell) !important;
+    max-width: var(--rn-wide-shell) !important;
+  }
+
+  body:not([data-page="landing"]) .site-footer {
+    margin-inline: auto !important;
+  }
+
+  body[data-page="apps"] .apps-store-shell {
+    grid-template-columns: minmax(270px, 360px) minmax(0, 1fr);
+  }
+
+  body[data-page="home"] .hero,
+  body[data-page="brew"] .hero,
+  body[data-page="ios"] .ios-hero {
+    grid-template-columns: minmax(0, 0.9fr) minmax(560px, 1.1fr);
+  }
+
+  body:not([data-page="landing"]) :where(.hero-copy, .download-hero__copy, .ios-hero-copy, .api-docs-hero__copy, .site-footer__copy) {
+    max-width: 72ch !important;
+  }
+}
+
+@media (min-width: 2200px) {
+  body:not([data-page="landing"]) {
+    --rn-wide-shell: min(2520px, calc(100vw - 144px));
+  }
+}
