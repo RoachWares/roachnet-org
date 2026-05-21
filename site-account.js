@@ -24,7 +24,10 @@ const defaultSiteConfig = {
 }
 
 let cachedAuthState = null
+let pendingAuthState = null
 let remoteConfigPromise = null
+
+const authClientGlobalKey = '__ROACHNET_SUPABASE_AUTH_CLIENT__'
 
 function mergeSiteConfig(...configs) {
   return configs.reduce(
@@ -104,6 +107,20 @@ export async function getSiteAuthState() {
     return cachedAuthState
   }
 
+  if (pendingAuthState) {
+    return pendingAuthState
+  }
+
+  pendingAuthState = resolveSiteAuthState()
+  try {
+    cachedAuthState = await pendingAuthState
+    return cachedAuthState
+  } finally {
+    pendingAuthState = null
+  }
+}
+
+async function resolveSiteAuthState() {
   let config = getSiteConfig()
   if ((!config.auth.enabled || !config.webChat.enabled) && window.location.hostname !== 'accounts.roachnet.org') {
     await loadRemoteSiteConfig()
@@ -120,7 +137,7 @@ export async function getSiteAuthState() {
     auth.supabaseAnonKey.length > 0
 
   if (!enabled) {
-    cachedAuthState = {
+    return {
       enabled: false,
       client: null,
       session: null,
@@ -128,28 +145,37 @@ export async function getSiteAuthState() {
         'Site accounts are not armed on this deploy yet. RoachTail, RoachSync, and the native runtime still stay on your own devices until this is live.',
       config,
     }
-    return cachedAuthState
   }
 
   const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')
-  const client = createClient(auth.supabaseUrl, auth.supabaseAnonKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      flowType: 'pkce',
-    },
-  })
+  const globalClient = window[authClientGlobalKey]
+  const client =
+    globalClient?.supabaseUrl === auth.supabaseUrl &&
+    globalClient?.supabaseAnonKey === auth.supabaseAnonKey
+      ? globalClient.client
+      : createClient(auth.supabaseUrl, auth.supabaseAnonKey, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            flowType: 'pkce',
+          },
+        })
+
+  window[authClientGlobalKey] = {
+    supabaseUrl: auth.supabaseUrl,
+    supabaseAnonKey: auth.supabaseAnonKey,
+    client,
+  }
 
   const { data, error } = await client.auth.getSession()
-  cachedAuthState = {
+  return {
     enabled: true,
     client,
     session: error ? null : data.session,
     reason: error ? error.message : '',
     config,
   }
-  return cachedAuthState
 }
 
 export function sessionLabel(session) {
@@ -172,4 +198,5 @@ export async function refreshSiteSession() {
 
 export function clearCachedAuthState() {
   cachedAuthState = null
+  pendingAuthState = null
 }

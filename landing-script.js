@@ -9,12 +9,21 @@ const progressBar = document.querySelector(".landing-scroll-progress");
 const heroSignal = document.querySelector(".why-hero__signal");
 const heroSignalCore = document.querySelector(".why-hero__signal-core");
 const bottomMark = document.querySelector(".why-bottom-mark");
+const root = document.documentElement;
+let landingScrollTimer = 0;
+let lastScrollY = window.scrollY;
 
 function syncScrollProgress() {
-  if (!progressBar) return;
   const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-  const pct = Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100));
-  progressBar.style.width = pct.toFixed(2) + "%";
+  const ratio = Math.min(1, Math.max(0, window.scrollY / scrollable));
+  const pct = ratio * 100;
+
+  root.style.setProperty("--landing-scroll-ratio", ratio.toFixed(4));
+  root.style.setProperty("--landing-scroll-px", window.scrollY.toFixed(2));
+
+  if (progressBar) {
+    progressBar.style.width = pct.toFixed(2) + "%";
+  }
 }
 
 function syncHeroScrollMotion() {
@@ -33,6 +42,18 @@ function syncHeroScrollMotion() {
 }
 
 window.addEventListener("scroll", () => {
+  const currentY = window.scrollY;
+  const direction = currentY >= lastScrollY ? "down" : "up";
+  document.body.classList.add("is-scrolling", `is-scrolling-${direction}`);
+  document.body.classList.toggle("is-scrolling-down", direction === "down");
+  document.body.classList.toggle("is-scrolling-up", direction === "up");
+  lastScrollY = currentY;
+
+  window.clearTimeout(landingScrollTimer);
+  landingScrollTimer = window.setTimeout(() => {
+    document.body.classList.remove("is-scrolling", "is-scrolling-down", "is-scrolling-up");
+  }, 180);
+
   syncScrollProgress();
   syncHeroScrollMotion();
 }, { passive: true });
@@ -124,12 +145,66 @@ function syncNavShell() {
 window.addEventListener("scroll", syncNavShell, { passive: true });
 syncNavShell();
 
+function initLandingPointerField() {
+  let rafId = 0;
+  let pointerLiveTimer = 0;
+  let pointerX = 0.5;
+  let pointerY = 0.24;
+
+  const syncPointer = () => {
+    rafId = 0;
+    root.style.setProperty("--landing-pointer-x", `${(pointerX * 100).toFixed(2)}%`);
+    root.style.setProperty("--landing-pointer-y", `${(pointerY * 100).toFixed(2)}%`);
+  };
+
+  window.addEventListener("pointermove", (event) => {
+    pointerX = Math.max(0, Math.min(1, event.clientX / Math.max(window.innerWidth, 1)));
+    pointerY = Math.max(0, Math.min(1, event.clientY / Math.max(window.innerHeight, 1)));
+    document.body.classList.add("is-pointer-live");
+    window.clearTimeout(pointerLiveTimer);
+    pointerLiveTimer = window.setTimeout(() => {
+      document.body.classList.remove("is-pointer-live");
+    }, 900);
+    if (!rafId) {
+      rafId = window.requestAnimationFrame(syncPointer);
+    }
+  }, { passive: true });
+
+  syncPointer();
+}
+
+function initLandingClickRipples() {
+  const selector = [
+    ".rn-nav a",
+    ".rn-btn",
+    ".why-cap-card",
+    ".company-status__grid a",
+    ".company-card",
+    ".rn-release-chip",
+  ].join(", ");
+
+  document.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    const target = event.target.closest(selector);
+    if (!target) return;
+
+    const ripple = document.createElement("span");
+    ripple.className = "rn-click-ripple rn-click-ripple--landing";
+    ripple.style.left = `${event.clientX}px`;
+    ripple.style.top = `${event.clientY}px`;
+    document.body.appendChild(ripple);
+
+    window.setTimeout(() => ripple.remove(), 620);
+  }, { passive: true });
+}
+
 const microTargets = document.querySelectorAll(
   [
     ".cta",
     ".rn-btn",
     ".rn-nav-primary",
     ".rn-nav-ghost",
+    ".rn-logo",
     ".site-header__action",
     ".app-store-card__action",
     ".app-detail-sheet__primary",
@@ -166,3 +241,6 @@ microTargets.forEach((target) => {
     target.style.setProperty("--rn-hover-y", "50%");
   });
 });
+
+initLandingPointerField();
+initLandingClickRipples();

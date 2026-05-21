@@ -103,6 +103,14 @@ function initDitherField() {
     [3, 11, 1, 9],
     [15, 7, 13, 5],
   ].map((row) => row.map((value) => value / 16))
+  const signals = [
+    [0.12, 0.18, 0.82, 0.78, 0],
+    [0.44, 0.24, 0.95, 0.58, 1],
+    [0.78, 0.16, 0.7, 0.5, 1],
+    [0.66, 0.58, 0.56, 0.66, 2],
+    [0.25, 0.78, 0.46, 0.84, 0],
+    [0.91, 0.84, 0.36, 0.72, 1],
+  ]
 
   let width = 0
   let height = 0
@@ -120,12 +128,46 @@ function initDitherField() {
   function resize() {
     width = window.innerWidth || 1
     height = window.innerHeight || 1
-    const scale = width < 720 ? 10 : width > 1440 ? 7 : 6
+    const scale = width < 720 ? 10 : width > 1680 ? 8 : 7
     cols = Math.max(1, Math.ceil(width / scale))
     rows = Math.max(1, Math.ceil(height / scale))
     canvas.width = cols
     canvas.height = rows
     needsDraw = true
+  }
+
+  const hash = (x, y) => {
+    const value = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123
+    return value - Math.floor(value)
+  }
+  const clamp01 = (value) => Math.max(0, Math.min(1, value))
+  const smoothstep = (edge0, edge1, value) => {
+    const t = clamp01((value - edge0) / Math.max(0.0001, edge1 - edge0))
+    return t * t * (3 - 2 * t)
+  }
+  const valueNoise = (x, y) => {
+    const ix = Math.floor(x)
+    const iy = Math.floor(y)
+    const fx = x - ix
+    const fy = y - iy
+    const ux = fx * fx * (3 - 2 * fx)
+    const uy = fy * fy * (3 - 2 * fy)
+    const a = hash(ix, iy)
+    const b = hash(ix + 1, iy)
+    const c = hash(ix, iy + 1)
+    const d = hash(ix + 1, iy + 1)
+    return (a + (b - a) * ux) + ((c + (d - c) * ux) - (a + (b - a) * ux)) * uy
+  }
+  const fbm = (x, y) => {
+    let value = 0
+    let amplitude = 0.5
+    let frequency = 1
+    for (let octave = 0; octave < 4; octave += 1) {
+      value += valueNoise(x * frequency, y * frequency) * amplitude
+      frequency *= 2.04
+      amplitude *= 0.52
+    }
+    return value
   }
 
   function draw(now = performance.now()) {
@@ -149,6 +191,9 @@ function initDitherField() {
     const cx = smoothX * 0.62 + 0.19
     const cy = smoothY * 0.48 + 0.15
     const scrollParallax = scroll * 0.18
+    const aspect = width / Math.max(height, 1)
+    const rayOriginX = 0.5 + (smoothX - 0.5) * 0.18
+    const rayOriginY = -0.16 + smoothY * 0.16
     const image = ctx.createImageData(cols, rows)
     const data = image.data
 
@@ -156,34 +201,111 @@ function initDitherField() {
       for (let x = 0; x < cols; x += 1) {
         const px = x / cols
         const py = y / rows
+        const ax = (px - 0.5) * aspect + 0.5
         const dx = px - cx
         const dy = py - cy + scrollParallax
         const radius = Math.sqrt(dx * dx + dy * dy)
-        const horizon = Math.max(0, 1 - Math.abs(py - 0.34 - scroll * 0.08) * 2.2)
-        const tunnel = Math.sin(radius * 48 - time * 2.3 + scroll * 11)
-        const drift = Math.sin(px * 14 + py * 8 + time * 0.62 + scroll * 5)
-        const contour = Math.cos((px - py) * 22 - time * 0.48 + scroll * 2)
-        const lattice = Math.sin((px + smoothX * 0.38) * 36) * Math.cos((py - smoothY * 0.2) * 24)
-        const signal = tunnel * 0.3 + drift * 0.26 + contour * 0.18 + lattice * 0.2 + horizon * 0.16
-        const vignette = Math.max(0, 1 - radius * 1.62)
-        const threshold = bayer[y % 4][x % 4] - 0.35 + vignette * 0.16
-        const lit = signal > threshold ? 1 : 0
-        const idx = (y * cols + x) * 4
-        const blue = 32 + Math.round((vignette + horizon) * 34)
-        const green = 40 + Math.round(vignette * 98 + horizon * 42)
-        const purple = 28 + Math.round((1 - Math.min(radius, 1)) * 46)
-        const alpha = lit ? 38 + Math.round(vignette * 54 + horizon * 24) : 3 + Math.round(vignette * 12)
+        const horizon = Math.max(0, 1 - Math.abs(py - 0.3 - scroll * 0.09) * 2.75)
+        const vanishing = Math.max(0, 1 - Math.abs(px - 0.5) * 1.42)
+        const noiseA = fbm(px * 3.15 + time * 0.035 + scroll * 0.72, py * 3.8 - time * 0.028 + smoothY * 0.62)
+        const noiseB = fbm(px * 7.2 - time * 0.055 + smoothX, py * 5.4 + time * 0.04 + scroll * 0.9)
+        const tunnel = Math.sin(radius * 62 - time * 2.05 + scroll * 14.5 + noiseA * 2.1)
+        const ring = Math.cos(radius * 96 - time * 1.18 + scroll * 10.5 + noiseB * 3.6)
+        const drift = Math.sin(px * 13.6 + py * 8.8 + time * 0.5 + scroll * 4.9 + noiseA * 2.4)
+        const contour = Math.cos((px - py) * 27 - time * 0.38 + scroll * 2.4)
+        const lattice = Math.sin((px + smoothX * 0.3) * 47) * Math.cos((py - smoothY * 0.18) * 31)
+        const rayDx = (ax - rayOriginX) * 1.12
+        const rayDy = py - rayOriginY
+        const rayDistance = Math.sqrt(rayDx * rayDx + rayDy * rayDy)
+        const rayAngle = Math.atan2(rayDy, rayDx)
+        const rayNoise = fbm(rayAngle * 2.1 + time * 0.05, rayDistance * 5.8 - time * 0.12 + scroll)
+        const rayStripe = Math.max(0, Math.sin(rayAngle * 17 + rayNoise * 5.2 + time * 0.34 + scroll * 2.2))
+        const godRay = smoothstep(0.46, 0.96, rayStripe + rayNoise * 0.42) * Math.pow(Math.max(0, 1 - rayDistance * 0.8), 2.1)
+        const hexA = Math.abs(Math.sin((ax * 9.1 + py * 3.35 + scroll * 0.8 + time * 0.05) * Math.PI))
+        const hexB = Math.abs(Math.sin((ax * -4.55 + py * 8.55 - scroll * 0.55 + time * 0.04) * Math.PI))
+        const hexC = Math.abs(Math.sin((ax * 4.55 + py * 8.55 + smoothX * 0.5 - time * 0.045) * Math.PI))
+        const hexGrid = Math.max(0, 1 - Math.min(hexA, hexB, hexC) * 15) * (0.42 + noiseB * 0.74)
+        const plasma = Math.sin((noiseA * 5.8 + noiseB * 3.4 + px * 3.1 - py * 2.6 + time * 0.21 + scroll * 1.5) * Math.PI)
+        const scanBand = Math.max(0, 1 - Math.abs(py - (0.14 + scroll * 0.38)) * 7.8)
+        const wireA = Math.max(0, 1 - Math.abs(Math.sin((px * 2.35 + py * 1.42 + scroll * 0.74) * Math.PI * 8 + time * 0.28)) * 13)
+        const wireB = Math.max(0, 1 - Math.abs(Math.sin((px * -1.25 + py * 2.1 + scroll * 0.46) * Math.PI * 7 - time * 0.22)) * 17)
+        const corridor = Math.max(0, 1 - Math.abs(py - (0.78 - Math.abs(px - 0.5) * 0.5 + scroll * 0.06)) * 11)
+        const grain = hash(x, y)
+        const dust = grain > 0.935 ? (grain - 0.935) * 1.65 : 0
+        const starSeed = hash(Math.floor(px * 116 + scroll * 11), Math.floor(py * 92 - time * 2.2))
+        const star = starSeed > 0.991 ? (starSeed - 0.991) * 42 : 0
+        const vhsTear = Math.max(0, 1 - Math.abs(Math.sin((py + noiseA * 0.08 + time * 0.035) * 122)) * 28) * (0.26 + noiseB * 0.6)
+        const vignette = Math.max(0, 1 - radius * 1.66)
+        let beacon = 0
+        let beaconTone = 0
 
-        data[idx] = lit ? purple : 6
-        data[idx + 1] = lit ? green : 8
-        data[idx + 2] = lit ? blue : 14
+        for (const [sx, sy, power, spread, toneIndex] of signals) {
+          const sxDrift = sx + Math.sin(time * 0.13 + toneIndex * 2.1 + scroll * 2.2) * 0.026
+          const syDrift = sy + Math.cos(time * 0.11 + toneIndex * 1.4 + scroll * 1.8) * 0.022
+          const bdx = px - sxDrift
+          const bdy = py - syDrift + scrollParallax * 0.42
+          const bRadius = Math.sqrt(bdx * bdx + bdy * bdy)
+          const beamCore = Math.max(0, 1 - bRadius * (3.85 / Math.max(0.2, spread))) * power
+          const beamSweep = Math.max(0, 1 - Math.abs(Math.atan2(bdy, bdx) - Math.sin(time * 0.18 + toneIndex + noiseA) * 0.9) * 0.48) * beamCore
+          const beam = beamCore + beamSweep * 0.2
+          if (beam > beacon) {
+            beacon = beam
+            beaconTone = toneIndex
+          }
+        }
+
+        const signal =
+          0.045 +
+          tunnel * 0.18 +
+          ring * 0.09 +
+          drift * 0.17 +
+          contour * 0.12 +
+          lattice * 0.13 +
+          (noiseA - 0.5) * 0.24 +
+          (noiseB - 0.5) * 0.12 +
+          plasma * 0.08 +
+          horizon * 0.1 +
+          vanishing * corridor * 0.12 +
+          scanBand * 0.2 +
+          wireA * 0.2 +
+          wireB * 0.13 +
+          godRay * 0.5 +
+          hexGrid * 0.22 +
+          dust * 0.18 +
+          star * 0.16 +
+          vhsTear * 0.08 +
+          beacon * 0.5
+        const edgeSilence = Math.min(1, Math.max(0, (py - 0.02) * 1.25)) * Math.min(1, Math.max(0, (0.98 - py) * 1.25))
+        const threshold = bayer[y % 4][x % 4] + 0.24 - vignette * 0.055 - beacon * 0.32 - scanBand * 0.085 - wireA * 0.075 - godRay * 0.16 - hexGrid * 0.05 + (1 - horizon) * 0.07
+        const lit = signal * edgeSilence > threshold ? 1 : 0
+        const idx = (y * cols + x) * 4
+        const tone = Math.sin(px * 9.2 - py * 11.4 + time * 0.7 + scroll * 5.2 + beaconTone + noiseB)
+        const purpleTone = beaconTone === 1 || tone > 0.28 || godRay > 0.34
+        const blueTone = beaconTone === 2 && tone < -0.18
+        const red = purpleTone ? 125 + Math.round(vignette * 48 + beacon * 22 + godRay * 16) : blueTone ? 28 : 18 + Math.round(scanBand * 10 + star * 10)
+        const green = purpleTone ? 46 + Math.round(horizon * 28 + beacon * 12) : blueTone ? 82 : 84 + Math.round(vignette * 74 + horizon * 38 + hexGrid * 18)
+        const blue = purpleTone ? 188 + Math.round(vignette * 34 + beacon * 18 + godRay * 18) : blueTone ? 138 + Math.round(horizon * 46) : 82 + Math.round((vignette + horizon) * 23)
+        const alpha = lit
+          ? 9 + Math.round(vignette * 20 + horizon * 10 + scanBand * 14 + beacon * 38 + wireA * 11 + godRay * 22 + hexGrid * 9 + star * 18)
+          : Math.round(vignette * 2 + godRay * 2)
+
+        data[idx] = lit ? red : 3
+        data[idx + 1] = lit ? green : 5
+        data[idx + 2] = lit ? blue : 9
         data[idx + 3] = alpha
       }
     }
 
     ctx.putImageData(image, 0, 0)
-    const ditherScale = window.innerWidth < 760 ? 1 : 1.06
-    shell.style.transform = `translate3d(0, ${(-scroll * 34).toFixed(2)}px, 0) scale(${ditherScale})`
+    const ditherScale = window.innerWidth < 760 ? 1 : 1.055
+    const parallaxX = (smoothX - 0.5) * -20
+    const parallaxY = -scroll * 44 + (smoothY - 0.24) * 12
+    const roll = (smoothX - 0.5) * 1.4 + (scroll - 0.5) * 0.45
+    shell.style.setProperty('--rn-dither-scroll', scroll.toFixed(4))
+    shell.style.setProperty('--rn-dither-parallax-x', `${parallaxX.toFixed(2)}px`)
+    shell.style.setProperty('--rn-dither-parallax-y', `${parallaxY.toFixed(2)}px`)
+    shell.style.setProperty('--rn-dither-roll', `${roll.toFixed(3)}deg`)
+    shell.style.transform = `translate3d(${parallaxX.toFixed(2)}px, ${parallaxY.toFixed(2)}px, 0) rotate(${roll.toFixed(3)}deg) scale(${ditherScale})`
     needsDraw = false
 
     if (!reduceMotion.matches || needsDraw) {
@@ -222,6 +344,84 @@ function initDitherField() {
   })
 }
 
+function initAmbientOrbits() {
+  if (document.body?.dataset.page === 'landing' || document.querySelector('.rn-ambient-orbits')) {
+    return
+  }
+
+  const field = document.createElement('div')
+  field.className = 'rn-ambient-orbits'
+  field.setAttribute('aria-hidden', 'true')
+
+  const seeds = [
+    [10, 16, 14, 18, 'green'],
+    [28, 82, 11, 24, 'blue'],
+    [42, 26, 8, 20, 'purple'],
+    [58, 72, 16, 28, 'green'],
+    [74, 18, 10, 22, 'blue'],
+    [88, 54, 13, 26, 'green'],
+    [18, 58, 7, 19, 'purple'],
+    [66, 38, 9, 23, 'green'],
+  ]
+
+  seeds.forEach(([x, y, size, speed, tone], index) => {
+    const node = document.createElement('span')
+    node.style.setProperty('--rn-orbit-x', `${x}%`)
+    node.style.setProperty('--rn-orbit-y', `${y}%`)
+    node.style.setProperty('--rn-orbit-size', `${size}rem`)
+    node.style.setProperty('--rn-orbit-speed', `${speed}s`)
+    node.style.setProperty('--rn-orbit-delay', `${index * -2.7}s`)
+    node.dataset.tone = tone
+    field.appendChild(node)
+  })
+
+  document.body.prepend(field)
+}
+
+function initScrollKinetics() {
+  let lastY = window.scrollY
+  let lastTime = performance.now()
+  let frame = 0
+  let settleTimer = 0
+
+  const sync = () => {
+    frame = 0
+    const now = performance.now()
+    const y = window.scrollY
+    const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
+    const progress = Math.min(1, Math.max(0, y / scrollable))
+    const delta = y - lastY
+    const elapsed = Math.max(16, now - lastTime)
+    const velocity = Math.max(-1, Math.min(1, delta / elapsed))
+
+    document.documentElement.style.setProperty('--rn-scroll-ratio', progress.toFixed(4))
+    document.documentElement.style.setProperty('--rn-scroll-px', y.toFixed(1))
+    document.documentElement.style.setProperty('--rn-scroll-velocity', velocity.toFixed(4))
+    document.body.classList.toggle('is-scrolling-down', delta > 1)
+    document.body.classList.toggle('is-scrolling-up', delta < -1)
+    document.body.classList.add('is-scrolling')
+
+    window.clearTimeout(settleTimer)
+    settleTimer = window.setTimeout(() => {
+      document.body.classList.remove('is-scrolling', 'is-scrolling-down', 'is-scrolling-up')
+      document.documentElement.style.setProperty('--rn-scroll-velocity', '0')
+    }, 180)
+
+    lastY = y
+    lastTime = now
+  }
+
+  const schedule = () => {
+    if (!frame) {
+      frame = window.requestAnimationFrame(sync)
+    }
+  }
+
+  sync()
+  window.addEventListener('scroll', schedule, { passive: true })
+  window.addEventListener('resize', schedule, { passive: true })
+}
+
 function initNavAccessibilityState() {
   const navLinks = [...document.querySelectorAll('.site-nav a, .rn-nav-link')]
   navLinks.forEach((link) => {
@@ -254,7 +454,7 @@ function initNavAccessibilityState() {
 function initScrollableNavRails() {
   const rails = [
     ...document.querySelectorAll(
-      '.site-header .site-nav, .site-header__actions, .rn-nav-links, .rn-nav-cta, .api-docs-topbar__links, .apps-store-topbar__status'
+      '.site-header .site-nav, .site-header__actions, .rn-nav-links, .rn-nav-cta, .api-docs-topbar__links, .apps-store-topbar__status, .apps-store-sidebar__nav'
     ),
   ]
 
@@ -283,11 +483,18 @@ function initScrollableNavRails() {
       return
     }
 
-    current.scrollIntoView({
-      behavior,
-      block: 'nearest',
-      inline: 'center',
-    })
+    const maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth)
+    if (maxScroll <= 2) {
+      return
+    }
+
+    const railRect = rail.getBoundingClientRect()
+    const currentRect = current.getBoundingClientRect()
+    const railCenter = railRect.left + railRect.width / 2
+    const currentCenter = currentRect.left + currentRect.width / 2
+    const nextLeft = Math.max(0, Math.min(maxScroll, rail.scrollLeft + currentCenter - railCenter))
+
+    rail.scrollTo({ left: nextLeft, behavior })
   }
 
   rails.forEach((rail) => {
@@ -316,16 +523,49 @@ function initScrollableNavRails() {
     rail.addEventListener(
       'wheel',
       (event) => {
+        const deltaScale = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? rail.clientWidth : 1
+        const rawDeltaX = event.deltaX * deltaScale
+        const rawDeltaY = event.deltaY * deltaScale
+        const horizontalDelta = Math.abs(rawDeltaX)
+        const verticalDelta = Math.abs(rawDeltaY)
+        const explicitHorizontalIntent =
+          (horizontalDelta > 6 && horizontalDelta > verticalDelta * 1.2) ||
+          (event.shiftKey && verticalDelta > 2 && verticalDelta >= horizontalDelta)
+        if (!explicitHorizontalIntent) {
+          if (
+            rail.matches('.apps-store-sidebar__nav') &&
+            verticalDelta > 1 &&
+            event.cancelable
+          ) {
+            event.preventDefault()
+            window.scrollBy({
+              top: rawDeltaY,
+              left: 0,
+              behavior: 'auto',
+            })
+          }
+          return
+        }
+
         const maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth)
-        if (maxScroll <= 2 || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+        if (maxScroll <= 2) {
+          return
+        }
+
+        const delta =
+          event.shiftKey && verticalDelta >= horizontalDelta ? rawDeltaY : rawDeltaX
+        if (!delta) {
+          return
+        }
+
+        const nextLeft = Math.max(0, Math.min(maxScroll, rail.scrollLeft + delta))
+        if (Math.abs(nextLeft - rail.scrollLeft) < 0.5) {
           return
         }
 
         event.preventDefault()
-        rail.scrollBy({
-          left: event.deltaY,
-          behavior: reduceMotion.matches ? 'auto' : 'smooth',
-        })
+        rail.scrollLeft = nextLeft
+        syncRail(rail)
       },
       { passive: false }
     )
@@ -360,6 +600,121 @@ function initScrollableNavRails() {
       subtree: true,
       attributeFilter: ['class', 'aria-current', 'aria-pressed'],
     })
+  })
+}
+
+function initNavIndicatorRails() {
+  const rails = [
+    ...document.querySelectorAll('.site-header .site-nav, .site-header__actions, .rn-nav-links, .rn-nav-cta'),
+  ]
+
+  if (!rails.length) {
+    return
+  }
+
+  rails.forEach((rail) => {
+    if (rail.querySelector(':scope > .rn-nav-indicator')) {
+      return
+    }
+
+    const indicator = document.createElement('span')
+    indicator.className = 'rn-nav-indicator'
+    indicator.setAttribute('aria-hidden', 'true')
+    rail.prepend(indicator)
+
+    let frame = 0
+    let activeTarget = null
+
+    const isUtilityRail = rail.matches('.site-header__actions, .rn-nav-cta')
+    const resolveTarget = () =>
+      activeTarget ||
+      rail.querySelector('a.is-hovered, a:focus-visible, a[aria-current="page"], a.is-current') ||
+      (isUtilityRail ? null : rail.querySelector('a'))
+
+    const sync = () => {
+      frame = 0
+      const target = resolveTarget()
+      if (!target) {
+        rail.classList.remove('has-nav-indicator')
+        return
+      }
+
+      const railRect = rail.getBoundingClientRect()
+      const targetRect = target.getBoundingClientRect()
+      const x = targetRect.left - railRect.left + rail.scrollLeft
+      const y = targetRect.top - railRect.top + rail.scrollTop
+
+      rail.style.setProperty('--rn-nav-indicator-x', `${x.toFixed(2)}px`)
+      rail.style.setProperty('--rn-nav-indicator-y', `${y.toFixed(2)}px`)
+      rail.style.setProperty('--rn-nav-indicator-w', `${targetRect.width.toFixed(2)}px`)
+      rail.style.setProperty('--rn-nav-indicator-h', `${targetRect.height.toFixed(2)}px`)
+      rail.classList.add('has-nav-indicator')
+    }
+
+    const schedule = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(sync)
+      }
+    }
+
+    rail.addEventListener('pointerover', (event) => {
+      const link = event.target?.closest?.('a')
+      if (!link || !rail.contains(link)) {
+        return
+      }
+
+      activeTarget?.classList.remove('is-hovered')
+      activeTarget = link
+      activeTarget.classList.add('is-hovered')
+      schedule()
+    })
+
+    rail.addEventListener('pointerout', (event) => {
+      const link = event.target?.closest?.('a')
+      if (!link || link.contains(event.relatedTarget)) {
+        return
+      }
+
+      link.classList.remove('is-hovered')
+      activeTarget = null
+      schedule()
+    })
+
+    rail.addEventListener('focusin', (event) => {
+      const link = event.target?.closest?.('a')
+      if (!link || !rail.contains(link)) {
+        return
+      }
+
+      activeTarget?.classList.remove('is-hovered')
+      activeTarget = link
+      activeTarget.classList.add('is-hovered')
+      schedule()
+    })
+
+    rail.addEventListener('focusout', (event) => {
+      const link = event.target?.closest?.('a')
+      if (!link) {
+        return
+      }
+
+      link.classList.remove('is-hovered')
+      activeTarget = null
+      schedule()
+    })
+
+    rail.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule, { passive: true })
+
+    const observer = new MutationObserver(schedule)
+    observer.observe(rail, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      attributeFilter: ['class', 'aria-current'],
+    })
+
+    window.requestAnimationFrame(sync)
   })
 }
 
@@ -479,6 +834,7 @@ function initSharedMicrointeractions() {
   let pointerX = window.innerWidth * 0.5
   let pointerY = window.innerHeight * 0.2
   let frame = 0
+  let pointerLiveTimer = 0
 
   const syncPointer = () => {
     frame = 0
@@ -492,6 +848,10 @@ function initSharedMicrointeractions() {
       pointerX = event.clientX
       pointerY = event.clientY
       document.body.classList.add('is-pointer-live')
+      window.clearTimeout(pointerLiveTimer)
+      pointerLiveTimer = window.setTimeout(() => {
+        document.body.classList.remove('is-pointer-live')
+      }, 900)
 
       if (!frame) {
         frame = window.requestAnimationFrame(syncPointer)
@@ -539,6 +899,46 @@ function initSharedMicrointeractions() {
     target.classList.add('is-pressing')
     window.setTimeout(() => target.classList.remove('is-pressing'), 180)
   })
+}
+
+function initClickRipples() {
+  if (reduceMotion.matches) {
+    return
+  }
+
+  const selector = [
+    'a[href]',
+    'button',
+    '[role="button"]',
+    '.apps-card',
+    '.api-route-card',
+    '.api-docs-group',
+    '.rc-starter-card',
+    '.account-tab',
+  ].join(', ')
+
+  document.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (event.button !== 0 || event.pointerType === 'touch') {
+        return
+      }
+
+      const target = event.target?.closest?.(selector)
+      if (!target) {
+        return
+      }
+
+      const ripple = document.createElement('span')
+      ripple.className = 'rn-click-ripple'
+      ripple.style.left = `${event.clientX}px`
+      ripple.style.top = `${event.clientY}px`
+      ripple.setAttribute('aria-hidden', 'true')
+      document.body.appendChild(ripple)
+      ripple.addEventListener('animationend', () => ripple.remove(), { once: true })
+    },
+    { passive: true }
+  )
 }
 
 function initActiveSectionNav() {
@@ -639,12 +1039,16 @@ function initRevealObserver() {
 
 initInputModality()
 initDitherField()
+initAmbientOrbits()
+initScrollKinetics()
 initSkipLink()
 initReadingProgress()
 initSharedMicrointeractions()
+initClickRipples()
 initActiveSectionNav()
 initChromeScrollState()
 initScrollableNavRails()
+initNavIndicatorRails()
 initLocalAnchorNavigation()
 initMediaLoadStates()
 initRevealObserver()
