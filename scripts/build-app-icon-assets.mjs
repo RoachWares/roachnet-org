@@ -83,6 +83,349 @@ function paletteFor(accent) {
   return palettes[accent] || palettes.blue
 }
 
+function compactLabel(value, fallback = 'RoachNet') {
+  const raw = String(value || fallback)
+    .replace(/\s*&\s*/g, ' ')
+    .replace(/[^a-z0-9 +.-]/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (!raw) return fallback
+  if (raw.length <= 12) return raw
+
+  const acronym = raw
+    .split(/[ +.-]+/)
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
+
+  if (acronym.length >= 2 && acronym.length <= 8) return acronym
+  return raw.slice(0, 10).trim().toUpperCase()
+}
+
+function hashString(value) {
+  return [...String(value || '')].reduce((hash, char) => ((hash << 5) - hash + char.charCodeAt(0)) | 0, 0)
+}
+
+function coverTitleLines(value) {
+  const words = String(value || 'RoachNet Pack')
+    .replace(/\b(RoachNet|Offline|Library|Pack|Shelf)\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .filter(Boolean)
+
+  if (!words.length) return ['RoachNet', 'Pack']
+
+  const lines = ['', '']
+  for (const word of words) {
+    const target = lines[0].length <= 13 ? 0 : 1
+    const next = [lines[target], word].filter(Boolean).join(' ')
+    if (next.length <= 16 || !lines[target]) {
+      lines[target] = next
+    } else if (!lines[1]) {
+      lines[1] = word
+    }
+  }
+
+  return lines.map((line) => compactLabel(line, 'PACK')).filter(Boolean).slice(0, 2)
+}
+
+function familyLabel(family, section) {
+  const labels = {
+    agriculture: 'FIELD DATA',
+    audio: 'AUDIO SHELF',
+    civic: 'PUBLIC RECORD',
+    courses: 'COURSE DROP',
+    culture: 'MEDIA VAULT',
+    design: 'VISUAL KIT',
+    development: 'DEV TOOL',
+    education: 'REFERENCE',
+    finance: 'LEDGER',
+    homestead: 'HOMESTEAD',
+    infrastructure: 'OPS PACK',
+    kids: 'FAMILY',
+    language: 'LANGUAGE',
+    library: 'LIBRARY',
+    maker: 'WORKSHOP',
+    maps: 'MAP CACHE',
+    math: 'PROBLEM SET',
+    medicine: 'MED SHELF',
+    ml: 'MODEL LANE',
+    models: 'MODEL PACK',
+    repair: 'FIX KIT',
+    science: 'SIM SHELF',
+    security: 'SECURITY',
+    survival: 'FIELD KIT',
+    systems: 'SYSTEMS',
+    travel: 'FIELD MAP',
+    voice: 'VOICE CORE',
+    wikipedia: 'WIKI DUMP',
+  }
+
+  return labels[family] || compactLabel(section, 'ROACHNET').toUpperCase()
+}
+
+function materialMarkup(family, palette) {
+  const dot = `fill="${palette.edge}" fill-opacity="0.24"`
+  const glowStroke = `stroke="${palette.glow}" stroke-opacity="0.42" stroke-width="3" stroke-linecap="round"`
+  const softStroke = `stroke="${palette.edge}" stroke-opacity="0.16" stroke-width="2" stroke-linecap="round"`
+
+  if (['voice', 'audio'].includes(family)) {
+    return `
+      <g opacity="0.82">
+        <rect x="84" y="270" width="18" height="62" rx="9" fill="${palette.glow}" fill-opacity="0.42"/>
+        <rect x="112" y="240" width="18" height="112" rx="9" fill="${palette.edge}" fill-opacity="0.2"/>
+        <rect x="140" y="286" width="18" height="42" rx="9" fill="${palette.glow}" fill-opacity="0.3"/>
+        <rect x="168" y="222" width="18" height="140" rx="9" fill="${palette.band}" fill-opacity="0.28"/>
+        <rect x="196" y="258" width="18" height="82" rx="9" fill="${palette.glow}" fill-opacity="0.22"/>
+        <path d="M250 294C292 238 334 236 380 292" ${glowStroke}/>
+        <path d="M250 324C302 276 344 270 404 310" ${softStroke}/>
+      </g>
+    `
+  }
+
+  if (['maps', 'travel'].includes(family)) {
+    return `
+      <g opacity="0.76">
+        <path d="M42 318C104 254 170 236 242 262C316 288 374 262 456 188" fill="none" ${glowStroke}/>
+        <path d="M48 356C120 298 188 286 250 306C318 328 390 294 474 232" fill="none" ${softStroke}/>
+        <path d="M72 390C134 350 214 336 300 354C358 366 408 354 462 326" fill="none" ${softStroke}/>
+        <circle cx="330" cy="242" r="42" fill="${palette.glow}" fill-opacity="0.13"/>
+        <circle cx="330" cy="242" r="12" ${dot}/>
+      </g>
+    `
+  }
+
+  if (['models', 'ml', 'development', 'systems', 'infrastructure', 'security'].includes(family)) {
+    return `
+      <g opacity="0.78">
+        <rect x="278" y="152" width="118" height="118" rx="30" fill="${palette.glow}" fill-opacity="0.09" stroke="${palette.edge}" stroke-opacity="0.2" stroke-width="2"/>
+        <circle cx="308" cy="184" r="7" ${dot}/>
+        <circle cx="366" cy="184" r="7" ${dot}/>
+        <circle cx="336" cy="238" r="7" ${dot}/>
+        <path d="M308 184L336 238L366 184M308 184H366" ${glowStroke}/>
+        <path d="M104 336H222M104 362H186M104 388H258" ${softStroke}/>
+      </g>
+    `
+  }
+
+  if (['library', 'education', 'wikipedia', 'courses', 'language', 'civic', 'math'].includes(family)) {
+    return `
+      <g opacity="0.76">
+        <rect x="294" y="132" width="36" height="190" rx="14" fill="${palette.glow}" fill-opacity="0.16"/>
+        <rect x="336" y="154" width="36" height="168" rx="14" fill="${palette.edge}" fill-opacity="0.12"/>
+        <rect x="378" y="178" width="36" height="144" rx="14" fill="${palette.band}" fill-opacity="0.14"/>
+        <path d="M92 344H234M92 370H196M92 396H254" ${softStroke}/>
+      </g>
+    `
+  }
+
+  if (['medicine', 'survival', 'agriculture', 'homestead', 'repair'].includes(family)) {
+    return `
+      <g opacity="0.76">
+        <path d="M318 142C378 170 412 220 404 282C344 278 300 238 294 178C304 162 312 150 318 142Z" fill="${palette.glow}" fill-opacity="0.15"/>
+        <path d="M292 322C232 298 194 248 198 186C258 186 308 222 322 282C314 300 304 314 292 322Z" fill="${palette.edge}" fill-opacity="0.1"/>
+        <path d="M94 348H238M94 374H204M94 400H260" ${softStroke}/>
+      </g>
+    `
+  }
+
+  return `
+    <g opacity="0.74">
+      <circle cx="336" cy="224" r="72" fill="${palette.glow}" fill-opacity="0.09"/>
+      <circle cx="336" cy="224" r="42" fill="${palette.edge}" fill-opacity="0.07"/>
+      <path d="M96 336H248M96 364H198M96 392H282" ${softStroke}/>
+    </g>
+  `
+}
+
+function glyphMarkup(family) {
+  switch (family) {
+    case 'maps':
+      return `
+        <path d="M154 176L224 146L294 176L362 148V330L294 360L224 330L154 360V176Z"/>
+        <path d="M224 146V330M294 176V360"/>
+        <path d="M256 218C282 218 302 238 302 264C302 296 272 322 256 334C240 322 210 296 210 264C210 238 230 218 256 218Z"/>
+        <circle cx="256" cy="264" r="14"/>
+      `
+    case 'medicine':
+      return `
+        <rect x="188" y="168" width="136" height="154" rx="36"/>
+        <path d="M256 198V292M210 245H302"/>
+        <path d="M214 168V148H298V168"/>
+      `
+    case 'survival':
+    case 'security':
+      return `
+        <path d="M256 142L348 178V246C348 306 312 350 256 382C200 350 164 306 164 246V178L256 142Z"/>
+        <path d="M216 252L246 282L304 218"/>
+      `
+    case 'education':
+    case 'library':
+      return `
+        <path d="M160 174C160 156 174 142 192 142H250C274 142 292 154 302 174V350C292 336 274 328 250 328H192C174 328 160 342 160 360V174Z"/>
+        <path d="M352 174C352 156 338 142 320 142H262C238 142 220 154 210 174V350C220 336 238 328 262 328H320C338 328 352 342 352 360V174Z"/>
+        <path d="M256 150V342"/>
+      `
+    case 'science':
+      return `
+        <circle cx="256" cy="252" r="20"/>
+        <ellipse cx="256" cy="252" rx="118" ry="44"/>
+        <ellipse cx="256" cy="252" rx="118" ry="44" transform="rotate(60 256 252)"/>
+        <ellipse cx="256" cy="252" rx="118" ry="44" transform="rotate(120 256 252)"/>
+      `
+    case 'kids':
+      return `
+        <path d="M256 142L286 206H356L300 248L322 318L256 276L190 318L212 248L156 206H226L256 142Z"/>
+        <path d="M224 246H225M288 246H289M224 286C242 302 270 302 288 286"/>
+      `
+    case 'courses':
+      return `
+        <rect x="146" y="156" width="220" height="150" rx="34"/>
+        <path d="M232 198L304 232L232 266V198Z"/>
+        <path d="M196 350H316M256 306V350"/>
+      `
+    case 'math':
+      return `
+        <path d="M172 176H340M186 178L258 252L186 326H340"/>
+        <circle cx="340" cy="176" r="10"/>
+        <circle cx="340" cy="326" r="10"/>
+      `
+    case 'civic':
+      return `
+        <path d="M156 200L256 154L356 200"/>
+        <path d="M184 218V326M232 218V326M280 218V326M328 218V326"/>
+        <path d="M148 344H364"/>
+      `
+    case 'language':
+    case 'culture':
+      return `
+        <path d="M156 174H356C374 174 388 188 388 206V286C388 304 374 318 356 318H278L222 362V318H156C138 318 124 304 124 286V206C124 188 138 174 156 174Z"/>
+        <path d="M184 226H328M184 268H292"/>
+      `
+    case 'repair':
+      return `
+        <path d="M212 158C230 176 234 202 222 224L300 302C322 290 348 294 366 312C386 332 386 364 366 384C346 404 314 404 294 384C276 366 272 340 284 318L206 240C184 252 158 248 140 230C120 210 120 178 140 158L180 198L220 158H212Z"/>
+      `
+    case 'maker':
+    case 'infrastructure':
+    case 'systems':
+      return `
+        <rect x="172" y="168" width="168" height="168" rx="34"/>
+        <rect x="218" y="214" width="76" height="76" rx="18"/>
+        <path d="M210 126V168M256 126V168M302 126V168M210 336V378M256 336V378M302 336V378M130 210H172M130 256H172M130 302H172M340 210H382M340 256H382M340 302H382"/>
+      `
+    case 'agriculture':
+    case 'homestead':
+      return `
+        <path d="M162 244L256 160L350 244V356H288V296H224V356H162V244Z"/>
+        <path d="M308 160C344 166 362 188 362 216C336 216 314 202 308 160Z"/>
+        <path d="M204 252C238 246 260 224 268 190"/>
+      `
+    case 'finance':
+      return `
+        <path d="M158 326H356"/>
+        <path d="M188 300L238 246L280 276L340 190"/>
+        <circle cx="214" cy="206" r="42"/>
+        <circle cx="304" cy="304" r="32"/>
+      `
+    case 'development':
+      return `
+        <rect x="146" y="154" width="220" height="190" rx="34"/>
+        <path d="M218 214L178 254L218 294M294 214L334 254L294 294"/>
+        <path d="M270 200L242 308"/>
+      `
+    case 'ml':
+    case 'models':
+      return `
+        <path d="M188 220C188 186 216 158 250 158H262C296 158 324 186 324 220V286C324 320 296 348 262 348H250C216 348 188 320 188 286V220Z"/>
+        <circle cx="226" cy="242" r="13"/>
+        <circle cx="286" cy="242" r="13"/>
+        <path d="M226 298C242 312 270 312 286 298"/>
+        <path d="M214 158L194 124M298 158L318 124"/>
+      `
+    case 'audio':
+      return `
+        <path d="M154 256C178 256 178 204 202 204C226 204 226 326 250 326C274 326 274 174 298 174C322 174 322 304 346 304C370 304 370 228 388 228"/>
+        <path d="M154 356H358"/>
+      `
+    case 'design':
+      return `
+        <path d="M190 318L312 196"/>
+        <path d="M300 166L346 212L224 334L166 350L182 292L300 166Z"/>
+        <circle cx="204" cy="210" r="42"/>
+      `
+    case 'travel':
+      return `
+        <path d="M256 142C312 142 358 188 358 244C358 314 284 372 256 390C228 372 154 314 154 244C154 188 200 142 256 142Z"/>
+        <circle cx="256" cy="244" r="36"/>
+      `
+    case 'wikipedia':
+      return `
+        <circle cx="256" cy="252" r="112"/>
+        <path d="M184 196L220 312L256 228L292 312L328 196"/>
+      `
+    case 'voice':
+      return `
+        <rect x="198" y="150" width="96" height="178" rx="48"/>
+        <path d="M166 240C190 240 192 204 216 204"/>
+        <path d="M294 204C322 204 344 228 344 258C344 288 322 312 294 312"/>
+        <path d="M318 174C360 204 384 250 384 302"/>
+        <path d="M246 328V372M206 372H286"/>
+        <path d="M232 206V272M260 206V272"/>
+      `
+    default:
+      return `
+        <path d="M160 256C160 202 202 160 256 160C310 160 352 202 352 256C352 310 310 352 256 352C202 352 160 310 160 256Z"/>
+        <path d="M206 256H306M256 206V306"/>
+      `
+  }
+}
+
+function polishedIconArtwork(item, family, palette, mono) {
+  const titleLines = coverTitleLines(item.title || item.category || 'RoachNet Pack')
+  const sectionLabel = xml(familyLabel(family, item.section || item.category || 'ROACHNET'))
+  const titleOne = xml(titleLines[0] || 'ROACHNET')
+  const titleTwo = xml(titleLines[1] || 'PACK')
+  const monoText = xml(mono)
+  const seed = Math.abs(hashString(`${item.id}:${item.title}:${item.section}`))
+  const flareX = 118 + (seed % 190)
+  const flareY = 128 + ((seed >> 3) % 110)
+  const cutA = 86 + ((seed >> 5) % 80)
+  const cutB = 286 + ((seed >> 7) % 84)
+  const titleSize = titleOne.length > 11 ? 42 : 50
+  const titleTwoSize = titleTwo.length > 11 ? 34 : 42
+  const descriptor = xml(compactLabel(item.subtitle || item.status || item.category || item.section, 'LOCAL PACK'))
+
+  return `
+    <g opacity="0.94">
+      <path d="M-34 ${cutA + 8}C72 ${cutA - 48} 174 ${cutA - 18} 288 ${cutA - 58}C382 ${cutA - 92} 462 ${cutA - 58} 550 ${cutA - 98}V-30H-34V${cutA + 8}Z" fill="${palette.glow}" fill-opacity="0.13"/>
+      <path d="M-28 ${cutB + 92}C86 ${cutB + 28} 186 ${cutB + 26} 300 ${cutB + 54}C398 ${cutB + 78} 462 ${cutB + 26} 540 ${cutB - 18}V552H-28V${cutB + 92}Z" fill="#000000" fill-opacity="0.27"/>
+      <path d="M38 ${cutA + 38}C128 ${cutA - 4} 220 ${cutA + 22} 318 ${cutA - 26}C382 ${cutA - 58} 430 ${cutA - 36} 482 ${cutA - 14}" fill="none" stroke="${palette.edge}" stroke-opacity="0.13" stroke-width="24" stroke-linecap="round"/>
+      <path d="M40 ${cutB + 56}C134 ${cutB + 10} 222 ${cutB + 16} 304 ${cutB + 42}C380 ${cutB + 66} 428 ${cutB + 34} 478 ${cutB + 2}" fill="none" stroke="${palette.glow}" stroke-opacity="0.16" stroke-width="15" stroke-linecap="round"/>
+      <circle cx="${flareX}" cy="${flareY}" r="116" fill="${palette.glow}" fill-opacity="0.08" filter="url(#softBlur)"/>
+      <circle cx="${flareX + 118}" cy="${flareY + 72}" r="88" fill="${palette.band}" fill-opacity="0.08" filter="url(#softBlur)"/>
+      <path d="M84 114C168 88 244 116 316 88C366 68 410 76 458 110" fill="none" stroke="#FFFFFF" stroke-opacity="0.07" stroke-width="18" stroke-linecap="round"/>
+    </g>
+    ${materialMarkup(family, palette)}
+    <g filter="url(#titleLift)">
+      <text x="92" y="184" fill="${palette.ink}" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="${titleSize}" font-weight="900" letter-spacing="-0.06em">${titleOne}</text>
+      <text x="92" y="${titleTwo ? 226 : 218}" fill="${palette.ink}" fill-opacity="0.92" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="${titleTwoSize}" font-weight="900" letter-spacing="-0.055em">${titleTwo}</text>
+      <path d="M94 250H${290 + (seed % 82)}" stroke="${palette.glow}" stroke-width="4" stroke-linecap="round" opacity="0.78"/>
+      <path d="M94 265H${178 + (seed % 86)}" stroke="${palette.edge}" stroke-width="2" stroke-linecap="round" opacity="0.28"/>
+    </g>
+    <g>
+      <rect x="82" y="346" width="236" height="54" rx="27" fill="#020406" fill-opacity="0.76" stroke="${palette.edge}" stroke-opacity="0.14" stroke-width="2"/>
+      <text x="104" y="381" fill="${palette.ink}" font-family="JetBrains Mono, SF Mono, monospace" font-size="24" font-weight="900" letter-spacing="0.1em">${monoText}</text>
+      <text x="182" y="381" fill="${palette.band}" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="0.12em">${descriptor}</text>
+      <rect x="326" y="346" width="104" height="54" rx="27" fill="#020406" fill-opacity="0.58" stroke="${palette.edge}" stroke-opacity="0.12" stroke-width="2"/>
+      <text x="378" y="378" text-anchor="middle" fill="${palette.band}" font-family="JetBrains Mono, SF Mono, monospace" font-size="12" font-weight="800" letter-spacing="0.12em">${sectionLabel}</text>
+    </g>
+  `
+}
+
 function familyMarkup(family, palette) {
   const stroke = palette.glow
   const edge = palette.edge
@@ -269,6 +612,15 @@ function familyMarkup(family, palette) {
         <path d="M226 294C240 310 272 310 286 294" stroke="${stroke}" stroke-width="12" stroke-linecap="round"/>
         <path d="M214 156L196 126M298 156L316 126" stroke="${edge}" stroke-width="10" stroke-linecap="round"/>
       `
+    case 'voice':
+      return `
+        <path d="M164 244C190 244 196 188 222 188C248 188 252 310 278 310C304 310 312 214 338 214" stroke="${stroke}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M214 154H252C270 154 284 168 284 186V326C284 344 270 358 252 358H214C196 358 182 344 182 326V186C182 168 196 154 214 154Z" fill="rgba(255,255,255,0.04)" stroke="${edge}" stroke-width="10"/>
+        <path d="M320 180C348 204 364 244 364 282C364 320 348 356 320 380" stroke="${edge}" stroke-width="10" stroke-linecap="round"/>
+        <path d="M308 224C320 238 326 258 326 278C326 298 320 316 308 330" stroke="${stroke}" stroke-width="10" stroke-linecap="round"/>
+        <circle cx="233" cy="214" r="10" fill="${stroke}"/>
+        <circle cx="233" cy="298" r="10" fill="${stroke}"/>
+      `
     default:
       return `
         <circle cx="256" cy="240" r="92" fill="rgba(255,255,255,0.04)" stroke="${edge}" stroke-width="10"/>
@@ -280,30 +632,84 @@ function familyMarkup(family, palette) {
 function buildIconSvg(item) {
   const palette = paletteFor(item.accent)
   const family = item.iconFamily || 'general'
-  const band = xml(item.iconBand || item.category || 'RoachNet')
-  const mono = xml(item.iconMonogram || 'RN')
+  const band = xml(compactLabel(item.iconBand || item.category || item.section, 'ROACHNET'))
+  const monoRaw = compactLabel(item.iconMonogram || 'RN', 'RN').slice(0, 4)
+  const mono = xml(monoRaw)
   const title = xml(item.title || 'RoachNet')
+  const artwork = polishedIconArtwork(item, family, palette, monoRaw).trim()
 
   return `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${title} icon">
   <defs>
-    <linearGradient id="bg" x1="56" y1="56" x2="456" y2="456" gradientUnits="userSpaceOnUse">
-      <stop stop-color="${palette.from}"/>
+    <clipPath id="tileClip">
+      <rect x="0" y="0" width="512" height="512" rx="118"/>
+    </clipPath>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020406"/>
+      <stop offset="0.48" stop-color="${palette.from}"/>
       <stop offset="1" stop-color="${palette.to}"/>
     </linearGradient>
+    <linearGradient id="line" x1="128" y1="132" x2="394" y2="386" gradientUnits="userSpaceOnUse">
+      <stop stop-color="${palette.edge}"/>
+      <stop offset="0.46" stop-color="${palette.glow}"/>
+      <stop offset="1" stop-color="${palette.band}"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.62"/>
+      <stop offset="0.34" stop-color="${palette.glow}" stop-opacity="0.66"/>
+      <stop offset="0.68" stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="${palette.band}" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="badge" x1="326" y1="368" x2="434" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="${palette.from}"/>
+      <stop offset="1" stop-color="#05070B"/>
+    </linearGradient>
+    <linearGradient id="coverGlass" x1="84" y1="106" x2="428" y2="406" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="0.46" stop-color="${palette.glow}" stop-opacity="0.025"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.2"/>
+    </linearGradient>
     <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(180 152) rotate(52) scale(282 282)">
-      <stop stop-color="${palette.glow}" stop-opacity="0.28"/>
+      <stop stop-color="${palette.glow}" stop-opacity="0.36"/>
       <stop offset="1" stop-color="${palette.glow}" stop-opacity="0"/>
     </radialGradient>
+    <pattern id="grain" width="18" height="18" patternUnits="userSpaceOnUse">
+      <path d="M0 17H18M17 0V18" stroke="${palette.glow}" stroke-opacity="0.08" stroke-width="1"/>
+      <circle cx="4" cy="5" r="1" fill="${palette.edge}" fill-opacity="0.14"/>
+      <circle cx="13" cy="12" r="1" fill="${palette.band}" fill-opacity="0.12"/>
+    </pattern>
+    <filter id="glyphGlow" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="${palette.glow}" flood-opacity="0.42"/>
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000000" flood-opacity="0.36"/>
+    </filter>
+    <filter id="softBlur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="titleLift" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
   </defs>
-  <rect x="22" y="22" width="468" height="468" rx="106" fill="url(#bg)"/>
-  <rect x="22" y="22" width="468" height="468" rx="106" fill="url(#glow)"/>
-  <rect x="42" y="42" width="428" height="428" rx="90" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-  ${familyMarkup(family, palette)}
-  <rect x="82" y="74" width="168" height="42" rx="21" fill="rgba(7,10,16,0.64)" stroke="rgba(255,255,255,0.10)" stroke-width="2"/>
-  <text x="100" y="101" fill="${palette.band}" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="0.18em">${band}</text>
-  <rect x="322" y="368" width="108" height="62" rx="22" fill="rgba(7,10,16,0.72)" stroke="rgba(255,255,255,0.11)" stroke-width="2"/>
-  <text x="376" y="408" text-anchor="middle" fill="${palette.ink}" font-family="JetBrains Mono, SF Mono, monospace" font-size="28" font-weight="700" letter-spacing="0.12em">${mono}</text>
+  <g clip-path="url(#tileClip)">
+    <rect width="512" height="512" fill="url(#bg)"/>
+    <rect width="512" height="512" fill="url(#glow)"/>
+    <rect width="512" height="512" fill="url(#grain)" opacity="0.55"/>
+    <path d="M-20 368C86 312 152 300 248 322C344 344 424 320 532 244V532H-20V368Z" fill="#000000" opacity="0.34"/>
+    <path d="M52 100C140 48 252 46 360 82C432 106 484 150 508 192" stroke="${palette.edge}" stroke-width="32" stroke-linecap="round" opacity="0.06"/>
+    <path d="M60 426C152 364 232 346 316 370C378 388 426 380 486 342" stroke="${palette.glow}" stroke-width="16" stroke-linecap="round" opacity="0.11"/>
+    ${artwork}
+    <rect x="58" y="62" width="188" height="44" rx="22" fill="#020406" fill-opacity="0.72" stroke="${palette.edge}" stroke-opacity="0.16" stroke-width="2"/>
+    <text x="82" y="91" fill="${palette.band}" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="17" font-weight="800" letter-spacing="0.16em">${band}</text>
+    <rect x="334" y="386" width="84" height="42" rx="21" fill="url(#badge)" fill-opacity="0.92" stroke="${palette.edge}" stroke-opacity="0.18" stroke-width="2"/>
+    <path d="M354 407H398" stroke="${palette.glow}" stroke-opacity="0.72" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="354" cy="407" r="5" fill="${palette.edge}" opacity="0.8"/>
+    <circle cx="398" cy="407" r="5" fill="${palette.band}" opacity="0.8"/>
+  </g>
+  <rect x="3" y="3" width="506" height="506" rx="116" stroke="url(#rim)" stroke-opacity="0.5" stroke-width="6"/>
+  <rect x="19" y="19" width="474" height="474" rx="102" stroke="#FFFFFF" stroke-opacity="0.06" stroke-width="2"/>
 </svg>`
+}
+
+function cleanSvg(svg) {
+  return `${svg.replace(/[ \t]+$/gm, '').trim()}\n`
 }
 
 async function main() {
@@ -315,7 +721,7 @@ async function main() {
 
   for (const item of items) {
     const target = path.join(outputDir, `${item.id}.svg`)
-    await writeFile(target, buildIconSvg(item), 'utf8')
+    await writeFile(target, cleanSvg(buildIconSvg(item)), 'utf8')
   }
 
   console.log(`Generated ${items.length} SVG app icons in ${path.relative(repoRoot, outputDir)}`)

@@ -1,24 +1,97 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LibreTexts Social Sciences icon">
   <defs>
-    <linearGradient id="bg" x1="56" y1="56" x2="456" y2="456" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#120A1D"/>
+    <clipPath id="tileClip">
+      <rect x="0" y="0" width="512" height="512" rx="118"/>
+    </clipPath>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020406"/>
+      <stop offset="0.48" stop-color="#120A1D"/>
       <stop offset="1" stop-color="#3F2575"/>
     </linearGradient>
+    <linearGradient id="line" x1="128" y1="132" x2="394" y2="386" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EEE5FF"/>
+      <stop offset="0.46" stop-color="#BC9CFF"/>
+      <stop offset="1" stop-color="#C9A8FF"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.62"/>
+      <stop offset="0.34" stop-color="#BC9CFF" stop-opacity="0.66"/>
+      <stop offset="0.68" stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#C9A8FF" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="badge" x1="326" y1="368" x2="434" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#120A1D"/>
+      <stop offset="1" stop-color="#05070B"/>
+    </linearGradient>
+    <linearGradient id="coverGlass" x1="84" y1="106" x2="428" y2="406" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="0.46" stop-color="#BC9CFF" stop-opacity="0.025"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.2"/>
+    </linearGradient>
     <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(180 152) rotate(52) scale(282 282)">
-      <stop stop-color="#BC9CFF" stop-opacity="0.28"/>
+      <stop stop-color="#BC9CFF" stop-opacity="0.36"/>
       <stop offset="1" stop-color="#BC9CFF" stop-opacity="0"/>
     </radialGradient>
+    <pattern id="grain" width="18" height="18" patternUnits="userSpaceOnUse">
+      <path d="M0 17H18M17 0V18" stroke="#BC9CFF" stroke-opacity="0.08" stroke-width="1"/>
+      <circle cx="4" cy="5" r="1" fill="#EEE5FF" fill-opacity="0.14"/>
+      <circle cx="13" cy="12" r="1" fill="#C9A8FF" fill-opacity="0.12"/>
+    </pattern>
+    <filter id="glyphGlow" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#BC9CFF" flood-opacity="0.42"/>
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000000" flood-opacity="0.36"/>
+    </filter>
+    <filter id="softBlur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="titleLift" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
   </defs>
-  <rect x="22" y="22" width="468" height="468" rx="106" fill="url(#bg)"/>
-  <rect x="22" y="22" width="468" height="468" rx="106" fill="url(#glow)"/>
-  <rect x="42" y="42" width="428" height="428" rx="90" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-  
-        <path d="M148 188C148 170 162 156 180 156H252C274 156 292 170 300 188V336C292 320 274 308 252 308H180C162 308 148 322 148 340V188Z" fill="rgba(255,255,255,0.04)" stroke="#EEE5FF" stroke-width="10"/>
-        <path d="M364 188C364 170 350 156 332 156H260C238 156 220 170 212 188V336C220 320 238 308 260 308H332C350 308 364 322 364 340V188Z" fill="rgba(255,255,255,0.04)" stroke="#EEE5FF" stroke-width="10"/>
-        <path d="M256 164V332" stroke="#BC9CFF" stroke-width="12" stroke-linecap="round"/>
-      
-  <rect x="82" y="74" width="168" height="42" rx="21" fill="rgba(7,10,16,0.64)" stroke="rgba(255,255,255,0.10)" stroke-width="2"/>
-  <text x="100" y="101" fill="#C9A8FF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="0.18em">Libre</text>
-  <rect x="322" y="368" width="108" height="62" rx="22" fill="rgba(7,10,16,0.72)" stroke="rgba(255,255,255,0.11)" stroke-width="2"/>
-  <text x="376" y="408" text-anchor="middle" fill="#FAF7FF" font-family="JetBrains Mono, SF Mono, monospace" font-size="28" font-weight="700" letter-spacing="0.12em">LSS</text>
+  <g clip-path="url(#tileClip)">
+    <rect width="512" height="512" fill="url(#bg)"/>
+    <rect width="512" height="512" fill="url(#glow)"/>
+    <rect width="512" height="512" fill="url(#grain)" opacity="0.55"/>
+    <path d="M-20 368C86 312 152 300 248 322C344 344 424 320 532 244V532H-20V368Z" fill="#000000" opacity="0.34"/>
+    <path d="M52 100C140 48 252 46 360 82C432 106 484 150 508 192" stroke="#EEE5FF" stroke-width="32" stroke-linecap="round" opacity="0.06"/>
+    <path d="M60 426C152 364 232 346 316 370C378 388 426 380 486 342" stroke="#BC9CFF" stroke-width="16" stroke-linecap="round" opacity="0.11"/>
+    <g opacity="0.94">
+      <path d="M-34 112C72 56 174 86 288 46C382 12 462 46 550 6V-30H-34V112Z" fill="#BC9CFF" fill-opacity="0.13"/>
+      <path d="M-28 398C86 334 186 332 300 360C398 384 462 332 540 288V552H-28V398Z" fill="#000000" fill-opacity="0.27"/>
+      <path d="M38 142C128 100 220 126 318 78C382 46 430 68 482 90" fill="none" stroke="#EEE5FF" stroke-opacity="0.13" stroke-width="24" stroke-linecap="round"/>
+      <path d="M40 362C134 316 222 322 304 348C380 372 428 340 478 308" fill="none" stroke="#BC9CFF" stroke-opacity="0.16" stroke-width="15" stroke-linecap="round"/>
+      <circle cx="266" cy="212" r="116" fill="#BC9CFF" fill-opacity="0.08" filter="url(#softBlur)"/>
+      <circle cx="384" cy="284" r="88" fill="#C9A8FF" fill-opacity="0.08" filter="url(#softBlur)"/>
+      <path d="M84 114C168 88 244 116 316 88C366 68 410 76 458 110" fill="none" stroke="#FFFFFF" stroke-opacity="0.07" stroke-width="18" stroke-linecap="round"/>
+    </g>
+
+      <g opacity="0.76">
+        <rect x="294" y="132" width="36" height="190" rx="14" fill="#BC9CFF" fill-opacity="0.16"/>
+        <rect x="336" y="154" width="36" height="168" rx="14" fill="#EEE5FF" fill-opacity="0.12"/>
+        <rect x="378" y="178" width="36" height="144" rx="14" fill="#C9A8FF" fill-opacity="0.14"/>
+        <path d="M92 344H234M92 370H196M92 396H254" stroke="#EEE5FF" stroke-opacity="0.16" stroke-width="2" stroke-linecap="round"/>
+      </g>
+
+    <g filter="url(#titleLift)">
+      <text x="92" y="184" fill="#FAF7FF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="50" font-weight="900" letter-spacing="-0.06em">LibreTexts</text>
+      <text x="92" y="226" fill="#FAF7FF" fill-opacity="0.92" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="42" font-weight="900" letter-spacing="-0.055em">Social</text>
+      <path d="M94 250H366" stroke="#BC9CFF" stroke-width="4" stroke-linecap="round" opacity="0.78"/>
+      <path d="M94 265H258" stroke="#EEE5FF" stroke-width="2" stroke-linecap="round" opacity="0.28"/>
+    </g>
+    <g>
+      <rect x="82" y="346" width="236" height="54" rx="27" fill="#020406" fill-opacity="0.76" stroke="#EEE5FF" stroke-opacity="0.14" stroke-width="2"/>
+      <text x="104" y="381" fill="#FAF7FF" font-family="JetBrains Mono, SF Mono, monospace" font-size="24" font-weight="900" letter-spacing="0.1em">LSS</text>
+      <text x="182" y="381" fill="#C9A8FF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="0.12em">PSPASFT</text>
+      <rect x="326" y="346" width="104" height="54" rx="27" fill="#020406" fill-opacity="0.58" stroke="#EEE5FF" stroke-opacity="0.12" stroke-width="2"/>
+      <text x="378" y="378" text-anchor="middle" fill="#C9A8FF" font-family="JetBrains Mono, SF Mono, monospace" font-size="12" font-weight="800" letter-spacing="0.12em">REFERENCE</text>
+    </g>
+    <rect x="58" y="62" width="188" height="44" rx="22" fill="#020406" fill-opacity="0.72" stroke="#EEE5FF" stroke-opacity="0.16" stroke-width="2"/>
+    <text x="82" y="91" fill="#C9A8FF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="17" font-weight="800" letter-spacing="0.16em">Libre</text>
+    <rect x="334" y="386" width="84" height="42" rx="21" fill="url(#badge)" fill-opacity="0.92" stroke="#EEE5FF" stroke-opacity="0.18" stroke-width="2"/>
+    <path d="M354 407H398" stroke="#BC9CFF" stroke-opacity="0.72" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="354" cy="407" r="5" fill="#EEE5FF" opacity="0.8"/>
+    <circle cx="398" cy="407" r="5" fill="#C9A8FF" opacity="0.8"/>
+  </g>
+  <rect x="3" y="3" width="506" height="506" rx="116" stroke="url(#rim)" stroke-opacity="0.5" stroke-width="6"/>
+  <rect x="19" y="19" width="474" height="474" rx="102" stroke="#FFFFFF" stroke-opacity="0.06" stroke-width="2"/>
 </svg>

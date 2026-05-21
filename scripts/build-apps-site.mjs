@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -72,6 +72,14 @@ async function validateAppStoreInstallContract() {
     }
     if (action === 'roachspeech-pack') {
       assertInstallIntent(item, intent.url && intent.pack && intent.kind, 'RoachSpeech packs need url, pack, and kind')
+    }
+
+    assertInstallIntent(item, item.iconAsset, 'missing iconAsset')
+    const iconPath = path.resolve(repoRoot, item.iconAsset.replace(/^\.\//, ''))
+    try {
+      await access(iconPath)
+    } catch {
+      throw new Error(`App Store icon missing for ${item.id || item.title}: ${item.iconAsset}`)
     }
   }
 

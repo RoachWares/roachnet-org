@@ -34,6 +34,16 @@ const sectionDefinitions = [
     layout: 'map',
   },
   {
+    key: 'Map Picks',
+    navLabel: 'Map Picks',
+    eyebrow: 'Single-file maps',
+    title: 'Focused map installs for one region, one job, less shelf noise.',
+    description:
+      'Single-region PMTiles packs for users who need a place, not a geography dissertation.',
+    icon: 'PIN',
+    layout: 'map',
+  },
+  {
     key: 'Starter Stacks',
     navLabel: 'Stacks',
     eyebrow: 'One-tap stacks',
@@ -313,6 +323,16 @@ const sectionDefinitions = [
     icon: 'AI',
     layout: 'grid',
   },
+  {
+    key: 'Voice Packs',
+    navLabel: 'Voice',
+    eyebrow: 'RoachSpeech packs',
+    title: 'RoachSpeech model packs.',
+    description:
+      'RoachVoice, RoachWhisper, transcripts, read-aloud, and cloning shelves staged as optional installs instead of surprise ballast.',
+    icon: 'VOX',
+    layout: 'grid',
+  },
 ]
 
 const sectionLookup = new Map(sectionDefinitions.map((section) => [section.key, section]))
@@ -320,6 +340,7 @@ const sectionSlugLookup = new Map(sectionDefinitions.map((section) => [slugify(s
 const sectionGlyphs = {
   Today: '✦',
   'Map Regions': '🌍',
+  'Map Picks': '⌖',
   'Starter Stacks': '▦',
   Medicine: '🩺',
   'Survival & Preparedness': '🏕',
@@ -348,6 +369,7 @@ const sectionGlyphs = {
   'Dictionaries & Primary Sources': '📚',
   Wikipedia: 'Ⓦ',
   'Model Packs': '⬡',
+  'Voice Packs': '◉',
 }
 
 function getSectionGlyph(section) {
@@ -361,6 +383,7 @@ const todayRows = [
     note: 'Good first adds once the shell is in place.',
     sections: [
       'Map Regions',
+      'Map Picks',
       'Starter Stacks',
       'Medicine',
       'Open Courses & Lectures',
@@ -368,6 +391,7 @@ const todayRows = [
       'Software Development',
       'Agriculture & Food',
       'Model Packs',
+      'Voice Packs',
     ],
   },
   {
@@ -383,6 +407,7 @@ const todayRows = [
       'Dictionaries & Primary Sources',
       'Wikipedia',
       'Model Packs',
+      'Voice Packs',
     ],
   },
 ]
@@ -589,6 +614,24 @@ const state = {
 let shouldScrollPreviewIntoView = false
 let sidebarNavBound = false
 let sidebarNavResizeObserver = null
+let initialHashScrollHandled = false
+
+function getSiteChromeOffset() {
+  const siteHeader = document.querySelector('.site-header')
+  const storeTopbar = document.querySelector('.apps-store-topbar')
+  const headerHeight = siteHeader?.getBoundingClientRect().height || 0
+  const topbarHeight = storeTopbar?.getBoundingClientRect().height || 0
+  const baseline = window.matchMedia('(max-width: 760px)').matches ? 224 : 248
+  return Math.ceil(Math.max(headerHeight, topbarHeight, baseline) + 18)
+}
+
+function scrollStoreMainIntoView({ behavior = 'smooth' } = {}) {
+  const target = document.querySelector('.apps-store-main') || document.querySelector('#apps-store-stage')
+  if (!target) return
+
+  const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - getSiteChromeOffset())
+  window.scrollTo({ top, behavior })
+}
 
 function syncSidebarNavOverflowState() {
   if (!sidebarNav) return
@@ -1073,6 +1116,15 @@ function deriveIconFamily(item) {
     return 'library'
   }
   if (haystack.includes('wikipedia')) return 'wikipedia'
+  if (
+    haystack.includes('voice') ||
+    haystack.includes('speech') ||
+    haystack.includes('whisper') ||
+    haystack.includes('transcript') ||
+    haystack.includes('listener')
+  ) {
+    return 'voice'
+  }
   if (haystack.includes('model')) return 'models'
   return 'general'
 }
@@ -1649,6 +1701,38 @@ function buildPreviewPanels(item) {
     ]
   }
 
+  if (item.section === 'Voice Packs') {
+    const isWhisper = /whisper|listener|transcript|stt/i.test(`${item.title} ${item.subtitle} ${item.summary}`)
+    const isCloner = /clone|cloning|chatterbox/i.test(`${item.title} ${item.subtitle} ${item.summary}`)
+    const promptSet = isWhisper
+      ? ['Transcribe this vault audio', 'Extract lyrics from this track', 'Make a transcript sidecar']
+      : isCloner
+        ? ['Train from this reference', 'Preview my RoachClaw voice', 'Keep the voice pack local']
+        : ['Read this book aloud', 'Narrate this document', 'Give RoachClaw a voice']
+
+    return [
+      {
+        label: 'Voice lane',
+        title: isWhisper ? 'RoachWhisper listens here' : isCloner ? 'RoachVoice cloning shelf' : 'RoachVoice reads here',
+        lines: promptSet,
+      },
+      {
+        label: 'What it adds',
+        title: previewTitle(item, 'Native speech pack'),
+        lines: (item.includes || []).slice(0, 3).map((entry) => trimPreviewLine(entry)),
+      },
+      {
+        label: 'Machine fit',
+        title: 'Optional local speech shelf',
+        lines: [
+          trimPreviewLine(item.machineFit, 'Fits the Apple Silicon speech lane'),
+          'No cloud ears required',
+          'Drops into RoachSpeech directly',
+        ],
+      },
+    ]
+  }
+
   if (item.section === 'Medicine') {
     return [
       {
@@ -1992,6 +2076,12 @@ function renderStore() {
 
   renderCategoryView()
   enhanceShelfScrollers()
+  if (!initialHashScrollHandled && window.location.hash && state.activeSection !== 'Today') {
+    initialHashScrollHandled = true
+    requestAnimationFrame(() => {
+      scrollStoreMainIntoView({ behavior: 'auto' })
+    })
+  }
   if (shouldScrollPreviewIntoView) {
     shouldScrollPreviewIntoView = false
     requestAnimationFrame(() => {
@@ -2161,6 +2251,9 @@ function setActiveSection(sectionKey) {
     history.replaceState(null, '', window.location.pathname)
   }
   renderStore()
+  requestAnimationFrame(() => {
+    scrollStoreMainIntoView({ behavior: 'smooth' })
+  })
 }
 
 sidebarNav?.addEventListener('click', (event) => {
@@ -2179,12 +2272,6 @@ document.querySelectorAll('[data-apps-section-jump]').forEach((link) => {
 
     event.preventDefault()
     setActiveSection(section)
-    requestAnimationFrame(() => {
-      document.querySelector('.apps-store-main')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    })
   })
 })
 

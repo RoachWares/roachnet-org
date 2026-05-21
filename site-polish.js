@@ -537,12 +537,14 @@ function initScrollableNavRails() {
             verticalDelta > 1 &&
             event.cancelable
           ) {
-            event.preventDefault()
-            window.scrollBy({
-              top: rawDeltaY,
-              left: 0,
-              behavior: 'auto',
-            })
+            const maxTop = Math.max(0, rail.scrollHeight - rail.clientHeight)
+            const nextTop = Math.max(0, Math.min(maxTop, rail.scrollTop + rawDeltaY))
+            const canScrollRail = maxTop > 2 && Math.abs(nextTop - rail.scrollTop) > 0.5
+
+            if (canScrollRail) {
+              event.preventDefault()
+              rail.scrollTop = nextTop
+            }
           }
           return
         }
