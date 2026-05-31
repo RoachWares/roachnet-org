@@ -1168,6 +1168,18 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
+
+  .page-view--roachclaw .rc-sidebar__link,
+  .rc-standalone .rc-sidebar__link,
+  .page-view--roachclaw .rc-thread-item,
+  .rc-standalone .rc-thread-item,
+  .page-view--roachclaw .rc-account-chip,
+  .rc-standalone .rc-account-chip,
+  .page-view--roachclaw .rc-sidebar-toggle,
+  .rc-standalone .rc-sidebar-toggle {
+    min-height: 42px !important;
+    touch-action: manipulation;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachNet iOS App: Control Without Clutter</title>
+    <title>RoachNet iOS: RoachNet in your pocket</title>
     <meta
       name="description"
-      content="RoachNet’s iOS app keeps runtime checks, vault reads, and GPS in sync with your Mac. Control in your pocket, nothing extra."
+      content="RoachNet iOS keeps RoachClaw, vault reads, app queues, runtime checks, and RoachAtlas GPS close when your Mac is paired. Pocket control, not a second desktop."
     />
     <meta name="theme-color" content="#0b1016" />
     <link rel="canonical" href="https://roachnet.org/ios/" />
@@ -15,20 +15,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="RoachNet iOS App: Control Without Clutter" />
+    <meta property="og:title" content="RoachNet iOS: RoachNet in your pocket" />
     <meta
       property="og:description"
-      content="Keep your Mac stack synced on the go with RoachNet’s iOS app. Control your tools with ease."
+      content="Use RoachNet iOS for chat, vault reads, app queues, runtime checks, and RoachAtlas GPS handoff from your phone or iPad."
     />
     <meta property="og:url" content="https://roachnet.org/ios/" />
-    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.jpg" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RoachNet iOS App: Control Without Clutter" />
+    <meta name="twitter:title" content="RoachNet iOS: RoachNet in your pocket" />
     <meta
       name="twitter:description"
-      content="Keep your Mac stack synced on the go with RoachNet’s iOS app. Control your tools with ease."
+      content="Use RoachNet iOS for chat, vault reads, app queues, runtime checks, and RoachAtlas GPS handoff from your phone or iPad."
     />
-    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.jpg" />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.webp" />
+    <link rel="preload" as="image" href="../assets/screens/roachnet-ios-companion-chat-v015.webp" imagesrcset="../assets/screens/roachnet-ios-companion-chat-v015.webp" />
     <link rel="stylesheet" href="../app.css" />
     <link rel="stylesheet" href="../app-polish.css" />
   </head>
@@ -38,7 +39,7 @@
 
     <header class="site-header">
       <a class="brand-lockup" href="https://roachnet.org/" aria-label="RoachNet home">
-        <img class="brand-mark" src="../assets/roachnet-logo.png" alt="RoachNet logo" />
+        <img class="brand-mark" src="../assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
         <div class="brand-copy">
           <span class="brand-kicker">iPhone &amp; iPad · SideStore + AltStore</span>
           <strong>RoachNet iOS</strong>
@@ -48,15 +49,18 @@
 
       <div class="site-header__panel">
         <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a href="https://roachnet.org/">Mission</a>
           <a href="https://roachnet.org/home/">Home</a>
-          <a href="#install">Install</a>
-          <a href="#pairing">Pairing</a>
           <a href="https://apps.roachnet.org/">Apps</a>
-          <a href="https://roachnet.org/api/">API</a>
+          <a href="https://roachnet.org/roachclaw/">Claw</a>
+          <a href="https://roachnet.org/brew/">Brew</a>
+          <a class="is-current" href="#top">iOS</a>
         </nav>
 
         <div class="site-header__actions" aria-label="Utility links">
-          <a class="site-action-pill" href="https://github.com/RoachWares/RoachNet-iOS" target="_blank" rel="noreferrer">GitHub</a>
+          <a class="site-action-pill" href="https://accounts.roachnet.org/">Account</a>
+          <a class="site-action-pill site-action-pill--ghost" href="https://roachnet.org/api/">API</a>
+          <a class="site-action-pill site-action-pill--ghost" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
     </header>
@@ -65,9 +69,9 @@
       <section class="hero hero--ios">
         <div class="hero-copy">
           <p class="eyebrow">RoachNet iOS</p>
-          <h1>The field remote for the stack on your Mac.</h1>
+          <h1>RoachNet in your pocket.</h1>
           <p class="hero-body">
-            RoachClaw first. Vault reads, runtime checks, app queues, and RoachAtlas GPS stay close without pretending the phone should be the desktop. Control in your pocket, nothing extra.
+            RoachClaw first. Vault reads, runtime checks, app queues, and RoachAtlas GPS stay close without pretending the phone should be the desktop. Control in your pocket, not the whole desk.
           </p>
 
           <div class="hero-actions">
@@ -76,13 +80,13 @@
             <a class="cta cta--ghost" href="https://altstore.io/" target="_blank" rel="noreferrer">AltStore guide</a>
           </div>
 
-          <p class="hero-footnote">Unsigned IPA for SideStore or AltStore. Pair it when you want. Stay useful when the Mac is asleep or the network drops.</p>
+          <p class="hero-footnote">Unsigned IPA for SideStore or AltStore. Pair it when you want. Cached reads stay useful when the Mac is asleep or the network drops.</p>
           <p class="download-meta">Current release: v0.1.5 · built for iPhone and iPad</p>
         </div>
 
         <div class="hero-visual ios-hero-visual" aria-hidden="true">
           <div class="app-screen-shot app-screen-shot--dark ios-hero-shot">
-            <img src="../assets/screens/roachnet-ios-companion-chat-v015.jpg" alt="RoachNet iOS chat surface" />
+            <img src="../assets/screens/roachnet-ios-companion-chat-v015.webp" width="1206" height="2622" alt="RoachNet iOS chat surface" fetchpriority="high" decoding="async" />
             <span class="screen-version-chip">v0.1.5</span>
           </div>
           <div class="screen-chip-row">
@@ -105,7 +109,7 @@
         <div class="ios-shot-wall ios-shot-wall--editorial">
           <article class="ios-shot-card ios-shot-card--feature" data-reveal>
             <div class="app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-ios-companion-chat-v015.jpg" alt="RoachNet iOS RoachClaw chat view" />
+              <img src="../assets/screens/roachnet-ios-companion-chat-v015.webp" width="1206" height="2622" alt="RoachNet iOS RoachClaw chat view" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v0.1.5</span>
             </div>
             <div class="ios-shot-card__copy">
@@ -117,37 +121,37 @@
 
           <article class="ios-shot-card ios-shot-card--compact" data-reveal>
             <div class="app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-ios-companion-apps-v015.jpg" alt="RoachNet iOS Apps view" />
+              <img src="../assets/screens/roachnet-ios-companion-apps-v015.webp" width="1206" height="2622" alt="RoachNet iOS Apps view" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v0.1.5</span>
             </div>
             <div class="ios-shot-card__copy">
               <span class="feature-card__eyebrow">Apps</span>
               <h3>Queue packs from anywhere.</h3>
-              <p>Browse packs, queue installs, and hand them to the Mac when the bridge comes back. Field shopping, but for useful files.</p>
+              <p>Browse packs, queue installs, and hand them to the Mac when the bridge comes back. Field shopping, but for files you actually asked for.</p>
             </div>
           </article>
 
           <article class="ios-shot-card ios-shot-card--compact" data-reveal>
             <div class="app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-ios-companion-runtime-v015.jpg" alt="RoachNet iOS Runtime view" />
+              <img src="../assets/screens/roachnet-ios-companion-runtime-v015.webp" width="1206" height="2622" alt="RoachNet iOS Runtime view" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v0.1.5</span>
             </div>
             <div class="ios-shot-card__copy">
               <span class="feature-card__eyebrow">Runtime</span>
               <h3>Check the desktop fast.</h3>
-              <p>What is live, what is downloading, what needs attention, and whether the foreground RoachAtlas GPS bridge is actually feeding the Mac.</p>
+              <p>See what is live, what is downloading, what needs attention, and whether the RoachAtlas GPS bridge is actually feeding the Mac.</p>
             </div>
           </article>
 
           <article class="ios-shot-card ios-shot-card--wide" data-reveal>
             <div class="app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-ios-companion-vault-v015.jpg" alt="RoachNet iOS Vault view" />
+              <img src="../assets/screens/roachnet-ios-companion-vault-v015.webp" width="1206" height="2622" alt="RoachNet iOS Vault view" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v0.1.5</span>
             </div>
             <div class="ios-shot-card__copy">
               <span class="feature-card__eyebrow">Vault</span>
               <h3>Read the shelf without opening the shell.</h3>
-              <p>Vault shelf cards, map and education pack summaries, archive reads, and cleaner media/document handoff on your phone, still readable when the bridge drops.</p>
+              <p>Vault shelf cards, map and education pack summaries, archive reads, and media/document handoff on your phone, still readable when the bridge drops.</p>
             </div>
           </article>
         </div>
@@ -157,7 +161,7 @@
         <div class="section-head">
           <p class="eyebrow">What’s in 0.1.5</p>
           <h2>Small companion. Real utility.</h2>
-          <p>The companion opens quicker, pairs faster, and adds an explicit local GPS bridge for RoachAtlas.</p>
+          <p>The companion opens quicker, pairs faster, and adds a local GPS bridge for RoachAtlas. Small app, actual job.</p>
         </div>
 
         <div class="ios-feature-shell">
@@ -214,7 +218,7 @@
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">Apps utility</span>
-              <h3>Save apps, see recents, queue sends. Useful when you are not at your desk.</h3>
+              <h3>Save apps, see recents, queue sends. Useful when you are not at your desk and still somehow doing desk things.</h3>
             </article>
           </div>
         </div>

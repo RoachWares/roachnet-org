@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachNet Brew Install: ~/RoachNet in Three Commands</title>
+    <title>RoachNet Brew: Three commands to ~/RoachNet</title>
     <meta
       name="description"
-      content="Install RoachNet with just 3 commands to ~/RoachNet. Minimal clicks, smooth setup, and no macOS launch headaches included."
+      content="Install RoachNet with Homebrew in three commands. Same Apple Silicon app, same ~/RoachNet folder, fewer clicks if Terminal is your kind of fun."
     />
     <meta name="theme-color" content="#0b1016" />
     <link rel="canonical" href="https://roachnet.org/brew/" />
@@ -15,20 +15,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="RoachNet Brew Install: ~/RoachNet in Three Commands" />
+    <meta property="og:title" content="RoachNet Brew: Three commands to ~/RoachNet" />
     <meta
       property="og:description"
-      content="Install RoachNet in ~/RoachNet with 3 easy commands. Quick setup, no macOS hiccups."
+      content="Install RoachNet in ~/RoachNet with Homebrew. Same destination as Setup.app, no mystery staging folder."
     />
     <meta property="og:url" content="https://roachnet.org/brew/" />
-    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.jpg" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RoachNet Brew Install: ~/RoachNet in Three Commands" />
+    <meta name="twitter:title" content="RoachNet Brew: Three commands to ~/RoachNet" />
     <meta
       name="twitter:description"
-      content="Install RoachNet in ~/RoachNet with 3 easy commands. Quick setup, no macOS hiccups."
+      content="Install RoachNet in ~/RoachNet with Homebrew. Same destination as Setup.app, no mystery staging folder."
     />
-    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.jpg" />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <link rel="preload" as="image" href="../assets/screens/roachnet-native-home.webp" imagesrcset="../assets/screens/roachnet-native-home.webp" />
     <link rel="stylesheet" href="../app.css" />
     <link rel="stylesheet" href="../app-polish.css" />
   </head>
@@ -38,9 +39,9 @@
 
     <header class="site-header">
       <a class="brand-lockup" href="https://roachnet.org/" aria-label="RoachNet home">
-        <img class="brand-mark" src="../assets/roachnet-logo.png" alt="RoachNet logo" />
+        <img class="brand-mark" src="../assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
         <div class="brand-copy">
-          <span class="brand-kicker">Apple Silicon · terminal lane · contained cask</span>
+          <span class="brand-kicker">Apple Silicon · Terminal lane · contained cask</span>
           <strong>RoachNet Brew</strong>
         </div>
         <span class="site-header__status">brew install --cask</span>
@@ -48,15 +49,18 @@
 
       <div class="site-header__panel">
         <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a href="https://roachnet.org/">Mission</a>
           <a href="https://roachnet.org/home/">Home</a>
-          <a href="#install">Install</a>
-          <a href="#layout">Layout</a>
-          <a href="#runtime">Runtime</a>
-          <a href="https://roachnet.org/api/">API</a>
+          <a href="https://apps.roachnet.org/">Apps</a>
+          <a href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="is-current" href="#top">Brew</a>
+          <a href="https://roachnet.org/ios/">iOS</a>
         </nav>
 
         <div class="site-header__actions" aria-label="Utility links">
-          <a class="site-action-pill" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Tap Repo</a>
+          <a class="site-action-pill" href="https://accounts.roachnet.org/">Account</a>
+          <a class="site-action-pill site-action-pill--ghost" href="https://roachnet.org/api/">API</a>
+          <a class="site-action-pill site-action-pill--ghost" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
     </header>
@@ -65,9 +69,9 @@
       <section class="hero hero--brew">
         <div class="hero-copy">
           <p class="eyebrow">RoachNet Brew</p>
-          <h1>Three commands to ~/RoachNet.</h1>
+          <h1>Terminal type? Three commands to <code>~/RoachNet</code>.</h1>
           <p class="hero-body">
-            This lane lands RoachNet in <code>~/RoachNet</code>, same as Setup.app, with fewer clicks between you and the work.
+            Same RoachNet app, same contained runtime, same folder you can back up or nuke anytime. This lane skips the setup window and lets Homebrew do the walking.
           </p>
 
           <div class="hero-actions">
@@ -75,7 +79,7 @@
             <button class="cta cta--ghost" data-homebrew-copy type="button">Copy brew command</button>
           </div>
 
-          <p class="hero-footnote">Apple Silicon only. Assumes Homebrew is already installed. If it is not, <a href="https://brew.sh" target="_blank" rel="noreferrer">install it first</a>, then come back.</p>
+          <p class="hero-footnote">Apple Silicon only. Assumes Homebrew is already installed. If it is not, <a href="https://brew.sh" target="_blank" rel="noreferrer">install it first</a>, then come back. RoachNet is not going anywhere.</p>
           <p class="download-meta">Current cask target: RoachNet 1.0.5 · DMG SHA-256 <code>332057c4f85d136882971957d907bec82e7657833272d30d0849990590e1d122</code> · <code>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</code></p>
           <p class="homebrew-note" id="homebrew-note">
             The cask writes the contained config, clears only launch-blocking bundle metadata, and boots the runtime without leaning on host Homebrew libraries.
@@ -86,8 +90,12 @@
           <div class="screen-frame screen-frame--hero">
             <img
               class="screen-frame__image"
-              src="../assets/screens/roachnet-native-home.jpg"
+              src="../assets/screens/roachnet-native-home.webp"
+              width="1568"
+              height="1032"
               alt="RoachNet native home command grid"
+              fetchpriority="high"
+              decoding="async"
             />
           </div>
           <div class="screen-chip-row">
@@ -102,7 +110,7 @@
       <section class="content-section" id="install">
         <div class="section-head">
           <p class="eyebrow">Install</p>
-          <h2>Three steps. No guessing.</h2>
+          <h2>Three steps. Same destination.</h2>
         </div>
 
         <div class="card-grid card-grid--three" role="list">
@@ -134,7 +142,7 @@
       <section class="content-section" id="layout">
         <div class="section-head">
           <p class="eyebrow">What it installs</p>
-          <h2>What it actually installs.</h2>
+          <h2>What lands on disk.</h2>
         </div>
 
         <div class="runtime-grid" role="list">
@@ -153,13 +161,13 @@
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Local tools</span>
             <h3><code>~/RoachNet/bin</code></h3>
-            <p>Helper binaries and tool shims live next to the app. Clean install, clean uninstall, nothing left behind.</p>
+            <p>Helper binaries and tool shims live next to the app. Clean install, clean uninstall, fewer breadcrumbs for future-you to curse at.</p>
           </article>
 
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Config writes</span>
             <h3><code>~/Library/Application Support/roachnet</code></h3>
-            <p>Launch config and install profile land here so the app already knows its paths on first boot. No first-run wizard.</p>
+            <p>Launch config and install profile land here so the app already knows its paths on first boot. No first-run scavenger hunt.</p>
           </article>
         </div>
       </section>
@@ -167,13 +175,13 @@
       <section class="content-section" id="runtime">
         <div class="section-head">
           <p class="eyebrow">Homebrew runtime</p>
-          <h2>Why it is not just a <code>brew install</code> wrapper.</h2>
+          <h2>Why it is more than a <code>brew install</code> wrapper.</h2>
         </div>
 
         <div class="card-grid card-grid--support" role="list">
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Portable Node</span>
-            <h3>Ships its own Node runtime. It does not touch your global install or depend on whichever Node version Homebrew just adopted.</h3>
+            <h3>Ships its own Node runtime. It does not touch your global install or depend on whichever Node version Homebrew just adopted this week.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
@@ -183,12 +191,12 @@
 
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Contained cache</span>
-            <h3>Cache lives in <code>~/RoachNet/storage/state/runtime-cache</code>, not <code>/tmp</code>. It will not vanish on reboot and confuse you next launch.</h3>
+            <h3>Cache lives in <code>~/RoachNet/storage/state/runtime-cache</code>, not <code>/tmp</code>. It will not vanish on reboot and act surprised next launch.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Safer first boot</span>
-            <h3>Bridge is off on first boot. Start clean, enable it when ready. If the first runtime handshake comes up dirty, it heals once before complaining.</h3>
+            <h3>Bridge is off on first boot. Start clean, enable it when ready. If the first runtime handshake comes up dirty, it tries one contained self-heal before complaining.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>

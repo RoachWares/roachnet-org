@@ -17,9 +17,9 @@ const sectionDefinitions = [
     key: 'Today',
     navLabel: 'Today',
     eyebrow: 'Today in RoachNet Apps',
-    title: 'Useful packs with a place to land.',
+    title: 'Apps and packs worth installing.',
     description:
-      'Maps, shelves, guides, and model packs that hand straight into the native app with a route attached.',
+      'Maps, shelves, guides, voice packs, and model packs that hand straight into the native app with a route attached.',
     icon: 'NOW',
     layout: 'today',
   },
@@ -27,9 +27,9 @@ const sectionDefinitions = [
     key: 'Map Regions',
     navLabel: 'Map Regions',
     eyebrow: 'Offline atlas',
-    title: 'Regional packs built around real-world use.',
+    title: 'Offline atlas packs by region.',
     description:
-      'City detail, road networks, coastlines, and small-town coverage grouped into named installs.',
+      'City detail, road networks, coastlines, and small-town coverage grouped into named installs for when the signal takes a walk.',
     icon: 'MAP',
     layout: 'map',
   },
@@ -47,9 +47,9 @@ const sectionDefinitions = [
     key: 'Starter Stacks',
     navLabel: 'Stacks',
     eyebrow: 'One-tap stacks',
-    title: 'Tier packs that seed a fresh RoachNet fast.',
+    title: 'Fresh RoachNet, fewer chores.',
     description:
-      'Curated bundles that install through the same native desktop tier actions as the rest of the catalog.',
+      'Curated bundles that install through the same native desktop lane as the rest of the catalog.',
     icon: 'STK',
     layout: 'grid',
   },
@@ -57,7 +57,7 @@ const sectionDefinitions = [
     key: 'Medicine',
     navLabel: 'Medicine',
     eyebrow: 'Care library',
-    title: 'Medical shelves from “what is this pill?” to “how do I stabilize this person?”',
+    title: 'Medical shelves for actual pressure, not search-result roulette.',
     description:
       'Drug references, treatment steps, emergency guides, and deeper libraries that stay on your machine.',
     icon: 'MED',
@@ -87,7 +87,7 @@ const sectionDefinitions = [
     key: 'Science & Simulations',
     navLabel: 'Science',
     eyebrow: 'Lab shelf',
-    title: 'Simulations, scientific Q&A, and hard-reference shelves for the curious machine.',
+    title: 'Science shelves for the curious machine.',
     description:
       'Physics, astronomy, chemistry, biology, and interactive science installs that feel like a compact lab bench inside RoachNet.',
     icon: 'LAB',
@@ -107,7 +107,7 @@ const sectionDefinitions = [
     key: 'Open Courses & Lectures',
     navLabel: 'Courses',
     eyebrow: 'Course shelf',
-    title: 'Bigger study installs for people who actually use their desktop as a campus.',
+    title: 'Study installs for people who use the desktop as a campus.',
     description:
       'Lecture libraries, open courses, and structured study packs that install like real apps instead of random downloads.',
     icon: 'CRS',
@@ -187,9 +187,9 @@ const sectionDefinitions = [
     key: 'Finance & Crypto',
     navLabel: 'Finance',
     eyebrow: 'Money shelf',
-    title: 'Investing, money, crypto, and finance-heavy reference that still feels practical.',
+    title: 'Money reference without the finance-influencer fog machine.',
     description:
-      'From basic money questions to cryptography and quant-minded reference, this shelf keeps the numbers close.',
+      'Investing, accounting, economics, crypto, and money-management installs grouped for research, not hype.',
     icon: 'FIN',
     layout: 'grid',
   },
@@ -197,9 +197,9 @@ const sectionDefinitions = [
     key: 'Software Development',
     navLabel: 'Dev',
     eyebrow: 'Dev shelf',
-    title: 'Coding docs, focused tutorials, and install-ready dev study packs.',
+    title: 'Coding docs and dev shelves that stay local.',
     description:
-      'Language docs, framework references, and tutorials that stay available when the router starts acting weird.',
+      'Programming references, system docs, software engineering material, and local-first dev packs for the RoachNet workspace.',
     icon: 'DEV',
     layout: 'grid',
   },
@@ -237,7 +237,7 @@ const sectionDefinitions = [
     key: 'Music Production & Audio',
     navLabel: 'Audio',
     eyebrow: 'Audio craft',
-    title: 'Theory, sound, and production references for actual studio sessions.',
+    title: 'Theory, sound, and production references for studio days.',
     description:
       'Open music-theory tracks, sound-focused talk archives, and audio references that belong next to the music tools instead of somewhere in Downloads.',
     icon: 'AUD',
@@ -317,7 +317,7 @@ const sectionDefinitions = [
     key: 'Model Packs',
     navLabel: 'Models',
     eyebrow: 'RoachClaw models',
-    title: 'Contained local model packs for RoachClaw.',
+    title: 'Local model packs for RoachClaw.',
     description:
       'Starter models, coding packs, and general-purpose models queued straight into the contained local AI stack.',
     icon: 'AI',
@@ -327,7 +327,7 @@ const sectionDefinitions = [
     key: 'Voice Packs',
     navLabel: 'Voice',
     eyebrow: 'RoachSpeech packs',
-    title: 'RoachSpeech model packs.',
+    title: 'RoachSpeech and RoachVoice model packs.',
     description:
       'RoachVoice, RoachWhisper, transcripts, read-aloud, and cloning shelves staged as optional installs instead of surprise ballast.',
     icon: 'VOX',
@@ -1549,10 +1549,10 @@ function renderCard(item) {
       <div class="apps-card__actions">
         ${
           item.installUrl
-            ? `<a class="apps-card__install" href="${item.installUrl}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
+            ? `<a class="apps-card__install" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
             : ''
         }
-        <button class="apps-card__more" type="button" data-preview-id="${item.id}">Open details</button>
+        <button class="apps-card__more" type="button" data-preview-id="${item.id}" aria-label="${escapeHtml(`Open details for ${item.title}`)}">Open details</button>
       </div>
     </article>
   `
@@ -1945,10 +1945,10 @@ function renderPreviewStage(item, options = {}) {
         <div class="apps-hero-panel__actions">
           ${
             item.installUrl
-              ? `<a class="apps-card__install apps-card__install--hero" href="${item.installUrl}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
+              ? `<a class="apps-card__install apps-card__install--hero" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
               : ''
           }
-          <button class="apps-card__more apps-card__more--hero" type="button" data-preview-id="${item.id}">Open details</button>
+          <button class="apps-card__more apps-card__more--hero" type="button" data-preview-id="${item.id}" aria-label="${escapeHtml(`Open details for ${item.title}`)}">Open details</button>
           ${
             detailUrl
               ? `<a class="apps-card__secondary" href="${detailUrl}">${escapeHtml(item.detailLabel || 'Open manifest')}</a>`
@@ -2116,7 +2116,7 @@ function renderDetail(item) {
           <div class="apps-detail__actions">
             ${
               item.installUrl
-                ? `<a class="apps-card__install apps-card__install--hero" href="${item.installUrl}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
+                ? `<a class="apps-card__install apps-card__install--hero" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
                 : ''
             }
             ${

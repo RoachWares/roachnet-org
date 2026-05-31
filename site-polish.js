@@ -110,6 +110,8 @@ function initDitherField() {
     [0.66, 0.58, 0.56, 0.66, 2],
     [0.25, 0.78, 0.46, 0.84, 0],
     [0.91, 0.84, 0.36, 0.72, 1],
+    [0.52, 0.08, 0.74, 0.42, 2],
+    [0.08, 0.62, 0.4, 0.72, 1],
   ]
 
   let width = 0
@@ -128,7 +130,10 @@ function initDitherField() {
   function resize() {
     width = window.innerWidth || 1
     height = window.innerHeight || 1
-    const scale = width < 720 ? 10 : width > 1680 ? 8 : 7
+    const constrainedDevice =
+      navigator.hardwareConcurrency <= 4 ||
+      (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4)
+    const scale = width <= 420 ? (constrainedDevice ? 16 : 14) : width < 720 ? (constrainedDevice ? 14 : 12) : width > 1680 ? 8 : 7
     cols = Math.max(1, Math.ceil(width / scale))
     rows = Math.max(1, Math.ceil(height / scale))
     canvas.width = cols
@@ -172,11 +177,12 @@ function initDitherField() {
 
   function draw(now = performance.now()) {
     if (document.visibilityState === 'hidden') {
-      frame = window.requestAnimationFrame(draw)
+      frame = 0
       return
     }
 
-    if (!reduceMotion.matches && lastDraw && now - lastDraw < 50) {
+    const frameBudget = width > 1900 ? 48 : width > 1200 ? 40 : 44
+    if (!reduceMotion.matches && lastDraw && now - lastDraw < frameBudget) {
       frame = window.requestAnimationFrame(draw)
       return
     }
@@ -297,15 +303,17 @@ function initDitherField() {
     }
 
     ctx.putImageData(image, 0, 0)
-    const ditherScale = window.innerWidth < 760 ? 1 : 1.055
-    const parallaxX = (smoothX - 0.5) * -20
-    const parallaxY = -scroll * 44 + (smoothY - 0.24) * 12
-    const roll = (smoothX - 0.5) * 1.4 + (scroll - 0.5) * 0.45
+    const isCompactDither = window.innerWidth <= 760
+    const isPhoneDither = window.innerWidth <= 480
+    const ditherScale = isCompactDither ? 1 : 1.055
+    const parallaxX = isCompactDither ? 0 : (smoothX - 0.5) * -20
+    const parallaxY = isPhoneDither ? 0 : isCompactDither ? -scroll * 12 : -scroll * 44 + (smoothY - 0.24) * 12
+    const roll = isCompactDither ? 0 : (smoothX - 0.5) * 1.4 + (scroll - 0.5) * 0.45
     shell.style.setProperty('--rn-dither-scroll', scroll.toFixed(4))
     shell.style.setProperty('--rn-dither-parallax-x', `${parallaxX.toFixed(2)}px`)
     shell.style.setProperty('--rn-dither-parallax-y', `${parallaxY.toFixed(2)}px`)
     shell.style.setProperty('--rn-dither-roll', `${roll.toFixed(3)}deg`)
-    shell.style.transform = `translate3d(${parallaxX.toFixed(2)}px, ${parallaxY.toFixed(2)}px, 0) rotate(${roll.toFixed(3)}deg) scale(${ditherScale})`
+    shell.style.setProperty('--rn-dither-scale', ditherScale.toFixed(3))
     needsDraw = false
 
     if (!reduceMotion.matches || needsDraw) {
@@ -341,6 +349,14 @@ function initDitherField() {
     start = performance.now()
     needsDraw = true
     draw()
+  })
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !frame) {
+      start = performance.now()
+      needsDraw = true
+      frame = window.requestAnimationFrame(draw)
+    }
   })
 }
 

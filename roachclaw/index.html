@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachClaw AI Chat: Private, Smart, and Local</title>
+    <title>RoachClaw: One shortcut away</title>
     <meta
       name="description"
-      content="Work smarter with RoachClaw, AI chat that knows your context and respects privacy. Fix, build, or refine anywhere with local pairing."
+      content="Use RoachClaw for AI chat, drafts, debugging, code help, and local-first context. Web lane anywhere, private lane when RoachNet is paired."
     />
     <meta name="theme-color" content="#0a1016" />
     <link rel="canonical" href="https://roachnet.org/roachclaw/" />
@@ -15,20 +15,20 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="RoachClaw AI Chat: Private, Smart, and Local" />
+    <meta property="og:title" content="RoachClaw: One shortcut away" />
     <meta
       property="og:description"
-      content="Smarter, local AI chat with RoachClaw. Enjoy privacy and productivity wherever the work takes you."
+      content="Ask RoachClaw for drafts, debugging, summaries, and project help. Pair RoachNet when the prompt needs private local context."
     />
     <meta property="og:url" content="https://roachnet.org/roachclaw/" />
-    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.jpg" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RoachClaw AI Chat: Private, Smart, and Local" />
+    <meta name="twitter:title" content="RoachClaw: One shortcut away" />
     <meta
       name="twitter:description"
-      content="Smarter, local AI chat with RoachClaw. Enjoy privacy and productivity wherever the work takes you."
+      content="Ask RoachClaw for drafts, debugging, summaries, and project help. Pair RoachNet when the prompt needs private local context."
     />
-    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.jpg" />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="stylesheet" href="../app.css" />
     <link rel="stylesheet" href="../app-polish.css" />
     <link rel="stylesheet" href="../roachclaw-web.css" />
@@ -43,10 +43,10 @@
         <aside class="rc-sidebar">
           <div class="rc-sidebar__head">
             <a class="rc-sidebar__brand" href="https://roachnet.org/" aria-label="Back to RoachNet">
-              <img class="brand-mark" src="../assets/roachclaw-logo.png" alt="RoachClaw logo" />
+              <img class="brand-mark" src="../assets/roachclaw-logo.webp" width="2400" height="2400" alt="RoachClaw logo" decoding="async" />
               <div class="brand-copy">
                 <strong>RoachClaw</strong>
-                <span class="brand-kicker">local lane when you mean it</span>
+                <span class="brand-kicker">one shortcut away</span>
               </div>
             </a>
             <button class="rc-sidebar__new-btn" id="roachclaw-new-thread" type="button" aria-label="New chat">
@@ -75,10 +75,6 @@
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7l2 2 2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               API
             </a>
-            <a href="https://stream.roachnet.org/" class="rc-sidebar__link">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2.5" y="3" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M6.8 5.8v2.4L9.2 7 6.8 5.8zM5 13h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Stream
-            </a>
           </nav>
 
           <div class="rc-sidebar__divider"></div>
@@ -87,7 +83,7 @@
             <span class="rc-sidebar__section-label">Threads</span>
             <div class="rc-thread-list" id="roachclaw-thread-list">
               <div class="rc-thread-empty">
-                <p>No threads yet. Sign in to start a conversation.</p>
+                <p>No threads yet. Sign in and give RoachClaw something to chew on.</p>
               </div>
             </div>
           </div>
@@ -127,8 +123,8 @@
                 <div class="rc-empty-state__icon" aria-hidden="true">
                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="url(#rc-grad)" stroke-width="2" opacity="0.5"/><path d="M16 20c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="url(#rc-grad)" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="28" r="2" fill="var(--rn-cyan)"/><circle cx="24" cy="28" r="2" fill="var(--rn-blue)"/><circle cx="30" cy="28" r="2" fill="var(--rn-green)"/><defs><linearGradient id="rc-grad" x1="4" y1="4" x2="44" y2="44"><stop stop-color="var(--rn-blue)"/><stop offset="1" stop-color="var(--rn-cyan)"/></linearGradient></defs></svg>
                 </div>
-                <h1 class="rc-empty-state__heading">What’s the plan today—fix, build, or refine?</h1>
-                <p class="rc-empty-state__sub">Your threads stay with your account, not this browser tab. Use the web lane anywhere. Pair locally for privacy and context.</p>
+                <h1 class="rc-empty-state__heading">What are we fixing, building, or untangling today?</h1>
+                <p class="rc-empty-state__sub">Your threads stay with your account, not this browser tab. Use the web lane anywhere. Pair RoachNet when the prompt needs private files, vault context, or the stuff you do not want wandering off.</p>
 
                 <div class="rc-starter-grid">
                   <button class="rc-starter-card" type="button" data-starter="explain">
@@ -136,28 +132,28 @@
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 13v-3M10 7.5v0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </div>
                     <strong>Explain something</strong>
-                    <span>Break down a concept, tool, or workflow in plain language.</span>
+                    <span>Break down a tool, idea, or workflow without turning it into a lecture.</span>
                   </button>
                   <button class="rc-starter-card" type="button" data-starter="draft">
                     <div class="rc-starter-card__icon">
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 14.5V16h1.5L14 7.5 12.5 6 4 14.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 5l3 3" stroke="currentColor" stroke-width="1.4"/></svg>
                     </div>
                     <strong>Draft a message</strong>
-                    <span>Write an email, commit message, or a quick reply.</span>
+                    <span>Write an email, commit message, or quick reply that sounds human on purpose.</span>
                   </button>
                   <button class="rc-starter-card" type="button" data-starter="debug">
                     <div class="rc-starter-card__icon">
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3.5" y="5.5" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
                     <strong>Debug a problem</strong>
-                    <span>Walk through an error, config issue, or unexpected behaviour.</span>
+                    <span>Walk through an error, config issue, or surprise behavior without blaming the chair.</span>
                   </button>
                   <button class="rc-starter-card" type="button" data-starter="summarize">
                     <div class="rc-starter-card__icon">
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5h12M4 8.5h9M4 12h10M4 15.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
                     </div>
                     <strong>Summarize content</strong>
-                    <span>Condense a doc, thread, or page into the key points.</span>
+                    <span>Condense a doc, thread, or page into the parts worth keeping.</span>
                   </button>
                 </div>
 
@@ -168,11 +164,11 @@
                   </div>
                   <div class="rc-info-strip__item">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                    <span>Works when your machines are asleep</span>
+                    <span>Web lane stays available when your machines are asleep</span>
                   </div>
                   <div class="rc-info-strip__item">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7a5 5 0 0110 0 5 5 0 01-10 0z" stroke="currentColor" stroke-width="1.2"/><path d="M7 5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                    <span>Private by default. No hidden data detours.</span>
+                    <span>Private lane stays local when paired</span>
                   </div>
                 </div>
               </div>
@@ -180,7 +176,7 @@
 
             <div class="rc-composer">
               <div class="rc-composer__inner">
-                <textarea id="roachclaw-input" class="rc-composer__textarea" placeholder="Ask RoachClaw. Debugs, drafts, maps, mixes, plans..." rows="1"></textarea>
+                <textarea id="roachclaw-input" class="rc-composer__textarea" placeholder="Ask RoachClaw. Debugs, drafts, maps, mixes, loose bolts..." rows="1"></textarea>
                 <div class="rc-composer__controls">
                   <span class="rc-composer__hint" id="roachclaw-hint">Web lane · hosted models</span>
                   <button class="rc-composer__send" id="roachclaw-send" type="button" aria-label="Send message">
@@ -188,7 +184,7 @@
                   </button>
                 </div>
               </div>
-              <p class="rc-composer__disclaimer">The web lane uses hosted models. Pair your local runtime when the prompt needs your vault, projects, or private files.</p>
+              <p class="rc-composer__disclaimer">The web lane uses hosted models. Pair RoachNet when the prompt needs your vault, projects, or private files.</p>
             </div>
           </div>
         </main>
@@ -198,9 +194,9 @@
         <div class="rc-auth-gate__backdrop" aria-hidden="true"></div>
         <section class="rc-auth-gate__window" aria-labelledby="roachclaw-gate-title">
           <span class="rc-auth-gate__eyebrow">RoachClaw web lane</span>
-          <h2 id="roachclaw-gate-title">Sign in and pick up where you left off.</h2>
+          <h2 id="roachclaw-gate-title">Sign in and pick up the thread.</h2>
           <p id="roachclaw-gate-copy">
-            Threads follow your account. The browser does not get your machine state unless you deliberately pair it later.
+            Threads follow your account. Your machine state does not leave the Mac unless you deliberately pair RoachNet later.
           </p>
 
           <div class="account-auth-card__tabs" role="tablist" aria-label="RoachClaw account mode">
@@ -234,7 +230,7 @@
 
           <div class="rc-auth-gate__meta" aria-hidden="true">
             <span class="rc-auth-gate__chip">Hosted threads from anywhere</span>
-            <span class="rc-auth-gate__chip">Your runtime stays on your hardware</span>
+            <span class="rc-auth-gate__chip">Your runtime stays on your machine</span>
           </div>
         </section>
       </div>
@@ -242,7 +238,7 @@
       <footer class="site-footer rc-footer">
         <div class="site-footer__copy">
           <strong>RoachClaw</strong>
-          <span>AI chat that follows your account, not your browser tab. Use the web lane anywhere. Pair locally for privacy and context.</span>
+          <span>AI chat for drafts, debugging, summaries, and RoachNet context. Web lane anywhere. Local lane when it matters.</span>
         </div>
         <nav class="site-footer__nav" aria-label="Footer">
           <a href="https://roachnet.org/">Mission</a>
@@ -252,7 +248,6 @@
           <a href="https://roachnet.org/api/">API</a>
           <a href="https://roachnet.org/sitemap/">Sitemap</a>
           <a href="https://www.roachwares.org/">RoachWares</a>
-          <a href="https://stream.roachnet.org/">Stream</a>
           <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
         <div class="site-footer__meta">

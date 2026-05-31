@@ -13,7 +13,7 @@ const apiGroups = [
         method: 'GET',
         path: '/state',
         title: 'Installer state',
-        summary: 'Returns machine state, saved setup choices, Docker preference, and active task state.',
+        summary: 'Returns machine state, saved setup choices, optional Docker preference, and active task state.',
         handler: 'getInstallerState',
         request: [
           'Query: installPath, installedAppPath, sourceMode, sourceRepoUrl, sourceRef',
@@ -33,7 +33,7 @@ const apiGroups = [
         method: 'POST',
         path: '/install',
         title: 'Start install workflow',
-        summary: 'Starts the staged contained install and native-app handoff task.',
+        summary: 'Starts the contained install and native-app handoff task.',
         handler: 'handleInstallRequest',
         request: [
           'Body: installer config payload from the setup UI',
@@ -90,7 +90,7 @@ const apiGroups = [
     label: 'Homebrew Install',
     scope: 'packaging',
     basePath: '/brew',
-    summary: 'Direct cask install for Apple Silicon Macs that bypasses Setup.app but lands on the same runtime API after boot.',
+    summary: 'Direct Apple Silicon cask install that skips Setup.app but lands in the same RoachNet folder after boot.',
     stack: 'homebrew-roachnet cask -> postflight config writer -> ~/RoachNet/app/RoachNet.app -> run-roachnet.mjs contained runtime bootstrap',
     callers: ['brew update && brew tap --force RoachWares/roachnet && brew install --cask roachnet', 'RoachNet-Homebrew.command', 'RoachNet.app first launch after cask install'],
     endpoints: [
@@ -99,7 +99,7 @@ const apiGroups = [
         method: 'GET',
         path: '/install',
         title: 'Homebrew install contract',
-        summary: 'Documents what the cask writes before the native shell ever opens.',
+        summary: 'Documents what the cask writes before the native shell opens.',
         handler: 'homebrew-roachnet Cask postflight',
         request: ['No HTTP body. This is a packaging/bootstrap contract, not a live runtime route.'],
         response: [
@@ -162,7 +162,7 @@ const apiGroups = [
     label: 'RoachNetiOS Distribution',
     scope: 'packaging',
     basePath: '/iOS',
-    summary: 'Unsigned IPA plus shared SideStore and AltStore source contracts for the RoachNetiOS install lane.',
+    summary: 'Unsigned IPA plus shared SideStore and AltStore source contracts for the RoachNet iOS lane.',
     stack: 'RoachNet-iOS release assets -> RoachNet-SideStore AltSource -> SideStore / AltStore signing flow -> RoachNetiOS first launch + RoachTail pairing',
     callers: ['roachnet.org/iOS', 'RoachNet-SideStore apps.json', 'SideStore source flow', 'AltStore source flow', 'RoachNetiOS first launch'],
     endpoints: [
@@ -229,7 +229,7 @@ const apiGroups = [
     label: 'Account + Web Chat',
     scope: 'website',
     basePath: '/.netlify/functions',
-    summary: 'Supabase-backed website identity plus the free RoachClaw web chat path.',
+    summary: 'Website identity for the small stuff that should travel: threads, app picks, device links, and settings.',
     stack: 'accounts.roachnet.org auth surface -> Supabase Auth + RLS tables -> Netlify functions -> paired-device RoachClaw relay or RoachBrain Cloud fallback',
     callers: ['accounts.roachnet.org', 'roachnet.org/roachclaw'],
     endpoints: [
@@ -277,7 +277,7 @@ const apiGroups = [
     label: 'RoachClaw Local Context',
     scope: 'native',
     basePath: 'local://roachnet',
-    summary: 'Permissioned local context used by the native RoachClaw lane, floating panel, command bar, voice prompt path, and Dev inline assist.',
+    summary: 'Permissioned local context for RoachClaw, the command bar, voice prompts, and Dev inline assist.',
     stack: 'RoachNet native shell -> WorkspaceModel -> RoachBrainStore -> RoachBrainWikiStore -> RoachClaw prompt builder',
     callers: ['Native RoachClaw lane', 'Global RoachClaw panel', 'Command bar', 'Dev workspace inline assist', 'Voice prompt composer'],
     endpoints: [
@@ -464,7 +464,7 @@ const apiGroups = [
     label: 'Companion',
     scope: 'runtime',
     basePath: '/api/companion',
-    summary: 'Desktop companion token plus per-device RoachTail peer tokens for iPhone and iPad, with RoachSync state and future account-linked device metadata folded into the same bridge.',
+    summary: 'Desktop companion token plus per-device RoachTail peer tokens for iPhone and iPad.',
     stack: 'roachnet-companion-server.mjs -> peer-aware token gate -> CompanionController -> ChatService / OllamaService / runtime relays -> RoachTail/RoachSync state in contained storage',
     callers: ['RoachNet iOS companion', 'future iPad surfaces'],
     endpoints: [
@@ -502,7 +502,7 @@ const apiGroups = [
         method: 'GET',
         path: '/roachtail',
         title: 'RoachTail status',
-        summary: 'Returns the private-device overlay state used by the companion app.',
+        summary: 'Returns the private-device lane used by the companion app.',
         handler: 'CompanionController.roachtail',
         request: ['Token-gated request, no body required'],
         response: ['enabled, networkName, deviceName, deviceId, status, relayHost, advertisedUrl, runtimeOrigin?, runtimeTunnelUrl?, joinCode?, joinCodeIssuedAt?, joinCodeExpiresAt?, pairingPayload?, pairingIssuedAt?, notes, peers'],

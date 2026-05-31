@@ -602,7 +602,7 @@ if (root) {
 
     if (authGateCopy) {
       authGateCopy.textContent =
-        'Threads follow your account. The browser does not get your machine state unless you deliberately pair it later.'
+        'Threads follow your account. Your machine state stays on the Mac unless you deliberately pair RoachNet later.'
     }
     setGateFeedback('')
     showGate()
