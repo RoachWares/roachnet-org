@@ -10,8 +10,9 @@
 
 .page-view--roachclaw.is-auth-locked .rc-layout,
 .rc-standalone.is-auth-locked .rc-layout {
-  filter: blur(16px) saturate(0.72);
-  transform: scale(0.994);
+  filter: saturate(0.78) brightness(0.52);
+  transform: scale(0.998);
+  opacity: 0.42;
   pointer-events: none;
   user-select: none;
 }
@@ -479,7 +480,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   width: 100%;
-  max-width: 560px;
+  max-width: 760px;
 }
 
 .page-view--roachclaw .rc-starter-card,
@@ -508,6 +509,14 @@
 .rc-standalone .rc-starter-card:nth-child(3) { animation-delay: 300ms; }
 .page-view--roachclaw .rc-starter-card:nth-child(4),
 .rc-standalone .rc-starter-card:nth-child(4) { animation-delay: 400ms; }
+.page-view--roachclaw .rc-starter-card:nth-child(5),
+.rc-standalone .rc-starter-card:nth-child(5) { animation-delay: 500ms; }
+.page-view--roachclaw .rc-starter-card:nth-child(6),
+.rc-standalone .rc-starter-card:nth-child(6) { animation-delay: 600ms; }
+.page-view--roachclaw .rc-starter-card:nth-child(7),
+.rc-standalone .rc-starter-card:nth-child(7) { animation-delay: 700ms; }
+.page-view--roachclaw .rc-starter-card:nth-child(8),
+.rc-standalone .rc-starter-card:nth-child(8) { animation-delay: 800ms; }
 
 .page-view--roachclaw .rc-starter-card::before,
 .rc-standalone .rc-starter-card::before {
@@ -532,6 +541,29 @@
   opacity: 1;
 }
 
+.page-view--roachclaw .rc-starter-card--accent,
+.rc-standalone .rc-starter-card--accent {
+  background:
+    linear-gradient(135deg, rgba(50, 255, 126, 0.08), rgba(145, 56, 216, 0.06)),
+    rgba(255, 255, 255, 0.03);
+  border-color: color-mix(in srgb, var(--rn-green) 22%, var(--rn-border));
+}
+
+.page-view--roachclaw .rc-starter-card--accent::before,
+.rc-standalone .rc-starter-card--accent::before {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(50, 255, 126, 0.12), transparent 48%),
+    radial-gradient(circle at 100% 100%, rgba(145, 56, 216, 0.12), transparent 56%);
+}
+
+.page-view--roachclaw .rc-starter-card--accent:hover,
+.rc-standalone .rc-starter-card--accent:hover {
+  background:
+    linear-gradient(135deg, rgba(50, 255, 126, 0.12), rgba(145, 56, 216, 0.1)),
+    rgba(255, 255, 255, 0.04);
+  border-color: color-mix(in srgb, var(--rn-green) 34%, var(--rn-magenta));
+}
+
 .page-view--roachclaw .rc-starter-card__icon,
 .rc-standalone .rc-starter-card__icon {
   color: var(--rn-magenta);
@@ -551,6 +583,81 @@
   font-size: 0.82rem;
   color: var(--rn-text-dim);
   line-height: 1.45;
+}
+
+.page-view--roachclaw .rc-native-map,
+.rc-standalone .rc-native-map {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  max-width: 760px;
+  animation: rc-fade-in 500ms ease 640ms both;
+}
+
+.page-view--roachclaw .rc-native-map__card,
+.rc-standalone .rc-native-map__card {
+  position: relative;
+  overflow: hidden;
+  min-height: 92px;
+  padding: 13px;
+  border-radius: 16px;
+  border: 1px solid rgba(142, 255, 174, 0.12);
+  background:
+    linear-gradient(135deg, rgba(50, 255, 126, 0.055), rgba(145, 56, 216, 0.055)),
+    rgba(255, 255, 255, 0.025);
+  text-align: left;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.page-view--roachclaw .rc-native-map__card::before,
+.rc-standalone .rc-native-map__card::before {
+  content: "";
+  position: absolute;
+  inset: -40% -20%;
+  background:
+    repeating-linear-gradient(
+      115deg,
+      transparent 0 10px,
+      rgba(50, 255, 126, 0.045) 10px 11px,
+      transparent 11px 22px
+    );
+  opacity: 0.38;
+  transform: translate3d(-6%, 0, 0);
+  transition: opacity 180ms ease, transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.page-view--roachclaw .rc-native-map__card:hover::before,
+.rc-standalone .rc-native-map__card:hover::before {
+  opacity: 0.7;
+  transform: translate3d(0, 0, 0);
+}
+
+.page-view--roachclaw .rc-native-map__card span,
+.rc-standalone .rc-native-map__card span {
+  display: block;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(50, 255, 126, 0.82);
+}
+
+.page-view--roachclaw .rc-native-map__card strong,
+.rc-standalone .rc-native-map__card strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+  color: rgba(239, 255, 245, 0.9);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
 }
 
 .page-view--roachclaw .rc-info-strip,
@@ -740,11 +847,97 @@
   color: var(--rn-text-dim);
 }
 
-.page-view--roachclaw .rc-message p,
-.rc-standalone .rc-message p {
-  margin: 0;
+.page-view--roachclaw .rc-message__content,
+.rc-standalone .rc-message__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   line-height: 1.6;
+}
+
+.page-view--roachclaw .rc-md-block,
+.rc-standalone .rc-md-block {
+  min-width: 0;
+}
+
+.page-view--roachclaw .rc-md-block.is-live,
+.rc-standalone .rc-md-block.is-live {
+  position: relative;
+}
+
+.page-view--roachclaw .rc-message p,
+.rc-standalone .rc-message p,
+.page-view--roachclaw .rc-message h1,
+.rc-standalone .rc-message h1,
+.page-view--roachclaw .rc-message h2,
+.rc-standalone .rc-message h2,
+.page-view--roachclaw .rc-message h3,
+.rc-standalone .rc-message h3,
+.page-view--roachclaw .rc-message h4,
+.rc-standalone .rc-message h4 {
+  margin: 0;
   white-space: pre-wrap;
+}
+
+.page-view--roachclaw .rc-message h1,
+.rc-standalone .rc-message h1,
+.page-view--roachclaw .rc-message h2,
+.rc-standalone .rc-message h2,
+.page-view--roachclaw .rc-message h3,
+.rc-standalone .rc-message h3,
+.page-view--roachclaw .rc-message h4,
+.rc-standalone .rc-message h4 {
+  font-size: 1rem;
+  color: var(--rn-text);
+}
+
+.page-view--roachclaw .rc-message ul,
+.rc-standalone .rc-message ul {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.page-view--roachclaw .rc-message li + li,
+.rc-standalone .rc-message li + li {
+  margin-top: 4px;
+}
+
+.page-view--roachclaw .rc-message pre,
+.rc-standalone .rc-message pre {
+  max-width: 100%;
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  border: 1px solid rgba(124, 249, 243, 0.14);
+  border-radius: 10px;
+  background: rgba(5, 8, 14, 0.74);
+}
+
+.page-view--roachclaw .rc-message code,
+.rc-standalone .rc-message code {
+  font-family: "SFMono-Regular", "SF Mono", Consolas, monospace;
+  font-size: 0.86em;
+}
+
+.page-view--roachclaw .rc-message p code,
+.rc-standalone .rc-message p code,
+.page-view--roachclaw .rc-message li code,
+.rc-standalone .rc-message li code {
+  padding: 0.12rem 0.32rem;
+  border-radius: 5px;
+  background: rgba(124, 249, 243, 0.08);
+  color: var(--rn-text);
+}
+
+.page-view--roachclaw .rc-message a,
+.rc-standalone .rc-message a {
+  color: var(--rn-cyan);
+  text-decoration: none;
+}
+
+.page-view--roachclaw .rc-message a:hover,
+.rc-standalone .rc-message a:hover {
+  text-decoration: underline;
 }
 
 .page-view--roachclaw .rc-footer,
@@ -772,11 +965,18 @@
 .rc-standalone .rc-auth-gate {
   position: fixed;
   inset: 0;
-  z-index: 30;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  max-height: 100dvh;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(16px, 4vw, 32px);
+  overflow-y: auto;
   opacity: 0;
   pointer-events: none;
   transition: opacity 280ms ease;
@@ -790,19 +990,22 @@
 
 .page-view--roachclaw .rc-auth-gate__backdrop,
 .rc-standalone .rc-auth-gate__backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background:
     radial-gradient(circle at top, rgba(145, 56, 216, 0.18), transparent 32%),
     radial-gradient(circle at bottom, rgba(50, 255, 126, 0.08), transparent 28%),
-    rgba(3, 5, 9, 0.58);
-  backdrop-filter: blur(7px) saturate(1.06);
+    rgba(3, 5, 9, 0.68);
+  backdrop-filter: blur(4px) saturate(1.06);
+  -webkit-backdrop-filter: blur(4px) saturate(1.06);
 }
 
 .page-view--roachclaw .rc-auth-gate__window,
 .rc-standalone .rc-auth-gate__window {
   position: relative;
   width: min(420px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
   padding: 22px 22px 20px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -973,6 +1176,13 @@
   .page-view--roachclaw .rc-starter-grid,
   .rc-standalone .rc-starter-grid {
     grid-template-columns: 1fr;
+    max-width: 580px;
+  }
+
+  .page-view--roachclaw .rc-native-map,
+  .rc-standalone .rc-native-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 580px;
   }
 
   .page-view--roachclaw .rc-footer,
@@ -1002,6 +1212,16 @@
   .page-view--roachclaw .rc-starter-card,
   .rc-standalone .rc-starter-card {
     padding: 12px;
+  }
+
+  .page-view--roachclaw .rc-native-map,
+  .rc-standalone .rc-native-map {
+    grid-template-columns: 1fr;
+  }
+
+  .page-view--roachclaw .rc-native-map__card,
+  .rc-standalone .rc-native-map__card {
+    min-height: 74px;
   }
 }
 

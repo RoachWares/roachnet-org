@@ -1,0 +1,10 @@
+{
+  "elements": ["html5"],
+  "rules": {
+    "no-dup-attr": "error",
+    "no-dup-id": "error",
+    "no-unknown-elements": "error",
+    "valid-id": "error",
+    "void-content": "error"
+  }
+}

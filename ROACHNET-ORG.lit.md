@@ -1,0 +1,9022 @@
+# RoachNet.org Site Code
+
+This literate source records the current site roots. Run `node scripts/tangle.mjs --verify` before writing generated roots; `--output-dir` stages a checked output tree without changing the repository. Additive chunks use double-angle references; duplicate roots, missing references, cycles, and unsafe paths are rejected.
+
+```mermaid
+flowchart LR
+  Sources[Site sources] --> Builds[Main, accounts, and apps builders]
+  Builds --> Sites[Generated static sites]
+  Lit[ROACHNET-ORG.lit.md] --> Tangler[Strict tangler]
+  Tangler --> Verify[Byte verification]
+  Verify --> Sites
+```
+
+## 404.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="404-html" file="404.html"}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found | RoachNet</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">404</span>
+          <h1>That route is not on this machine.</h1>
+          <p class="hero-body">The page may have moved, or the address may be wrong.</p>
+          <div class="hero-actions"><a class="cta cta--primary" href="https://roachnet.org/">Return to RoachNet</a></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+```
+
+## account.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="account-js" file="account.js"}
+import {
+  clearCachedAuthState,
+  getSiteAuthState,
+  refreshSiteSession,
+  sessionLabel,
+} from './site-account.js'
+
+const browserDeviceStorageKey = 'RoachNetAccountBrowserDeviceID'
+const turnstileScriptId = 'roachnet-turnstile-script'
+
+const statusTitle = document.querySelector('#account-status-title')
+const statusBody = document.querySelector('#account-status-body')
+const statusBadge = document.querySelector('#account-status-badge')
+const feedback = document.querySelector('#account-feedback')
+const refreshButton = document.querySelector('#account-refresh')
+const signOutButton = document.querySelector('#account-signout')
+const submitButton = document.querySelector('#account-submit')
+const form = document.querySelector('#account-form')
+const formNote = document.querySelector('#account-form-note')
+const emailInput = document.querySelector('#account-email')
+const passwordInput = document.querySelector('#account-password')
+const displayNameInput = document.querySelector('#account-display-name')
+const displayNameField = document.querySelector('#account-name-field')
+const startedAtInput = document.querySelector('#account-started-at')
+const honeypotInput = document.querySelector('#account-company')
+const tabs = [...document.querySelectorAll('[data-account-mode]')]
+const snapshotTitle = document.querySelector('#account-snapshot-title')
+const snapshotBody = document.querySelector('#account-snapshot-body')
+const deviceCount = document.querySelector('#account-device-count')
+const appCount = document.querySelector('#account-app-count')
+const settingsState = document.querySelector('#account-settings-state')
+const turnstileShell = document.querySelector('#account-turnstile-shell')
+const turnstileMount = document.querySelector('#account-turnstile')
+const turnstileNote = document.querySelector('#account-turnstile-note')
+
+let accountMode = 'signin'
+let authState = null
+let authSubscription = null
+let activeRequest = null
+let turnstileWidgetId = null
+let captchaToken = ''
+
+function setFeedback(message, tone = 'muted') {
+  if (!feedback) return
+  feedback.textContent = message || ''
+  feedback.dataset.tone = tone
+}
+
+function setSnapshot({
+  title,
+  body,
+  devices = '—',
+  apps = '—',
+  settings = '—',
+}) {
+  if (snapshotTitle) snapshotTitle.textContent = title
+  if (snapshotBody) snapshotBody.textContent = body
+  if (deviceCount) deviceCount.textContent = devices
+  if (appCount) appCount.textContent = apps
+  if (settingsState) settingsState.textContent = settings
+}
+
+function getBrowserDeviceID() {
+  const existing = window.localStorage.getItem(browserDeviceStorageKey)
+  if (existing) return existing
+  const next = `account-web-${window.crypto.randomUUID()}`
+  window.localStorage.setItem(browserDeviceStorageKey, next)
+  return next
+}
+
+function inferPlatform() {
+  const userAgent = window.navigator.userAgent.toLowerCase()
+  if (userAgent.includes('iphone')) return 'ios-web'
+  if (userAgent.includes('ipad')) return 'ipados-web'
+  if (userAgent.includes('mac os')) return 'macos-web'
+  if (userAgent.includes('windows')) return 'windows-web'
+  if (userAgent.includes('linux')) return 'linux-web'
+  return 'web'
+}
+
+function displayNameFor(profile, session) {
+  if (profile?.display_name && profile.display_name.trim()) {
+    return profile.display_name.trim()
+  }
+
+  const email = session?.user?.email || ''
+  return email ? email.split('@')[0] : 'RoachNet account'
+}
+
+function setFormBusy(isBusy) {
+  activeRequest = isBusy
+  const disabled = Boolean(isBusy)
+
+  for (const field of [emailInput, passwordInput, displayNameInput, submitButton, refreshButton, signOutButton]) {
+    if (field) field.disabled = disabled
+  }
+}
+
+function resetTurnstileIfPresent() {
+  if (typeof window.turnstile?.reset === 'function' && turnstileWidgetId !== null) {
+    window.turnstile.reset(turnstileWidgetId)
+  }
+}
+
+function setTurnstileState(message, tone = 'muted') {
+  if (!turnstileNote) return
+  turnstileNote.textContent = message
+  turnstileNote.dataset.tone = tone
+}
+
+function setMode(nextMode) {
+  accountMode = nextMode === 'signup' ? 'signup' : 'signin'
+
+  tabs.forEach((tab) => {
+    const isActive = tab.dataset.accountMode === accountMode
+    tab.classList.toggle('is-active', isActive)
+    tab.setAttribute('role', 'tab')
+    tab.setAttribute('aria-selected', isActive ? 'true' : 'false')
+    tab.tabIndex = isActive ? 0 : -1
+  })
+
+  if (displayNameField) {
+    displayNameField.hidden = accountMode !== 'signup'
+  }
+
+  if (passwordInput) {
+    passwordInput.autocomplete = accountMode === 'signup' ? 'new-password' : 'current-password'
+  }
+
+  if (submitButton) {
+    submitButton.textContent = accountMode === 'signup' ? 'Create account' : 'Sign in'
+  }
+
+  if (formNote) {
+    formNote.textContent =
+      accountMode === 'signup'
+        ? 'Create the account that holds web chat, app picks, and device links.'
+        : 'Sign in when you want the website tied to your RoachNet account.'
+  }
+
+  if (turnstileShell) {
+    turnstileShell.hidden = accountMode !== 'signup' || !authState?.config?.turnstile?.enabled
+  }
+
+  setFeedback('')
+}
+
+function renderStatus() {
+  if (!authState) return
+
+  const enabled = authState.enabled === true
+  const session = authState.session
+
+  if (!enabled) {
+    statusTitle.textContent = 'Auth is staged, not armed.'
+    statusBody.textContent = authState.reason
+    statusBadge.textContent = 'Disabled'
+    statusBadge.dataset.state = 'disabled'
+    signOutButton.hidden = true
+    form?.setAttribute('aria-disabled', 'true')
+    setFormBusy(true)
+    setSnapshot({
+      title: 'Auth is disabled on this deploy.',
+      body: 'The account system is staged, but this deploy is missing live auth keys.',
+    })
+    setFeedback('This deploy does not have live account auth configured yet.')
+    return
+  }
+
+  form?.removeAttribute('aria-disabled')
+  setFormBusy(false)
+
+  if (session?.user) {
+    statusTitle.textContent = 'Signed in.'
+    statusBody.textContent = `Website account is linked to ${sessionLabel(session)}.`
+    statusBadge.textContent = 'Live'
+    statusBadge.dataset.state = 'live'
+    signOutButton.hidden = false
+    setFeedback('Account session is live.', 'live')
+    return
+  }
+
+  statusTitle.textContent = 'Ready for sign-in.'
+  statusBody.textContent = 'Use your account for web chat, saved app picks, and device metadata.'
+  statusBadge.textContent = 'Ready'
+  statusBadge.dataset.state = 'ready'
+  signOutButton.hidden = true
+  setSnapshot({
+    title: 'Sign in to load account state.',
+    body: 'Linked devices, saved app picks, and settings metadata will show up here once you sign in.',
+  })
+}
+
+async function syncSnapshot() {
+  if (!authState?.client || !authState?.session?.user) {
+    return
+  }
+
+  const client = authState.client
+  const browserDeviceID = getBrowserDeviceID()
+  const currentOrigin = window.location.origin
+
+  const [touchResult, profileResult, settingsResult, devicesResult, appsResult] = await Promise.all([
+    client.rpc('touch_device_link', {
+      p_device_id: browserDeviceID,
+      p_device_name: 'Accounts Web',
+      p_platform: inferPlatform(),
+      p_runtime_lane: 'account-web',
+      p_metadata: {
+        surface: 'accounts',
+        origin: currentOrigin,
+      },
+    }),
+    client
+      .from('profiles')
+      .select('display_name, email, plan, account_state, last_seen_at')
+      .eq('id', authState.session.user.id)
+      .maybeSingle(),
+    client
+      .from('user_settings')
+      .select('updated_at, favorite_apps, settings')
+      .eq('user_id', authState.session.user.id)
+      .maybeSingle(),
+    client.from('device_links').select('id', { count: 'exact', head: true }),
+    client.from('saved_apps').select('id', { count: 'exact', head: true }),
+  ])
+
+  const errors = [
+    touchResult.error,
+    profileResult.error,
+    settingsResult.error,
+    devicesResult.error,
+    appsResult.error,
+  ].filter(Boolean)
+
+  if (errors.length > 0) {
+    setFeedback(errors[0].message || 'Could not load the account snapshot.', 'error')
+    setSnapshot({
+      title: 'Account snapshot needs attention.',
+      body: 'The account session is live, but this browser session could not finish loading its synced state.',
+      settings: 'Error',
+    })
+    return
+  }
+
+  const profile = profileResult.data
+  const settings = settingsResult.data
+  const devices = devicesResult.count ?? 0
+  const apps = appsResult.count ?? 0
+  const settingsCount =
+    (settings?.favorite_apps?.length || 0) + Object.keys(settings?.settings || {}).length
+
+  setSnapshot({
+    title: `${displayNameFor(profile, authState.session)} is linked.`,
+    body:
+      devices > 0
+        ? 'RoachTail and RoachSync metadata can anchor themselves here without leaking local machine details.'
+        : 'This is a fresh account. Pair devices or save installs to start building synced state.',
+    devices: String(devices),
+    apps: String(apps),
+    settings: settingsCount > 0 ? 'Remembered' : 'Fresh',
+  })
+}
+
+function loadTurnstileScript() {
+  return new Promise((resolve, reject) => {
+    if (window.turnstile) {
+      resolve(window.turnstile)
+      return
+    }
+
+    const existing = document.querySelector(`#${turnstileScriptId}`)
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.turnstile), { once: true })
+      existing.addEventListener('error', reject, { once: true })
+      return
+    }
+
+    const script = document.createElement('script')
+    script.id = turnstileScriptId
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+    script.async = true
+    script.defer = true
+    script.addEventListener('load', () => resolve(window.turnstile), { once: true })
+    script.addEventListener('error', reject, { once: true })
+    document.head.append(script)
+  })
+}
+
+async function ensureTurnstile() {
+  const turnstileConfig = authState?.config?.turnstile
+  if (!turnstileConfig?.enabled || !turnstileConfig?.siteKey || !turnstileMount || turnstileWidgetId !== null) {
+    if (turnstileShell) {
+      turnstileShell.hidden = accountMode !== 'signup' || !turnstileConfig?.enabled
+    }
+    return
+  }
+
+  setTurnstileState('Loading verification…')
+
+  try {
+    await loadTurnstileScript()
+    turnstileWidgetId = window.turnstile.render(turnstileMount, {
+      sitekey: turnstileConfig.siteKey,
+      theme: 'dark',
+      callback: (token) => {
+        captchaToken = token
+        setTurnstileState('Verification ready.', 'live')
+      },
+      'expired-callback': () => {
+        captchaToken = ''
+        setTurnstileState('Verification expired. Run it again.', 'error')
+      },
+      'error-callback': () => {
+        captchaToken = ''
+        setTurnstileState('Verification failed to load.', 'error')
+      },
+    })
+    setTurnstileState('Finish the human check to create the account.')
+  } catch {
+    setTurnstileState('Verification could not load right now.', 'error')
+  }
+}
+
+async function registerAccount({ email, password, displayName }) {
+  const registerUrl =
+    authState?.config?.auth?.registerUrl || 'https://roachnet.org/.netlify/functions/register-account'
+  const response = await fetch(registerUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      displayName,
+      captchaToken,
+      company: honeypotInput?.value || '',
+      startedAt: startedAtInput?.value || '',
+    }),
+  })
+
+  const result = await response.json().catch(() => ({
+    ok: false,
+    message: 'The account service returned unreadable data.',
+  }))
+
+  if (!response.ok || result.ok !== true) {
+    throw new Error(result.message || 'Account creation failed.')
+  }
+
+  return result
+}
+
+async function loadAuthState() {
+  authSubscription?.unsubscribe?.()
+  authSubscription = null
+
+  authState = await getSiteAuthState()
+  renderStatus()
+
+  if (authState?.client) {
+    const { data } = authState.client.auth.onAuthStateChange((_event, session) => {
+      authState = {
+        ...authState,
+        session,
+      }
+      renderStatus()
+      void syncSnapshot()
+    })
+    authSubscription = data.subscription
+  }
+
+  await ensureTurnstile()
+  await syncSnapshot()
+}
+
+tabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    if (activeRequest) return
+    setMode(tab.dataset.accountMode)
+  })
+})
+
+refreshButton?.addEventListener('click', async () => {
+  setFeedback('Refreshing account state…')
+  const session = await refreshSiteSession()
+  if (authState) {
+    authState = {
+      ...authState,
+      session,
+    }
+  }
+  renderStatus()
+  await syncSnapshot()
+})
+
+signOutButton?.addEventListener('click', async () => {
+  if (!authState?.client) return
+  setFormBusy(true)
+  setFeedback('Signing out…')
+  await authState.client.auth.signOut()
+  clearCachedAuthState()
+  authState = null
+  await loadAuthState()
+})
+
+form?.addEventListener('submit', async (event) => {
+  event.preventDefault()
+
+  if (!authState?.client) {
+    setFeedback('Account auth is not armed on this deploy yet.', 'error')
+    return
+  }
+
+  const email = emailInput?.value?.trim() || ''
+  const password = passwordInput?.value || ''
+  const displayName = displayNameInput?.value?.trim() || ''
+
+  if (!email || !password) {
+    setFeedback('Enter both email and password.', 'error')
+    return
+  }
+
+  if (accountMode === 'signup' && authState?.config?.turnstile?.enabled && !captchaToken) {
+    setFeedback('Finish the human check first.', 'error')
+    return
+  }
+
+  setFormBusy(true)
+  setFeedback(accountMode === 'signup' ? 'Creating account…' : 'Signing in…')
+
+  try {
+    if (accountMode === 'signup') {
+      const registration = await registerAccount({ email, password, displayName })
+      form.reset()
+      startedAtInput.value = String(Date.now())
+      captchaToken = ''
+      resetTurnstileIfPresent()
+      setMode('signin')
+      setFeedback(
+        registration.message || 'Check your email to confirm your account, then sign in.',
+        'live'
+      )
+      return
+    }
+
+    const result = await authState.client.auth.signInWithPassword({ email, password })
+    if (result.error) {
+      throw result.error
+    }
+
+    authState = {
+      ...authState,
+      session: result.data?.session || authState.session,
+    }
+
+    renderStatus()
+    await syncSnapshot()
+    setFeedback('Signed in.', 'live')
+  } catch (error) {
+    setFeedback(error?.message || 'Account request failed.', 'error')
+    captchaToken = ''
+    resetTurnstileIfPresent()
+  } finally {
+    setFormBusy(false)
+  }
+})
+
+startedAtInput.value = String(Date.now())
+setMode(accountMode)
+loadAuthState()
+```
+
+## account/index.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="account-index-html" file="account/index.html"}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet Account: The small stuff that should travel</title>
+    <meta
+      name="description"
+      content="Your RoachNet account carries the small web stuff: RoachClaw threads, saved app picks, device links, and settings. The runtime, vault, models, and files stay local."
+    />
+    <meta name="theme-color" content="#0a1016" />
+    <link rel="canonical" href="https://accounts.roachnet.org/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet Account: The small stuff that should travel" />
+    <meta
+      property="og:description"
+      content="Threads, app picks, device links, and settings can travel. The vault, runtime, models, and files stay on your machine."
+    />
+    <meta property="og:url" content="https://accounts.roachnet.org/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet Account: The small stuff that should travel" />
+    <meta
+      name="twitter:description"
+      content="Threads, app picks, device links, and settings can travel. The vault, runtime, models, and files stay on your machine."
+    />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
+    <link rel="stylesheet" href="/app.css" />
+    <link rel="stylesheet" href="/app-polish.css?v=20260609-overflow" />
+    <link rel="stylesheet" href="/roachclaw-web.css?v=20260609-auth-gate" />
+  </head>
+  <body data-page="account">
+    <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ACCOUNT PAGE                                          -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="page-view page-view--account" id="view-account">
+      <a class="rn-skip-link" href="#account-main">Skip to main content</a>
+      <header class="site-header account-topbar">
+        <a class="brand-lockup" href="https://roachnet.org/" aria-label="Back to RoachNet">
+          <img class="brand-mark" src="/assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
+          <div class="brand-copy">
+            <strong>RoachNet Account</strong>
+            <span class="brand-kicker">sync the small stuff, keep the heavy stuff home</span>
+          </div>
+          <span class="site-header__status">Accounts</span>
+        </a>
+
+        <div class="site-header__panel">
+          <nav class="site-nav site-nav--primary" aria-label="Primary">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+          <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">Claw</a>
+            <a href="https://roachnet.org/brew/">Brew</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+
+          <div class="site-header__actions" aria-label="Utility links">
+            <a class="site-action-pill is-current" href="#view-account">Account</a>
+            <a class="site-action-pill site-action-pill--ghost" href="https://roachnet.org/api/">API</a>
+            <a class="site-action-pill site-action-pill--ghost" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </div>
+      </header>
+
+      <main class="account-page" id="account-main" tabindex="-1">
+        <section class="account-hero" data-reveal-group>
+          <article class="account-poster">
+            <span class="eyebrow">Account</span>
+            <h1>Your machine stays yours. This account carries the small stuff.</h1>
+            <p>
+              Most of RoachNet belongs on your hardware. That is the point. This account holds what should travel: RoachClaw threads, app picks, device links, and settings.
+            </p>
+
+            <div class="account-chip-row" aria-label="Account features">
+              <span class="account-chip">RoachClaw web chat</span>
+              <span class="account-chip">Saved installs</span>
+              <span class="account-chip">Device links</span>
+              <span class="account-chip">Settings sync</span>
+            </div>
+
+            <div class="poster-actions">
+              <a class="cta cta--primary" href="/roachclaw" data-route="roachclaw">Open RoachClaw</a>
+              <a class="cta cta--ghost" href="https://roachnet.org/ios/">Get RoachNetiOS</a>
+              <a class="cta cta--ghost" href="https://roachnet.org/api/">Read the API</a>
+            </div>
+
+            <div class="hero-signal-board hero-signal-board--compact">
+              <article class="hero-signal-card" data-reveal>
+                <span>Syncs</span>
+                <strong>App picks, device links, and web settings. The metadata with a reason to leave the house.</strong>
+              </article>
+              <article class="hero-signal-card" data-reveal>
+                <span>Stays home</span>
+                <strong>Runtime, models, vault, and files. Your hardware, your rules, no cloud custody.</strong>
+              </article>
+            </div>
+
+            <div class="account-poster__grid">
+              <article class="account-mini-card" data-reveal>
+                <span class="feature-card__eyebrow">What syncs</span>
+                <strong>Threads, app picks, device links, web settings.</strong>
+                <p>The useful metadata that keeps your devices in step. Nothing that belongs in the vault.</p>
+              </article>
+
+              <article class="account-mini-card" data-reveal>
+                <span class="feature-card__eyebrow">What stays local</span>
+                <strong>Runtime, models, vault, file paths.</strong>
+                <p>Desktop data stays on your box. The internet is a convenience, not custody.</p>
+              </article>
+
+              <article class="account-mini-card" data-reveal>
+                <span class="feature-card__eyebrow">What comes next</span>
+                <strong>Web chat, RoachTail handoff, cleaner multi-device state.</strong>
+                <p>The web side keeps account state in step. The heavy lifting still belongs on your hardware.</p>
+              </article>
+            </div>
+          </article>
+
+          <section class="account-auth-shell">
+            <div class="account-inline-status">
+              <div>
+                <span class="feature-card__eyebrow">Account</span>
+                <h2 id="account-status-title">Checking account…</h2>
+                <p id="account-status-body">Looking up the current session for this browser.</p>
+              </div>
+              <div class="account-status-badge" id="account-status-badge">Loading</div>
+            </div>
+
+            <div class="account-actions-inline">
+              <button class="cta cta--ghost" id="account-refresh" type="button">Refresh</button>
+              <button class="cta cta--ghost" id="account-signout" type="button" hidden>Sign out</button>
+            </div>
+
+            <div class="account-auth-card__tabs" role="tablist" aria-label="Account mode">
+              <button class="account-tab is-active" data-account-mode="signin" type="button">Sign in</button>
+              <button class="account-tab" data-account-mode="signup" type="button">Create account</button>
+            </div>
+
+            <form class="account-form" id="account-form">
+              <label class="account-field account-name-field" id="account-name-field" hidden>
+                <span>Name</span>
+                <input id="account-display-name" type="text" autocomplete="nickname" maxlength="60" placeholder="Studio name, handle, or whatever fits" />
+              </label>
+
+              <label class="account-field">
+                <span>Email</span>
+                <input id="account-email" type="email" autocomplete="email" placeholder="you@example.com" required />
+              </label>
+
+              <label class="account-field">
+                <span>Password</span>
+                <input id="account-password" type="password" autocomplete="current-password" placeholder="Strong password" required />
+              </label>
+
+              <input id="account-started-at" type="hidden" />
+              <label class="account-honeypot" aria-hidden="true">
+                <span>Leave this blank</span>
+                <input id="account-company" type="text" tabindex="-1" autocomplete="off" />
+              </label>
+
+              <div class="account-turnstile" id="account-turnstile-shell" hidden>
+                <div id="account-turnstile"></div>
+                <p class="account-form__note" id="account-turnstile-note">Verifying this request.</p>
+              </div>
+
+              <button class="cta cta--primary" id="account-submit" type="submit">Sign in</button>
+              <p class="account-form__note" id="account-form-note">Sign in when you want the website tied to your RoachNet account. The vault stays out of it.</p>
+              <p class="account-form__feedback" id="account-feedback" aria-live="polite"></p>
+            </form>
+          </section>
+        </section>
+
+        <section class="account-dashboard" data-reveal-group>
+          <article class="account-panel account-panel--snapshot" data-reveal>
+            <span class="feature-card__eyebrow">Synced state</span>
+            <h3 id="account-snapshot-title">Sign in to see what is in step.</h3>
+            <p id="account-snapshot-body">Device links, saved installs, and settings metadata appear here once the session is live.</p>
+
+            <div class="account-metrics">
+              <div class="account-metric">
+                <strong id="account-device-count">—</strong>
+                <span>Linked devices</span>
+              </div>
+
+              <div class="account-metric">
+                <strong id="account-app-count">—</strong>
+                <span>Saved apps</span>
+              </div>
+
+              <div class="account-metric">
+                <strong id="account-settings-state">—</strong>
+                <span>Settings</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="account-panel" data-reveal>
+            <span class="feature-card__eyebrow">Desktop &amp; phone</span>
+            <h3>The real work lives in the app.</h3>
+            <p>This account handles identity and sync metadata. Runtime, vault, and local services stay on your hardware, where they belong. Quiet helper, not fake cloud runtime.</p>
+            <div class="account-actions-inline">
+              <a class="cta cta--ghost" href="https://roachnet.org/ios/">RoachNetiOS</a>
+              <a class="cta cta--ghost" href="/roachclaw" data-route="roachclaw">RoachClaw web chat</a>
+            </div>
+          </article>
+
+          <article class="account-panel" data-reveal>
+            <span class="feature-card__eyebrow">Privacy</span>
+            <h3>No local path dump. No fake cloud runtime.</h3>
+            <p>The server stores what a server should: identity and sync metadata. File paths, runtime secrets, and vault content stay on your machine.</p>
+            <div class="account-actions-inline">
+              <a class="cta cta--ghost" href="https://roachnet.org/api/">API docs</a>
+              <a class="cta cta--ghost" href="https://roachnet.org/">Back to RoachNet</a>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="site-footer__copy">
+          <strong>RoachNet Account</strong>
+          <span>RoachClaw threads, saved installs, linked devices, and settings. The heavy lifting stays on your machine.</span>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <a href="https://roachnet.org/">Home</a>
+          <a href="/roachclaw" data-route="roachclaw">RoachClaw</a>
+          <a href="https://apps.roachnet.org/">Apps</a>
+          <a href="https://roachnet.org/api/">API</a>
+          <a href="https://roachnet.org/sitemap/">Sitemap</a>
+          <a href="https://www.roachwares.org/">RoachWares</a>
+          <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+        <div class="site-footer__meta">
+          <a
+            class="netlify-badge"
+            href="https://www.netlify.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Proudly powered by Netlify"
+          >
+            <span>Proudly powered by Netlify</span>
+            <img
+              src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
+              alt="Netlify"
+              loading="lazy"
+            />
+          </a>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ROACHCLAW PAGE                                        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="page-view page-view--roachclaw" id="view-roachclaw" hidden>
+      <a class="rn-skip-link" href="#account-roachclaw-main">Skip to main content</a>
+      <div class="rc-sidebar-overlay" aria-hidden="true"></div>
+      <div class="rc-layout">
+        <!-- Sidebar -->
+        <aside class="rc-sidebar">
+          <div class="rc-sidebar__head">
+            <a class="rc-sidebar__brand" href="https://roachnet.org/" aria-label="Back to RoachNet">
+              <img class="brand-mark" src="/assets/roachclaw-logo.webp" width="2400" height="2400" alt="RoachClaw logo" decoding="async" />
+              <div class="brand-copy">
+                <strong>RoachClaw</strong>
+                <span class="brand-kicker">one shortcut away</span>
+              </div>
+            </a>
+            <button class="rc-sidebar__new-btn" id="roachclaw-new-thread" type="button" aria-label="New chat">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <nav class="rc-sidebar__nav" aria-label="RoachClaw navigation">
+            <a href="/" data-route="account" class="rc-sidebar__link">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-4.5 5.5-4.5s5.5 1.5 5.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Account
+            </a>
+            <a href="https://roachnet.org/" class="rc-sidebar__link">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8l6-5.5L14 8M3.5 7v5.5a1 1 0 001 1h7a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              RoachNet
+            </a>
+            <a href="https://roachnet.org/api/" class="rc-sidebar__link">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7l2 2 2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              API
+            </a>
+          </nav>
+
+          <div class="rc-sidebar__divider"></div>
+
+          <div class="rc-sidebar__threads">
+            <span class="rc-sidebar__section-label">Threads</span>
+            <div class="rc-thread-list" id="roachclaw-thread-list">
+              <div class="rc-thread-empty">
+                <p>No threads yet. Sign in and give RoachClaw something to chew on.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rc-sidebar__foot">
+            <div class="rc-lane-status">
+              <div class="rc-lane-dot rc-lane-dot--web" aria-label="Web lane active"></div>
+              <span>Web lane active</span>
+            </div>
+            <div class="rc-lane-status rc-lane-status--dim">
+              <div class="rc-lane-dot rc-lane-dot--local" aria-label="Local lane offline"></div>
+              <span>Local lane — pair to enable</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <section class="rc-main" id="account-roachclaw-main" tabindex="-1">
+          <header class="rc-main__topbar">
+            <div class="rc-main__topbar-left">
+              <button class="rc-sidebar-toggle" id="rc-sidebar-toggle" type="button" aria-label="Toggle sidebar">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+              <span class="rc-main__thread-title">New conversation</span>
+            </div>
+            <div class="rc-main__topbar-right">
+              <div class="rc-model-badge">
+                <div class="rc-lane-dot rc-lane-dot--web"></div>
+                <span>Hosted model</span>
+              </div>
+              <button class="rc-account-chip" id="roachclaw-account-chip" type="button">Sign in</button>
+            </div>
+          </header>
+
+          <div class="rc-chat-area">
+            <div class="rc-chat-scroll" id="roachclaw-log">
+              <div class="rc-empty-state">
+                <div class="rc-empty-state__icon" aria-hidden="true">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="url(#rc-grad)" stroke-width="2" opacity="0.5"/><path d="M16 20c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="url(#rc-grad)" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="28" r="2" fill="var(--rn-cyan)"/><circle cx="24" cy="28" r="2" fill="var(--rn-blue)"/><circle cx="30" cy="28" r="2" fill="var(--rn-green)"/><defs><linearGradient id="rc-grad" x1="4" y1="4" x2="44" y2="44"><stop stop-color="var(--rn-blue)"/><stop offset="1" stop-color="var(--rn-cyan)"/></linearGradient></defs></svg>
+                </div>
+                <h1 class="rc-empty-state__heading">What are we fixing, building, or untangling today?</h1>
+                <p class="rc-empty-state__sub">Your threads stay with your account, not this browser tab. Use the web lane anywhere. Pair RoachNet when the prompt needs private files, vault context, or the stuff you do not want wandering off.</p>
+
+                <div class="rc-starter-grid">
+                  <button class="rc-starter-card" type="button" data-starter="explain">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 13v-3M10 7.5v0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>Explain something</strong>
+                    <span>Break down a tool, idea, or workflow without turning it into a lecture.</span>
+                  </button>
+                  <button class="rc-starter-card" type="button" data-starter="draft">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 14.5V16h1.5L14 7.5 12.5 6 4 14.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 5l3 3" stroke="currentColor" stroke-width="1.4"/></svg>
+                    </div>
+                    <strong>Draft a message</strong>
+                    <span>Write an email, commit message, or quick reply that sounds human on purpose.</span>
+                  </button>
+                  <button class="rc-starter-card" type="button" data-starter="debug">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3.5" y="5.5" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <strong>Debug a problem</strong>
+                    <span>Walk through an error, config issue, or surprise behavior without blaming the chair.</span>
+                  </button>
+                  <button class="rc-starter-card" type="button" data-starter="summarize">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5h12M4 8.5h9M4 12h10M4 15.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>Summarize content</strong>
+                    <span>Condense a doc, thread, or page into the parts worth keeping.</span>
+                  </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="cookbook">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M7 2.5v3M13 2.5v3M7 14.5v3M13 14.5v3M2.5 7h3M14.5 7h3M2.5 13h3M14.5 13h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>RoachClaw Cookbook</strong>
+                    <span>Pick the model lane that fits your machine, including quantized and MoE packs that lie about their weight.</span>
+                  </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="research">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 3.5h7l4 4v9h-11v-13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 3.5v4h4M7 11h6M7 14h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <strong>Deep research</strong>
+                    <span>Gather sources, read them, and turn the mess into a vault-ready brief.</span>
+                  </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="compare">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4" width="6" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="4" width="6" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M9 10h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>Compare models</strong>
+                    <span>Blind-test two routes so the confident answer has to earn the crown.</span>
+                  </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="memory">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 6.5a3 3 0 116 0v1h.5A2.5 2.5 0 0116 10v2.5A3.5 3.5 0 0112.5 16h-5A3.5 3.5 0 014 12.5V10a2.5 2.5 0 012.5-2.5H7v-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 11h4M10 9v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>RoachBrain audit</strong>
+                    <span>Find useful context, stale habits, and saved procedures worth keeping.</span>
+                  </button>
+                  <button class="rc-starter-card" type="button" data-starter="diagnostics">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 4.5h10M6.5 8h7M8 11.5h4M9.5 15h1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 3h12v14H4V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                    </div>
+                    <strong>Diagnostics</strong>
+                    <span>Probe providers, scrub settings, and find the failure before it grows teeth.</span>
+                  </button>
+                  <button class="rc-starter-card" type="button" data-starter="integrations">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="5" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.2 8.8l5.6-2.6M7.2 11.2l5.6 2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>Hooks and contacts</strong>
+                    <span>Check recipients, webhooks, provider routes, and handoffs that should stay scoped.</span>
+                  </button>
+                </div>
+
+                <div class="rc-info-strip">
+                  <div class="rc-info-strip__item">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    <span>Account-scoped threads</span>
+                  </div>
+                  <div class="rc-info-strip__item">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    <span>Web lane stays available when your machines are asleep</span>
+                  </div>
+                  <div class="rc-info-strip__item">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7a5 5 0 0110 0 5 5 0 01-10 0z" stroke="currentColor" stroke-width="1.2"/><path d="M7 5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    <span>Private lane stays local when paired</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rc-composer">
+              <div class="rc-composer__inner">
+                <textarea id="roachclaw-input" class="rc-composer__textarea" placeholder="Ask RoachClaw. Debugs, drafts, maps, mixes, loose bolts..." rows="1"></textarea>
+                <div class="rc-composer__controls">
+                  <span class="rc-composer__hint" id="roachclaw-hint">Web lane · hosted models</span>
+                  <button class="rc-composer__send" id="roachclaw-send" type="button" aria-label="Send message">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3.5 9h11M10 4.5L14.5 9 10 13.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+              </div>
+              <p class="rc-composer__disclaimer">The web lane uses hosted models. Pair RoachNet when the prompt needs your vault, projects, or private files.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="rc-auth-gate" id="roachclaw-auth-gate" hidden>
+        <div class="rc-auth-gate__backdrop" aria-hidden="true"></div>
+        <section class="rc-auth-gate__window" aria-labelledby="roachclaw-gate-title">
+          <span class="rc-auth-gate__eyebrow">RoachClaw web lane</span>
+          <h2 id="roachclaw-gate-title">Sign in and pick up the thread.</h2>
+          <p id="roachclaw-gate-copy">
+            Threads follow your account. Your machine state does not leave the Mac unless you deliberately pair RoachNet later.
+          </p>
+
+          <div class="account-auth-card__tabs" role="tablist" aria-label="RoachClaw account mode">
+            <button class="account-tab is-active" data-roachclaw-auth-mode="signin" type="button">Sign in</button>
+            <button class="account-tab" data-roachclaw-auth-mode="signup" type="button">Create account</button>
+          </div>
+
+          <form class="account-form" id="roachclaw-auth-form">
+            <label class="account-field" id="roachclaw-auth-name-field" hidden>
+              <span>Name</span>
+              <input id="roachclaw-auth-name" type="text" autocomplete="nickname" maxlength="60" placeholder="Studio name, handle, or whatever fits" />
+            </label>
+
+            <label class="account-field">
+              <span>Email</span>
+              <input id="roachclaw-auth-email" type="email" autocomplete="email" placeholder="you@example.com" required />
+            </label>
+
+            <label class="account-field">
+              <span>Password</span>
+              <input id="roachclaw-auth-password" type="password" autocomplete="current-password" placeholder="Use your account password" required />
+            </label>
+
+            <div class="rc-auth-gate__actions">
+              <button class="cta cta--primary" id="roachclaw-auth-submit" type="submit">Sign in</button>
+              <a class="cta cta--ghost" href="/" data-route="account">Account</a>
+            </div>
+            <p class="account-form__note" id="roachclaw-auth-note">Use the same account that owns your RoachClaw threads.</p>
+            <p class="account-form__feedback" id="roachclaw-auth-feedback" aria-live="polite"></p>
+          </form>
+
+          <div class="rc-auth-gate__meta" aria-hidden="true">
+            <span class="rc-auth-gate__chip">Hosted threads from anywhere</span>
+            <span class="rc-auth-gate__chip">Your runtime stays on your machine</span>
+          </div>
+        </section>
+      </div>
+
+      <footer class="site-footer rc-footer">
+        <div class="site-footer__copy">
+          <strong>RoachClaw</strong>
+          <span>AI chat for drafts, debugging, summaries, and RoachNet context. Web lane anywhere. Local lane when it matters.</span>
+        </div>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <a href="/" data-route="account">Account</a>
+          <a href="https://roachnet.org/">RoachNet</a>
+          <a href="https://apps.roachnet.org/">Apps</a>
+          <a href="https://roachnet.org/api/">API</a>
+          <a href="https://roachnet.org/sitemap/">Sitemap</a>
+          <a href="https://www.roachwares.org/">RoachWares</a>
+          <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+        <div class="site-footer__meta">
+          <a
+            class="netlify-badge"
+            href="https://www.netlify.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Proudly powered by Netlify"
+          >
+            <span>Proudly powered by Netlify</span>
+            <img
+              src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
+              alt="Netlify"
+              loading="lazy"
+            />
+          </a>
+        </div>
+      </footer>
+    </div>
+
+    <script src="/site-config.js"></script>
+    <script src="/router.js"></script>
+    <script src="/account.js" type="module"></script>
+    <script src="/roachclaw.js" type="module"></script>
+    <script src="/site-polish.js" type="module"></script>
+  </body>
+</html>
+```
+
+## html-validate.json
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="html-validate-json" file="html-validate.json"}
+{
+  "elements": ["html5"],
+  "rules": {
+    "no-dup-attr": "error",
+    "no-dup-id": "error",
+    "no-unknown-elements": "error",
+    "valid-id": "error",
+    "void-content": "error"
+  }
+}
+```
+
+## index.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="index-html" file="index.html"}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet – Offline-first AI, Archiving & Dev Stack</title>
+    <meta
+      name="description"
+      content="You weren't crazy. The cloud got loud. RoachNet brings AI, code, maps, and your archive back into one contained stack on your machine."
+    />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://roachnet.org/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet" />
+    <meta
+      property="og:description"
+      content="The cloud got loud. RoachNet brings AI, code, maps, and your archive back into one contained stack on your machine."
+    />
+    <meta property="og:url" content="https://roachnet.org/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet" />
+    <meta
+      name="twitter:description"
+      content="Bring the important stuff home. RoachNet keeps AI, code, maps, and your archive in one contained stack on your machine."
+    />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    />
+    <link rel="stylesheet" href="./app.css" />
+    <link rel="stylesheet" href="./app-polish.css?v=20260609-overflow" />
+    <link rel="stylesheet" href="./landing.css" />
+  </head>
+  <body class="rn-body" data-page="landing">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+
+    <!-- Navigation -->
+    <header class="rn-nav">
+      <div class="rn-nav-inner">
+        <a href="https://roachnet.org/" class="rn-logo" aria-label="RoachNet landing page">
+          <img class="rn-logo-img" src="./favicon-32x32.png" width="26" height="26" alt="RoachNet logo" />
+          <span class="rn-logo-text">RoachNet</span>
+        </a>
+        <nav class="rn-nav-links" aria-label="Primary">
+          <a href="#top" class="rn-nav-link is-current">Mission</a>
+          <a href="https://roachnet.org/home/" class="rn-nav-link">Home</a>
+          <a href="https://apps.roachnet.org" class="rn-nav-link">Apps</a>
+          <a href="https://roachnet.org/roachclaw/" class="rn-nav-link">Claw</a>
+          <a href="https://roachnet.org/brew/" class="rn-nav-link">Brew</a>
+          <a href="https://roachnet.org/ios/" class="rn-nav-link">iOS</a>
+        </nav>
+        <div class="rn-nav-cta">
+          <a class="rn-nav-ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="rn-nav-ghost" href="https://roachnet.org/api/">API</a>
+          <a class="rn-nav-primary" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="landing-scroll-progress" aria-hidden="true"></div>
+
+    <!-- Main content -->
+    <main id="top" class="rn-main" tabindex="-1">
+
+      <!-- Hero: single-column, centered, editorial -->
+      <section class="why-hero">
+        <div class="why-hero__inner">
+          <h1 class="why-hero__title">
+            You weren't crazy.<br />
+            The&nbsp;cloud got&nbsp;loud.
+          </h1>
+          <div class="why-hero__signal" aria-hidden="true">
+            <div class="why-hero__signal-core">
+              <span class="why-hero__signal-core-ring"></span>
+              <span class="why-hero__signal-core-ring"></span>
+              <span class="why-hero__signal-core-dot"></span>
+            </div>
+            <div class="why-hero__signal-rails">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <p class="why-hero__lede">
+            You used to sit down, open your laptop, and just build. Hours would
+            disappear into code, writing, research &mdash; not into debugging your
+            setup, chasing logins, or nursing along some &ldquo;smart&rdquo; cloud tool
+            that keeps trying to help by getting in your way.
+          </p>
+        </div>
+      </section>
+
+      <!-- Flow: the problem -->
+      <section class="why-section" data-reveal>
+        <div class="why-section__inner">
+          <p class="why-prose">
+            Now your work lives in a dozen tabs, three identity providers, and
+            however many SaaS dashboards decided to redesign themselves this
+            quarter. Your "stack" feels less like a system and more like a pile.
+          </p>
+        </div>
+      </section>
+
+      <!-- Blockquote: the turn -->
+      <section class="why-section why-section--quote" data-reveal>
+        <div class="why-section__inner">
+          <blockquote class="why-blockquote">
+            <p class="why-blockquote__intro">
+              And yet, for the work that actually matters, you still crave
+              something simple:
+            </p>
+            <div class="why-blockquote__lines" aria-hidden="true">
+              <span>A machine that&rsquo;s yours.</span>
+              <span>Tools that don&rsquo;t move.</span>
+              <span>A setup that keeps working, even when the internet doesn&rsquo;t.</span>
+            </div>
+            <p class="why-blockquote__outro">That&rsquo;s where RoachNet comes in.</p>
+          </blockquote>
+        </div>
+      </section>
+
+      <!-- What RoachNet is -->
+      <section class="why-section" data-reveal>
+        <div class="why-section__inner">
+          <h2 class="why-heading">Meet RoachNet.</h2>
+          <p class="why-prose">
+            Meet RoachNet &mdash; an offline-first suite for AI, archiving, and
+            development that actually lives on your machines.
+          </p>
+          <p class="why-prose">
+            RoachNet treats your computer like a computer again. It&rsquo;s a
+            self-contained environment where your models, your tools, and your
+            data run locally, sync on your terms, and don&rsquo;t vanish when a
+            login expires or a product manager gets bored.
+          </p>
+          <p class="why-prose">
+            Instead of asking &ldquo;which service holds this?&rdquo;, you always
+            know: <strong>it&rsquo;s in RoachNet.</strong>
+          </p>
+        </div>
+      </section>
+
+      <!-- What you can do -->
+      <section class="why-section" data-reveal>
+        <div class="why-section__inner">
+          <h2 class="why-heading">Bring the important stuff home.</h2>
+          <p class="why-prose">
+            Spin up local AI with RoachClaw. Keep a durable archive of the web,
+            docs, and projects you care about. Ship code from a reproducible dev
+            environment that&rsquo;s the same on your desktop, your laptop, or your
+            lab machine.
+          </p>
+        </div>
+      </section>
+
+      <!-- Capability cards -->
+      <section class="why-section" data-reveal>
+        <div class="why-capabilities">
+          <article class="why-cap-card" data-reveal>
+            <span class="why-cap-card__icon" aria-hidden="true">&#xe2;</span>
+            <h3>Local AI</h3>
+            <p>Spin up RoachClaw with contained models. No API keys, no cloud dependency. Run models on your own metal.</p>
+          </article>
+          <article class="why-cap-card" data-reveal>
+            <span class="why-cap-card__icon" aria-hidden="true">&#x26B6;</span>
+            <h3>Durable Archive</h3>
+            <p>Keep the web, docs, playlists, and projects you care about in a vault that doesn't expire or leak.</p>
+          </article>
+          <article class="why-cap-card" data-reveal>
+            <span class="why-cap-card__icon" aria-hidden="true">&#x2318;</span>
+            <h3>Dev Environment</h3>
+            <p>Ship code from a reproducible setup &mdash; same on every machine you own, no browser required.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Accent statement -->
+      <section class="why-section why-section--accent" data-reveal>
+        <div class="why-section__inner">
+          <p class="why-accent-line">
+            No surprise upgrades. No forced migrations. No "we've updated our
+            terms" emails between you and your work.
+          </p>
+        </div>
+      </section>
+
+      <!-- A different relationship -->
+      <section class="why-section" data-reveal>
+        <div class="why-section__inner">
+          <h2 class="why-heading">A different relationship with computing</h2>
+          <p class="why-prose">
+            Once you stop assuming everything has to be hosted elsewhere, your
+            whole relationship with computing shifts.
+          </p>
+          <ul class="why-list">
+            <li>Keeping your core tools close, instead of chasing new dashboards.</li>
+            <li>Treating the internet as an optional bonus, not a dependency.</li>
+            <li>Designing workflows that can't be turned off from someone else's control panel.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Closing -->
+      <section class="why-section" data-reveal>
+        <div class="why-section__inner">
+          <p class="why-prose">
+            RoachNet is built for that mindset. For people who like to own the
+            stack they rely on, even if they still use plenty of cloud on top.
+          </p>
+          <p class="why-prose">
+            It's not nostalgia. It's just a quieter, saner foundation for modern
+            work &mdash; one where your AI, your archive, and your dev tools are
+            portable, offline-capable, and under your control.
+          </p>
+        </div>
+      </section>
+
+      <!-- The choice -->
+      <section class="why-section why-section--final" data-reveal>
+        <div class="why-section__inner">
+          <p class="why-final-line">
+            You can keep clicking through other people&rsquo;s platforms.<br />
+            Or you can bring the important stuff home.
+          </p>
+        </div>
+      </section>
+
+      <!-- Download CTA -->
+      <section class="why-section why-section--cta" id="download-section" data-reveal>
+        <div class="why-cta">
+          <div class="why-cta__keys" data-landing-shortcut aria-label="Download shortcut">
+            <span class="why-cta__key" data-shortcut-key="shift">Shift</span>
+            <span class="why-cta__key" data-shortcut-key="meta">&#x2318;</span>
+            <span class="why-cta__key" data-shortcut-key="r">R</span>
+          </div>
+          <p class="why-cta__text">
+            Press <span class="why-cta__kbd">&#x21E7;</span><span class="why-cta__kbd">&#x2318;</span><span class="why-cta__kbd">R</span> to download RoachNet and take your environment back.
+          </p>
+          <p class="why-cta__status" data-landing-download-status>
+            Press the shortcut to start the macOS download. We will send you into Home right after.
+          </p>
+          <p class="why-cta__status">RoachNet v1.0.5 is not Apple-notarized; macOS may require manual approval on first launch.</p>
+          <div class="why-cta__buttons">
+            <button class="rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
+            <a class="rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom wordmark -->
+      <div class="why-bottom-mark" aria-hidden="true">
+        <span class="why-bottom-wordmark">RoachNet</span>
+        <span class="why-bottom-tag">offline on purpose</span>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="rn-footer">
+      <div class="rn-footer-inner">
+        <div class="rn-footer-copy">
+          <strong>RoachNet</strong>
+          <span>RoachNet &middot; offline on purpose.</span>
+        </div>
+        <nav class="rn-footer-nav" aria-label="Footer">
+          <a href="#top">Mission</a>
+          <a href="https://roachnet.org/home/">Home</a>
+          <a href="https://apps.roachnet.org/">Apps</a>
+          <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+          <a href="https://roachnet.org/ios/">iOS</a>
+          <a href="https://roachnet.org/api/">API</a>
+          <a href="https://roachnet.org/sitemap/">Sitemap</a>
+          <a href="https://www.roachwares.org/">RoachWares</a>
+          <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+        <div class="rn-footer-meta">
+          <div class="rn-footer-brand" aria-hidden="true">
+            <span>RoachNet</span>
+          </div>
+          <a
+            class="rn-release-chip"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.5"
+          >v1.0.5</a>
+          <a
+            class="rn-netlify-badge"
+            href="https://www.netlify.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Proudly powered by Netlify"
+          >
+            <span>Proudly powered by Netlify</span>
+            <img
+              src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
+              alt="Netlify"
+              loading="lazy"
+            />
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./site-config.js"></script>
+    <script src="./app.js" type="module"></script>
+    <script src="./landing-script.js"></script>
+    <script src="./site-polish.js" type="module"></script>
+  </body>
+</html>
+```
+
+## landing.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="landing-css" file="landing.css"}
+/* =========================================================
+   landing.css
+   Raycast /why–inspired editorial layout for the RoachNet
+   Mission page. Single-column, centered, vertical scroll,
+   large typography, generous whitespace.
+   ========================================================= */
+
+/* 0) Variables */
+:root {
+  --rn-font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", "Segoe UI", sans-serif;
+  --rn-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --why-bg: #000000;
+  --why-text: #f0f0f0;
+  --why-text-muted: #999999;
+  --why-text-soft: #666666;
+  --why-accent: #9138D8;
+  --why-accent-soft: rgba(145, 56, 216, 0.18);
+  --why-border: rgba(255, 255, 255, 0.08);
+  --why-content-width: 720px;
+  --why-wide-width: 1080px;
+}
+
+/* 1) Body reset */
+body.rn-body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--rn-font-sans);
+  background: var(--why-bg);
+  color: var(--why-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  opacity: 1;
+  animation: none;
+}
+
+body.rn-body::before,
+body.rn-body::after {
+  display: none;
+}
+
+body.rn-body .rn-skip-link {
+  color: #fff;
+  background: #000;
+}
+
+/* Hide old site-level layout artifacts */
+body.rn-body .bg-glow { display: none; }
+body.rn-body .site-header { display: none; }
+body.rn-body .site-footer { display: none; }
+
+/* 2) Navigation */
+.rn-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(24px) saturate(1.35);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(145, 56, 216, 0.1), transparent 38%),
+    rgba(0, 0, 0, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
+}
+
+.rn-nav-inner {
+  max-width: var(--why-wide-width);
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.rn-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--why-text);
+  text-decoration: none;
+}
+
+.rn-logo-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.rn-logo-text {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.rn-nav-links {
+  display: flex;
+  gap: 5px;
+  max-width: 42vw;
+  padding: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  scrollbar-width: none;
+  font-size: 13px;
+}
+
+.rn-nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.rn-nav-link {
+  flex: 0 0 auto;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  color: var(--why-text-muted);
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rn-nav-link:hover,
+.rn-nav-link:focus-visible,
+.rn-nav-link.is-current,
+.rn-nav-link[aria-current="page"] {
+  color: var(--why-text);
+  border-color: rgba(145, 56, 216, 0.28);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(145, 56, 216, 0.22), transparent 72%),
+    rgba(255, 255, 255, 0.065);
+}
+
+.rn-nav-link:hover {
+  transform: translateY(-1px);
+}
+
+.rn-nav-cta {
+  display: inline-flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.rn-nav-cta::-webkit-scrollbar {
+  display: none;
+}
+
+.rn-nav-ghost,
+.rn-nav-primary {
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--why-text-muted);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  transition:
+    color 150ms ease,
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rn-nav-ghost:hover {
+  color: var(--why-text);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.rn-nav-primary {
+  border-color: transparent;
+  background: var(--why-accent);
+  color: #fff;
+}
+
+.rn-nav-primary:hover {
+  filter: brightness(1.15);
+}
+
+/* 3) Main container */
+.rn-main {
+  padding: 0 24px 80px;
+}
+
+/* 4) Hero: large, centered, editorial */
+.why-hero {
+  max-width: var(--why-content-width);
+  margin: 0 auto;
+  padding: 120px 0 80px;
+  text-align: center;
+}
+
+.why-hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.why-hero__kicker {
+  display: inline-block;
+  margin: 0 0 28px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--why-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  animation: why-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.why-hero__title {
+  margin: 0 0 32px;
+  font-size: clamp(40px, 7vw, 72px);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -0.045em;
+  color: var(--why-text);
+  animation: why-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) 100ms both;
+}
+
+.why-hero__lede {
+  margin: 0;
+  max-width: 560px;
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.6;
+  color: var(--why-text-muted);
+  animation: why-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+}
+
+.why-hero__signal {
+  width: min(100%, 840px);
+  margin-top: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  min-height: 184px;
+  justify-content: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at 50% 46%, rgba(145, 56, 216, 0.24), rgba(145, 56, 216, 0.07) 44%, transparent 72%),
+    radial-gradient(ellipse at 50% 82%, rgba(50, 255, 126, 0.12), transparent 64%);
+  opacity: 1;
+  --hero-scroll-shift: 0px;
+  position: relative;
+  isolation: isolate;
+}
+
+.why-hero__signal::before {
+  content: "";
+  position: absolute;
+  inset: 8% 14% 18%;
+  z-index: -1;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(145, 56, 216, 0.26), transparent 48%),
+    radial-gradient(circle at 32% 62%, rgba(50, 255, 126, 0.1), transparent 46%);
+  filter: blur(18px);
+  opacity: 0.9;
+  transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * 0.35), 0);
+}
+
+.why-hero__signal-core {
+  --hero-core-x: 0px;
+  --hero-core-y: 0px;
+  --hero-scroll-y: 0px;
+  position: relative;
+  width: min(100%, 320px);
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  transform: translate3d(var(--hero-core-x), calc(var(--hero-core-y) + var(--hero-scroll-y)), 0);
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.why-hero__signal-core::before {
+  content: "";
+  position: absolute;
+  inset: 18% 10%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, rgba(145, 56, 216, 0.34), rgba(145, 56, 216, 0) 62%),
+    radial-gradient(circle at 70% 32%, rgba(92, 141, 255, 0.2), rgba(92, 141, 255, 0) 58%);
+  filter: blur(26px);
+  opacity: 0.94;
+}
+
+.why-hero__signal-core-ring,
+.why-hero__signal-core-dot {
+  position: absolute;
+  pointer-events: none;
+}
+
+.why-hero__signal-core-ring {
+  top: 50%;
+  left: 50%;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(90deg, rgba(145, 56, 216, 0.08), rgba(92, 141, 255, 0.04));
+  box-shadow:
+    0 0 0 1px rgba(145, 56, 216, 0.08),
+    0 0 38px rgba(145, 56, 216, 0.16);
+  transform: translate(-50%, -50%);
+}
+
+.why-hero__signal-core-ring:nth-child(1) {
+  width: min(100%, 268px);
+  height: 84px;
+}
+
+.why-hero__signal-core-ring:nth-child(2) {
+  width: min(74%, 196px);
+  height: 48px;
+  border-color: rgba(92, 141, 255, 0.24);
+  box-shadow:
+    0 0 0 1px rgba(92, 141, 255, 0.08),
+    0 0 32px rgba(92, 141, 255, 0.18);
+}
+
+.why-hero__signal-core-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(249, 252, 255, 0.98), rgba(249, 252, 255, 0.22) 45%, rgba(145, 56, 216, 0.08) 100%),
+    rgba(145, 56, 216, 0.94);
+  box-shadow:
+    0 0 0 6px rgba(145, 56, 216, 0.08),
+    0 0 20px rgba(145, 56, 216, 0.48),
+    0 0 44px rgba(92, 141, 255, 0.2);
+}
+
+.why-hero__signal-rails {
+  width: min(100%, 620px);
+  display: grid;
+  gap: 8px;
+}
+
+.why-hero__signal-rails span {
+  display: block;
+  height: 2px;
+  border-radius: 999px;
+  background-size: 180% 100%;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(145, 56, 216, 0) 0%,
+      rgba(145, 56, 216, 0.22) 12%,
+      rgba(92, 141, 255, 0.7) 44%,
+      rgba(50, 255, 126, 0.46) 68%,
+      rgba(145, 56, 216, 0) 100%
+    );
+  opacity: 0.72;
+}
+
+.why-hero__signal-rails span:nth-child(2) {
+  width: 88%;
+  justify-self: center;
+  animation-delay: -2.1s;
+}
+
+.why-hero__signal-rails span:nth-child(3) {
+  width: 72%;
+  justify-self: center;
+  animation-delay: -4.2s;
+}
+
+/* 5) Content sections */
+.why-section {
+  max-width: var(--why-content-width);
+  margin: 0 auto;
+  padding: 60px 0;
+}
+
+.why-section__inner {
+  /* no special styling — just structure */
+}
+
+/* Prose text */
+.why-prose {
+  margin: 0 0 20px;
+  font-size: clamp(16px, 1.8vw, 18px);
+  line-height: 1.7;
+  color: var(--why-text-muted);
+}
+
+.why-prose:last-child {
+  margin-bottom: 0;
+}
+
+.why-prose em {
+  font-style: normal;
+  color: var(--why-text);
+}
+
+.why-prose strong {
+  color: var(--why-text);
+  font-weight: 600;
+}
+
+/* Section headings */
+.why-heading {
+  margin: 0 0 24px;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--why-text);
+}
+
+/* 6) Blockquote — the turn */
+.why-section--quote {
+  padding: 80px 0;
+}
+
+.why-blockquote {
+  margin: 0;
+  padding: 0;
+  border: none;
+  text-align: center;
+  display: grid;
+  gap: 20px;
+}
+
+.why-blockquote__intro,
+.why-blockquote__outro {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.04em;
+  color: var(--why-text);
+}
+
+.why-blockquote__intro {
+  max-width: 26ch;
+  margin-inline: auto;
+}
+
+.why-blockquote__lines {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.why-blockquote__lines span {
+  font-size: clamp(30px, 5vw, 54px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: var(--why-text);
+  text-wrap: balance;
+}
+
+.why-blockquote__lines span:nth-child(2) {
+  color: rgba(247, 250, 255, 0.9);
+}
+
+.why-blockquote__lines span:nth-child(3) {
+  max-width: 16ch;
+  color: rgba(229, 235, 242, 0.78);
+}
+
+.why-blockquote__outro {
+  color: var(--why-accent);
+  text-shadow:
+    0 0 18px rgba(145, 56, 216, 0.24),
+    0 0 36px rgba(145, 56, 216, 0.12);
+}
+
+/* 7) Capability cards */
+.why-capabilities {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: var(--why-wide-width);
+  margin: 0 auto;
+}
+
+.why-cap-card {
+  padding: 32px 28px;
+  border-radius: 16px;
+  border: 1px solid var(--why-border);
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 250ms ease, transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.why-cap-card:hover {
+  border-color: rgba(145, 56, 216, 0.25);
+  transform: translateY(-2px);
+}
+
+.why-cap-card__icon {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 14px;
+  opacity: 0.6;
+}
+
+.why-cap-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--why-text);
+}
+
+.why-cap-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--why-text-soft);
+}
+
+.company-hero {
+  padding-bottom: 54px;
+}
+
+.company-signal {
+  margin-top: 42px;
+}
+
+.company-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 26px auto 0;
+}
+
+.company-status,
+.company-proof {
+  width: min(100%, var(--why-wide-width));
+  margin: 0 auto;
+  padding: 30px;
+  border: 1px solid var(--why-border);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.3);
+}
+
+.company-status__label {
+  margin-bottom: 10px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.company-status__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.company-status__grid a {
+  min-height: 160px;
+  padding: 18px;
+  border: 1px solid var(--why-border);
+  border-radius: 16px;
+  color: inherit;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.22);
+  transition: border-color 220ms ease, transform 220ms ease, background 220ms ease;
+}
+
+.company-status__grid a:hover {
+  border-color: rgba(88, 255, 168, 0.35);
+  background: rgba(255, 255, 255, 0.045);
+  transform: translateY(-2px);
+}
+
+.company-status__grid span,
+.company-card span {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.company-status__grid span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--why-text-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.company-status__grid strong {
+  display: block;
+  color: var(--why-text);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.company-status__grid small {
+  display: block;
+  margin-top: 10px;
+  color: var(--why-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.company-grid {
+  max-width: var(--why-wide-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.company-card {
+  min-height: 210px;
+  padding: 28px;
+  border: 1px solid var(--why-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
+}
+
+.company-card span {
+  display: block;
+  margin-bottom: 18px;
+  color: var(--why-text-soft);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.company-card h3 {
+  margin: 0 0 12px;
+  color: var(--why-text);
+  font-size: 1.28rem;
+  line-height: 1.16;
+}
+
+.company-card p {
+  margin: 0;
+  color: var(--why-text-muted);
+  font-size: 0.98rem;
+  line-height: 1.58;
+}
+
+.company-list {
+  margin-top: 28px;
+}
+
+.company-cta {
+  max-width: 720px;
+}
+
+/* 8) Accent statement */
+.why-section--accent {
+  padding: 40px 0;
+}
+
+.why-accent-line {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+  color: var(--why-text);
+  padding-left: 28px;
+  border-left: 3px solid var(--why-accent);
+}
+
+/* 9) List */
+.why-list {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.why-list li {
+  padding-left: 24px;
+  position: relative;
+  font-size: clamp(16px, 1.8vw, 18px);
+  line-height: 1.6;
+  color: var(--why-text-muted);
+}
+
+.why-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--why-accent);
+}
+
+/* 10) Final line */
+.why-section--final {
+  padding: 80px 0 40px;
+  text-align: center;
+}
+
+.why-final-line {
+  margin: 0;
+  font-size: clamp(24px, 4.5vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  color: var(--why-text);
+}
+
+@keyframes why-core-haze {
+  0%,
+  100% {
+    opacity: 0.84;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes why-core-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.985);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes why-core-pulse {
+  0%,
+  100% {
+    transform: scale(0.95);
+    box-shadow:
+      0 0 0 6px rgba(145, 56, 216, 0.08),
+      0 0 20px rgba(145, 56, 216, 0.48),
+      0 0 44px rgba(92, 141, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow:
+      0 0 0 10px rgba(145, 56, 216, 0.12),
+      0 0 28px rgba(145, 56, 216, 0.58),
+      0 0 54px rgba(92, 141, 255, 0.28);
+  }
+}
+
+@keyframes why-rail-glow {
+  0%,
+  100% {
+    opacity: 0.58;
+    filter: blur(0);
+  }
+  50% {
+    opacity: 0.86;
+    filter: blur(0.6px);
+  }
+}
+
+@keyframes why-signal-halo {
+  0%,
+  100% {
+    opacity: 0.66;
+    transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * 0.35), 0) scaleX(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * 0.35), 0) scaleX(1.04);
+  }
+}
+
+@keyframes why-signal-mobile-pop {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.96);
+    filter: blur(8px) saturate(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0) saturate(1);
+  }
+}
+
+@keyframes why-signal-mobile-breathe {
+  0%,
+  100% {
+    opacity: 0.92;
+    filter: saturate(1) brightness(1);
+  }
+
+  50% {
+    opacity: 1;
+    filter: saturate(1.24) brightness(1.08);
+  }
+}
+
+/* 11) Download CTA */
+.why-section--cta {
+  padding: 60px 0 0;
+  max-width: 560px;
+  text-align: center;
+}
+
+.why-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.why-cta__keys {
+  display: flex;
+  gap: 8px;
+}
+
+.why-cta__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 48px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--why-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--rn-font-mono);
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.why-cta__key[data-active="true"] {
+  border-color: rgba(145, 56, 216, 0.6);
+  background: var(--why-accent-soft);
+  color: var(--why-text);
+  transform: translateY(-2px);
+}
+
+.why-cta__text {
+  margin: 0;
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--why-text);
+}
+
+.why-cta__kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  margin: 0 1px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.85em;
+  vertical-align: baseline;
+}
+
+.why-cta__status {
+  margin: 0;
+  font-size: 13px;
+  color: var(--why-text-soft);
+  font-family: var(--rn-font-mono);
+}
+
+.why-cta__buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Buttons */
+.rn-btn {
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+.rn-btn-primary {
+  background: var(--why-accent);
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(145, 56, 216, 0.35);
+}
+
+.rn-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(145, 56, 216, 0.5);
+  filter: brightness(1.1);
+}
+
+.rn-btn-ghost {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--why-text-muted);
+  background: transparent;
+}
+
+.rn-btn-ghost:hover {
+  color: var(--why-text);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* 12) Bottom wordmark */
+.why-bottom-mark {
+  max-width: var(--why-wide-width);
+  margin: 80px auto 0;
+  text-align: center;
+}
+
+.why-bottom-wordmark {
+  display: block;
+  font-size: clamp(4rem, 14vw, 12rem);
+  line-height: 0.84;
+  letter-spacing: -0.08em;
+  color: var(--why-accent);
+  font-weight: 800;
+  position: relative;
+  animation: glitch-flicker 5s infinite;
+  text-shadow:
+    0 0 20px rgba(145, 56, 216, 0.26),
+    0 0 56px rgba(145, 56, 216, 0.14),
+    0 0 92px rgba(92, 141, 255, 0.08);
+}
+
+.why-bottom-wordmark::before,
+.why-bottom-wordmark::after {
+  content: "RoachNet";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.why-bottom-wordmark::before {
+  animation: glitch-shift-1 5s infinite;
+  clip-path: inset(0 0 60% 0);
+  color: #b06aff;
+}
+
+.why-bottom-wordmark::after {
+  animation: glitch-shift-2 5s infinite;
+  clip-path: inset(55% 0 0 0);
+  color: #7b2fba;
+}
+
+.why-bottom-tag {
+  display: block;
+  margin-top: 12px;
+  color: rgba(240, 240, 240, 0.84);
+  opacity: 0.92;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: glitch-flicker 6s infinite 1s;
+  text-shadow: 0 0 18px rgba(145, 56, 216, 0.16);
+}
+
+/* 13) Footer */
+.rn-footer {
+  margin-top: 48px;
+  padding: 24px 0 32px;
+  border-top: 1px solid var(--why-border);
+}
+
+.rn-footer-inner {
+  max-width: var(--why-wide-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+
+.rn-footer-copy {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--why-text-soft);
+}
+
+.rn-footer-copy strong {
+  color: var(--why-text);
+}
+
+.rn-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 13px;
+  margin-left: auto;
+}
+
+.rn-footer-nav a {
+  color: var(--why-text-soft);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.rn-footer-nav a:hover {
+  color: var(--why-text);
+}
+
+.rn-footer-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+  padding-top: 12px;
+}
+
+.rn-footer-brand {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.rn-footer-brand span {
+  position: relative;
+  display: inline-block;
+  font-size: clamp(1.75rem, 6vw, 3.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.08em;
+  font-weight: 800;
+  color: rgba(145, 56, 216, 0.88);
+  text-shadow:
+    0 0 12px rgba(145, 56, 216, 0.26),
+    0 0 28px rgba(92, 141, 255, 0.12);
+}
+
+.rn-footer-brand span::before,
+.rn-footer-brand span::after {
+  content: "RoachNet";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.64;
+}
+
+.rn-footer-brand span::before {
+  color: rgba(92, 141, 255, 0.72);
+  clip-path: polygon(0 0, 100% 0, 100% 42%, 0 54%);
+}
+
+.rn-footer-brand span::after {
+  color: rgba(50, 255, 126, 0.58);
+  clip-path: polygon(0 58%, 100% 46%, 100% 100%, 0 100%);
+}
+
+.rn-release-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: var(--why-text-soft);
+  font-size: 12px;
+  font-family: var(--rn-font-mono);
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.rn-release-chip:hover {
+  border-color: rgba(145, 56, 216, 0.4);
+  color: var(--why-text);
+}
+
+.rn-netlify-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--why-text-soft);
+  font-size: 12px;
+  transition: color 150ms ease;
+}
+
+.rn-netlify-badge:hover {
+  color: var(--why-text);
+}
+
+.rn-netlify-badge img {
+  height: 18px;
+  width: auto;
+}
+
+/* 14) Scroll progress bar */
+.landing-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--why-accent), #c084fc);
+  z-index: 9999;
+  transition: width 60ms linear;
+  will-change: width;
+}
+
+/* 14b) Shared chrome polish: compact, reactive, less SaaS dashboard. */
+.rn-nav {
+  isolation: isolate;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 260ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rn-nav::before,
+.rn-nav::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.rn-nav::before {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.22), transparent 32%),
+    linear-gradient(90deg, transparent 0 8%, rgba(255, 255, 255, 0.06) 48%, transparent 90%);
+  opacity: 0.52;
+  transform: translateX(calc((var(--landing-scroll-ratio, 0) - 0.5) * 18px));
+  transition: opacity 180ms ease;
+}
+
+.rn-nav::after {
+  top: auto;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(145, 56, 216, 0.46),
+      rgba(92, 141, 255, 0.42),
+      rgba(50, 255, 126, 0.32),
+      transparent
+    );
+  opacity: 0.68;
+  transform: scaleX(calc(0.22 + (var(--landing-scroll-ratio, 0) * 0.78)));
+  transform-origin: left center;
+}
+
+.rn-nav.is-scrolled {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.13), transparent 34%),
+    rgba(0, 0, 0, 0.88);
+  border-bottom-color: rgba(145, 56, 216, 0.22);
+  box-shadow:
+    0 18px 64px rgba(0, 0, 0, 0.42),
+    0 0 34px rgba(145, 56, 216, 0.08);
+}
+
+.rn-logo {
+  position: relative;
+  padding: 4px 6px 4px 4px;
+  border-radius: 12px;
+  transition:
+    background 180ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms ease;
+}
+
+.rn-logo::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(145, 56, 216, 0.24), transparent 62%),
+    rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.rn-logo:hover,
+.rn-logo:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+}
+
+.rn-logo:hover::after,
+.rn-logo:focus-visible::after {
+  opacity: 1;
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  position: relative;
+  isolation: isolate;
+}
+
+.rn-nav-links {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.16), transparent 70%),
+    rgba(255, 255, 255, 0.036);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 14px 44px rgba(0, 0, 0, 0.22);
+}
+
+.rn-nav-link {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  font-weight: 650;
+}
+
+.rn-nav .rn-nav-indicator {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22), transparent 58%),
+    linear-gradient(135deg, rgba(145, 56, 216, 0.34), rgba(92, 141, 255, 0.18) 52%, rgba(50, 255, 126, 0.18));
+  border-color: rgba(183, 117, 255, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(145, 56, 216, 0.09),
+    0 0 28px rgba(145, 56, 216, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.rn-nav-link::before,
+.rn-nav-link::after,
+.rn-nav-primary::before,
+.rn-nav-ghost::before,
+.rn-btn::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.rn-nav-link::before,
+.rn-nav-primary::before,
+.rn-nav-ghost::before,
+.rn-btn::before {
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 0%), rgba(255, 255, 255, 0.16), transparent 58%),
+    linear-gradient(180deg, rgba(145, 56, 216, 0.26), rgba(45, 18, 71, 0.1));
+  opacity: 0;
+  transform: scaleX(0.7);
+  transition:
+    opacity 170ms ease,
+    transform 230ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rn-nav-link::after {
+  inset: auto 12px 5px;
+  height: 1px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, transparent, rgba(50, 255, 126, 0.58), rgba(145, 56, 216, 0.66), transparent);
+  opacity: 0;
+  transform: scaleX(0.34);
+  transition:
+    opacity 180ms ease,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rn-nav-link:hover::before,
+.rn-nav-link:focus-visible::before,
+.rn-nav-link.is-current::before,
+.rn-nav-link[aria-current="page"]::before,
+.rn-nav-primary:hover::before,
+.rn-nav-primary:focus-visible::before,
+.rn-nav-ghost:hover::before,
+.rn-nav-ghost:focus-visible::before,
+.rn-btn:hover::before,
+.rn-btn:focus-visible::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.rn-nav-link:hover::after,
+.rn-nav-link:focus-visible::after,
+.rn-nav-link.is-current::after,
+.rn-nav-link[aria-current="page"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.rn-nav-primary,
+.rn-nav-ghost,
+.rn-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.rn-nav-primary {
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.26), transparent 52%),
+    linear-gradient(180deg, #a64dff, #6d20ac);
+  box-shadow:
+    0 14px 34px rgba(145, 56, 216, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.rn-nav-primary:hover,
+.rn-nav-ghost:hover,
+.rn-btn:hover {
+  transform: translateY(-2px);
+}
+
+@keyframes landing-click-ripple {
+  0% {
+    opacity: 0.94;
+    transform: scale(0.32);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(9);
+  }
+}
+
+body.rn-body [data-reveal] {
+  will-change: opacity, transform, filter;
+}
+
+body.rn-body [data-reveal]:not(.is-visible) {
+  filter: blur(10px) saturate(0.72);
+  transform: translateY(38px) scale(0.985);
+}
+
+body.rn-body [data-reveal].is-visible {
+  filter: blur(0) saturate(1);
+  transform: translateY(0) scale(1);
+}
+
+@keyframes landing-scan-drift {
+  from { transform: translate3d(0, -3%, 0); }
+  to { transform: translate3d(0, 3%, 0); }
+}
+
+/* 15) Pixelated-glitch keyframes */
+@keyframes glitch-flicker {
+  0%, 90%, 100% { opacity: 1; filter: none; }
+  91% { opacity: 0.85; filter: brightness(1.3); }
+  92% { opacity: 1; filter: none; }
+  93% { opacity: 0.9; filter: brightness(1.1) saturate(1.4); }
+  94% { opacity: 1; filter: none; }
+  95% { opacity: 0.7; filter: brightness(1.5); }
+  96% { opacity: 1; filter: none; }
+}
+
+@keyframes glitch-shift-1 {
+  0%, 89%, 100% { transform: translate(0); }
+  90% { transform: translate(-3px, -1px); }
+  91% { transform: translate(2px, 1px); }
+  92% { transform: translate(0); }
+  95% { transform: translate(-2px, -2px); }
+  96% { transform: translate(0); }
+}
+
+@keyframes glitch-shift-2 {
+  0%, 88%, 100% { transform: translate(0); }
+  89% { transform: translate(3px, 1px); }
+  90% { transform: translate(-1px, -1px); }
+  91% { transform: translate(0); }
+  94% { transform: translate(2px, 2px); }
+  95% { transform: translate(-3px, 1px); }
+  96% { transform: translate(0); }
+}
+
+
+  35% {
+    transform: translateX(1.25%) scaleX(1);
+    opacity: 0.86;
+  }
+  65% {
+    transform: translateX(-0.75%) scaleX(0.94);
+    opacity: 0.66;
+  }
+}
+
+/* 16) Reveal animations */
+@keyframes why-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.rn-body [data-reveal] {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.rn-body [data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger for capability cards */
+body.rn-body .why-cap-card[data-reveal]:nth-child(1) { transition-delay: 0ms; }
+body.rn-body .why-cap-card[data-reveal]:nth-child(2) { transition-delay: 120ms; }
+body.rn-body .why-cap-card[data-reveal]:nth-child(3) { transition-delay: 240ms; }
+
+/* 16) Responsiveness */
+@media (max-width: 920px) {
+  .rn-nav-links {
+    max-width: none;
+    order: 3;
+    flex-basis: 100%;
+    margin-top: 8px;
+  }
+
+  .rn-nav {
+    background: rgba(0, 0, 0, 0.84);
+  }
+
+  .rn-nav-inner {
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding-block: 8px;
+  }
+
+  .rn-nav-cta {
+    max-width: calc(100vw - 146px);
+  }
+
+  .why-hero {
+    padding: 104px 0 70px;
+  }
+
+  .why-hero__title {
+    max-width: 10ch;
+  }
+
+  .why-capabilities {
+    grid-template-columns: 1fr;
+    max-width: var(--why-content-width);
+  }
+
+  .company-grid {
+    grid-template-columns: 1fr;
+    max-width: var(--why-content-width);
+  }
+
+  .company-status__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .rn-nav-inner {
+    padding: 0 16px;
+    padding-block: 8px;
+    min-width: 0;
+    width: 100%;
+    max-width: 100vw;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+
+  .rn-logo-text {
+    max-width: 82px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rn-nav-cta {
+    order: 2;
+    flex-basis: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+  }
+
+  .rn-nav-links {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    min-height: 32px;
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+
+  .rn-main {
+    padding: 0 16px 60px;
+  }
+
+  .why-hero {
+    padding: 80px 0 60px;
+  }
+
+  .why-hero__title {
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: min(100%, 9.5ch);
+    font-size: clamp(2.25rem, 10.4vw, 2.58rem);
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+    opacity: 1 !important;
+    color: rgba(246, 246, 246, 0.96);
+    animation: why-title-mobile-glow 6s ease-in-out infinite;
+  }
+
+  .why-hero__lede {
+    max-width: none;
+    font-size: 1rem;
+    line-height: 1.62;
+  }
+
+  .company-status,
+  .company-proof {
+    padding: 22px;
+    border-radius: 18px;
+  }
+
+  .company-status__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .why-hero__signal {
+    margin-top: 34px;
+    gap: 12px;
+    min-height: 146px;
+    justify-content: center;
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(145, 56, 216, 0.34), rgba(145, 56, 216, 0.08) 42%, transparent 72%),
+      radial-gradient(ellipse at 50% 76%, rgba(50, 255, 126, 0.16), transparent 68%);
+    box-shadow:
+      inset 0 0 44px rgba(145, 56, 216, 0.08),
+      0 0 38px rgba(145, 56, 216, 0.1);
+    animation: why-signal-mobile-breathe 5.4s ease-in-out infinite;
+  }
+
+  .why-hero__signal-core {
+    width: min(100%, 280px);
+  }
+
+  .why-hero__signal-core::before {
+    inset: 12% 5%;
+    opacity: 1;
+    filter: blur(18px);
+    background:
+      radial-gradient(circle at center, rgba(145, 56, 216, 0.48), rgba(145, 56, 216, 0.08) 54%, transparent 72%),
+      radial-gradient(circle at 70% 32%, rgba(92, 141, 255, 0.28), transparent 62%),
+      radial-gradient(circle at 28% 72%, rgba(50, 255, 126, 0.2), transparent 58%);
+  }
+
+  .why-hero__signal-core-ring {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 0 0 1px rgba(145, 56, 216, 0.16),
+      0 0 38px rgba(145, 56, 216, 0.24);
+  }
+
+  .why-hero__signal-core-dot {
+    box-shadow:
+      0 0 0 8px rgba(145, 56, 216, 0.12),
+      0 0 26px rgba(145, 56, 216, 0.68),
+      0 0 58px rgba(92, 141, 255, 0.32);
+  }
+
+  .why-hero__signal-rails span {
+    opacity: 0.9;
+    height: 2px;
+  }
+
+  .why-hero__signal-rails {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .why-section {
+    padding: 40px 0;
+  }
+
+  .why-section--quote {
+    padding: 50px 0;
+  }
+
+  .why-section--final {
+    padding: 50px 0 30px;
+  }
+
+  .why-heading {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .why-blockquote__lines span {
+    font-size: clamp(2.2rem, 11.5vw, 3.3rem);
+  }
+
+  .why-accent-line {
+    padding-left: 20px;
+  }
+
+  .why-cta__key {
+    min-width: 44px;
+    min-height: 40px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .rn-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rn-footer-nav {
+    margin-left: 0;
+  }
+}
+
+/* Reduced motion: disable glitch and dithered background */
+@media (prefers-reduced-motion: reduce) {
+  .why-bottom-wordmark,
+  .why-bottom-wordmark::before,
+  .why-bottom-wordmark::after,
+  .rn-footer-brand span::before,
+  .rn-footer-brand span::after,
+  .why-bottom-tag {
+    animation: none !important;
+  }
+
+  .rn-nav,
+  .rn-logo,
+  .rn-nav-link,
+  .rn-nav-primary,
+  .rn-nav-ghost,
+  .rn-btn,
+  body.rn-body [data-reveal],
+  body.rn-body [data-reveal].is-visible {
+    transition: none !important;
+  }
+}
+
+/* Final Mission chrome pass: black-first with animated signal accents. */
+.rn-nav {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.11), transparent 32%),
+    rgba(0, 0, 0, 0.86);
+  border-bottom-color: rgba(255, 255, 255, 0.085);
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.1), transparent 64%),
+    rgba(0, 0, 0, 0.42);
+  border-color: rgba(255, 255, 255, 0.078);
+}
+
+.rn-nav-link,
+.rn-nav-ghost {
+  color: rgba(238, 244, 239, 0.76);
+  background: rgba(255, 255, 255, 0.018);
+  border-color: rgba(255, 255, 255, 0.052);
+}
+
+.rn-nav-primary {
+  border-color: rgba(183, 117, 255, 0.24);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
+    linear-gradient(180deg, #a54aff, #6f22b0);
+}
+
+.rn-nav-link:hover,
+.rn-nav-link:focus-visible,
+.rn-nav-link.is-current,
+.rn-nav-link[aria-current="page"],
+.rn-nav-link.is-hovered,
+.rn-nav-ghost:hover,
+.rn-nav-primary:hover {
+  color: rgba(250, 255, 251, 0.98);
+  border-color: rgba(50, 255, 126, 0.2);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(50, 255, 126, 0.14), transparent 68%),
+    rgba(255, 255, 255, 0.045);
+  box-shadow:
+    0 0 0 1px rgba(50, 255, 126, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.28),
+    0 0 26px rgba(145, 56, 216, 0.1);
+}
+
+@keyframes why-title-mobile-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 0 rgba(145, 56, 216, 0);
+  }
+
+  50% {
+    text-shadow:
+      0 0 18px rgba(145, 56, 216, 0.12),
+      0 0 28px rgba(50, 255, 126, 0.06);
+  }
+}
+
+/* 2026-05 Mission signal-field rewrite: same black-first system as the rest of the site. */
+.rn-nav {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(4, 5, 7, 0.94), rgba(0, 0, 0, 0.9));
+  border-bottom-color: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 18px 70px rgba(0, 0, 0, 0.42),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.rn-nav-inner {
+  max-width: min(1180px, calc(100vw - 36px));
+  gap: clamp(8px, 1.4vw, 16px);
+}
+
+.rn-logo {
+  min-height: 40px;
+  padding: 5px 9px 5px 5px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(50, 255, 126, 0.1), transparent 56%),
+    rgba(255, 255, 255, 0.014);
+}
+
+.rn-logo-img {
+  filter:
+    drop-shadow(0 0 18px rgba(50, 255, 126, 0.2))
+    drop-shadow(0 0 22px rgba(145, 56, 216, 0.16));
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  min-height: 42px;
+  padding: 4px;
+  gap: 4px;
+  border-color: rgba(255, 255, 255, 0.075);
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.12), transparent 62%),
+    rgba(0, 0, 0, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 14px 34px rgba(0, 0, 0, 0.24);
+}
+
+.rn-nav-link,
+.rn-nav-ghost,
+.rn-nav-primary {
+  min-height: 34px;
+  padding-inline: 13px;
+  border-color: rgba(255, 255, 255, 0.052);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.052), transparent 60%),
+    rgba(255, 255, 255, 0.014);
+  color: rgba(240, 245, 242, 0.76);
+}
+
+.rn-nav-primary {
+  border-color: rgba(183, 117, 255, 0.28);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
+    linear-gradient(180deg, #a64dff, #6820a6);
+}
+
+.rn-nav-link:hover,
+.rn-nav-link:focus-visible,
+.rn-nav-link.is-current,
+.rn-nav-link[aria-current="page"],
+.rn-nav-link.is-hovered,
+.rn-nav-ghost:hover,
+.rn-nav-ghost:focus-visible,
+.rn-nav-ghost.is-hovered,
+.rn-nav-primary:hover,
+.rn-nav-primary:focus-visible,
+.rn-nav-primary.is-hovered {
+  color: rgba(252, 255, 252, 0.98);
+  border-color: rgba(50, 255, 126, 0.23);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(50, 255, 126, 0.16), transparent 72%),
+    radial-gradient(circle at 70% 100%, rgba(145, 56, 216, 0.14), transparent 68%),
+    rgba(255, 255, 255, 0.046);
+}
+
+.rn-nav .rn-nav-indicator {
+  border-color: rgba(50, 255, 126, 0.22);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22), transparent 58%),
+    linear-gradient(135deg, rgba(50, 255, 126, 0.2), rgba(8, 12, 16, 0.82) 48%, rgba(145, 56, 216, 0.28));
+  box-shadow:
+    0 0 0 1px rgba(50, 255, 126, 0.055),
+    0 0 26px rgba(50, 255, 126, 0.1),
+    0 0 34px rgba(145, 56, 216, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 760px) {
+  .rn-nav-inner {
+    max-width: 100%;
+  }
+
+  .rn-nav-links,
+  .rn-nav-cta {
+    min-height: 40px;
+  }
+
+  .rn-nav-cta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    justify-content: center;
+  }
+}
+
+@keyframes landing-signal-field-breathe {
+  0% {
+    opacity: 0.42;
+    filter: saturate(0.92);
+  }
+
+  100% {
+    opacity: 0.74;
+    filter: saturate(1.22);
+  }
+}
+
+/* 2026-05 Mission nav/background final pass: same signal language, cleaner scroll. */
+html {
+  scroll-behavior: auto;
+  overscroll-behavior-y: auto;
+}
+
+.rn-nav {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.13), transparent 34%),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 0%, rgba(50, 255, 126, 0.07), transparent 44%),
+    linear-gradient(180deg, rgba(2, 3, 4, 0.92), rgba(0, 0, 0, 0.82));
+  border-bottom-color: rgba(255, 255, 255, 0.075);
+  backdrop-filter: blur(24px) saturate(1.16);
+  -webkit-backdrop-filter: blur(24px) saturate(1.16);
+}
+
+.rn-nav-inner {
+  max-width: min(1200px, calc(100vw - 32px));
+  align-items: center;
+}
+
+.rn-logo,
+.rn-nav-links,
+.rn-nav-cta {
+  backdrop-filter: blur(20px) saturate(1.14);
+  -webkit-backdrop-filter: blur(20px) saturate(1.14);
+}
+
+.rn-logo {
+  border-color: rgba(255, 255, 255, 0.07);
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(50, 255, 126, 0.09), transparent 58%),
+    rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  overscroll-behavior: auto !important;
+  overscroll-behavior-inline: auto !important;
+  touch-action: pan-x pan-y;
+  border-color: rgba(255, 255, 255, 0.085);
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.105), transparent 58%),
+    linear-gradient(180deg, rgba(4, 6, 7, 0.86), rgba(0, 0, 0, 0.66));
+}
+
+.rn-nav-link,
+.rn-nav-ghost,
+.rn-nav-primary {
+  letter-spacing: 0;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.rn-nav-link:hover,
+.rn-nav-link:focus-visible,
+.rn-nav-ghost:hover,
+.rn-nav-ghost:focus-visible,
+.rn-nav-primary:hover,
+.rn-nav-primary:focus-visible {
+  transform: translate3d(var(--rn-magnet-x, 0px), var(--rn-magnet-y, 0px), 0);
+}
+
+@media (max-width: 760px) {
+  .rn-nav {
+    background:
+      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.1), transparent 42%),
+      linear-gradient(180deg, rgba(2, 3, 4, 0.94), rgba(0, 0, 0, 0.9));
+  }
+
+  .rn-nav-inner {
+    max-width: calc(100vw - 20px);
+  }
+
+  .rn-nav-links,
+  .rn-nav-cta {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+}
+
+/* 2026-05 worker pass: Mission chrome aligned with the black-first site system. */
+html {
+  scroll-behavior: auto !important;
+  overscroll-behavior-y: auto !important;
+  background: #000;
+}
+
+body.rn-body {
+  background:
+    radial-gradient(circle at calc(10% + (var(--landing-scroll-ratio, 0) * 15%)) -15%, rgba(54, 255, 132, 0.03), transparent 31rem),
+    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 12%)) 5%, rgba(150, 74, 255, 0.048), transparent 32rem),
+    linear-gradient(180deg, #000 0%, #010101 52%, #000 100%) !important;
+}
+
+.rn-nav {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(150, 74, 255, 0.12), transparent 36%),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 0%, rgba(54, 255, 132, 0.062), transparent 44%),
+    linear-gradient(180deg, rgba(3, 4, 5, 0.92), rgba(0, 0, 0, 0.78)) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.075) !important;
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.36),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.034) !important;
+}
+
+.rn-nav-inner {
+  height: 54px;
+  max-width: min(1200px, calc(100vw - 34px));
+  gap: clamp(8px, 1.3vw, 14px);
+}
+
+.rn-logo,
+.rn-nav-links,
+.rn-nav-cta {
+  backdrop-filter: blur(22px) saturate(1.16);
+  -webkit-backdrop-filter: blur(22px) saturate(1.16);
+}
+
+.rn-logo {
+  min-height: 38px;
+  padding: 4px 9px 4px 5px;
+  border-color: rgba(255, 255, 255, 0.075) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(54, 255, 132, 0.09), transparent 58%),
+    rgba(0, 0, 0, 0.42) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045) !important;
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  min-height: 42px;
+  padding: 4px;
+  gap: 4px;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  overscroll-behavior: auto !important;
+  overscroll-behavior-inline: auto !important;
+  touch-action: pan-x pan-y;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(150, 74, 255, 0.1), transparent 58%),
+    linear-gradient(180deg, rgba(4, 6, 7, 0.86), rgba(0, 0, 0, 0.66)) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.048) !important;
+}
+
+.rn-nav-link,
+.rn-nav-ghost,
+.rn-nav-primary {
+  min-height: 32px;
+  padding-inline: 12px;
+  letter-spacing: 0;
+  color: rgba(238, 245, 241, 0.75);
+  border-color: rgba(255, 255, 255, 0.052) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.052), transparent 62%),
+    rgba(255, 255, 255, 0.012) !important;
+  transform: translate3d(var(--rn-magnet-x, 0px), var(--rn-magnet-y, 0px), 0);
+  transition:
+    color 170ms ease,
+    border-color 170ms ease,
+    background 170ms ease,
+    box-shadow 170ms ease,
+    transform 170ms ease;
+}
+
+.rn-nav-primary {
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(183, 117, 255, 0.3) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
+    linear-gradient(180deg, #9d3cff, #5f1c99) !important;
+}
+
+.rn-nav-link:hover,
+.rn-nav-link:focus-visible,
+.rn-nav-link.is-current,
+.rn-nav-link[aria-current="page"],
+.rn-nav-link.is-hovered,
+.rn-nav-ghost:hover,
+.rn-nav-ghost:focus-visible,
+.rn-nav-ghost.is-hovered,
+.rn-nav-primary:hover,
+.rn-nav-primary:focus-visible,
+.rn-nav-primary.is-hovered {
+  color: rgba(252, 255, 252, 0.98) !important;
+  border-color: rgba(54, 255, 132, 0.24) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(54, 255, 132, 0.15), transparent 72%),
+    radial-gradient(circle at 74% 100%, rgba(150, 74, 255, 0.15), transparent 68%),
+    rgba(255, 255, 255, 0.045) !important;
+  box-shadow:
+    0 0 0 1px rgba(54, 255, 132, 0.065),
+    0 16px 34px rgba(0, 0, 0, 0.28),
+    0 0 28px rgba(150, 74, 255, 0.12) !important;
+}
+
+.rn-nav .rn-nav-indicator {
+  border-color: rgba(54, 255, 132, 0.22) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.24), transparent 58%),
+    linear-gradient(135deg, rgba(54, 255, 132, 0.22), rgba(7, 10, 13, 0.84) 48%, rgba(150, 74, 255, 0.28)) !important;
+  box-shadow:
+    0 0 0 1px rgba(54, 255, 132, 0.055),
+    0 0 26px rgba(54, 255, 132, 0.105),
+    0 0 34px rgba(150, 74, 255, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+@media (max-width: 760px) {
+  .rn-nav {
+    background:
+      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(150, 74, 255, 0.1), transparent 42%),
+      linear-gradient(180deg, rgba(2, 3, 4, 0.94), rgba(0, 0, 0, 0.88)) !important;
+  }
+
+  .rn-nav-inner {
+    height: auto;
+    max-width: calc(100vw - 20px);
+    padding-block: 5px;
+    gap: 5px;
+  }
+
+  .rn-logo {
+    min-height: 32px;
+    border-radius: 22px;
+  }
+
+  .rn-nav-links,
+  .rn-nav-cta {
+    min-height: 34px;
+    padding: 3px;
+    gap: 3px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rn-nav-links::-webkit-scrollbar,
+  .rn-nav-cta::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rn-nav-link,
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    min-height: 28px;
+    padding-inline: 9px;
+    font-size: 0.72rem;
+  }
+}
+
+@keyframes landing-worker-scan-crawl {
+  from {
+    background-position: 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 0 18px, 0 36px, 28px 0;
+  }
+}
+}
+
+/* 2026-05 worker pass B: Mission shares the same black signal chrome as the app pages. */
+:root {
+  --rn-site-green: 54, 255, 132;
+  --rn-site-purple: 150, 74, 255;
+  --rn-site-blue: 92, 141, 255;
+}
+
+html {
+  scroll-behavior: auto !important;
+  overscroll-behavior-y: auto !important;
+  background: #000 !important;
+}
+
+body.rn-body {
+  background:
+    radial-gradient(circle at calc(8% + (var(--landing-scroll-ratio, 0) * 12%)) -18%, rgba(var(--rn-site-green), 0.026), transparent 32rem),
+    radial-gradient(circle at calc(100% - (var(--landing-scroll-ratio, 0) * 10%)) 4%, rgba(var(--rn-site-purple), 0.05), transparent 32rem),
+    linear-gradient(180deg, #000 0%, #010101 48%, #000 100%) !important;
+}
+
+.rn-nav {
+  min-height: 58px;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-purple), 0.12), transparent 38%),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 0%, rgba(var(--rn-site-green), 0.058), transparent 42%),
+    linear-gradient(180deg, rgba(3, 4, 5, 0.92), rgba(0, 0, 0, 0.8)) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.072) !important;
+  box-shadow:
+    0 18px 58px rgba(0, 0, 0, 0.36),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.032) !important;
+}
+
+.rn-nav-inner {
+  height: 54px;
+  max-width: min(1180px, calc(100vw - 32px));
+  gap: clamp(8px, 1.2vw, 14px);
+}
+
+.rn-logo,
+.rn-nav-links,
+.rn-nav-cta {
+  border: 1px solid rgba(255, 255, 255, 0.105) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(var(--rn-site-purple), 0.105), transparent 42%),
+    linear-gradient(180deg, rgba(6, 8, 8, 0.9), rgba(0, 0, 0, 0.76)) !important;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(22px) saturate(1.14);
+  -webkit-backdrop-filter: blur(22px) saturate(1.14);
+}
+
+.rn-logo {
+  min-height: 38px;
+  padding: 4px 9px 4px 5px;
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  min-height: 42px;
+  padding: 4px;
+  gap: 4px;
+  border-radius: 999px;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  overscroll-behavior: auto !important;
+  overscroll-behavior-inline: auto !important;
+  touch-action: pan-x pan-y;
+}
+
+.rn-nav-link,
+.rn-nav-ghost,
+.rn-nav-primary {
+  min-height: 32px;
+  padding-inline: 12px;
+  border-radius: 999px;
+  letter-spacing: 0;
+  color: rgba(238, 245, 241, 0.76) !important;
+  border-color: rgba(255, 255, 255, 0.052) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.055), transparent 62%),
+    rgba(255, 255, 255, 0.012) !important;
+  transform:
+    translate3d(var(--rn-magnet-x, 0px), var(--rn-magnet-y, 0px), 0)
+    scale(var(--rn-nav-scale, 1));
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 180ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rn-nav-primary {
+  color: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(var(--rn-site-purple), 0.34) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
+    linear-gradient(180deg, #9d3cff, #5f1c99) !important;
+}
+
+.rn-nav-link:hover,
+.rn-nav-link:focus-visible,
+.rn-nav-link.is-current,
+.rn-nav-link[aria-current="page"],
+.rn-nav-link.is-hovered,
+.rn-nav-ghost:hover,
+.rn-nav-ghost:focus-visible,
+.rn-nav-ghost.is-hovered,
+.rn-nav-primary:hover,
+.rn-nav-primary:focus-visible,
+.rn-nav-primary.is-hovered {
+  --rn-nav-scale: 1.025;
+  color: rgba(252, 255, 252, 0.98) !important;
+  border-color: rgba(var(--rn-site-green), 0.24) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(var(--rn-site-green), 0.16), transparent 72%),
+    radial-gradient(circle at 78% 100%, rgba(var(--rn-site-purple), 0.16), transparent 68%),
+    rgba(255, 255, 255, 0.046) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--rn-site-green), 0.07),
+    0 15px 32px rgba(0, 0, 0, 0.29),
+    0 0 28px rgba(var(--rn-site-purple), 0.13) !important;
+}
+
+.rn-nav .rn-nav-indicator {
+  border-color: rgba(var(--rn-site-green), 0.22) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.24), transparent 58%),
+    linear-gradient(135deg, rgba(var(--rn-site-green), 0.22), rgba(7, 10, 13, 0.84) 48%, rgba(var(--rn-site-purple), 0.28)) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--rn-site-green), 0.055),
+    0 0 24px rgba(var(--rn-site-green), 0.11),
+    0 0 34px rgba(var(--rn-site-purple), 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+@media (max-width: 760px) {
+  .rn-nav {
+    min-height: 0;
+    background:
+      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-purple), 0.1), transparent 42%),
+      linear-gradient(180deg, rgba(2, 3, 4, 0.94), rgba(0, 0, 0, 0.88)) !important;
+  }
+
+  .rn-nav-inner {
+    height: auto;
+    max-width: calc(100vw - 20px);
+    padding-block: 6px;
+    gap: 6px;
+  }
+
+  .rn-logo {
+    min-height: 34px;
+  }
+
+  .rn-nav-links,
+  .rn-nav-cta {
+    min-height: 38px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rn-nav-links::-webkit-scrollbar,
+  .rn-nav-cta::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rn-nav-link,
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    min-height: 30px;
+    padding-inline: 10px;
+  }
+}
+}
+
+/* 2026-05 worker pass C: Mission gets the same black-first signal field as the site pages. */
+:root {
+  --rn-site-green: 54, 255, 132;
+  --rn-site-purple: 145, 56, 216;
+  --rn-site-blue: 70, 116, 190;
+}
+
+html,
+body {
+  scroll-behavior: auto !important;
+  overscroll-behavior-y: auto !important;
+  background: #000 !important;
+}
+
+body.rn-body {
+  overflow-x: clip;
+  background:
+    radial-gradient(circle at calc(8% + (var(--landing-scroll-ratio, 0) * 16%)) -16%, rgba(var(--rn-site-green), 0.034), transparent 35rem),
+    radial-gradient(circle at calc(94% - (var(--landing-scroll-ratio, 0) * 18%)) 7%, rgba(var(--rn-site-purple), 0.062), transparent 34rem),
+    radial-gradient(circle at 50% 118%, rgba(var(--rn-site-blue), 0.02), transparent 46rem),
+    linear-gradient(180deg, #000 0%, #010202 44%, #000 100%) !important;
+}
+
+body.rn-body::before,
+body.rn-body::after {
+  content: "" !important;
+  display: block !important;
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+body.rn-body::after {
+  z-index: -1;
+}
+
+body.rn-body::before {
+  opacity: 0.48 !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 22%), rgba(var(--rn-site-purple), 0.088), transparent 22rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) calc(100% - var(--landing-pointer-y, 22%)), rgba(var(--rn-site-green), 0.052), transparent 27rem),
+    linear-gradient(115deg, transparent 0 18%, rgba(var(--rn-site-green), 0.026) 19%, transparent 20% 46%, rgba(var(--rn-site-purple), 0.032) 47%, transparent 48% 100%),
+    repeating-linear-gradient(90deg, transparent 0 34px, rgba(255, 255, 255, 0.018) 35px, transparent 36px 78px),
+    repeating-linear-gradient(0deg, transparent 0 42px, rgba(var(--rn-site-green), 0.018) 43px, transparent 44px 96px) !important;
+  mix-blend-mode: screen;
+  transform:
+    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -52px), 0)
+    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 1.6deg));
+  animation: landing-signal-depth-field 24s linear infinite;
+}
+
+body.rn-body::after {
+  opacity: 0.26 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.86), transparent 17%, transparent 76%, rgba(0, 0, 0, 0.9)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 7px),
+    radial-gradient(ellipse at 50% calc(14% + (var(--landing-scroll-ratio, 0) * 42%)), rgba(var(--rn-site-green), 0.03), transparent 38%) !important;
+  animation: landing-signal-scan-crawl 15s linear infinite;
+}
+
+@keyframes landing-signal-depth-field {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 0 0, 0 0, 48px -32px, -78px 0, 0 96px;
+  }
+}
+
+@keyframes landing-signal-scan-crawl {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 0 0, 0 42px, 34px 0, 64px -64px;
+  }
+}
+
+@keyframes landing-signal-vault-breathe {
+  0% {
+    opacity: 0.46;
+    filter: saturate(1) contrast(1.06);
+  }
+
+  100% {
+    opacity: 0.68;
+    filter: saturate(1.22) contrast(1.22);
+  }
+}
+
+@media (max-width: 760px) {
+  body.rn-body::before {
+    opacity: 0.34 !important;
+  }
+
+  body.rn-body::after {
+    opacity: 0.2 !important;
+  }
+}
+}
+
+/* VISUAL-CLAW EOF priority: these repeat the landing chrome guards after all earlier polish layers. */
+body[data-page="landing"] {
+  background: #000 !important;
+  overflow-x: clip !important;
+}
+
+body[data-page="landing"] .rn-nav-inner {
+  width: min(1240px, calc(100vw - 24px)) !important;
+  max-width: min(1240px, calc(100vw - 24px)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.086) !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0, rgba(63, 255, 139, 0.082), transparent 21rem),
+    radial-gradient(circle at 100% 100%, rgba(145, 56, 216, 0.09), transparent 24rem),
+    linear-gradient(180deg, rgba(10, 14, 14, 0.86), rgba(0, 0, 0, 0.74)) !important;
+  box-shadow:
+    0 20px 58px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(63, 255, 139, 0.06) !important;
+}
+
+body[data-page="landing"] .rn-nav-links,
+body[data-page="landing"] .rn-nav-cta {
+  background:
+    linear-gradient(180deg, rgba(8, 11, 10, 0.88), rgba(0, 0, 0, 0.78)),
+    repeating-linear-gradient(90deg, rgba(63, 255, 139, 0.026) 0 1px, transparent 1px 10px) !important;
+}
+
+body[data-page="landing"] .rn-footer {
+  width: min(1240px, calc(100vw - 24px)) !important;
+  max-width: min(1240px, calc(100vw - 24px)) !important;
+  margin-inline: auto !important;
+  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(63, 255, 139, 0.075), transparent 24rem),
+    radial-gradient(circle at 84% 0%, rgba(145, 56, 216, 0.066), transparent 22rem),
+    linear-gradient(180deg, rgba(1, 2, 2, 0.94), #000) !important;
+}
+
+@media (max-width: 760px) {
+  body[data-page="landing"] .rn-nav-inner,
+  body[data-page="landing"] .rn-footer {
+    width: min(calc(100vw - 16px), 100%) !important;
+    max-width: min(calc(100vw - 16px), 100%) !important;
+  }
+
+  body[data-page="landing"] .rn-nav-links,
+  body[data-page="landing"] .rn-nav-cta {
+    min-height: 44px !important;
+    scroll-padding-inline: 0.75rem !important;
+  }
+
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 40px !important;
+    touch-action: manipulation;
+  }
+
+  body[data-page="landing"] .rn-logo,
+  body[data-page="landing"] .rn-footer a {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 40px !important;
+    touch-action: manipulation;
+  }
+
+  body[data-page="landing"] .why-hero__signal {
+    overflow: clip !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    padding-inline: 0.58rem !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring {
+    max-width: calc(100% - 8px) !important;
+    max-height: calc(100% - 8px) !important;
+  }
+}
+
+/* MOBILE-CLAW-B: landing-specific mobile touch and signal containment. */
+@media (max-width: 760px) {
+  body[data-page="landing"] .rn-nav-links,
+  body[data-page="landing"] .rn-nav-cta {
+    min-height: 44px !important;
+    scroll-padding-inline: 0.75rem !important;
+  }
+
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    min-height: 40px !important;
+    touch-action: manipulation;
+  }
+
+  body[data-page="landing"] .why-hero__signal {
+    overflow: clip !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    padding-inline: 0.58rem !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring {
+    max-width: calc(100% - 8px) !important;
+    max-height: calc(100% - 8px) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-page="landing"],
+  body[data-page="landing"] .rn-main,
+  body[data-page="landing"] .why-hero,
+  body[data-page="landing"] .why-hero__inner {
+    max-width: 100% !important;
+    overflow-x: clip !important;
+  }
+
+  body[data-page="landing"] .rn-nav-links,
+  body[data-page="landing"] .rn-nav-cta {
+    contain: paint !important;
+    max-width: 100% !important;
+    scroll-padding-inline: 0.85rem !important;
+  }
+
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    min-height: 40px !important;
+    touch-action: manipulation;
+  }
+
+  body[data-page="landing"] .why-hero__signal {
+    width: min(100%, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+    overflow: hidden !important;
+    contain: paint !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core {
+    width: min(100%, 232px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
+    width: min(92%, 220px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
+    width: min(68%, 160px) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body[data-page="landing"] .why-hero__signal {
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core {
+    width: min(100%, 208px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
+    width: min(90%, 196px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
+    width: min(64%, 142px) !important;
+  }
+}
+
+/* 2026-05-21 VISUAL-CLAW landing finish: keep the mission page black, dense, and overflow-safe. */
+body[data-page="landing"] {
+  --landing-claw-green: 63, 255, 139;
+  --landing-claw-purple: 145, 56, 216;
+  --landing-claw-cyan: 80, 222, 210;
+  background: #000 !important;
+  overflow-x: clip !important;
+}
+
+@supports not (overflow: clip) {
+  body[data-page="landing"] {
+    overflow-x: hidden !important;
+  }
+}
+
+body[data-page="landing"] .rn-nav-inner {
+  width: min(1240px, calc(100vw - 24px)) !important;
+  max-width: min(1240px, calc(100vw - 24px)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.086) !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0, rgba(var(--landing-claw-green), 0.082), transparent 21rem),
+    radial-gradient(circle at 100% 100%, rgba(var(--landing-claw-purple), 0.09), transparent 24rem),
+    linear-gradient(180deg, rgba(10, 14, 14, 0.86), rgba(0, 0, 0, 0.74)) !important;
+  box-shadow:
+    0 20px 58px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(var(--landing-claw-green), 0.06) !important;
+}
+
+body[data-page="landing"] .rn-nav-links,
+body[data-page="landing"] .rn-nav-cta {
+  background:
+    linear-gradient(180deg, rgba(8, 11, 10, 0.88), rgba(0, 0, 0, 0.78)),
+    repeating-linear-gradient(90deg, rgba(var(--landing-claw-green), 0.026) 0 1px, transparent 1px 10px) !important;
+}
+
+body[data-page="landing"] .why-cap-card,
+body[data-page="landing"] .why-cta {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 0%), rgba(var(--landing-claw-green), 0.08), transparent 42%),
+    linear-gradient(180deg, rgba(8, 12, 11, 0.72), rgba(0, 0, 0, 0.66)) !important;
+}
+
+body[data-page="landing"] .why-cap-card::after,
+body[data-page="landing"] .why-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(112deg, transparent 0 34%, rgba(255, 255, 255, 0.07) 48%, transparent 62%),
+    repeating-linear-gradient(0deg, rgba(var(--landing-claw-green), 0.018) 0 1px, transparent 1px 9px);
+  opacity: 0;
+  transform: translateX(-18%);
+  transition:
+    opacity 180ms ease,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body[data-page="landing"] .why-cap-card:hover::after,
+body[data-page="landing"] .why-cap-card:focus-within::after,
+body[data-page="landing"] .why-cta:hover::after,
+body[data-page="landing"] .why-cta:focus-within::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+body[data-page="landing"] .rn-footer {
+  width: min(1240px, calc(100vw - 24px)) !important;
+  max-width: min(1240px, calc(100vw - 24px)) !important;
+  margin-inline: auto !important;
+  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(var(--landing-claw-green), 0.075), transparent 24rem),
+    radial-gradient(circle at 84% 0%, rgba(var(--landing-claw-purple), 0.066), transparent 22rem),
+    linear-gradient(180deg, rgba(1, 2, 2, 0.94), #000) !important;
+}
+
+@media (max-width: 760px) {
+  body[data-page="landing"] .rn-nav-inner,
+  body[data-page="landing"] .rn-footer {
+    width: min(calc(100vw - 16px), 100%) !important;
+    max-width: min(calc(100vw - 16px), 100%) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="landing"] .why-cap-card::after,
+  body[data-page="landing"] .why-cta::after {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* 2026-05-21 Mission nav reconciliation: match the RoachNet page chrome without changing the Mission copy. */
+:root {
+  --rn-mission-nav-max: min(1240px, calc(100vw - 24px));
+  --rn-mission-nav-rail: rgba(255, 255, 255, 0.085);
+}
+
+.rn-nav {
+  padding-inline: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.52) 72%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(1.24) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.24) !important;
+}
+
+.rn-nav-inner {
+  display: grid !important;
+  grid-template-columns: minmax(178px, auto) minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  width: var(--rn-mission-nav-max) !important;
+  max-width: var(--rn-mission-nav-max) !important;
+  min-height: 66px !important;
+  gap: 6px !important;
+  padding: 5px !important;
+  border: 1px solid rgba(255, 255, 255, 0.085) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-green), 0.075), transparent 22rem),
+    linear-gradient(180deg, rgba(12, 16, 17, 0.86), rgba(0, 0, 0, 0.72)) !important;
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(var(--rn-site-purple), 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.085),
+    inset 0 -1px 0 rgba(var(--rn-site-green), 0.055) !important;
+  overflow: hidden !important;
+}
+
+.rn-logo {
+  min-width: 0 !important;
+  padding-inline: 0.55rem 0.78rem !important;
+}
+
+.rn-logo-text {
+  max-width: 14ch !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+  min-height: 44px !important;
+  padding: 3px !important;
+  border: 1px solid var(--rn-mission-nav-rail) !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(180deg, rgba(7, 10, 11, 0.88), rgba(0, 0, 0, 0.78)),
+    rgba(0, 0, 0, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    inset 0 -1px 0 rgba(var(--rn-site-green), 0.04) !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+}
+
+.rn-nav-links {
+  justify-self: center !important;
+}
+
+.rn-nav-cta {
+  justify-self: end !important;
+}
+
+.rn-nav-links::-webkit-scrollbar,
+.rn-nav-cta::-webkit-scrollbar {
+  display: none !important;
+}
+
+.rn-nav-link,
+.rn-nav-ghost,
+.rn-nav-primary {
+  z-index: 1 !important;
+  min-height: 38px !important;
+  padding: 0 clamp(0.62rem, 1vw, 0.86rem) !important;
+  font-size: clamp(0.7rem, 0.78vw, 0.76rem) !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.rn-nav-primary {
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 54%),
+    linear-gradient(180deg, #9138d8, #5d1994) !important;
+}
+
+.rn-nav .rn-nav-indicator {
+  z-index: 0 !important;
+  opacity: 0.72 !important;
+  inset: 3px auto auto 3px !important;
+  width: max(0px, calc(var(--rn-nav-indicator-w, 0px) - 6px)) !important;
+  height: max(0px, calc(var(--rn-nav-indicator-h, 0px) - 6px)) !important;
+  transform:
+    translate3d(
+      calc(var(--rn-nav-indicator-x, 0px) - 3px),
+      calc(var(--rn-nav-indicator-y, 0px) - 3px),
+      0
+    ) !important;
+}
+
+@media (max-width: 980px) {
+  .rn-nav-inner {
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    border-radius: 22px !important;
+    width: min(calc(100vw - 18px), 100%) !important;
+    max-width: min(calc(100vw - 18px), 100%) !important;
+  }
+
+  .rn-nav-cta {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+  .rn-nav-links {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    justify-self: stretch !important;
+    justify-content: flex-start !important;
+    mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .rn-nav-inner {
+    gap: 5px !important;
+    min-height: 0 !important;
+    padding: 5px !important;
+  }
+
+  .rn-logo {
+    padding-inline: 0.42rem !important;
+  }
+
+  .rn-logo-text {
+    max-width: 8ch !important;
+  }
+
+  .rn-nav-cta {
+    width: 100% !important;
+    justify-content: flex-end !important;
+    mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
+  }
+
+  .rn-nav-link,
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    min-height: 32px !important;
+    padding-inline: 0.52rem !important;
+    font-size: 0.67rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-page="landing"],
+  body[data-page="landing"] .rn-main,
+  body[data-page="landing"] .why-hero,
+  body[data-page="landing"] .why-hero__inner {
+    max-width: 100% !important;
+    overflow-x: clip !important;
+  }
+
+  body[data-page="landing"] .rn-nav-links,
+  body[data-page="landing"] .rn-nav-cta {
+    contain: paint !important;
+    max-width: 100% !important;
+    scroll-padding-inline: 0.85rem !important;
+  }
+
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    min-height: 40px !important;
+    touch-action: manipulation;
+  }
+
+  body[data-page="landing"] .why-hero__signal {
+    width: min(100%, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+    overflow: hidden !important;
+    contain: paint !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core {
+    width: min(100%, 232px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
+    width: min(92%, 220px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
+    width: min(68%, 160px) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body[data-page="landing"] .why-hero__signal {
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core {
+    width: min(100%, 208px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
+    width: min(90%, 196px) !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
+    width: min(64%, 142px) !important;
+  }
+}
+
+/* 2026-05 worker pass D: Mission chrome and field match the black-first RoachNet site system. */
+:root {
+  --rn-site-green: 54, 255, 132;
+  --rn-site-purple: 145, 56, 216;
+  --rn-site-blue: 70, 116, 190;
+  --rn-nav-surface:
+    linear-gradient(180deg, rgba(9, 12, 12, 0.78), rgba(0, 0, 0, 0.58)),
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-green), 0.08), transparent 62%),
+    radial-gradient(circle at 100% 100%, rgba(var(--rn-site-purple), 0.1), transparent 70%);
+  --rn-nav-border: rgba(255, 255, 255, 0.11);
+}
+
+html,
+body {
+  scroll-behavior: auto !important;
+  overscroll-behavior-y: auto !important;
+  background: #000 !important;
+}
+
+body.rn-body {
+  background:
+    radial-gradient(circle at calc(8% + (var(--landing-scroll-ratio, 0) * 12%)) -10%, rgba(var(--rn-site-green), 0.027), transparent 34rem),
+    radial-gradient(circle at calc(92% - (var(--landing-scroll-ratio, 0) * 14%)) 3%, rgba(var(--rn-site-purple), 0.054), transparent 34rem),
+    radial-gradient(ellipse at 50% 112%, rgba(8, 18, 14, 0.34), transparent 54rem),
+    linear-gradient(180deg, #000 0%, #010202 38%, #000 100%) !important;
+}
+
+body.rn-body::before {
+  opacity: 0.52 !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 54%) var(--landing-pointer-y, 22%), rgba(var(--rn-site-purple), 0.11), transparent 20rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 54%)) calc(100% - var(--landing-pointer-y, 22%)), rgba(var(--rn-site-green), 0.062), transparent 27rem),
+    linear-gradient(118deg, transparent 0 17%, rgba(var(--rn-site-green), 0.026) 18%, transparent 19% 45%, rgba(var(--rn-site-purple), 0.034) 46%, transparent 47% 100%),
+    linear-gradient(60deg, transparent 0 47%, rgba(var(--rn-site-green), 0.018) 48%, transparent 49% 100%),
+    linear-gradient(-60deg, transparent 0 49%, rgba(var(--rn-site-purple), 0.018) 50%, transparent 51% 100%),
+    repeating-linear-gradient(90deg, transparent 0 42px, rgba(255, 255, 255, 0.016) 43px, transparent 44px 92px) !important;
+  background-size: auto, auto, auto, 72px 72px, 72px 72px, auto;
+  mix-blend-mode: screen;
+  transform:
+    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -58px), 0)
+    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 1.45deg));
+  animation: landing-code-therapy-field-drift 28s linear infinite;
+}
+
+body.rn-body::after {
+  opacity: 0.3 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 18%, transparent 73%, rgba(0, 0, 0, 0.92)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.032) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.026) 0 1px, transparent 1px 19px),
+    radial-gradient(ellipse at 50% calc(12% + (var(--landing-scroll-ratio, 0) * 46%)), rgba(var(--rn-site-green), 0.033), transparent 36%) !important;
+  animation: landing-code-therapy-vhs-scan 14s linear infinite;
+}
+
+.rn-nav {
+  overscroll-behavior: auto !important;
+  overscroll-behavior-y: auto !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.76), rgba(0, 0, 0, 0.46)) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.075) !important;
+}
+
+.rn-nav-inner {
+  max-width: min(1180px, calc(100vw - 24px));
+  min-height: 58px;
+  gap: 10px;
+}
+
+.rn-nav-links,
+.rn-nav-cta {
+  min-height: 40px;
+  padding: 4px !important;
+  border: 1px solid var(--rn-nav-border) !important;
+  border-radius: 999px !important;
+  background: var(--rn-nav-surface) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(var(--rn-site-green), 0.025),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  overscroll-behavior: auto !important;
+  overscroll-behavior-inline: auto !important;
+}
+
+.rn-nav-link,
+.rn-nav-ghost,
+.rn-nav-primary {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid transparent !important;
+  border-radius: 999px !important;
+  color: rgba(232, 239, 226, 0.78) !important;
+  letter-spacing: 0 !important;
+  transform:
+    translate3d(var(--rn-magnet-x, 0), var(--rn-magnet-y, 0), 0)
+    scale(var(--rn-nav-scale, 1));
+}
+
+.rn-nav-primary {
+  color: rgba(255, 255, 255, 0.97) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 54%),
+    linear-gradient(180deg, #9138D8, #5d1994) !important;
+  box-shadow: 0 14px 32px rgba(var(--rn-site-purple), 0.22) !important;
+}
+
+.rn-nav-link:hover,
+.rn-nav-link:focus-visible,
+.rn-nav-link.is-current,
+.rn-nav-link[aria-current="page"],
+.rn-nav-link.is-hovered,
+.rn-nav-ghost:hover,
+.rn-nav-ghost:focus-visible,
+.rn-nav-ghost.is-hovered,
+.rn-nav-primary:hover,
+.rn-nav-primary:focus-visible,
+.rn-nav-primary.is-hovered {
+  --rn-nav-scale: 1.035;
+  color: rgba(252, 255, 248, 0.98) !important;
+  border-color: rgba(var(--rn-site-green), 0.22) !important;
+  background:
+    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(var(--rn-site-green), 0.16), transparent 62%),
+    radial-gradient(circle at 100% 100%, rgba(var(--rn-site-purple), 0.17), transparent 65%),
+    rgba(255, 255, 255, 0.045) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--rn-site-green), 0.045),
+    0 0 24px rgba(var(--rn-site-purple), 0.12),
+    0 10px 22px rgba(0, 0, 0, 0.28) !important;
+}
+
+.rn-nav .rn-nav-indicator {
+  border: 1px solid rgba(var(--rn-site-green), 0.22) !important;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 45% 0%, rgba(255, 255, 255, 0.22), transparent 55%),
+    linear-gradient(135deg, rgba(var(--rn-site-green), 0.2), rgba(2, 4, 5, 0.84) 50%, rgba(var(--rn-site-purple), 0.28)) !important;
+  box-shadow:
+    0 0 28px rgba(var(--rn-site-green), 0.12),
+    0 0 34px rgba(var(--rn-site-purple), 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13) !important;
+}
+
+@keyframes landing-code-therapy-field-drift {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 0 0, 0 0, 56px -38px, 72px 72px, -72px 72px, -96px 0;
+  }
+}
+
+@keyframes landing-code-therapy-vhs-scan {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 0 0, 0 42px, 36px 0, 76px -76px;
+  }
+}
+
+@keyframes landing-code-therapy-vault-pulse {
+  0% {
+    opacity: 0.52;
+    filter: saturate(1.04) contrast(1.08);
+  }
+
+  100% {
+    opacity: 0.72;
+    filter: saturate(1.26) contrast(1.24);
+  }
+}
+
+@media (max-width: 760px) {
+  .rn-nav {
+    background:
+      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-purple), 0.12), transparent 44%),
+      rgba(0, 0, 0, 0.82) !important;
+  }
+
+  .rn-nav-inner {
+    max-width: calc(100vw - 20px);
+    min-height: 0;
+    padding-block: 6px;
+    gap: 6px;
+  }
+
+  .rn-nav-links,
+  .rn-nav-cta {
+    min-height: 36px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rn-nav-links::-webkit-scrollbar,
+  .rn-nav-cta::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rn-nav-link,
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    min-height: 28px;
+    padding-inline: 9px;
+    font-size: 0.72rem;
+  }
+}
+}
+
+/* VISUAL-CLAW EOF priority: these repeat the landing chrome guards after all earlier polish layers. */
+body[data-page="landing"] {
+  background: #000 !important;
+  overflow-x: clip !important;
+}
+
+body[data-page="landing"] .rn-nav-inner {
+  width: min(1240px, calc(100vw - 24px)) !important;
+  max-width: min(1240px, calc(100vw - 24px)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.086) !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) 0, rgba(63, 255, 139, 0.082), transparent 21rem),
+    radial-gradient(circle at 100% 100%, rgba(145, 56, 216, 0.09), transparent 24rem),
+    linear-gradient(180deg, rgba(10, 14, 14, 0.86), rgba(0, 0, 0, 0.74)) !important;
+  box-shadow:
+    0 20px 58px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(63, 255, 139, 0.06) !important;
+}
+
+body[data-page="landing"] .rn-nav-links,
+body[data-page="landing"] .rn-nav-cta {
+  background:
+    linear-gradient(180deg, rgba(8, 11, 10, 0.88), rgba(0, 0, 0, 0.78)),
+    repeating-linear-gradient(90deg, rgba(63, 255, 139, 0.026) 0 1px, transparent 1px 10px) !important;
+}
+
+body[data-page="landing"] .rn-footer {
+  width: min(1240px, calc(100vw - 24px)) !important;
+  max-width: min(1240px, calc(100vw - 24px)) !important;
+  margin-inline: auto !important;
+  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(63, 255, 139, 0.075), transparent 24rem),
+    radial-gradient(circle at 84% 0%, rgba(145, 56, 216, 0.066), transparent 22rem),
+    linear-gradient(180deg, rgba(1, 2, 2, 0.94), #000) !important;
+}
+
+@media (max-width: 760px) {
+  body[data-page="landing"] .rn-nav-inner,
+  body[data-page="landing"] .rn-footer {
+    width: min(calc(100vw - 16px), 100%) !important;
+    max-width: min(calc(100vw - 16px), 100%) !important;
+  }
+}
+
+/* MOBILE-CLAW-B EOF: keep the landing chrome tactile after all landing layers. */
+@media (max-width: 760px) {
+  body[data-page="landing"] .rn-nav-links,
+  body[data-page="landing"] .rn-nav-cta {
+    min-height: 44px !important;
+    scroll-padding-inline: 0.75rem !important;
+  }
+
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 40px !important;
+    touch-action: manipulation;
+  }
+
+  body[data-page="landing"] .why-hero__signal {
+    overflow: clip !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
+    padding-inline: 0.58rem !important;
+  }
+
+  body[data-page="landing"] .why-hero__signal-core-ring {
+    max-width: calc(100% - 8px) !important;
+    max-height: calc(100% - 8px) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary),
+  body[data-page="landing"] .rn-logo,
+  body[data-page="landing"] .rn-footer a {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 40px !important;
+    touch-action: manipulation;
+  }
+}
+```
+
+## landing-script.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="landing-script-js" file="landing-script.js"}
+const progressBar = document.querySelector('.landing-scroll-progress')
+const downloadButton = document.querySelector('[data-landing-download-button]')
+const downloadStatus = document.querySelector('[data-landing-download-status]')
+
+function syncScrollProgress() {
+  if (!progressBar) return
+  const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
+  progressBar.style.width = `${Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)).toFixed(2)}%`
+}
+
+function startDownload() {
+  window.location.assign('https://roachnet.org/home/')
+}
+
+window.addEventListener('scroll', syncScrollProgress, { passive: true })
+syncScrollProgress()
+
+if (downloadButton) downloadButton.addEventListener('click', startDownload)
+window.addEventListener('keydown', (event) => {
+  if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'r') {
+    event.preventDefault()
+    if (downloadStatus) downloadStatus.textContent = 'Opening Home to start the macOS download.'
+    startDownload()
+  }
+})
+```
+
+## netlify.toml
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="netlify-toml" file="netlify.toml"}
+[build]
+publish = "website-main-dist"
+command = "npm run build:main:deploy"
+
+[functions]
+directory = "netlify/functions"
+
+[[redirects]]
+from = "/apps"
+to = "https://apps.roachnet.org/"
+status = 301
+force = true
+
+[[redirects]]
+from = "/apps/*"
+to = "https://apps.roachnet.org/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "/iOS"
+to = "/ios/"
+status = 301
+force = true
+
+[[redirects]]
+from = "/iOS/*"
+to = "/ios/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "/brew"
+to = "/brew/"
+status = 301
+force = true
+
+[[redirects]]
+from = "/brew/*"
+to = "/brew/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "/sitemap"
+to = "/sitemap/"
+status = 301
+force = true
+
+[[redirects]]
+from = "/sitemap.html"
+to = "/sitemap/"
+status = 301
+force = true
+
+[[redirects]]
+from = "/roachwares"
+to = "https://www.roachwares.org/"
+status = 301
+force = true
+
+[[redirects]]
+from = "/roachwares/*"
+to = "https://www.roachwares.org/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "/account"
+to = "https://accounts.roachnet.org/"
+status = 301
+force = true
+
+[[redirects]]
+from = "/account/*"
+to = "https://accounts.roachnet.org/:splat"
+status = 301
+force = true
+
+[[headers]]
+for = "/*"
+
+  [headers.values]
+  Content-Security-Policy = "default-src 'self'; base-uri 'none'; connect-src 'self' https://api.github.com https://challenges.cloudflare.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data: https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com https://cdn.jsdelivr.net 'sha256-QiHqwLZuL/pVgJffI8ko4lWWbhUgm8d98y+2YTSbnBU=' 'sha256-qLy8IxmePVj8e3iEGcT8WZulBFGCcodug2V4DgZ6pFw='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:; upgrade-insecure-requests"
+  X-Frame-Options = "DENY"
+  X-Content-Type-Options = "nosniff"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+  Permissions-Policy = "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+```
+
+## package-lock.json
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="package-lock-json" file="package-lock.json"}
+{
+  "name": "roachnet-org",
+  "version": "1.0.5",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "roachnet-org",
+      "version": "1.0.5",
+      "dependencies": {
+        "@huggingface/transformers": "^3.8.1",
+        "@netlify/blobs": "11.0.1",
+        "sharp": "file:./vendor/sharp-stub"
+      },
+      "devDependencies": {
+        "html-validate": "10.9.0",
+        "puppeteer-core": "25.8.0"
+      },
+      "optionalDependencies": {
+        "@img/sharp-linux-x64": "^0.34.5"
+      }
+    },
+    "node_modules/@envelop/instrumentation": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/@envelop/instrumentation/-/instrumentation-1.0.0.tgz",
+      "integrity": "sha512-cxgkB66RQB95H3X27jlnxCRNTmPuSTgmBAq6/4n2Dtv4hsk4yz8FadA1ggmd0uZzvKqWD6CR+WFgTjhDqg7eyw==",
+      "license": "MIT",
+      "dependencies": {
+        "@whatwg-node/promise-helpers": "^1.2.1",
+        "tslib": "^2.5.0"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/@fastify/busboy": {
+      "version": "3.2.2",
+      "resolved": "https://registry.npmjs.org/@fastify/busboy/-/busboy-3.2.2.tgz",
+      "integrity": "sha512-yXSS27qPExaXeuLvMRMXOLtpipzfQYNjG3FkunDWKGfMYjKuhFXko9CVzqxm8jcF+lmtS9Fd89QNdh9XDjnbNg==",
+      "license": "MIT"
+    },
+    "node_modules/@html-validate/stylish": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/@html-validate/stylish/-/stylish-4.3.0.tgz",
+      "integrity": "sha512-eUfvKpRJg5TvzSfTf2EovrQoTKjkRnPUOUnXVJ2cQ4GbC/bQw98oxN+DdSf+HxOBK00YOhsP52xWdJPV1o4n5w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "kleur": "^4.0.0"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/@huggingface/jinja": {
+      "version": "0.5.6",
+      "resolved": "https://registry.npmjs.org/@huggingface/jinja/-/jinja-0.5.6.tgz",
+      "integrity": "sha512-MyMWyLnjqo+KRJYSH7oWNbsOn5onuIvfXYPcc0WOGxU0eHUV7oAYUoQTl2BMdu7ml+ea/bu11UM+EshbeHwtIA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@huggingface/transformers": {
+      "version": "3.8.1",
+      "resolved": "https://registry.npmjs.org/@huggingface/transformers/-/transformers-3.8.1.tgz",
+      "integrity": "sha512-tsTk4zVjImqdqjS8/AOZg2yNLd1z9S5v+7oUPpXaasDRwEDhB+xnglK1k5cad26lL5/ZIaeREgWWy0bs9y9pPA==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@huggingface/jinja": "^0.5.3",
+        "onnxruntime-node": "1.21.0",
+        "onnxruntime-web": "1.22.0-dev.20250409-89f8206ba4",
+        "sharp": "^0.34.1"
+      }
+    },
+    "node_modules/@img/sharp-libvips-linux-x64": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.2.4.tgz",
+      "integrity": "sha512-tJxiiLsmHc9Ax1bz3oaOYBURTXGIRDODBqhveVHonrHJ9/+k89qbLl0bcJns+e4t4rvaNBxaEZsFtSfAdquPrw==",
+      "cpu": [
+        "x64"
+      ],
+      "libc": [
+        "glibc"
+      ],
+      "license": "LGPL-3.0-or-later",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      }
+    },
+    "node_modules/@img/sharp-linux-x64": {
+      "version": "0.34.5",
+      "resolved": "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz",
+      "integrity": "sha512-MEzd8HPKxVxVenwAa+JRPwEC7QFjoPWuS5NZnBt6B3pu7EG2Ge0id1oLHZpPJdn3OQK+BQDiw9zStiHBTJQQQQ==",
+      "cpu": [
+        "x64"
+      ],
+      "libc": [
+        "glibc"
+      ],
+      "license": "Apache-2.0",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+      },
+      "funding": {
+        "url": "https://opencollective.com/libvips"
+      },
+      "optionalDependencies": {
+        "@img/sharp-libvips-linux-x64": "1.2.4"
+      }
+    },
+    "node_modules/@isaacs/fs-minipass": {
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/@isaacs/fs-minipass/-/fs-minipass-4.0.1.tgz",
+      "integrity": "sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==",
+      "license": "ISC",
+      "dependencies": {
+        "minipass": "^7.0.4"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/@netlify/blobs": {
+      "version": "11.0.1",
+      "resolved": "https://registry.npmjs.org/@netlify/blobs/-/blobs-11.0.1.tgz",
+      "integrity": "sha512-ohmcoesUSdIU6FSZhq4EwDu6sYBWrfywRQdyUOYo/a7Rnc1VLot8w2d0npQzr/YuRgJFqV50OZ0Eg3GOCnRUcQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@netlify/dev-utils": "6.0.1",
+        "@netlify/otel": "^7.0.1",
+        "@netlify/runtime-utils": "3.0.0"
+      },
+      "engines": {
+        "node": ">=22.12.0"
+      }
+    },
+    "node_modules/@netlify/dev-utils": {
+      "version": "6.0.1",
+      "resolved": "https://registry.npmjs.org/@netlify/dev-utils/-/dev-utils-6.0.1.tgz",
+      "integrity": "sha512-q5g70dO3q/M/XTBQz7uIECJxVlJoS8UBlzpjf22DV6q61UzXa8EONTPXPmvisrFcUi1I3AUKplPcHGQYZZj+Vw==",
+      "license": "MIT",
+      "dependencies": {
+        "@whatwg-node/server": "^0.11.0",
+        "ansis": "^4.1.0",
+        "atomically": "^2.0.3",
+        "chokidar": "^5.0.0",
+        "decache": "^4.6.2",
+        "dettle": "^1.0.5",
+        "dot-prop": "9.0.0",
+        "empathic": "^2.0.0",
+        "env-paths": "^3.0.0",
+        "parse-gitignore": "^2.0.0",
+        "semver": "^7.7.2"
+      },
+      "engines": {
+        "node": ">=22.12.0"
+      }
+    },
+    "node_modules/@netlify/otel": {
+      "version": "7.0.1",
+      "resolved": "https://registry.npmjs.org/@netlify/otel/-/otel-7.0.1.tgz",
+      "integrity": "sha512-9GVV5b/Fb1nfXbooy46YcR6YrzTV0wjTC70y4Em6xgcckpvgi5F9hWQssl7UGIMp0abx9WxTAz2LPITTCnarKQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@opentelemetry/api": "1.9.1",
+        "@opentelemetry/core": "2.8.0",
+        "@opentelemetry/instrumentation": "^0.220.0",
+        "@opentelemetry/resources": "2.9.0",
+        "@opentelemetry/sdk-trace-node": "2.9.0"
+      },
+      "engines": {
+        "node": ">=22.12.0"
+      }
+    },
+    "node_modules/@netlify/runtime-utils": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/@netlify/runtime-utils/-/runtime-utils-3.0.0.tgz",
+      "integrity": "sha512-OHo40+V3QZkR+UrDjqhN+LekrAby/dSSJxsvyYs9i88E/mSl3goB/ysoL+VYROm190egxmQyRYlHK7vL4GeHBQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=22.12.0"
+      }
+    },
+    "node_modules/@opentelemetry/api": {
+      "version": "1.9.1",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/api/-/api-1.9.1.tgz",
+      "integrity": "sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q==",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=8.0.0"
+      }
+    },
+    "node_modules/@opentelemetry/api-logs": {
+      "version": "0.220.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/api-logs/-/api-logs-0.220.0.tgz",
+      "integrity": "sha512-CmVa4ImJ+ynfrPMNaAXHET6Bhb44SwzmfyVJFq9ni2jgXJR/l7C6gfVFddNmHP+ZOkP9cf4f9DBe68qVLTHc9w==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/api": "^1.3.0"
+      },
+      "engines": {
+        "node": ">=8.0.0"
+      }
+    },
+    "node_modules/@opentelemetry/context-async-hooks": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/context-async-hooks/-/context-async-hooks-2.9.0.tgz",
+      "integrity": "sha512-OQ0vzvbZBiUhjqLnUaoNfYmP8553Crr3aggB4y0ZUi815mZ7idpdJXQmoKdeBKJelYttoBlLSSHubmyw3wvX4w==",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/core": {
+      "version": "2.8.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/core/-/core-2.8.0.tgz",
+      "integrity": "sha512-hd1Lfh8p545nNz+jq1Ejfz+Mn1hyLuxYn1YzTfFNrxr8urEWMNQLPf1Th8kjOH+HxwawCrtgBp8JpBUR4ZSgww==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/instrumentation": {
+      "version": "0.220.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/instrumentation/-/instrumentation-0.220.0.tgz",
+      "integrity": "sha512-xQx3E2WxP1mDvKzxLxX+CTCtNLa560YJZ3087qYHerl2YmiKpv7AH+dAy7vmx+eVrZ5BwhfWUAVoKOoxCNHcpw==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/api-logs": "0.220.0",
+        "import-in-the-middle": "^3.0.0",
+        "require-in-the-middle": "^8.0.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": "^1.3.0"
+      }
+    },
+    "node_modules/@opentelemetry/resources": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/resources/-/resources-2.9.0.tgz",
+      "integrity": "sha512-jyA5MBLQ+Dkl3+JsZkUoUvL7yHvU64kLsvpXKarWm6347Sl1t1bXFTFykUePNpT5WH5pm9a2Qtt03iIYQhZ1Fg==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/core": "2.9.0",
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.3.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/resources/node_modules/@opentelemetry/core": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/core/-/core-2.9.0.tgz",
+      "integrity": "sha512-m2nckMT80NnmjTYSPjJQObBJ+8dgkoajEOUbznL8AHZ3T3yHRk2P7gI1PhEBc1+lOnrYE9UWrWHqJDsmqjmNbw==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/sdk-trace": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/sdk-trace/-/sdk-trace-2.9.0.tgz",
+      "integrity": "sha512-sGA19HvtrrSKYsseHphluH6j3p6Xa3fqc7c7y8f/7mYWejc1lyDFcpSdD1kYa50HCLUeEo4zA5bW0pniaPszuw==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/core": "2.9.0",
+        "@opentelemetry/resources": "2.9.0",
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.3.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/sdk-trace-base": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/sdk-trace-base/-/sdk-trace-base-2.9.0.tgz",
+      "integrity": "sha512-cp9zmTl62R8PJrpvFcmc8N2JQU/xfa0S+61q511Nji+QxCfZ8Ifvg7H27G8cANe4crg4RTrWsVvanHiXjSp6ag==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/core": "2.9.0",
+        "@opentelemetry/resources": "2.9.0",
+        "@opentelemetry/sdk-trace": "2.9.0",
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.3.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/sdk-trace-base/node_modules/@opentelemetry/core": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/core/-/core-2.9.0.tgz",
+      "integrity": "sha512-m2nckMT80NnmjTYSPjJQObBJ+8dgkoajEOUbznL8AHZ3T3yHRk2P7gI1PhEBc1+lOnrYE9UWrWHqJDsmqjmNbw==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/sdk-trace-node": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/sdk-trace-node/-/sdk-trace-node-2.9.0.tgz",
+      "integrity": "sha512-ec9a7ps37huy5itYk0MalaZdSLlM6AXWp/FhtEjgMpp5leEGojBDvAl/UWttQnkMZOvFHKzRESn8TD3yKTF5nQ==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/context-async-hooks": "2.9.0",
+        "@opentelemetry/core": "2.9.0",
+        "@opentelemetry/sdk-trace-base": "2.9.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/sdk-trace-node/node_modules/@opentelemetry/core": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/core/-/core-2.9.0.tgz",
+      "integrity": "sha512-m2nckMT80NnmjTYSPjJQObBJ+8dgkoajEOUbznL8AHZ3T3yHRk2P7gI1PhEBc1+lOnrYE9UWrWHqJDsmqjmNbw==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/sdk-trace/node_modules/@opentelemetry/core": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/core/-/core-2.9.0.tgz",
+      "integrity": "sha512-m2nckMT80NnmjTYSPjJQObBJ+8dgkoajEOUbznL8AHZ3T3yHRk2P7gI1PhEBc1+lOnrYE9UWrWHqJDsmqjmNbw==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@opentelemetry/semantic-conventions": "^1.29.0"
+      },
+      "engines": {
+        "node": "^18.19.0 || >=20.6.0"
+      },
+      "peerDependencies": {
+        "@opentelemetry/api": ">=1.0.0 <1.10.0"
+      }
+    },
+    "node_modules/@opentelemetry/semantic-conventions": {
+      "version": "1.43.0",
+      "resolved": "https://registry.npmjs.org/@opentelemetry/semantic-conventions/-/semantic-conventions-1.43.0.tgz",
+      "integrity": "sha512-eSYWTm620tTk45EKSedaUL8MFYI8hW164hIXsgIHyxu3VobUB3fFCu5t0hQby6OoWRPsG1KkKUG2M5UadiLiVg==",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/@protobufjs/aspromise": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/@protobufjs/aspromise/-/aspromise-1.1.2.tgz",
+      "integrity": "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@protobufjs/base64": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/@protobufjs/base64/-/base64-1.1.2.tgz",
+      "integrity": "sha512-AZkcAA5vnN/v4PDqKyMR5lx7hZttPDgClv83E//FMNhR2TMcLUhfRUBHCmSl0oi9zMgDDqRUJkSxO3wm85+XLg==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@protobufjs/codegen": {
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/@protobufjs/codegen/-/codegen-2.0.5.tgz",
+      "integrity": "sha512-zgXFLzW3Ap33e6d0Wlj4MGIm6Ce8O89n/apUaGNB/jx+hw+ruWEp7EwGUshdLKVRCxZW12fp9r40E1mQrf/34g==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@protobufjs/eventemitter": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@protobufjs/eventemitter/-/eventemitter-1.1.1.tgz",
+      "integrity": "sha512-vW1GmwMZNnL+gMRaovlh9yZX74kc+TTU3FObkkurpMaRtBfLP3ldjS9KQWlwZgraRE0+dheEEoAxdzcJQ8eXZg==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@protobufjs/fetch": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@protobufjs/fetch/-/fetch-1.1.1.tgz",
+      "integrity": "sha512-GpptLrs57adMSuHi3VNj0mAF8dwh36LMaYF6XyJ6JMWlVsc+t42tm1HSEDmOs3A8fC9yyeisgLhsTVQokOZ0zw==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "@protobufjs/aspromise": "^1.1.1"
+      }
+    },
+    "node_modules/@protobufjs/float": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/@protobufjs/float/-/float-1.0.2.tgz",
+      "integrity": "sha512-Ddb+kVXlXst9d+R9PfTIxh1EdNkgoRe5tOX6t01f1lYWOvJnSPDBlG241QLzcyPdoNTsblLUdujGSE4RzrTZGQ==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@protobufjs/path": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/@protobufjs/path/-/path-1.1.2.tgz",
+      "integrity": "sha512-6JOcJ5Tm08dOHAbdR3GrvP+yUUfkjG5ePsHYczMFLq3ZmMkAD98cDgcT2iA1lJ9NVwFd4tH/iSSoe44YWkltEA==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@protobufjs/pool": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/@protobufjs/pool/-/pool-1.1.0.tgz",
+      "integrity": "sha512-0kELaGSIDBKvcgS4zkjz1PeddatrjYcmMWOlAuAPwAeccUrPHdUqo/J6LiymHHEiJT5NrF1UVwxY14f+fy4WQw==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@protobufjs/utf8": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.1.tgz",
+      "integrity": "sha512-oOAWABowe8EAbMyWKM0tYDKi8Yaox52D+HWZhAIJqQXbqe0xI/GV7FhLWqlEKreMkfDjshR5FKgi3mnle0h6Eg==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/@puppeteer/browsers": {
+      "version": "3.2.1",
+      "resolved": "https://registry.npmjs.org/@puppeteer/browsers/-/browsers-3.2.1.tgz",
+      "integrity": "sha512-KDz+3qDRdBAlRlMjmKyj6dEs33YHTk/xRHEENSXq6TNnhgoU15ruSHtEBeVF6OZ9tBDY55Se4P0nFMNsipzU9A==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "modern-tar": "^0.8.0",
+        "yargs": "^18.0.0"
+      },
+      "bin": {
+        "browsers": "lib/main-cli.js"
+      },
+      "engines": {
+        "node": ">=22.12.0"
+      },
+      "peerDependencies": {
+        "proxy-agent": ">=8.0.1",
+        "yauzl": "^2.10.0 || ^3.4.0"
+      },
+      "peerDependenciesMeta": {
+        "proxy-agent": {
+          "optional": true
+        },
+        "yauzl": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/@sidvind/better-ajv-errors": {
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/@sidvind/better-ajv-errors/-/better-ajv-errors-4.0.1.tgz",
+      "integrity": "sha512-6arF1ssKxItxgitPYXafUoLmsVBA6K7m9+ZGj6hLDoBl7nWpJ33EInwQUdHTle2METeWGxgQiqSex20KZRykew==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "kleur": "^4.1.0"
+      },
+      "engines": {
+        "node": ">= 18"
+      },
+      "peerDependencies": {
+        "ajv": "^7.0.0 || ^8.0.0"
+      }
+    },
+    "node_modules/@types/node": {
+      "version": "25.5.2",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-25.5.2.tgz",
+      "integrity": "sha512-tO4ZIRKNC+MDWV4qKVZe3Ql/woTnmHDr5JD8UI5hn2pwBrHEwOEMZK7WlNb5RKB6EoJ02gwmQS9OrjuFnZYdpg==",
+      "license": "MIT",
+      "dependencies": {
+        "undici-types": "~7.18.0"
+      }
+    },
+    "node_modules/@whatwg-node/disposablestack": {
+      "version": "0.0.6",
+      "resolved": "https://registry.npmjs.org/@whatwg-node/disposablestack/-/disposablestack-0.0.6.tgz",
+      "integrity": "sha512-LOtTn+JgJvX8WfBVJtF08TGrdjuFzGJc4mkP8EdDI8ADbvO7kiexYep1o8dwnt0okb0jYclCDXF13xU7Ge4zSw==",
+      "license": "MIT",
+      "dependencies": {
+        "@whatwg-node/promise-helpers": "^1.0.0",
+        "tslib": "^2.6.3"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/@whatwg-node/fetch": {
+      "version": "0.10.13",
+      "resolved": "https://registry.npmjs.org/@whatwg-node/fetch/-/fetch-0.10.13.tgz",
+      "integrity": "sha512-b4PhJ+zYj4357zwk4TTuF2nEe0vVtOrwdsrNo5hL+u1ojXNhh1FgJ6pg1jzDlwlT4oBdzfSwaBwMCtFCsIWg8Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@whatwg-node/node-fetch": "^0.8.3",
+        "urlpattern-polyfill": "^10.0.0"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/@whatwg-node/node-fetch": {
+      "version": "0.8.6",
+      "resolved": "https://registry.npmjs.org/@whatwg-node/node-fetch/-/node-fetch-0.8.6.tgz",
+      "integrity": "sha512-BDMdYFcerLQkwA2RTldxOqRCs6ZQD1S7UgP3pUdGUkcbgTrP/V5ko77ZkCww9DHmC4lpoYuwigGfQYj285gMvA==",
+      "license": "MIT",
+      "dependencies": {
+        "@fastify/busboy": "^3.1.1",
+        "@whatwg-node/disposablestack": "^0.0.6",
+        "@whatwg-node/promise-helpers": "^1.3.2",
+        "tslib": "^2.6.3"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/@whatwg-node/promise-helpers": {
+      "version": "1.3.2",
+      "resolved": "https://registry.npmjs.org/@whatwg-node/promise-helpers/-/promise-helpers-1.3.2.tgz",
+      "integrity": "sha512-Nst5JdK47VIl9UcGwtv2Rcgyn5lWtZ0/mhRQ4G8NN2isxpq2TO30iqHzmwoJycjWuyUfg3GFXqP/gFHXeV57IA==",
+      "license": "MIT",
+      "dependencies": {
+        "tslib": "^2.6.3"
+      },
+      "engines": {
+        "node": ">=16.0.0"
+      }
+    },
+    "node_modules/@whatwg-node/server": {
+      "version": "0.11.0",
+      "resolved": "https://registry.npmjs.org/@whatwg-node/server/-/server-0.11.0.tgz",
+      "integrity": "sha512-VSdkwnJRr8Yv9UgB2aXB3VUPWwd6Oqnn0hycFwhg9pZgWxJXb7JmhsiXe9tmpMwjHFxli12PGcz9aI63YYloGQ==",
+      "license": "MIT",
+      "dependencies": {
+        "@envelop/instrumentation": "^1.0.0",
+        "@whatwg-node/disposablestack": "^0.0.6",
+        "@whatwg-node/fetch": "^0.10.13",
+        "@whatwg-node/promise-helpers": "^1.3.2",
+        "tslib": "^2.6.3"
+      },
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/ajv": {
+      "version": "8.20.0",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-8.20.0.tgz",
+      "integrity": "sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "fast-deep-equal": "^3.1.3",
+        "fast-uri": "^3.0.1",
+        "json-schema-traverse": "^1.0.0",
+        "require-from-string": "^2.0.2"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/epoberezkin"
+      }
+    },
+    "node_modules/ansi-regex": {
+      "version": "6.3.0",
+      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-6.3.0.tgz",
+      "integrity": "sha512-WpDfL7NO6j7tH88IDBNVdUJxDh9nmCteAVW9dsep846XdwF4naCBK+/tGLX3KJgcpgMRXCFlTM2hKGoK9FsdrQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-regex?sponsor=1"
+      }
+    },
+    "node_modules/ansi-styles": {
+      "version": "6.2.3",
+      "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.3.tgz",
+      "integrity": "sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/ansi-styles?sponsor=1"
+      }
+    },
+    "node_modules/ansis": {
+      "version": "4.3.1",
+      "resolved": "https://registry.npmjs.org/ansis/-/ansis-4.3.1.tgz",
+      "integrity": "sha512-BJ8/l4R5LRE7hW9WdSuGYrLSHi2ynxeFpDFbH0K/CgNeY/tyhk+vO6TYxXC5r5CpUhNVX310xzPsN/H9lCdfOA==",
+      "license": "ISC",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/atomically": {
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/atomically/-/atomically-2.1.1.tgz",
+      "integrity": "sha512-P4w9o2dqARji6P7MHprklbfiArZAWvo07yW7qs3pdljb3BWr12FIB7W+p0zJiuiVsUpRO0iZn1kFFcpPegg0tQ==",
+      "license": "MIT",
+      "dependencies": {
+        "stubborn-fs": "^2.0.0",
+        "when-exit": "^2.1.4"
+      }
+    },
+    "node_modules/balanced-match": {
+      "version": "4.0.4",
+      "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-4.0.4.tgz",
+      "integrity": "sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": "18 || 20 || >=22"
+      }
+    },
+    "node_modules/boolean": {
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/boolean/-/boolean-3.2.0.tgz",
+      "integrity": "sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw==",
+      "deprecated": "Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.",
+      "license": "MIT"
+    },
+    "node_modules/brace-expansion": {
+      "version": "5.0.9",
+      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.9.tgz",
+      "integrity": "sha512-ScQ4IuvIEF1TMlP7Zt+vjJ//9zlPb2SDcxWxM3bk8s6t6GGdJ7KO1dCcTidOPJKePW30LE/2cT7wCyPho9/Wxg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "balanced-match": "^4.0.2"
+      },
+      "engines": {
+        "node": "20 || >=22"
+      }
+    },
+    "node_modules/callsite": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/callsite/-/callsite-1.0.0.tgz",
+      "integrity": "sha512-0vdNRFXn5q+dtOqjfFtmtlI9N2eVZ7LMyEV2iKC5mEEFvSg/69Ml6b/WU2qF8W1nLRa0wiSrDT3Y5jOHZCwKPQ==",
+      "engines": {
+        "node": "*"
+      }
+    },
+    "node_modules/chokidar": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-5.0.0.tgz",
+      "integrity": "sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==",
+      "license": "MIT",
+      "dependencies": {
+        "readdirp": "^5.0.0"
+      },
+      "engines": {
+        "node": ">= 20.19.0"
+      },
+      "funding": {
+        "url": "https://paulmillr.com/funding/"
+      }
+    },
+    "node_modules/chownr": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/chownr/-/chownr-3.0.0.tgz",
+      "integrity": "sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==",
+      "license": "BlueOak-1.0.0",
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/chromium-bidi": {
+      "version": "17.0.2",
+      "resolved": "https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-17.0.2.tgz",
+      "integrity": "sha512-5v9GQFhTktFvotn/OFNJBmKLKRAb6n9r0bVCwf7sHgWc3/JryK0bj1nn93L3pHFrfgcsu6Be6EWsDi+1XHTGDg==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "mitt": "^3.0.1",
+        "zod": "^3.24.1"
+      },
+      "engines": {
+        "node": ">=20.19.0 <22.0.0 || >=22.12.0"
+      },
+      "peerDependencies": {
+        "devtools-protocol": "*"
+      }
+    },
+    "node_modules/cjs-module-lexer": {
+      "version": "2.2.1",
+      "resolved": "https://registry.npmjs.org/cjs-module-lexer/-/cjs-module-lexer-2.2.1.tgz",
+      "integrity": "sha512-Ca8swihM+/4yKecYHY52kgJd300hi2lADU/a1RxNTRe+RJ9jvqQlESpbz9DnG9mowez8qwXHB8qYdIUw9e+F5Q==",
+      "license": "MIT"
+    },
+    "node_modules/cliui": {
+      "version": "9.0.1",
+      "resolved": "https://registry.npmjs.org/cliui/-/cliui-9.0.1.tgz",
+      "integrity": "sha512-k7ndgKhwoQveBL+/1tqGJYNz097I7WOvwbmmU2AR5+magtbjPWQTS1C5vzGkBC8Ym8UWRzfKUzUUqFLypY4Q+w==",
+      "dev": true,
+      "license": "ISC",
+      "dependencies": {
+        "string-width": "^7.2.0",
+        "strip-ansi": "^7.1.0",
+        "wrap-ansi": "^9.0.0"
+      },
+      "engines": {
+        "node": ">=20"
+      }
+    },
+    "node_modules/cliui/node_modules/string-width": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/string-width/-/string-width-7.2.0.tgz",
+      "integrity": "sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "emoji-regex": "^10.3.0",
+        "get-east-asian-width": "^1.0.0",
+        "strip-ansi": "^7.1.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/debug": {
+      "version": "4.4.3",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz",
+      "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.3"
+      },
+      "engines": {
+        "node": ">=6.0"
+      },
+      "peerDependenciesMeta": {
+        "supports-color": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/decache": {
+      "version": "4.6.2",
+      "resolved": "https://registry.npmjs.org/decache/-/decache-4.6.2.tgz",
+      "integrity": "sha512-2LPqkLeu8XWHU8qNCS3kcF6sCcb5zIzvWaAHYSvPfwhdd7mHuah29NssMzrTYyHN4F5oFy2ko9OBYxegtU0FEw==",
+      "license": "MIT",
+      "dependencies": {
+        "callsite": "^1.0.0"
+      }
+    },
+    "node_modules/define-data-property": {
+      "version": "1.1.4",
+      "resolved": "https://registry.npmjs.org/define-data-property/-/define-data-property-1.1.4.tgz",
+      "integrity": "sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==",
+      "license": "MIT",
+      "dependencies": {
+        "es-define-property": "^1.0.0",
+        "es-errors": "^1.3.0",
+        "gopd": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/define-properties": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/define-properties/-/define-properties-1.2.1.tgz",
+      "integrity": "sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==",
+      "license": "MIT",
+      "dependencies": {
+        "define-data-property": "^1.0.1",
+        "has-property-descriptors": "^1.0.0",
+        "object-keys": "^1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/detect-node": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/detect-node/-/detect-node-2.1.0.tgz",
+      "integrity": "sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==",
+      "license": "MIT"
+    },
+    "node_modules/dettle": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/dettle/-/dettle-1.0.5.tgz",
+      "integrity": "sha512-ZVyjhAJ7sCe1PNXEGveObOH9AC8QvMga3HJIghHawtG7mE4K5pW9nz/vDGAr/U7a3LWgdOzEE7ac9MURnyfaTA==",
+      "license": "MIT"
+    },
+    "node_modules/devtools-protocol": {
+      "version": "0.0.1666840",
+      "resolved": "https://registry.npmjs.org/devtools-protocol/-/devtools-protocol-0.0.1666840.tgz",
+      "integrity": "sha512-gCcO42XCHKEs7Ag0S7aGYsnJ7hlgrO3qderYqeiY0Eqk+0GFfuvT13IA0hHreJTa2KCdDVyGMeOhdMNmrrTjVg==",
+      "dev": true,
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/dot-prop": {
+      "version": "9.0.0",
+      "resolved": "https://registry.npmjs.org/dot-prop/-/dot-prop-9.0.0.tgz",
+      "integrity": "sha512-1gxPBJpI/pcjQhKgIU91II6Wkay+dLcN3M6rf2uwP8hRur3HtQXjVrdAK3sjC0piaEuxzMwjXChcETiJl47lAQ==",
+      "license": "MIT",
+      "dependencies": {
+        "type-fest": "^4.18.2"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/dot-prop/node_modules/type-fest": {
+      "version": "4.41.0",
+      "resolved": "https://registry.npmjs.org/type-fest/-/type-fest-4.41.0.tgz",
+      "integrity": "sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==",
+      "license": "(MIT OR CC0-1.0)",
+      "engines": {
+        "node": ">=16"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/emoji-regex": {
+      "version": "10.6.0",
+      "resolved": "https://registry.npmjs.org/emoji-regex/-/emoji-regex-10.6.0.tgz",
+      "integrity": "sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/empathic": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/empathic/-/empathic-2.0.1.tgz",
+      "integrity": "sha512-YGRs8knHhKHVShLkFET/rWAU8kmHbOV5LwN938RHI0pljAJ1Gf6SzXsSmRaEzcXTtOOmVqJ5+WtQPL5uigY50Q==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/env-paths": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/env-paths/-/env-paths-3.0.0.tgz",
+      "integrity": "sha512-dtJUTepzMW3Lm/NPxRf3wP4642UWhjL2sQxc+ym2YMj1m/H2zDNQOlezafzkHwn6sMstjHTwG6iQQsctDW/b1A==",
+      "license": "MIT",
+      "engines": {
+        "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/es-define-property": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.1.tgz",
+      "integrity": "sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-errors": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz",
+      "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-module-lexer": {
+      "version": "2.3.2",
+      "resolved": "https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-2.3.2.tgz",
+      "integrity": "sha512-poHGpORABojJJucnV9KbOavETW8lBVnphkW77ER5/BQ5Fz7oXSoCNek7IH3vR5nRjdsEz926ibFYX8KtLQmdyw==",
+      "license": "MIT"
+    },
+    "node_modules/es6-error": {
+      "version": "4.1.1",
+      "resolved": "https://registry.npmjs.org/es6-error/-/es6-error-4.1.1.tgz",
+      "integrity": "sha512-Um/+FxMr9CISWh0bi5Zv0iOD+4cFh5qLeks1qhAopKVAJw3drgKbKySikp7wGhDL0HPeaja0P5ULZrxLkniUVg==",
+      "license": "MIT"
+    },
+    "node_modules/escalade": {
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/escalade/-/escalade-3.2.0.tgz",
+      "integrity": "sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/escape-string-regexp": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz",
+      "integrity": "sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/fast-deep-equal": {
+      "version": "3.1.3",
+      "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz",
+      "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/fast-uri": {
+      "version": "3.1.5",
+      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.5.tgz",
+      "integrity": "sha512-gHwA1O9LDIcKunMKhObS/HimwtehO1nPUECKAu5TpKgaO19fcWEl4bliWe1jWxVFvIXztJjjQ4L8XQ1EU9f7Jw==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/fastify"
+        },
+        {
+          "type": "opencollective",
+          "url": "https://opencollective.com/fastify"
+        }
+      ],
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/flatbuffers": {
+      "version": "25.9.23",
+      "resolved": "https://registry.npmjs.org/flatbuffers/-/flatbuffers-25.9.23.tgz",
+      "integrity": "sha512-MI1qs7Lo4Syw0EOzUl0xjs2lsoeqFku44KpngfIduHBYvzm8h2+7K8YMQh1JtVVVrUvhLpNwqVi4DERegUJhPQ==",
+      "license": "Apache-2.0"
+    },
+    "node_modules/get-caller-file": {
+      "version": "2.0.5",
+      "resolved": "https://registry.npmjs.org/get-caller-file/-/get-caller-file-2.0.5.tgz",
+      "integrity": "sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": "6.* || 8.* || >= 10.*"
+      }
+    },
+    "node_modules/get-east-asian-width": {
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/get-east-asian-width/-/get-east-asian-width-1.6.0.tgz",
+      "integrity": "sha512-QRbvDIbx6YklUe6RxeTeleMR0yv3cYH6PsPZHcnVn7xv7zO1BHN8r0XETu8n6Ye3Q+ahtSarc3WgtNWmehIBfA==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/glob": {
+      "version": "13.0.6",
+      "resolved": "https://registry.npmjs.org/glob/-/glob-13.0.6.tgz",
+      "integrity": "sha512-Wjlyrolmm8uDpm/ogGyXZXb1Z+Ca2B8NbJwqBVg0axK9GbBeoS7yGV6vjXnYdGm6X53iehEuxxbyiKp8QmN4Vw==",
+      "dev": true,
+      "license": "BlueOak-1.0.0",
+      "dependencies": {
+        "minimatch": "^10.2.2",
+        "minipass": "^7.1.3",
+        "path-scurry": "^2.0.2"
+      },
+      "engines": {
+        "node": "18 || 20 || >=22"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/isaacs"
+      }
+    },
+    "node_modules/global-agent": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/global-agent/-/global-agent-3.0.0.tgz",
+      "integrity": "sha512-PT6XReJ+D07JvGoxQMkT6qji/jVNfX/h364XHZOWeRzy64sSFr+xJ5OX7LI3b4MPQzdL4H8Y8M0xzPpsVMwA8Q==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "boolean": "^3.0.1",
+        "es6-error": "^4.1.1",
+        "matcher": "^3.0.0",
+        "roarr": "^2.15.3",
+        "semver": "^7.3.2",
+        "serialize-error": "^7.0.1"
+      },
+      "engines": {
+        "node": ">=10.0"
+      }
+    },
+    "node_modules/globalthis": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/globalthis/-/globalthis-1.0.4.tgz",
+      "integrity": "sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==",
+      "license": "MIT",
+      "dependencies": {
+        "define-properties": "^1.2.1",
+        "gopd": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/gopd": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz",
+      "integrity": "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/guid-typescript": {
+      "version": "1.0.9",
+      "resolved": "https://registry.npmjs.org/guid-typescript/-/guid-typescript-1.0.9.tgz",
+      "integrity": "sha512-Y8T4vYhEfwJOTbouREvG+3XDsjr8E3kIr7uf+JZ0BYloFsttiHU0WfvANVsR7TxNUJa/WpCnw/Ino/p+DeBhBQ==",
+      "license": "ISC"
+    },
+    "node_modules/has-property-descriptors": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/has-property-descriptors/-/has-property-descriptors-1.0.3.tgz",
+      "integrity": "sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==",
+      "license": "MIT",
+      "dependencies": {
+        "es-define-property": "^1.0.0"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/html-validate": {
+      "version": "10.9.0",
+      "resolved": "https://registry.npmjs.org/html-validate/-/html-validate-10.9.0.tgz",
+      "integrity": "sha512-UILbVSkPEqhnG8ud+cgTtzepGEWyiSBHYp6A51viIm2tAFi6dZrmAXo2Z4W7EZ5qqqMa8Rkk6cTJcDG9Zo8nUg==",
+      "dev": true,
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/html-validate"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "@html-validate/stylish": "^4.1.0",
+        "@sidvind/better-ajv-errors": "4.0.1",
+        "ajv": "^8.0.0",
+        "glob": "^13.0.0",
+        "kleur": "^4.1.0",
+        "minimist": "^1.2.0",
+        "prompts": "^2.0.0",
+        "semver": "^7.0.0"
+      },
+      "bin": {
+        "html-validate": "bin/html-validate.mjs"
+      },
+      "engines": {
+        "node": "^20.19.0 || >= 22.12.0"
+      },
+      "peerDependencies": {
+        "jest": "^28.1.3 || ^29.0.3 || ^30.0.0",
+        "jest-diff": "^28.1.3 || ^29.0.3 || ^30.0.0",
+        "jest-snapshot": "^28.1.3 || ^29.0.3 || ^30.0.0",
+        "vitest": "^1.0.0 || ^2.0.0 || ^3.0.0 || ^4.0.1"
+      },
+      "peerDependenciesMeta": {
+        "jest": {
+          "optional": true
+        },
+        "jest-diff": {
+          "optional": true
+        },
+        "jest-snapshot": {
+          "optional": true
+        },
+        "vitest": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/import-in-the-middle": {
+      "version": "3.3.3",
+      "resolved": "https://registry.npmjs.org/import-in-the-middle/-/import-in-the-middle-3.3.3.tgz",
+      "integrity": "sha512-AiohS3H80sXO6owEltjGX+glb7qXaDhBoJb9XcQVH4UI207xu/bDLUcadVKp7Qe576reg9yr/PXZjV5qx8gfbA==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "cjs-module-lexer": "^2.2.0",
+        "es-module-lexer": "^2.2.0",
+        "module-details-from-path": "^1.0.4"
+      },
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/json-schema-traverse": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz",
+      "integrity": "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/json-stringify-safe": {
+      "version": "5.0.1",
+      "resolved": "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz",
+      "integrity": "sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==",
+      "license": "ISC"
+    },
+    "node_modules/kleur": {
+      "version": "4.1.5",
+      "resolved": "https://registry.npmjs.org/kleur/-/kleur-4.1.5.tgz",
+      "integrity": "sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/long": {
+      "version": "5.3.2",
+      "resolved": "https://registry.npmjs.org/long/-/long-5.3.2.tgz",
+      "integrity": "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==",
+      "license": "Apache-2.0"
+    },
+    "node_modules/lru-cache": {
+      "version": "11.5.2",
+      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-11.5.2.tgz",
+      "integrity": "sha512-4pfM1Ff0x50o0tQwb5ucw/RzNyD0/YJME6IVcStalZuMWxdt3sR3huStTtxz4PUmvZfRguvDejasvQ2kifR11g==",
+      "dev": true,
+      "license": "BlueOak-1.0.0",
+      "engines": {
+        "node": "20 || >=22"
+      }
+    },
+    "node_modules/matcher": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/matcher/-/matcher-3.0.0.tgz",
+      "integrity": "sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==",
+      "license": "MIT",
+      "dependencies": {
+        "escape-string-regexp": "^4.0.0"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/minimatch": {
+      "version": "10.2.6",
+      "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-10.2.6.tgz",
+      "integrity": "sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A==",
+      "dev": true,
+      "license": "BlueOak-1.0.0",
+      "dependencies": {
+        "brace-expansion": "^5.0.8"
+      },
+      "engines": {
+        "node": "18 || 20 || >=22"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/isaacs"
+      }
+    },
+    "node_modules/minimist": {
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz",
+      "integrity": "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/minipass": {
+      "version": "7.1.3",
+      "resolved": "https://registry.npmjs.org/minipass/-/minipass-7.1.3.tgz",
+      "integrity": "sha512-tEBHqDnIoM/1rXME1zgka9g6Q2lcoCkxHLuc7ODJ5BxbP5d4c2Z5cGgtXAku59200Cx7diuHTOYfSBD8n6mm8A==",
+      "license": "BlueOak-1.0.0",
+      "engines": {
+        "node": ">=16 || 14 >=14.17"
+      }
+    },
+    "node_modules/minizlib": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/minizlib/-/minizlib-3.1.0.tgz",
+      "integrity": "sha512-KZxYo1BUkWD2TVFLr0MQoM8vUUigWD3LlD83a/75BqC+4qE0Hb1Vo5v1FgcfaNXvfXzr+5EhQ6ing/CaBijTlw==",
+      "license": "MIT",
+      "dependencies": {
+        "minipass": "^7.1.2"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/mitt": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/mitt/-/mitt-3.0.1.tgz",
+      "integrity": "sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/modern-tar": {
+      "version": "0.8.4",
+      "resolved": "https://registry.npmjs.org/modern-tar/-/modern-tar-0.8.4.tgz",
+      "integrity": "sha512-gN54ddmyzEg10orwZ2u4OOv+bjpMWdIl5jIkodK97bMq8QBSL5c0D7YX0lT1Ooz+99S7+PvFbnxzdjgHo1r41g==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=18.0.0"
+      }
+    },
+    "node_modules/module-details-from-path": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/module-details-from-path/-/module-details-from-path-1.0.4.tgz",
+      "integrity": "sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==",
+      "license": "MIT"
+    },
+    "node_modules/ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+      "license": "MIT"
+    },
+    "node_modules/object-keys": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/object-keys/-/object-keys-1.1.1.tgz",
+      "integrity": "sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/onnxruntime-common": {
+      "version": "1.21.0",
+      "resolved": "https://registry.npmjs.org/onnxruntime-common/-/onnxruntime-common-1.21.0.tgz",
+      "integrity": "sha512-Q632iLLrtCAVOTO65dh2+mNbQir/QNTVBG3h/QdZBpns7mZ0RYbLRBgGABPbpU9351AgYy7SJf1WaeVwMrBFPQ==",
+      "license": "MIT"
+    },
+    "node_modules/onnxruntime-node": {
+      "version": "1.21.0",
+      "resolved": "https://registry.npmjs.org/onnxruntime-node/-/onnxruntime-node-1.21.0.tgz",
+      "integrity": "sha512-NeaCX6WW2L8cRCSqy3bInlo5ojjQqu2fD3D+9W5qb5irwxhEyWKXeH2vZ8W9r6VxaMPUan+4/7NDwZMtouZxEw==",
+      "hasInstallScript": true,
+      "license": "MIT",
+      "os": [
+        "win32",
+        "darwin",
+        "linux"
+      ],
+      "dependencies": {
+        "global-agent": "^3.0.0",
+        "onnxruntime-common": "1.21.0",
+        "tar": "^7.0.1"
+      }
+    },
+    "node_modules/onnxruntime-web": {
+      "version": "1.22.0-dev.20250409-89f8206ba4",
+      "resolved": "https://registry.npmjs.org/onnxruntime-web/-/onnxruntime-web-1.22.0-dev.20250409-89f8206ba4.tgz",
+      "integrity": "sha512-0uS76OPgH0hWCPrFKlL8kYVV7ckM7t/36HfbgoFw6Nd0CZVVbQC4PkrR8mBX8LtNUFZO25IQBqV2Hx2ho3FlbQ==",
+      "license": "MIT",
+      "dependencies": {
+        "flatbuffers": "^25.1.24",
+        "guid-typescript": "^1.0.9",
+        "long": "^5.2.3",
+        "onnxruntime-common": "1.22.0-dev.20250409-89f8206ba4",
+        "platform": "^1.3.6",
+        "protobufjs": "^7.2.4"
+      }
+    },
+    "node_modules/onnxruntime-web/node_modules/onnxruntime-common": {
+      "version": "1.22.0-dev.20250409-89f8206ba4",
+      "resolved": "https://registry.npmjs.org/onnxruntime-common/-/onnxruntime-common-1.22.0-dev.20250409-89f8206ba4.tgz",
+      "integrity": "sha512-vDJMkfCfb0b1A836rgHj+ORuZf4B4+cc2bASQtpeoJLueuFc5DuYwjIZUBrSvx/fO5IrLjLz+oTrB3pcGlhovQ==",
+      "license": "MIT"
+    },
+    "node_modules/parse-gitignore": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/parse-gitignore/-/parse-gitignore-2.0.0.tgz",
+      "integrity": "sha512-RmVuCHWsfu0QPNW+mraxh/xjQVw/lhUCUru8Zni3Ctq3AoMhpDTq0OVdKS6iesd6Kqb7viCV3isAL43dciOSog==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=14"
+      }
+    },
+    "node_modules/path-scurry": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/path-scurry/-/path-scurry-2.0.2.tgz",
+      "integrity": "sha512-3O/iVVsJAPsOnpwWIeD+d6z/7PmqApyQePUtCndjatj/9I5LylHvt5qluFaBT3I5h3r1ejfR056c+FCv+NnNXg==",
+      "dev": true,
+      "license": "BlueOak-1.0.0",
+      "dependencies": {
+        "lru-cache": "^11.0.0",
+        "minipass": "^7.1.2"
+      },
+      "engines": {
+        "node": "18 || 20 || >=22"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/isaacs"
+      }
+    },
+    "node_modules/platform": {
+      "version": "1.3.6",
+      "resolved": "https://registry.npmjs.org/platform/-/platform-1.3.6.tgz",
+      "integrity": "sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==",
+      "license": "MIT"
+    },
+    "node_modules/prompts": {
+      "version": "2.4.2",
+      "resolved": "https://registry.npmjs.org/prompts/-/prompts-2.4.2.tgz",
+      "integrity": "sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "kleur": "^3.0.3",
+        "sisteransi": "^1.0.5"
+      },
+      "engines": {
+        "node": ">= 6"
+      }
+    },
+    "node_modules/prompts/node_modules/kleur": {
+      "version": "3.0.3",
+      "resolved": "https://registry.npmjs.org/kleur/-/kleur-3.0.3.tgz",
+      "integrity": "sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=6"
+      }
+    },
+    "node_modules/protobufjs": {
+      "version": "7.6.5",
+      "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-7.6.5.tgz",
+      "integrity": "sha512-/FPD0nUc9jH6rfFjji9IBqOz4pcSE3CsT1m7Ep6Mdb0LxSUMj8hgl6GomOvZzpNpAqqGaXA0P3VSrZLFzIhQrw==",
+      "hasInstallScript": true,
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "@protobufjs/aspromise": "^1.1.2",
+        "@protobufjs/base64": "^1.1.2",
+        "@protobufjs/codegen": "^2.0.5",
+        "@protobufjs/eventemitter": "^1.1.1",
+        "@protobufjs/fetch": "^1.1.1",
+        "@protobufjs/float": "^1.0.2",
+        "@protobufjs/path": "^1.1.2",
+        "@protobufjs/pool": "^1.1.0",
+        "@protobufjs/utf8": "^1.1.1",
+        "@types/node": ">=13.7.0",
+        "long": "^5.3.2"
+      },
+      "engines": {
+        "node": ">=12.0.0"
+      }
+    },
+    "node_modules/puppeteer-core": {
+      "version": "25.8.0",
+      "resolved": "https://registry.npmjs.org/puppeteer-core/-/puppeteer-core-25.8.0.tgz",
+      "integrity": "sha512-LDOrawV8vfCVk+yLj2ozvajNP4Sv3OV9y3Tpiyy2g2Z+aQlbcozP6KJfI4iSBq7YQER+86ihEtPa5ioiZyWxMQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@puppeteer/browsers": "3.2.1",
+        "chromium-bidi": "17.0.2",
+        "devtools-protocol": "0.0.1666840",
+        "typed-query-selector": "^2.12.2",
+        "webdriver-bidi-protocol": "0.4.2",
+        "ws": "^8.21.1"
+      },
+      "engines": {
+        "node": ">=22.12.0"
+      }
+    },
+    "node_modules/readdirp": {
+      "version": "5.1.1",
+      "resolved": "https://registry.npmjs.org/readdirp/-/readdirp-5.1.1.tgz",
+      "integrity": "sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 20.19.0"
+      },
+      "funding": {
+        "type": "individual",
+        "url": "https://paulmillr.com/funding/"
+      }
+    },
+    "node_modules/require-from-string": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/require-from-string/-/require-from-string-2.0.2.tgz",
+      "integrity": "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/require-in-the-middle": {
+      "version": "8.0.1",
+      "resolved": "https://registry.npmjs.org/require-in-the-middle/-/require-in-the-middle-8.0.1.tgz",
+      "integrity": "sha512-QT7FVMXfWOYFbeRBF6nu+I6tr2Tf3u0q8RIEjNob/heKY/nh7drD/k7eeMFmSQgnTtCzLDcCu/XEnpW2wk4xCQ==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "^4.3.5",
+        "module-details-from-path": "^1.0.3"
+      },
+      "engines": {
+        "node": ">=9.3.0 || >=8.10.0 <9.0.0"
+      }
+    },
+    "node_modules/roarr": {
+      "version": "2.15.4",
+      "resolved": "https://registry.npmjs.org/roarr/-/roarr-2.15.4.tgz",
+      "integrity": "sha512-CHhPh+UNHD2GTXNYhPWLnU8ONHdI+5DI+4EYIAOaiD63rHeYlZvyh8P+in5999TTSFgUYuKUAjzRI4mdh/p+2A==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "boolean": "^3.0.1",
+        "detect-node": "^2.0.4",
+        "globalthis": "^1.0.1",
+        "json-stringify-safe": "^5.0.1",
+        "semver-compare": "^1.0.0",
+        "sprintf-js": "^1.1.2"
+      },
+      "engines": {
+        "node": ">=8.0"
+      }
+    },
+    "node_modules/semver": {
+      "version": "7.7.4",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-7.7.4.tgz",
+      "integrity": "sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==",
+      "license": "ISC",
+      "bin": {
+        "semver": "bin/semver.js"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/semver-compare": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/semver-compare/-/semver-compare-1.0.0.tgz",
+      "integrity": "sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==",
+      "license": "MIT"
+    },
+    "node_modules/serialize-error": {
+      "version": "7.0.1",
+      "resolved": "https://registry.npmjs.org/serialize-error/-/serialize-error-7.0.1.tgz",
+      "integrity": "sha512-8I8TjW5KMOKsZQTvoxjuSIa7foAwPWGOts+6o7sgjz41/qMD9VQHEDxi6PBvK2l0MXUmqZyNpUK+T2tQaaElvw==",
+      "license": "MIT",
+      "dependencies": {
+        "type-fest": "^0.13.1"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/sharp": {
+      "resolved": "vendor/sharp-stub",
+      "link": true
+    },
+    "node_modules/sisteransi": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/sisteransi/-/sisteransi-1.0.5.tgz",
+      "integrity": "sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/sprintf-js": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.1.3.tgz",
+      "integrity": "sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/string-width": {
+      "version": "8.2.2",
+      "resolved": "https://registry.npmjs.org/string-width/-/string-width-8.2.2.tgz",
+      "integrity": "sha512-GaPUh5gfdrYzqeVNZvUfT23vYYxXzKYidUcnMtJg/3rxRV63EFZy3k6xfKlmfeJD0176lnUV/Usr3XcwSvFzpg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "get-east-asian-width": "^1.5.0",
+        "strip-ansi": "^7.1.2"
+      },
+      "engines": {
+        "node": ">=20"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/strip-ansi": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-7.2.0.tgz",
+      "integrity": "sha512-yDPMNjp4WyfYBkHnjIRLfca1i6KMyGCtsVgoKe/z1+6vukgaENdgGBZt+ZmKPc4gavvEZ5OgHfHdrazhgNyG7w==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-regex": "^6.2.2"
+      },
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/strip-ansi?sponsor=1"
+      }
+    },
+    "node_modules/stubborn-fs": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/stubborn-fs/-/stubborn-fs-2.0.0.tgz",
+      "integrity": "sha512-Y0AvSwDw8y+nlSNFXMm2g6L51rBGdAQT20J3YSOqxC53Lo3bjWRtr2BKcfYoAf352WYpsZSTURrA0tqhfgudPA==",
+      "license": "MIT",
+      "dependencies": {
+        "stubborn-utils": "^1.0.1"
+      }
+    },
+    "node_modules/stubborn-utils": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/stubborn-utils/-/stubborn-utils-1.0.2.tgz",
+      "integrity": "sha512-zOh9jPYI+xrNOyisSelgym4tolKTJCQd5GBhK0+0xJvcYDcwlOoxF/rnFKQ2KRZknXSG9jWAp66fwP6AxN9STg==",
+      "license": "MIT"
+    },
+    "node_modules/tar": {
+      "version": "7.5.22",
+      "resolved": "https://registry.npmjs.org/tar/-/tar-7.5.22.tgz",
+      "integrity": "sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==",
+      "license": "BlueOak-1.0.0",
+      "dependencies": {
+        "@isaacs/fs-minipass": "^4.0.0",
+        "chownr": "^3.0.0",
+        "minipass": "^7.1.2",
+        "minizlib": "^3.1.0",
+        "yallist": "^5.0.0"
+      },
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/tslib": {
+      "version": "2.8.1",
+      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz",
+      "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==",
+      "license": "0BSD"
+    },
+    "node_modules/type-fest": {
+      "version": "0.13.1",
+      "resolved": "https://registry.npmjs.org/type-fest/-/type-fest-0.13.1.tgz",
+      "integrity": "sha512-34R7HTnG0XIJcBSn5XhDd7nNFPRcXYRZrBB2O2jdKqYODldSzBAqzsWoZYYvduky73toYS/ESqxPvkDf/F0XMg==",
+      "license": "(MIT OR CC0-1.0)",
+      "engines": {
+        "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/typed-query-selector": {
+      "version": "2.12.2",
+      "resolved": "https://registry.npmjs.org/typed-query-selector/-/typed-query-selector-2.12.2.tgz",
+      "integrity": "sha512-EOPFbyIub4ngnEdqi2yOcNeDLaX/0jcE1JoAXQDDMIthap7FoN795lc/SHfIq2d416VufXpM8z/lD+WRm2gfOQ==",
+      "dev": true,
+      "license": "MIT"
+    },
+    "node_modules/undici-types": {
+      "version": "7.18.2",
+      "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz",
+      "integrity": "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==",
+      "license": "MIT"
+    },
+    "node_modules/urlpattern-polyfill": {
+      "version": "10.1.0",
+      "resolved": "https://registry.npmjs.org/urlpattern-polyfill/-/urlpattern-polyfill-10.1.0.tgz",
+      "integrity": "sha512-IGjKp/o0NL3Bso1PymYURCJxMPNAf/ILOpendP9f5B6e1rTJgdgiOvgfoT8VxCAdY+Wisb9uhGaJJf3yZ2V9nw==",
+      "license": "MIT"
+    },
+    "node_modules/webdriver-bidi-protocol": {
+      "version": "0.4.2",
+      "resolved": "https://registry.npmjs.org/webdriver-bidi-protocol/-/webdriver-bidi-protocol-0.4.2.tgz",
+      "integrity": "sha512-VSV+fzfChirL3e7jay2yUC7B4HQCGtEWEg/MSSQbK+qWbqeGlRLlXTzPpYr3XGUvbpDHumWZBJxgesg4N7dbtA==",
+      "dev": true,
+      "license": "Apache-2.0"
+    },
+    "node_modules/when-exit": {
+      "version": "2.1.5",
+      "resolved": "https://registry.npmjs.org/when-exit/-/when-exit-2.1.5.tgz",
+      "integrity": "sha512-VGkKJ564kzt6Ms1dbgPP/yuIoQCrsFAnRbptpC5wOEsDaNsbCB2bnfnaA8i/vRs5tjUSEOtIuvl9/MyVsvQZCg==",
+      "license": "MIT"
+    },
+    "node_modules/wrap-ansi": {
+      "version": "9.0.2",
+      "resolved": "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-9.0.2.tgz",
+      "integrity": "sha512-42AtmgqjV+X1VpdOfyTGOYRi0/zsoLqtXQckTmqTeybT+BDIbM/Guxo7x3pE2vtpr1ok6xRqM9OpBe+Jyoqyww==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "ansi-styles": "^6.2.1",
+        "string-width": "^7.0.0",
+        "strip-ansi": "^7.1.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/chalk/wrap-ansi?sponsor=1"
+      }
+    },
+    "node_modules/wrap-ansi/node_modules/string-width": {
+      "version": "7.2.0",
+      "resolved": "https://registry.npmjs.org/string-width/-/string-width-7.2.0.tgz",
+      "integrity": "sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "emoji-regex": "^10.3.0",
+        "get-east-asian-width": "^1.0.0",
+        "strip-ansi": "^7.1.0"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/ws": {
+      "version": "8.21.3",
+      "resolved": "https://registry.npmjs.org/ws/-/ws-8.21.3.tgz",
+      "integrity": "sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==",
+      "dev": true,
+      "license": "MIT",
+      "engines": {
+        "node": ">=10.0.0"
+      },
+      "peerDependencies": {
+        "bufferutil": "^4.0.1",
+        "utf-8-validate": ">=5.0.2"
+      },
+      "peerDependenciesMeta": {
+        "bufferutil": {
+          "optional": true
+        },
+        "utf-8-validate": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/y18n": {
+      "version": "5.0.8",
+      "resolved": "https://registry.npmjs.org/y18n/-/y18n-5.0.8.tgz",
+      "integrity": "sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/yallist": {
+      "version": "5.0.0",
+      "resolved": "https://registry.npmjs.org/yallist/-/yallist-5.0.0.tgz",
+      "integrity": "sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==",
+      "license": "BlueOak-1.0.0",
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/yargs": {
+      "version": "18.1.0",
+      "resolved": "https://registry.npmjs.org/yargs/-/yargs-18.1.0.tgz",
+      "integrity": "sha512-2rAgRKu54VsHkqI0/tYkmluGXHD4KW7yZoycuqDQ15QOTnc2VVfy0nN/1eMhnQLO00A+dwtK20xuCnc1YGeUyg==",
+      "dev": true,
+      "license": "MIT",
+      "dependencies": {
+        "cliui": "^9.0.1",
+        "escalade": "^3.1.1",
+        "get-caller-file": "^2.0.5",
+        "string-width": "^8.2.1",
+        "y18n": "^5.0.5",
+        "yargs-parser": "^22.0.0"
+      },
+      "engines": {
+        "node": "^20.19.0 || ^22.12.0 || >=23"
+      }
+    },
+    "node_modules/yargs-parser": {
+      "version": "22.0.0",
+      "resolved": "https://registry.npmjs.org/yargs-parser/-/yargs-parser-22.0.0.tgz",
+      "integrity": "sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==",
+      "dev": true,
+      "license": "ISC",
+      "engines": {
+        "node": "^20.19.0 || ^22.12.0 || >=23"
+      }
+    },
+    "node_modules/zod": {
+      "version": "3.25.76",
+      "resolved": "https://registry.npmjs.org/zod/-/zod-3.25.76.tgz",
+      "integrity": "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==",
+      "dev": true,
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/colinhacks"
+      }
+    },
+    "vendor/sharp-stub": {
+      "name": "sharp",
+      "version": "0.34.5"
+    }
+  }
+}
+```
+
+## package.json
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="package-json" file="package.json"}
+{
+  "name": "roachnet-org",
+  "private": true,
+  "version": "1.0.5",
+  "type": "module",
+  "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "@netlify/blobs": "11.0.1",
+    "sharp": "file:./vendor/sharp-stub"
+  },
+  "overrides": {
+    "sharp": "file:./vendor/sharp-stub"
+  },
+  "scripts": {
+    "build": "npm run verify && npm run build:main && npm run build:accounts && npm run build:apps",
+    "build:main": "node scripts/build-main-site.mjs",
+    "build:main:deploy": "npm run verify && npm run build:main",
+    "build:config": "node scripts/render-site-config.mjs",
+    "build:catalog": "node scripts/build-app-store-catalog.mjs",
+    "build:apps": "node scripts/build-apps-site.mjs",
+    "stage:apps-model-packs": "node scripts/stage-apps-model-packs.mjs",
+    "publish:apps-model-packs:ia": "node scripts/upload-apps-model-packs-ia.mjs",
+    "build:accounts": "node scripts/build-accounts-site.mjs",
+    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs",
+    "test": "node test/site-outcomes.mjs && node --test test/register-account.test.mjs",
+    "verify": "npm run lint && npm run test && npm run tangle:verify",
+    "validate:html": "node scripts/validate-html.mjs",
+    "test:browser": "node scripts/site-browser-outcomes.mjs",
+    "verify:local": "npm run build && npm run validate:html && npm run test:browser && node scripts/check-links.mjs && npm run tangle:verify && npm audit --omit=dev --audit-level=high",
+    "tangle:verify": "node scripts/tangle.mjs --verify",
+    "tangle:write": "node scripts/tangle.mjs --write && node scripts/tangle.mjs --verify"
+  },
+  "devDependencies": {
+    "html-validate": "10.9.0",
+    "puppeteer-core": "25.8.0"
+  },
+  "optionalDependencies": {
+    "@img/sharp-linux-x64": "^0.34.5"
+  }
+}
+```
+
+## robots-accounts.txt
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="robots-accounts-txt" file="robots-accounts.txt"}
+User-agent: *
+Disallow: /
+```
+
+## robots-apps.txt
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="robots-apps-txt" file="robots-apps.txt"}
+User-agent: *
+Allow: /
+
+Sitemap: https://apps.roachnet.org/sitemap.xml
+```
+
+## scripts/build-accounts-site.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-build-accounts-site-mjs" file="scripts/build-accounts-site.mjs"}
+#!/usr/bin/env node
+
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const repoRoot = path.resolve(__dirname, '..')
+const outputRoot = path.join(repoRoot, 'website-accounts-dist')
+
+async function main() {
+  await rm(outputRoot, { recursive: true, force: true })
+  await mkdir(outputRoot, { recursive: true })
+
+  const copyTargets = [
+    'app.css',
+    'app-polish.css',
+    'account.js',
+    'roachclaw.js',
+    'roachclaw-web.css',
+    'router.js',
+    'site-account.js',
+    'site-polish.js',
+    'site-config.js',
+    'assets/roachnet-logo.webp',
+    'assets/roachclaw-logo.webp',
+    'favicon.ico',
+    'favicon-16x16.png',
+    'favicon-32x32.png',
+    'apple-touch-icon.png',
+  ]
+
+  for (const target of copyTargets) {
+    const destination = path.join(outputRoot, target)
+    await mkdir(path.dirname(destination), { recursive: true })
+    await cp(path.join(repoRoot, target), destination, {
+      recursive: true,
+      force: true,
+    })
+  }
+
+  await cp(path.join(repoRoot, 'account/index.html'), path.join(outputRoot, 'index.html'), {
+    force: true,
+  })
+  await cp(path.join(repoRoot, 'robots-accounts.txt'), path.join(outputRoot, 'robots.txt'))
+  await cp(path.join(repoRoot, 'sitemap-accounts.xml'), path.join(outputRoot, 'sitemap.xml'))
+  await cp(path.join(repoRoot, '404.html'), path.join(outputRoot, '404.html'))
+
+  const accountPage = path.join(outputRoot, 'index.html')
+  await writeFile(accountPage, (await readFile(accountPage, 'utf8'))
+    .replace('class="site-header__actions" aria-label', 'class="site-header__actions" role="group" aria-label')
+    .replace('class="account-chip-row" aria-label', 'class="account-chip-row" role="group" aria-label')
+    .replace('<label class="account-honeypot" aria-hidden="true">', '<div class="account-honeypot" aria-hidden="true">')
+    .replace('              </label>\n\n              <div class="account-turnstile"', '              </div>\n\n              <div class="account-turnstile"')
+    .replaceAll('class="rc-lane-dot rc-lane-dot--web" aria-label', 'class="rc-lane-dot rc-lane-dot--web" role="img" aria-label')
+    .replace('class="rc-lane-dot rc-lane-dot--local" aria-label', 'class="rc-lane-dot rc-lane-dot--local" role="img" aria-label')
+    .replaceAll('<div class="rc-starter-card__icon">', '<span class="rc-starter-card__icon">')
+    .replaceAll('</svg>\n                    </div>\n                    <strong>', '</svg>\n                    </span>\n                    <strong>'), 'utf8')
+
+  await writeFile(
+    path.join(outputRoot, '_redirects'),
+    [
+      '/account / 301',
+      '/account/* /:splat 301',
+      '/roachclaw /index.html 200',
+      '/404.html /404.html 404',
+    ].join('\n') + '\n',
+    'utf8'
+  )
+
+  await writeFile(
+    path.join(outputRoot, '_headers'),
+    [
+      '/*',
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      '  X-Frame-Options: DENY',
+      '  X-Content-Type-Options: nosniff',
+      '  Referrer-Policy: strict-origin-when-cross-origin',
+      '  Strict-Transport-Security: max-age=31536000; includeSubDomains',
+      '  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()',
+    ].join('\n') + '\n',
+    'utf8'
+  )
+
+  console.log(`Built Accounts site into ${outputRoot}`)
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exitCode = 1
+})
+```
+
+## scripts/build-apps-site.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-build-apps-site-mjs" file="scripts/build-apps-site.mjs"}
+#!/usr/bin/env node
+
+import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const repoRoot = path.resolve(__dirname, '..')
+const outputRoot = path.join(repoRoot, 'website-apps-dist')
+
+function assertInstallIntent(item, condition, message) {
+  if (!condition) {
+    throw new Error(`App Store install contract failed for ${item.id || item.title}: ${message}`)
+  }
+}
+
+async function validateAppStoreInstallContract() {
+  const catalog = JSON.parse(await readFile(path.join(repoRoot, 'app-store-catalog.json'), 'utf8'))
+  const items = Array.isArray(catalog.items) ? catalog.items : []
+  assertInstallIntent({ id: 'catalog' }, items.length > 0, 'catalog has no installable items')
+
+  const supportedActions = new Set([
+    'base-map-assets',
+    'direct-download',
+    'map-collection',
+    'education-tier',
+    'education-resource',
+    'wikipedia-option',
+    'roachclaw-model',
+    'roachspeech-pack',
+  ])
+
+  for (const item of items) {
+    const intent = item.installIntent || {}
+    const action = intent.action
+    assertInstallIntent(item, action, 'missing installIntent.action')
+    assertInstallIntent(item, supportedActions.has(action), `unsupported install action "${action}"`)
+    const params = new URLSearchParams()
+    Object.entries({
+      id: item.id,
+      title: item.title,
+      category: item.section || item.category,
+      ...intent,
+    }).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        params.set(key, String(value))
+      }
+    })
+    const installURL = new URL(`roachnet://install-content?${params.toString()}`)
+    assertInstallIntent(item, installURL.protocol === 'roachnet:', 'install URL must use the roachnet scheme')
+    assertInstallIntent(item, installURL.host === 'install-content', 'install URL must target the native install-content route')
+
+    if (action === 'direct-download') {
+      assertInstallIntent(item, intent.url, 'direct downloads need a descriptor URL')
+      assertInstallIntent(item, intent.filetype, 'direct downloads need a filetype')
+    }
+    if (action === 'map-collection') {
+      assertInstallIntent(item, intent.slug, 'map collections need a slug')
+    }
+    if (action === 'education-tier') {
+      assertInstallIntent(item, intent.category && intent.tier, 'education tiers need category and tier')
+    }
+    if (action === 'education-resource') {
+      assertInstallIntent(item, intent.category && intent.resource, 'education resources need category and resource')
+    }
+    if (action === 'wikipedia-option') {
+      assertInstallIntent(item, intent.option, 'Wikipedia options need an option id')
+    }
+    if (action === 'roachclaw-model') {
+      assertInstallIntent(item, intent.model, 'RoachClaw installs need a model name')
+    }
+    if (action === 'roachspeech-pack') {
+      assertInstallIntent(item, intent.url && intent.pack && intent.kind, 'RoachSpeech packs need url, pack, and kind')
+    }
+
+    assertInstallIntent(item, item.iconAsset, 'missing iconAsset')
+    const iconPath = path.resolve(repoRoot, item.iconAsset.replace(/^\.\//, ''))
+    try {
+      await access(iconPath)
+    } catch {
+      throw new Error(`App Store icon missing for ${item.id || item.title}: ${item.iconAsset}`)
+    }
+  }
+
+  const appStoreSource = await readFile(path.join(repoRoot, 'app-store.js'), 'utf8')
+  assertInstallIntent({ id: 'app-store.js' }, appStoreSource.includes('roachnet://install-content'), 'install buttons must open native RoachNet deep links')
+  assertInstallIntent({ id: 'app-store.js' }, appStoreSource.includes('attemptNativeInstall'), 'install buttons must use the native install handoff')
+}
+
+async function main() {
+  await validateAppStoreInstallContract()
+  await rm(outputRoot, { recursive: true, force: true })
+  await mkdir(outputRoot, { recursive: true })
+
+  const copyTargets = [
+    'app.css',
+    'app-polish.css',
+    'app.js',
+    'app-store.js',
+    'app-store-catalog.json',
+    'site-polish.js',
+    'site-config.js',
+    'collections',
+    'downloads',
+    'assets/app-icons',
+    'assets/roachnet-logo.webp',
+    'favicon.ico',
+    'favicon-16x16.png',
+    'favicon-32x32.png',
+    'apple-touch-icon.png',
+  ]
+
+  for (const target of copyTargets) {
+    const destination = path.join(outputRoot, target)
+    await mkdir(path.dirname(destination), { recursive: true })
+    await cp(path.join(repoRoot, target), destination, {
+      recursive: true,
+      force: true,
+    })
+  }
+
+  await cp(path.join(repoRoot, 'app-store.html'), path.join(outputRoot, 'index.html'), {
+    force: true,
+  })
+  await cp(path.join(repoRoot, 'robots-apps.txt'), path.join(outputRoot, 'robots.txt'))
+  await cp(path.join(repoRoot, 'sitemap-apps.xml'), path.join(outputRoot, 'sitemap.xml'))
+  await cp(path.join(repoRoot, '404.html'), path.join(outputRoot, '404.html'))
+
+  const appStore = path.join(outputRoot, 'index.html')
+  await writeFile(appStore, (await readFile(appStore, 'utf8'))
+    .replace('class="apps-artifact-lane" aria-label', 'class="apps-artifact-lane" role="group" aria-label')
+    .replace('class="apps-store-sidebar__quick" aria-label', 'class="apps-store-sidebar__quick" role="group" aria-label')
+    .replace('class="apps-store-topbar__status" aria-label', 'class="apps-store-topbar__status" role="group" aria-label'), 'utf8')
+
+  await writeFile(
+    path.join(outputRoot, '_redirects'),
+    [
+      '/app-store.html / 301',
+      '/downloads/* /downloads/:splat 200',
+      '/404.html /404.html 404',
+    ].join('\n') + '\n',
+    'utf8'
+  )
+
+  await writeFile(
+    path.join(outputRoot, '_headers'),
+    [
+      '/*',
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.github.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      '  X-Frame-Options: DENY',
+      '  X-Content-Type-Options: nosniff',
+      '  Referrer-Policy: strict-origin-when-cross-origin',
+      '  Strict-Transport-Security: max-age=31536000; includeSubDomains',
+      '  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()',
+    ].join('\n') + '\n',
+    'utf8'
+  )
+
+  console.log(`Built Apps site into ${outputRoot}`)
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exitCode = 1
+})
+```
+
+## scripts/build-main-site.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-build-main-site-mjs" file="scripts/build-main-site.mjs"}
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, "..");
+const outDir = path.join(repoRoot, "website-main-dist");
+
+function optimizeLandingDocument(document) {
+  const removableResources = [
+    /\n    <link\n      rel="stylesheet"\n      href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&family=JetBrains\+Mono:wght@400;600&display=swap"\n    \/>/,
+    /\n    <link rel="stylesheet" href="\.\/app\.css" \/>/,
+    /\n    <link rel="stylesheet" href="\.\/app-polish\.css\?v=20260609-overflow" \/>/,
+    /\n    <script src="\.\/site-config\.js"><\/script>/,
+    /\n    <script src="\.\/app\.js" type="module"><\/script>/,
+    /\n    <script src="\.\/site-polish\.js" type="module"><\/script>/,
+  ];
+
+  return removableResources.reduce((result, resource) => {
+    if (!resource.test(result)) throw new Error(`Landing resource was not found: ${resource}`);
+    return result.replace(resource, "");
+  }, document).replace(
+    'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"',
+    'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" width="114" height="32"'
+  );
+}
+
+const copyList = [
+  "index.html",
+  "404.html",
+  "app.css",
+  "app-polish.css",
+  "app.js",
+  "api.js",
+  "app-store.html",
+  "app-store.js",
+  "app-store-catalog.json",
+  "landing.css",
+  "landing-script.js",
+  "roachclaw.js",
+  "roachclaw-web.css",
+  "router.js",
+  "site-account.js",
+  "site-config.js",
+  "site-polish.js",
+  "robots.txt",
+  "sitemap.xml",
+  "apple-touch-icon.png",
+  "favicon.ico",
+  "favicon-16x16.png",
+  "favicon-32x32.png",
+  "api",
+  "assets",
+  "brew",
+  "collections",
+  "downloads",
+  "home",
+  "ios",
+  "roachclaw",
+  "sitemap",
+];
+
+await rm(outDir, { recursive: true, force: true });
+await mkdir(outDir, { recursive: true });
+
+for (const entry of copyList) {
+  const source = path.join(repoRoot, entry);
+  const destination = path.join(outDir, entry);
+  await cp(source, destination, { recursive: true });
+}
+
+const mainIndex = path.join(outDir, "index.html");
+await writeFile(mainIndex, optimizeLandingDocument((await readFile(mainIndex, "utf8"))
+  .replace('data-landing-shortcut aria-label', 'data-landing-shortcut role="group" aria-label')), "utf8");
+
+console.log(`Built main site into ${outDir}`);
+```
+
+## scripts/check-links.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-check-links-mjs" file="scripts/check-links.mjs"}
+#!/usr/bin/env node
+
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const pages = ['index.html', 'home/index.html', 'ios/index.html', 'api/index.html', 'brew/index.html', 'roachclaw/index.html', 'account/index.html', 'app-store.html']
+const urls = new Set()
+
+for (const page of pages) {
+  const html = await readFile(path.join(root, page), 'utf8')
+  for (const match of html.matchAll(/(?:href|src)="(https:\/\/[^"#?]+(?:\?[^"#]*)?)"/g)) {
+    urls.add(match[1])
+  }
+}
+
+const failures = []
+for (const url of urls) {
+  try {
+    let response = await fetch(url, { method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(15_000) })
+    if (response.status === 405) response = await fetch(url, { method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(15_000) })
+    if (!response.ok) failures.push(`${response.status} ${url}`)
+  } catch (error) {
+    failures.push(`${error.message} ${url}`)
+  }
+}
+
+if (failures.length) throw new Error(`External link check failed:\n${failures.join('\n')}`)
+console.log(`Verified ${urls.size} external links`)
+```
+
+## scripts/site-browser-outcomes.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-site-browser-outcomes-mjs" file="scripts/site-browser-outcomes.mjs"}
+#!/usr/bin/env node
+
+import assert from 'node:assert/strict'
+import { createReadStream } from 'node:fs'
+import { access, readdir, stat } from 'node:fs/promises'
+import http from 'node:http'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import puppeteer from 'puppeteer-core'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const sites = [
+  { name: 'main', directory: 'website-main-dist', pages: [['mission', '/'], ['home', '/home/'], ['ios', '/ios/'], ['api', '/api/'], ['brew', '/brew/'], ['sitemap', '/sitemap/'], ['roachclaw', '/roachclaw/']] },
+  { name: 'accounts', directory: 'website-accounts-dist', pages: [['account', '/']] },
+  { name: 'apps', directory: 'website-apps-dist', pages: [['catalog', '/']] },
+]
+const mime = new Map([
+  ['.css', 'text/css; charset=utf-8'], ['.html', 'text/html; charset=utf-8'], ['.ico', 'image/x-icon'],
+  ['.js', 'text/javascript; charset=utf-8'], ['.json', 'application/json; charset=utf-8'], ['.png', 'image/png'],
+  ['.svg', 'image/svg+xml'], ['.txt', 'text/plain; charset=utf-8'], ['.webp', 'image/webp'], ['.xml', 'application/xml; charset=utf-8'],
+])
+
+async function findChromium() {
+  const candidates = [process.env.PUPPETEER_EXECUTABLE_PATH].filter(Boolean)
+  try {
+    const entries = await readdir('/opt/data/pw-browsers', { withFileTypes: true })
+    for (const entry of entries.filter((item) => item.isDirectory() && item.name.startsWith('chromium-')).sort((a, b) => b.name.localeCompare(a.name))) {
+      candidates.push(path.join('/opt/data/pw-browsers', entry.name, 'chrome-linux', 'chrome'))
+      candidates.push(path.join('/opt/data/pw-browsers', entry.name, 'chrome-linux64', 'chrome'))
+    }
+  } catch {
+    // The shared browser cache is optional outside the verification image.
+  }
+  candidates.push('/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome')
+  for (const candidate of candidates) {
+    try {
+      await access(candidate)
+      return candidate
+    } catch {
+      // Try the next known browser location.
+    }
+  }
+  throw new Error('No Chromium executable found. Set PUPPETEER_EXECUTABLE_PATH or install Chromium.')
+}
+
+async function localFile(directory, urlPath) {
+  const requested = decodeURIComponent(urlPath).replace(/^\/+/, '')
+  const resolved = path.resolve(directory, requested || 'index.html')
+  if (!resolved.startsWith(`${directory}${path.sep}`)) return null
+  try {
+    return (await stat(resolved)).isDirectory() ? path.join(resolved, 'index.html') : resolved
+  } catch {
+    return null
+  }
+}
+
+async function startServer(directory) {
+  const server = http.createServer(async (request, response) => {
+    const file = await localFile(directory, new URL(request.url, 'http://localhost').pathname)
+    const target = file || path.join(directory, '404.html')
+    response.writeHead(file ? 200 : 404, { 'content-type': mime.get(path.extname(target)) || 'application/octet-stream', 'cache-control': 'no-store' })
+    createReadStream(target).pipe(response)
+  })
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+  return server
+}
+
+function close(server) {
+  return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
+}
+
+async function checkPage(browser, baseUrl, pathname, viewport, label) {
+  const page = await browser.newPage()
+  const failures = []
+  await page.setViewport(viewport)
+  page.on('console', (message) => {
+    if (message.type() === 'error') failures.push(`console: ${message.text()}`)
+  })
+  page.on('requestfailed', (request) => failures.push(`request: ${request.url()} ${request.failure()?.errorText || ''}`))
+  await page.setRequestInterception(true)
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.origin === baseUrl) return request.continue()
+    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : 'export {}' })
+  })
+  try {
+    const response = await page.goto(`${baseUrl}${pathname}`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
+    assert.equal(response?.status(), 200, `${label} response`)
+    await page.waitForFunction(() => document.querySelector('h1'), { timeout: 10_000 })
+    await page.waitForFunction(() => document.fonts.status === 'loaded', { timeout: 10_000 })
+    const outcome = await page.evaluate(() => {
+      const visible = (element) => {
+        const style = getComputedStyle(element)
+        const rect = element.getBoundingClientRect()
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0
+      }
+      const targets = [...document.querySelectorAll('a, button, input, select, textarea')].filter((target) => visible(target) && !target.closest('footer'))
+      const strip = document.querySelector('.apps-hero-panel__strip')
+      const stripItems = strip ? [...strip.children].map((child) => child.getBoundingClientRect()) : []
+      const stripItemsOverlap = stripItems.some((rect, index) => stripItems.slice(index + 1).some((other) => !(
+        rect.right <= other.left || other.right <= rect.left || rect.bottom <= other.top || other.bottom <= rect.top
+      )))
+      const shelfCardsFit = [...document.querySelectorAll('.apps-row__scroller')].every((scroller) => {
+        const card = scroller.querySelector('.apps-card')
+        return !card || card.getBoundingClientRect().width <= scroller.clientWidth + 1
+      })
+      const shelfCardsOverlap = [...document.querySelectorAll('.apps-row__scroller')].some((scroller) => {
+        const cards = [...scroller.querySelectorAll('.apps-card')].map((card) => card.getBoundingClientRect()).sort((a, b) => a.left - b.left)
+        return cards.some((card, index) => cards[index + 1] && card.right > cards[index + 1].left + 1)
+      })
+      return {
+        bodySize: Number.parseFloat(getComputedStyle(document.body).fontSize),
+        h1s: [...document.querySelectorAll('h1')].filter(visible).length,
+        overflow: document.documentElement.scrollWidth > window.innerWidth,
+        smallTargets: targets.filter((target) => {
+          const rect = target.getBoundingClientRect()
+          return rect.width < 24 && rect.height < 24
+        }).map((target) => target.outerHTML.slice(0, 120)),
+        hasSkip: Boolean(document.querySelector('.rn-skip-link')),
+        shelfCardsFit,
+        shelfCardsOverlap,
+        stripItemsOverlap,
+      }
+    })
+    assert.ok(outcome.bodySize >= 16, `${label} body font is below 16px`)
+    assert.equal(outcome.h1s, 1, `${label} must expose one visible h1`)
+    assert.equal(outcome.overflow, false, `${label} has horizontal overflow`)
+    assert.deepEqual(outcome.smallTargets, [], `${label} has targets below 24px`)
+    assert.equal(outcome.shelfCardsFit, true, `${label} clips shelf cards inside their horizontal scroller`)
+    assert.equal(outcome.shelfCardsOverlap, false, `${label} overlaps adjacent shelf cards`)
+    assert.equal(outcome.stripItemsOverlap, false, `${label} overlaps featured metadata`)
+    if (outcome.hasSkip) {
+      await page.evaluate(() => {
+        const skip = document.querySelector('.rn-skip-link')
+        if (!(skip instanceof HTMLElement)) throw new Error('Skip link disappeared')
+        skip.focus()
+      })
+      assert.equal(await page.evaluate(() => document.activeElement?.matches('.rn-skip-link')), true, `${label} skip link cannot receive focus`)
+      await page.evaluate(() => {
+        const skip = document.querySelector('.rn-skip-link')
+        if (!(skip instanceof HTMLElement)) throw new Error('Skip link disappeared')
+        skip.click()
+      })
+      await page.waitForFunction(() => document.activeElement?.matches('main, [role="main"]'), { timeout: 5_000 })
+    }
+    assert.deepEqual(failures, [], `${label} browser failures`)
+  } finally {
+    await page.close()
+  }
+}
+
+async function checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl) {
+  const page = await browser.newPage()
+  const failures = []
+  await page.evaluateOnNewDocument(() => {
+    const thread = { id: 'markdown-heading-thread', title: 'Markdown heading regression', summary: '', last_message_at: '2026-08-22T00:00:00.000Z', created_at: '2026-08-22T00:00:00.000Z' }
+    const message = { id: 'markdown-heading-message', role: 'assistant', content: '# Runtime **heading**\n\n## Nested <img src=x onerror=alert(1)>\n\n### Deep heading', created_at: '2026-08-22T00:00:00.000Z', provider: 'fixture', model: 'fixture' }
+    const queryFor = (table) => {
+      const result = { data: table === 'chat_threads' ? [thread] : [message], error: null }
+      const query = {
+        select: () => query,
+        eq: () => query,
+        order: () => query,
+        limit: () => Promise.resolve(result),
+        then: (resolve, reject) => Promise.resolve(result).then(resolve, reject),
+      }
+      return query
+    }
+    const client = {
+      auth: {
+        getSession: async () => ({ data: { session: { access_token: 'fixture-token', user: { id: 'fixture-user', email: 'fixture@example.com' } } }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
+      },
+      from: queryFor,
+    }
+    window.__ROACHNET_SUPABASE_AUTH_CLIENT__ = {
+      supabaseUrl: 'https://fixture.supabase.co',
+      supabaseAnonKey: 'fixture-anon-key',
+      client,
+    }
+  })
+  page.on('console', (message) => {
+    if (message.type() === 'error') failures.push(`console: ${message.text()}`)
+  })
+  page.on('requestfailed', (request) => failures.push(`request: ${request.url()} ${request.failure()?.errorText || ''}`))
+  await page.setRequestInterception(true)
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.origin === baseUrl && url.pathname === '/site-config.js') {
+      return request.respond({
+        status: 200,
+        contentType: 'text/javascript',
+        body: `window.__ROACHNET_SITE_CONFIG__ = { auth: { enabled: true, provider: 'supabase', supabaseUrl: 'https://fixture.supabase.co', supabaseAnonKey: 'fixture-anon-key' }, webChat: { enabled: true } }`,
+      })
+    }
+    if (url.origin === baseUrl) return request.continue()
+    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : 'export {}' })
+  })
+  try {
+    const response = await page.goto(`${baseUrl}/roachclaw/`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
+    assert.equal(response?.status(), 200, 'RoachClaw Markdown fixture response')
+    await page.waitForSelector('.rc-message__content', { timeout: 10_000 })
+    const outcome = await page.evaluate(() => {
+      const content = document.querySelector('.rc-message__content')
+      const headings = [...content.querySelectorAll('h1, h2, h3, h4, h5, h6')]
+      return {
+        headingTags: headings.map((heading) => heading.tagName),
+        messageH1s: content.querySelectorAll('h1').length,
+        unsafeElements: content.querySelectorAll('script, img, iframe, object, embed').length,
+        nestedText: headings[1]?.textContent || '',
+        headingStyles: headings.map((heading) => {
+          const style = getComputedStyle(heading)
+          return [style.fontSize, style.color, style.marginBlockStart, style.marginBlockEnd]
+        }),
+      }
+    })
+    assert.deepEqual(outcome.headingTags, ['H2', 'H3', 'H4'], 'runtime Markdown headings must start below the page h1')
+    assert.equal(outcome.messageH1s, 0, 'runtime messages must not add a page-level h1')
+    assert.equal(outcome.unsafeElements, 0, 'runtime Markdown headings must remain sanitized')
+    assert.match(outcome.nestedText, /<img src=x onerror=alert\(1\)>/, 'escaped heading content must remain visible as text')
+    assert.ok(outcome.headingStyles.every((style) => JSON.stringify(style) === JSON.stringify(outcome.headingStyles[0])), 'demoted runtime headings must preserve message heading styles')
+    assert.deepEqual(failures, [], 'RoachClaw Markdown fixture browser failures')
+  } finally {
+    await page.close()
+  }
+}
+
+const browser = await puppeteer.launch({ executablePath: await findChromium(), headless: true, timeout: 60_000, args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'] })
+try {
+  for (const site of sites) {
+    const server = await startServer(path.join(root, site.directory))
+    const baseUrl = `http://127.0.0.1:${server.address().port}`
+    try {
+      for (const [pathname, expectedMime] of [['/robots.txt', 'text/plain'], ['/sitemap.xml', 'application/xml']]) {
+        const response = await fetch(`${baseUrl}${pathname}`)
+        assert.equal(response.status, 200, `${site.name}${pathname} status`)
+        assert.match(response.headers.get('content-type') || '', new RegExp(`^${expectedMime}`), `${site.name}${pathname} MIME type`)
+      }
+      const unknown = await fetch(`${baseUrl}/this-route-does-not-exist`)
+      assert.equal(unknown.status, 404, `${site.name} unknown route must be a 404`)
+      assert.match(await unknown.text(), /<h1[ >]/i, `${site.name} 404 document has no h1`)
+      for (const [name, pathname] of site.pages) {
+        await checkPage(browser, baseUrl, pathname, { width: 1440, height: 900 }, `${site.name} ${name} desktop`)
+        await checkPage(browser, baseUrl, pathname, { width: 390, height: 844, isMobile: true }, `${site.name} ${name} mobile`)
+        if (site.name === 'apps') {
+          await checkPage(browser, baseUrl, pathname, { width: 320, height: 720, isMobile: true }, `${site.name} ${name} compact`)
+        }
+      }
+      if (site.name === 'main') {
+        await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)
+      }
+    } finally {
+      await close(server)
+    }
+  }
+} finally {
+  await browser.close()
+}
+
+console.log('Browser outcome checks passed for generated main, accounts, and apps sites')
+```
+
+## scripts/snapshot-live-sites.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-snapshot-live-sites-mjs" file="scripts/snapshot-live-sites.mjs"}
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
+
+const rootDir = new URL("..", import.meta.url);
+const snapshotRoot = new URL("../live-site-snapshots/", import.meta.url);
+
+const allowedHosts = new Set([
+  "roachnet.org",
+  "accounts.roachnet.org",
+  "apps.roachnet.org",
+]);
+
+const seedUrls = [
+  "https://roachnet.org/",
+  "https://roachnet.org/home/",
+  "https://roachnet.org/ios/",
+  "https://roachnet.org/api/",
+  "https://roachnet.org/brew/",
+  "https://roachnet.org/roachclaw/",
+  "https://accounts.roachnet.org/",
+  "https://accounts.roachnet.org/roachclaw",
+  "https://apps.roachnet.org/",
+  "https://apps.roachnet.org/app-store-catalog.json",
+];
+
+const textTypes = [
+  "text/html",
+  "text/css",
+  "application/javascript",
+  "text/javascript",
+  "application/json",
+  "image/svg+xml",
+];
+
+const assetPattern =
+  /(?:src|href)=["']([^"'#]+)["']|url\((?:'|")?([^)"']+)(?:'|")?\)|["'`]((?:\/|\.\/|\.\.\/)[^"'`?#]+\.(?:js|css|png|jpe?g|svg|gif|webp|ico|json|woff2?|ttf|otf|mp4))["'`]/g;
+
+function normalizeUrl(candidate, baseUrl) {
+  if (candidate.includes("${") || candidate.includes("%7B") || candidate.includes("{{")) {
+    return null;
+  }
+  try {
+    const url = new URL(candidate, baseUrl);
+    url.hash = "";
+    if (!allowedHosts.has(url.hostname)) {
+      return null;
+    }
+    if (url.protocol !== "https:") {
+      return null;
+    }
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+function filePathForUrl(url, contentType) {
+  const cleanPath = url.pathname.replace(/\/+$/, "");
+  const hasExtension = /\.[a-z0-9]+$/i.test(cleanPath);
+
+  let relativePath;
+  if (!cleanPath || cleanPath === "") {
+    relativePath = "index.html";
+  } else if (url.pathname.endsWith("/")) {
+    relativePath = path.join(cleanPath.slice(1), "index.html");
+  } else if (!hasExtension && contentType.startsWith("text/html")) {
+    relativePath = path.join(cleanPath.slice(1), "index.html");
+  } else {
+    relativePath = cleanPath.slice(1);
+  }
+
+  return path.join(snapshotRoot.pathname, url.hostname, relativePath);
+}
+
+function extractAssetUrls(body, baseUrl) {
+  const discovered = [];
+  for (const match of body.matchAll(assetPattern)) {
+    const candidate = match[1] || match[2] || match[3];
+    if (!candidate) continue;
+    const normalized = normalizeUrl(candidate, baseUrl);
+    if (normalized) {
+      discovered.push(normalized.toString());
+    }
+  }
+  return discovered;
+}
+
+async function fetchOne(urlString) {
+  const response = await fetch(urlString, {
+    headers: {
+      "user-agent": "RoachNetLiveSnapshot/1.0",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+
+  const contentType = (response.headers.get("content-type") || "application/octet-stream")
+    .split(";")[0]
+    .trim()
+    .toLowerCase();
+
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  return { contentType, buffer };
+}
+
+async function main() {
+  await rm(snapshotRoot, { recursive: true, force: true });
+  await mkdir(snapshotRoot, { recursive: true });
+
+  const queue = [...seedUrls];
+  const seen = new Set();
+  const manifest = [];
+
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current || seen.has(current)) continue;
+    seen.add(current);
+
+    const url = new URL(current);
+    process.stdout.write(`snapshot ${url.hostname}${url.pathname}\n`);
+
+    let result;
+    try {
+      result = await fetchOne(current);
+    } catch (error) {
+      manifest.push({
+        url: current,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      continue;
+    }
+
+    const filePath = filePathForUrl(url, result.contentType);
+    await mkdir(path.dirname(filePath), { recursive: true });
+    await writeFile(filePath, result.buffer);
+
+    manifest.push({
+      url: current,
+      contentType: result.contentType,
+      bytes: result.buffer.length,
+      file: path.relative(rootDir.pathname, filePath),
+    });
+
+    if (textTypes.some((type) => result.contentType.startsWith(type))) {
+      const body = result.buffer.toString("utf8");
+      const discovered = extractAssetUrls(body, current);
+      for (const discoveredUrl of discovered) {
+        if (!seen.has(discoveredUrl)) {
+          queue.push(discoveredUrl);
+        }
+      }
+
+      if (current.endsWith("/app-store-catalog.json")) {
+        try {
+          const catalog = JSON.parse(body);
+          for (const item of catalog.items || []) {
+            for (const key of ["icon", "iconPath", "iconAsset", "previewImage", "preview", "image", "detailUrl"]) {
+              if (typeof item[key] === "string") {
+                const normalized = normalizeUrl(item[key], current);
+                if (normalized && !seen.has(normalized.toString())) {
+                  queue.push(normalized.toString());
+                }
+              }
+            }
+          }
+        } catch {
+          // Ignore malformed JSON in the snapshot manifest path.
+        }
+      }
+    }
+  }
+
+  const manifestPath = path.join(snapshotRoot.pathname, "manifest.json");
+  await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
+  process.stdout.write(`saved ${manifest.length} live files into ${snapshotRoot.pathname}\n`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+```
+
+## scripts/tangle.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-tangle-mjs" file="scripts/tangle.mjs"}
+#!/usr/bin/env node
+
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const arguments_ = process.argv.slice(2)
+const reconcile = arguments_.includes('--reconcile')
+const write = arguments_.includes('--write')
+const verify = arguments_.includes('--verify')
+const outputIndex = arguments_.indexOf('--output-dir')
+const outputDirectory = outputIndex === -1 ? root : path.resolve(arguments_[outputIndex + 1] || '')
+const allowed = new Set(['--reconcile', '--verify', '--write', '--output-dir'])
+if ((!reconcile && !verify && !write) || arguments_.some((argument, index) => !allowed.has(argument) && arguments_[index - 1] !== '--output-dir') || (outputIndex !== -1 && !arguments_[outputIndex + 1])) {
+  throw new Error('Usage: node scripts/tangle.mjs --verify [--write] [--output-dir directory] | --reconcile')
+}
+
+function safePath(value) {
+  if (!value || path.isAbsolute(value) || value.includes('\\')) {
+    throw new Error(`Unsafe chunk path: ${value || '(empty)'}`)
+  }
+  const resolved = path.resolve(root, value)
+  if (!resolved.startsWith(`${root}${path.sep}`)) {
+    throw new Error(`Chunk path escapes repository: ${value}`)
+  }
+  return resolved
+}
+
+function parse(document) {
+  const chunks = new Map()
+  const targets = new Set()
+  const matcher = /(^|\n)```[^\n]*\{chunk="([A-Za-z0-9_-]+)"(?: file="([^"]+)")?\}\n([\s\S]*?)```(?=\n|$)/g
+  let match
+  while ((match = matcher.exec(document))) {
+    const [, , name, target, content] = match
+    if (chunks.has(name)) throw new Error(`Duplicate chunk: ${name}`)
+    if (target && targets.has(target)) throw new Error(`Duplicate root: ${target}`)
+    if (target) targets.add(target)
+    chunks.set(name, { target, content })
+  }
+  if (!chunks.size) throw new Error('No chunks found')
+  return chunks
+}
+
+function expand(name, chunks, stack = []) {
+  if (stack.includes(name)) throw new Error(`Chunk cycle: ${[...stack, name].join(' -> ')}`)
+  const chunk = chunks.get(name)
+  if (!chunk) throw new Error(`Missing chunk: ${name}`)
+  return chunk.content.replace(/<<([A-Za-z0-9_-]+)>>/g, (_, reference) => expand(reference, chunks, [...stack, name]))
+}
+
+const sourceFiles = [
+  '404.html', 'account.js', 'account/index.html', 'html-validate.json', 'index.html', 'landing.css', 'landing-script.js', 'netlify.toml', 'package-lock.json', 'package.json', 'robots-accounts.txt', 'robots-apps.txt',
+  'scripts/build-accounts-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-main-site.mjs', 'scripts/check-links.mjs',
+  'scripts/site-browser-outcomes.mjs', 'scripts/snapshot-live-sites.mjs', 'scripts/tangle.mjs', 'scripts/validate-html.mjs',
+  'sitemap-accounts.xml', 'sitemap-apps.xml', 'test/register-account.test.mjs', 'test/site-outcomes.mjs', 'netlify/functions/register-account.mjs', 'netlify/functions/roachclaw-chat.mjs',
+]
+
+if (reconcile) {
+  const blocks = await Promise.all(sourceFiles.map(async (file) => {
+    const name = file.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    return `## ${file}\n\nThis root is reconciled byte-for-byte from the current production source.\n\n\`\`\`text {chunk="${name}" file="${file}"}\n${await readFile(path.join(root, file), 'utf8')}\`\`\``
+  }))
+  const document = `# RoachNet.org Site Code\n\nThis literate source records the current site roots. Run \`node scripts/tangle.mjs --verify\` before writing generated roots; \`--output-dir\` stages a checked output tree without changing the repository. Additive chunks use double-angle references; duplicate roots, missing references, cycles, and unsafe paths are rejected.\n\n\`\`\`mermaid\nflowchart LR\n  Sources[Site sources] --> Builds[Main, accounts, and apps builders]\n  Builds --> Sites[Generated static sites]\n  Lit[ROACHNET-ORG.lit.md] --> Tangler[Strict tangler]\n  Tangler --> Verify[Byte verification]\n  Verify --> Sites\n\`\`\`\n\n${blocks.join('\n\n')}\n`
+  await writeFile(path.join(root, 'ROACHNET-ORG.lit.md'), document, 'utf8')
+  console.log(`Reconciled ${sourceFiles.length} literate roots`)
+  process.exit(0)
+}
+
+const document = await readFile(path.join(root, 'ROACHNET-ORG.lit.md'), 'utf8')
+const chunks = parse(document)
+const roots = [...chunks.entries()].filter(([, chunk]) => chunk.target)
+const outputs = roots.map(([name, chunk]) => ({ name, chunk, expected: expand(name, chunks) }))
+for (const { chunk, expected } of outputs) {
+  const target = path.resolve(outputDirectory, chunk.target)
+  if (!target.startsWith(`${outputDirectory}${path.sep}`)) throw new Error(`Chunk path escapes output directory: ${chunk.target}`)
+  let actual = null
+  try {
+    actual = await readFile(target, 'utf8')
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error
+  }
+  if (verify && actual !== expected) throw new Error(`Tangle mismatch: ${chunk.target}`)
+}
+if (write) {
+  // All roots are compared before any write, preventing partial stale overwrites.
+  for (const { chunk, expected } of outputs) {
+    const target = path.resolve(outputDirectory, chunk.target)
+    await mkdir(path.dirname(target), { recursive: true })
+    let actual = null
+    try {
+      actual = await readFile(target, 'utf8')
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error
+    }
+    if (actual !== expected) await writeFile(target, expected, 'utf8')
+  }
+}
+
+console.log(`${write ? 'Wrote' : 'Verified'} ${roots.length} literate roots`)
+```
+
+## scripts/validate-html.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-validate-html-mjs" file="scripts/validate-html.mjs"}
+#!/usr/bin/env node
+
+import { HtmlValidate } from 'html-validate'
+import { readdir, readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const outputRoots = ['website-main-dist', 'website-accounts-dist', 'website-apps-dist']
+
+async function htmlFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true })
+  const nested = await Promise.all(entries.map(async (entry) => {
+    const target = path.join(directory, entry.name)
+    if (entry.isDirectory()) return htmlFiles(target)
+    return entry.isFile() && entry.name.endsWith('.html') ? [target] : []
+  }))
+  return nested.flat()
+}
+
+const validator = new HtmlValidate(JSON.parse(await readFile(path.join(root, 'html-validate.json'), 'utf8')))
+const files = (await Promise.all(outputRoots.map((directory) => htmlFiles(path.join(root, directory))))).flat()
+const reports = await Promise.all(files.map(async (file) => ({ file, report: await validator.validateString(await readFile(file, 'utf8'), file) })))
+const errors = reports.flatMap(({ file, report }) => report.results.flatMap((result) => result.messages.map((message) => `${path.relative(root, file)}:${message.line}:${message.column} ${message.message} (${message.ruleId})`)))
+
+if (errors.length) throw new Error(`HTML validation failed:\n${errors.join('\n')}`)
+console.log(`Validated ${files.length} generated HTML5 documents`)
+```
+
+## sitemap-accounts.xml
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="sitemap-accounts-xml" file="sitemap-accounts.xml"}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>
+```
+
+## sitemap-apps.xml
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="sitemap-apps-xml" file="sitemap-apps.xml"}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://apps.roachnet.org/</loc><lastmod>2026-08-21</lastmod></url>
+</urlset>
+```
+
+## test/register-account.test.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="test-register-account-test-mjs" file="test/register-account.test.mjs"}
+import assert from 'node:assert/strict'
+import { test } from 'node:test'
+
+import { createRegistrationHandler } from '../netlify/functions/register-account.mjs'
+
+class MemoryRateLimitStore {
+  constructor() {
+    this.entries = new Map()
+    this.version = 0
+  }
+
+  async getWithMetadata(key) {
+    const entry = this.entries.get(key)
+    return entry ? structuredClone(entry) : null
+  }
+
+  async setJSON(key, data, options = {}) {
+    const existing = this.entries.get(key)
+    const canWrite = options.onlyIfNew
+      ? !existing
+      : options.onlyIfMatch
+        ? existing?.etag === options.onlyIfMatch
+        : true
+
+    if (!canWrite) return { modified: false }
+
+    const etag = `etag-${++this.version}`
+    this.entries.set(key, { data: structuredClone(data), etag, metadata: {} })
+    return { modified: true, etag }
+  }
+}
+
+const productionEnv = {
+  ROACHNET_SUPABASE_URL: 'https://project.supabase.co',
+  ROACHNET_SUPABASE_ANON_KEY: 'public-anon-key',
+  ROACHNET_TURNSTILE_SECRET_KEY: 'turnstile-secret',
+  ROACHNET_AUTH_REDIRECT_URL: 'https://accounts.roachnet.org/',
+}
+
+function registrationRequest({
+  origin = 'https://accounts.roachnet.org',
+  ip = '203.0.113.9',
+  email = 'person@example.com',
+  captchaToken = 'captcha-token',
+} = {}) {
+  const headers = { 'content-type': 'application/json' }
+  if (origin !== null) headers.origin = origin
+  if (ip !== null) headers['x-nf-client-connection-ip'] = ip
+
+  return new Request('https://roachnet.org/.netlify/functions/register-account', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      email,
+      password: 'long-enough-password',
+      displayName: 'Person',
+      captchaToken,
+      company: '',
+      startedAt: '1',
+    }),
+  })
+}
+
+function createHarness({ env = productionEnv, store = new MemoryRateLimitStore(), fetchImpl } = {}) {
+  const calls = []
+  const fetchStub = fetchImpl || (async (url, options) => {
+    calls.push({ url: String(url), options })
+    if (String(url).includes('challenges.cloudflare.com')) {
+      return Response.json({ success: true })
+    }
+    return Response.json({ id: 'user-1' })
+  })
+
+  return {
+    calls,
+    handler: createRegistrationHandler({
+      env,
+      fetchImpl: fetchStub,
+      getRateLimitStore: () => store,
+      now: () => Date.parse('2026-08-22T12:00:00.000Z'),
+    }),
+    store,
+  }
+}
+
+async function body(response) {
+  return response.json()
+}
+
+test('registration rejects a missing Origin before external work', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(registrationRequest({ origin: null }))
+
+  assert.equal(response.status, 403)
+  assert.equal((await body(response)).message, 'Origin not allowed.')
+  assert.equal(calls.length, 0)
+})
+
+test('production registration fails closed when Turnstile is not configured', async () => {
+  const { calls, handler } = createHarness({
+    env: {
+      ROACHNET_SUPABASE_URL: productionEnv.ROACHNET_SUPABASE_URL,
+      ROACHNET_SUPABASE_ANON_KEY: productionEnv.ROACHNET_SUPABASE_ANON_KEY,
+    },
+  })
+  const response = await handler(registrationRequest())
+
+  assert.equal(response.status, 503)
+  assert.equal((await body(response)).code, 'captcha_unavailable')
+  assert.equal(calls.length, 0)
+})
+
+test('production registration requires and verifies a Turnstile token', async () => {
+  const missing = createHarness()
+  const missingResponse = await missing.handler(registrationRequest({ captchaToken: '' }))
+  assert.equal(missingResponse.status, 400)
+  assert.equal((await body(missingResponse)).code, 'captcha_required')
+  assert.equal(missing.calls.length, 0)
+
+  const invalid = createHarness({
+    fetchImpl: async () => Response.json({ success: false }),
+  })
+  const invalidResponse = await invalid.handler(registrationRequest())
+  assert.equal(invalidResponse.status, 403)
+  assert.equal((await body(invalidResponse)).code, 'captcha_failed')
+})
+
+test('local Turnstile bypass requires an exact local Origin and explicit Netlify dev opt-in', async () => {
+  const env = {
+    ROACHNET_SUPABASE_URL: productionEnv.ROACHNET_SUPABASE_URL,
+    ROACHNET_SUPABASE_ANON_KEY: productionEnv.ROACHNET_SUPABASE_ANON_KEY,
+    ROACHNET_ALLOW_LOCAL_REGISTRATION_BYPASS: '1',
+    NETLIFY_DEV: 'true',
+  }
+  const local = createHarness({ env })
+  const localResponse = await local.handler(
+    registrationRequest({ origin: 'http://localhost:8888', ip: null, captchaToken: '' })
+  )
+  assert.equal(localResponse.status, 200)
+
+  const deployed = createHarness({ env: { ...env, NETLIFY_DEV: 'false' } })
+  const deployedResponse = await deployed.handler(
+    registrationRequest({ origin: 'http://localhost:8888', ip: null, captchaToken: '' })
+  )
+  assert.equal(deployedResponse.status, 503)
+  assert.equal((await body(deployedResponse)).code, 'captcha_unavailable')
+})
+
+test('registration fails closed without a trusted production client IP', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(registrationRequest({ ip: null }))
+
+  assert.equal(response.status, 503)
+  assert.equal((await body(response)).code, 'rate_limit_unavailable')
+  assert.equal(calls.filter(({ url }) => url.includes('/auth/v1/signup')).length, 0)
+})
+
+test('registration fails closed when the durable limiter is unavailable', async () => {
+  const { calls, handler } = createHarness({
+    store: {
+      async getWithMetadata() {
+        throw new Error('blob store unavailable')
+      },
+    },
+  })
+  const response = await handler(registrationRequest())
+
+  assert.equal(response.status, 503)
+  assert.equal((await body(response)).code, 'rate_limit_unavailable')
+  assert.equal(calls.filter(({ url }) => url.includes('/auth/v1/signup')).length, 0)
+})
+
+test('durable limiter blocks the fourth hourly attempt for one email', async () => {
+  const harness = createHarness()
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const response = await harness.handler(registrationRequest({ captchaToken: `captcha-${attempt}` }))
+    assert.equal(response.status, 200)
+  }
+
+  const blocked = await harness.handler(registrationRequest({ captchaToken: 'captcha-4' }))
+  assert.equal(blocked.status, 429)
+  assert.equal((await body(blocked)).code, 'rate_limited')
+  assert.equal(harness.calls.filter(({ url }) => url.includes('/auth/v1/signup')).length, 3)
+})
+
+test('registration uses public Supabase signup and returns confirmation semantics', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(registrationRequest())
+  const result = await body(response)
+  const signupCall = calls.find(({ url }) => url.includes('/auth/v1/signup'))
+
+  assert.equal(response.status, 200)
+  assert.equal(result.requiresConfirmation, true)
+  assert.match(result.message, /confirm/i)
+  assert.ok(signupCall)
+  assert.equal(
+    signupCall.url,
+    'https://project.supabase.co/auth/v1/signup?redirect_to=https%3A%2F%2Faccounts.roachnet.org%2F'
+  )
+  assert.equal(signupCall.options.headers.apikey, 'public-anon-key')
+  assert.equal(signupCall.options.headers.authorization, 'Bearer public-anon-key')
+  assert.deepEqual(JSON.parse(signupCall.options.body), {
+    email: 'person@example.com',
+    password: 'long-enough-password',
+    data: { display_name: 'Person' },
+  })
+  assert.equal(calls.some(({ url }) => url.includes('/auth/v1/admin/users')), false)
+})
+```
+
+## test/site-outcomes.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="test-site-outcomes-mjs" file="test/site-outcomes.mjs"}
+import assert from 'node:assert/strict'
+import { execFile } from 'node:child_process'
+import { readFile, stat } from 'node:fs/promises'
+import { HtmlValidate } from 'html-validate'
+import path from 'node:path'
+import { promisify } from 'node:util'
+import { fileURLToPath } from 'node:url'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const run = promisify(execFile)
+
+async function source(file) {
+  return readFile(path.join(root, file), 'utf8')
+}
+
+const netlify = await source('netlify.toml')
+assert.match(netlify, /\[build\]\s+publish = "website-main-dist"\s+command = "npm run build:main:deploy"/)
+assert.match(netlify, /\[functions\]\s+directory = "netlify\/functions"/)
+assert.match(netlify, /from = "\/apps"\s+to = "https:\/\/apps\.roachnet\.org\/"\s+status = 301/s)
+assert.match(netlify, /Strict-Transport-Security/)
+assert.match(netlify, /Permissions-Policy/)
+assert.match(netlify, /Content-Security-Policy/)
+assert.match(netlify, /frame-ancestors 'none'/)
+assert.doesNotMatch(await source('sitemap.xml'), /https:\/\/(apps|accounts)\.roachnet\.org|https:\/\/www\.roachwares\.org/)
+
+const appsBuild = await source('scripts/build-apps-site.mjs')
+const accountsBuild = await source('scripts/build-accounts-site.mjs')
+for (const build of [appsBuild, accountsBuild]) {
+  assert.match(build, /'\/404\.html \/404\.html 404'/)
+  assert.doesNotMatch(build, /'\/\* \/index\.html 200'/)
+  assert.match(build, /'robots\.txt'/)
+  assert.match(build, /'sitemap\.xml'/)
+  assert.match(build, /'_headers'/)
+  assert.match(build, /X-Frame-Options: DENY/)
+  assert.match(build, /Permissions-Policy:/)
+  assert.match(build, /Content-Security-Policy:/)
+  assert.match(build, /frame-ancestors 'none'/)
+}
+assert.doesNotMatch(accountsBuild, /^\s*'assets',$/m)
+assert.doesNotMatch(appsBuild, /^\s*'assets',$/m)
+
+await run(process.execPath, ['scripts/build-main-site.mjs'], { cwd: root })
+assert.equal(
+  await source('website-main-dist/404.html'),
+  await source('404.html'),
+  'build:main must stage canonical 404.html byte-for-byte'
+)
+const mainHtml = await source('website-main-dist/index.html')
+for (const unnecessaryResource of [
+  'https://fonts.googleapis.com/',
+  './app.css',
+  './app-polish.css',
+  './app.js',
+  './site-config.js',
+  './site-polish.js',
+]) {
+  assert.doesNotMatch(mainHtml, new RegExp(unnecessaryResource.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `generated main must not load ${unnecessaryResource}`)
+}
+assert.match(mainHtml, /<link rel="stylesheet" href="\.\/landing\.css" \/>/)
+assert.match(mainHtml, /<script src="\.\/landing-script\.js"><\/script>/)
+assert.match(mainHtml, /<img[^>]+src="https:\/\/www\.netlify\.com\/assets\/badges\/netlify-badge-color-accent\.svg"[^>]+width="[^"]+"[^>]+height="[^"]+"/)
+
+const landingHtml = await source('index.html')
+const landingCss = await source('landing.css')
+const landingScript = await source('landing-script.js')
+assert.doesNotMatch(landingHtml, /dither-(?:bg|canvas)|<canvas\b|Dithered parallax/i, 'landing must not ship a decorative canvas background')
+assert.doesNotMatch(landingHtml, /<script>[\s\S]*?<\/script>/, 'landing must not ship inline executable scripts')
+assert.doesNotMatch(landingScript, /queueBurst|requestAnimationFrame|initLanding(?:PointerField|ClickRipples)/, 'landing must not run decorative continuous or pointer animation')
+assert.doesNotMatch(landingCss, /\.dither-bg|why-rail-shift|\.is-bursting|rn-click-ripple--landing/, 'landing must not retain decorative animation styles')
+assert.match(landingCss, /body\.rn-body \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*background:\s*#000;/s, 'landing skip link needs an explicit high-contrast default style')
+assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.5"/, 'release accessible name must include its visible version')
+assert.match(landingHtml, /<img class="rn-logo-img" src="\.\/favicon-32x32\.png" width="26" height="26"/, 'landing must request a local icon sized for its rendered logo')
+const landingLogo = await readFile(path.join(root, 'favicon-32x32.png'))
+assert.equal(landingLogo.readUInt32BE(16), 32, 'landing logo width budget')
+assert.equal(landingLogo.readUInt32BE(20), 32, 'landing logo height budget')
+assert.ok((await stat(path.join(root, 'favicon-32x32.png'))).size <= 1024, 'landing logo byte budget')
+
+await run(process.execPath, ['scripts/build-accounts-site.mjs'], { cwd: root })
+const accountsHtml = await source('website-accounts-dist/index.html')
+const accountsValidation = await new HtmlValidate({
+  elements: ['html5'],
+  rules: {
+    'close-order': 'error',
+    'no-multiple-main': 'error',
+  },
+}).validateString(accountsHtml, 'website-accounts-dist/index.html')
+assert.equal(accountsValidation.valid, true, 'generated Accounts HTML must have one closed main element')
+
+const publicPages = [
+  'index.html',
+  'home/index.html',
+  'ios/index.html',
+  'api/index.html',
+  'brew/index.html',
+  'sitemap/index.html',
+  'roachclaw/index.html',
+  'account/index.html',
+  'app-store.html',
+]
+for (const page of publicPages) {
+  const html = await source(page)
+  assert.match(html, /class="rn-skip-link"/, `${page} needs a keyboard bypass link`)
+  assert.match(html, /<main[^>]+id="[^"]+"/, `${page} needs a skip-link main target`)
+}
+assert.match(await source('app-store.html'), /<h1[ >]/)
+for (const page of ['index.html', 'home/index.html', 'brew/index.html', 'app-store.html']) {
+  const html = await source(page)
+  assert.match(html, /not Apple-notarized/i, `${page} needs release-notarization disclosure`)
+  assert.doesNotMatch(html, /\b(?:is|which is) unsigned\b/i, `${page} must not claim the macOS release is unsigned`)
+}
+const packageManifest = await source('package.json')
+assert.match(packageManifest, /"build:main:deploy": "npm run verify && npm run build:main"/)
+assert.match(packageManifest, /"tangle:write": "node scripts\/tangle\.mjs --write && node scripts\/tangle\.mjs --verify"/)
+
+const chat = await source('netlify/functions/roachclaw-chat.mjs')
+assert.match(chat, /function isAllowedBridgeUrl/)
+assert.match(chat, /function isAllowedRequestOrigin/)
+assert.equal([...chat.matchAll(/!isAllowedBridgeUrl/g)].length, 2)
+assert.match(chat, /redirect: 'error'/)
+assert.match(chat, /signal: AbortSignal\.timeout/)
+
+const registration = await source('netlify/functions/register-account.mjs')
+assert.match(registration, /function isAllowedRequestOrigin/)
+assert.match(registration, /ROACHNET_TURNSTILE_SECRET_KEY/)
+assert.match(registration, /getStore\('roachnet-registration-rate-limits'\)/)
+assert.match(registration, /\/auth\/v1\/signup/)
+assert.doesNotMatch(registration, /\/auth\/v1\/admin\/users|SERVICE_ROLE|email_confirm/)
+
+const accountClient = await source('account.js')
+assert.match(
+  accountClient,
+  /if \(accountMode === 'signup'\) \{[\s\S]*await registerAccount\([\s\S]*return[\s\S]*\}\s*const result = await authState\.client\.auth\.signInWithPassword/,
+  'signup must wait for confirmation instead of immediately attempting password sign-in'
+)
+assert.match(accountClient, /Check your email to confirm your account/)
+
+process.env.ROACHNET_SUPABASE_URL = 'https://example.supabase.co'
+process.env.ROACHNET_SUPABASE_ANON_KEY = 'public-key'
+process.env.ROACHNET_WEB_CHAT_ENABLED = '1'
+process.env.ROACHNET_ALLOWED_BRIDGE_ORIGINS = 'https://paired.example'
+const { default: chatHandler } = await import('../netlify/functions/roachclaw-chat.mjs')
+const { default: registerHandler } = await import('../netlify/functions/register-account.mjs')
+globalThis.fetch = async () => new Response(JSON.stringify({ id: 'user-1' }), { status: 200 })
+for (const handler of [chatHandler, registerHandler]) {
+  const rejectedOrigin = await handler(
+    new Request('https://roachnet.org/.netlify/functions/test', {
+      method: 'POST',
+      headers: { authorization: 'Bearer session', origin: 'https://evil.example' },
+      body: JSON.stringify({ email: 'person@example.com', password: 'long-enough-password', message: 'hello' }),
+    })
+  )
+  assert.equal(rejectedOrigin.status, 403)
+}
+const blockedBridge = await chatHandler(
+  new Request('https://roachnet.org/.netlify/functions/roachclaw-chat', {
+    method: 'POST',
+    headers: { authorization: 'Bearer session', origin: 'https://roachnet.org' },
+    body: JSON.stringify({ message: 'hello', bridgeUrl: 'http://127.0.0.1:8080' }),
+  })
+)
+assert.equal(blockedBridge.status, 400)
+
+console.log('site outcome checks passed')
+```
+
+## netlify/functions/register-account.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="netlify-functions-register-account-mjs" file="netlify/functions/register-account.mjs"}
+import { createHmac } from 'node:crypto'
+import { getStore } from '@netlify/blobs'
+
+const allowedOrigins = new Set([
+  'https://accounts.roachnet.org',
+  'https://roachnet.org',
+  'http://localhost:8888',
+  'http://localhost:3000',
+  'http://127.0.0.1:8888',
+  'http://127.0.0.1:3000',
+])
+
+const localOrigins = new Set([
+  'http://localhost:8888',
+  'http://localhost:3000',
+  'http://127.0.0.1:8888',
+  'http://127.0.0.1:3000',
+])
+
+const rateLimitRules = [
+  { scope: 'ip', limit: 5, windowMs: 15 * 60 * 1000 },
+  { scope: 'email', limit: 3, windowMs: 60 * 60 * 1000 },
+]
+
+function requestOrigin(request) {
+  return request.headers.get('origin') || ''
+}
+
+function isAllowedRequestOrigin(request) {
+  return allowedOrigins.has(requestOrigin(request))
+}
+
+function isLocalBypassEnabled(origin, env) {
+  return (
+    localOrigins.has(origin) &&
+    env.NETLIFY_DEV === 'true' &&
+    env.ROACHNET_ALLOW_LOCAL_REGISTRATION_BYPASS === '1'
+  )
+}
+
+function json(body, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+      ...extraHeaders,
+    },
+  })
+}
+
+function withCors(request, response) {
+  const headers = new Headers(response.headers)
+  headers.set('access-control-allow-origin', requestOrigin(request))
+  headers.set('access-control-allow-methods', 'POST, OPTIONS')
+  headers.set('access-control-allow-headers', 'content-type')
+  headers.set('vary', 'origin')
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  })
+}
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+function clientIp(request, localBypass) {
+  const netlifyIp = request.headers.get('x-nf-client-connection-ip')?.trim() || ''
+  if (netlifyIp) return netlifyIp
+  if (!localBypass) return ''
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local-development'
+}
+
+function rateLimitKey(secret, scope, value) {
+  return `${scope}:${createHmac('sha256', secret).update(value).digest('hex')}`
+}
+
+async function consumeRateLimit({ store, key, limit, windowMs, now }) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const entry = await store.getWithMetadata(key, {
+      consistency: 'strong',
+      type: 'json',
+    })
+
+    if (!entry) {
+      const resetAt = now + windowMs
+      const result = await store.setJSON(
+        key,
+        { count: 1, resetAt },
+        { onlyIfNew: true }
+      )
+      if (result.modified) return { allowed: true, retryAfterSeconds: 0 }
+      continue
+    }
+
+    const count = Number(entry.data?.count)
+    const resetAt = Number(entry.data?.resetAt)
+    if (!Number.isSafeInteger(count) || count < 0 || !Number.isFinite(resetAt)) {
+      throw new Error('Invalid registration rate-limit state.')
+    }
+
+    if (now < resetAt && count >= limit) {
+      return {
+        allowed: false,
+        retryAfterSeconds: Math.max(1, Math.ceil((resetAt - now) / 1000)),
+      }
+    }
+
+    const nextState =
+      now >= resetAt
+        ? { count: 1, resetAt: now + windowMs }
+        : { count: count + 1, resetAt }
+    const result = await store.setJSON(key, nextState, { onlyIfMatch: entry.etag })
+    if (result.modified) return { allowed: true, retryAfterSeconds: 0 }
+  }
+
+  throw new Error('Registration rate-limit contention did not settle.')
+}
+
+async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
+  const body = new URLSearchParams({
+    secret,
+    response: token,
+  })
+
+  if (remoteip) body.set('remoteip', remoteip)
+
+  const response = await fetchImpl('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+    },
+    body,
+  })
+
+  if (!response.ok) {
+    return { success: false, message: 'Captcha verification did not finish cleanly.' }
+  }
+
+  const result = await response.json()
+  return {
+    success: result.success === true,
+    message: result.success === true ? '' : 'Captcha verification failed.',
+  }
+}
+
+function confirmationRedirect(env) {
+  const fallback = 'https://accounts.roachnet.org/'
+  try {
+    const configured = new URL(env.ROACHNET_AUTH_REDIRECT_URL || fallback)
+    return allowedOrigins.has(configured.origin) ? configured.href : fallback
+  } catch {
+    return fallback
+  }
+}
+
+export function createRegistrationHandler({
+  env = process.env,
+  fetchImpl = globalThis.fetch,
+  getRateLimitStore = () => getStore('roachnet-registration-rate-limits'),
+  now = Date.now,
+} = {}) {
+  return async (request) => {
+    if (!isAllowedRequestOrigin(request)) {
+      return json({ ok: false, message: 'Origin not allowed.' }, 403)
+    }
+
+    if (request.method === 'OPTIONS') {
+      return withCors(request, json({ ok: true }))
+    }
+
+    if (request.method !== 'POST') {
+      return withCors(request, json({ ok: false, message: 'Use POST for account creation.' }, 405))
+    }
+
+    const supabaseUrl = String(env.ROACHNET_SUPABASE_URL || '').replace(/\/$/, '')
+    const anonKey = env.ROACHNET_SUPABASE_ANON_KEY || ''
+
+    if (!supabaseUrl || !anonKey) {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            message: 'The account lane is missing its secure auth configuration.',
+          },
+          503
+        )
+      )
+    }
+
+    let payload
+    try {
+      payload = await request.json()
+    } catch {
+      return withCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
+    }
+
+    const email = String(payload?.email || '').trim().toLowerCase()
+    const password = String(payload?.password || '')
+    const displayName = String(payload?.displayName || '').trim()
+    const honeypot = String(payload?.company || '').trim()
+    const captchaToken = String(payload?.captchaToken || '').trim()
+    const startedAt = Number(payload?.startedAt || 0)
+
+    if (honeypot) {
+      return withCors(request, json({ ok: false, message: 'Request rejected.' }, 400))
+    }
+
+    if (!validateEmail(email)) {
+      return withCors(request, json({ ok: false, message: 'Enter a real email address.' }, 400))
+    }
+
+    if (password.length < 10) {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Use a password with at least 10 characters.' }, 400)
+      )
+    }
+
+    if (displayName.length > 60) {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Keep the display name under 60 characters.' }, 400)
+      )
+    }
+
+    if (startedAt && now() - startedAt < 900) {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Hold for a second and try again.' }, 429)
+      )
+    }
+
+    const origin = requestOrigin(request)
+    const localBypass = isLocalBypassEnabled(origin, env)
+    const turnstileSecret = env.ROACHNET_TURNSTILE_SECRET_KEY || ''
+    const remoteip = clientIp(request, localBypass)
+
+    if (!localBypass) {
+      if (!turnstileSecret) {
+        return withCors(
+          request,
+          json(
+            {
+              ok: false,
+              code: 'captcha_unavailable',
+              message: 'Account creation is unavailable until human verification is configured.',
+            },
+            503
+          )
+        )
+      }
+
+      if (!captchaToken) {
+        return withCors(
+          request,
+          json({ ok: false, code: 'captcha_required', message: 'Finish the human check first.' }, 400)
+        )
+      }
+
+      let captcha
+      try {
+        captcha = await verifyTurnstile({
+          fetchImpl,
+          secret: turnstileSecret,
+          token: captchaToken,
+          remoteip,
+        })
+      } catch {
+        return withCors(
+          request,
+          json(
+            {
+              ok: false,
+              code: 'captcha_unavailable',
+              message: 'Captcha verification is temporarily unavailable.',
+            },
+            503
+          )
+        )
+      }
+
+      if (!captcha.success) {
+        return withCors(
+          request,
+          json({ ok: false, code: 'captcha_failed', message: captcha.message }, 403)
+        )
+      }
+    }
+
+    if (!remoteip) {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            code: 'rate_limit_unavailable',
+            message: 'Account creation could not establish abuse protection.',
+          },
+          503
+        )
+      )
+    }
+
+    try {
+      const store = getRateLimitStore()
+      const keySecret = turnstileSecret || 'local-development-only'
+      const values = { ip: remoteip, email }
+      for (const rule of rateLimitRules) {
+        const result = await consumeRateLimit({
+          store,
+          key: rateLimitKey(keySecret, rule.scope, values[rule.scope]),
+          limit: rule.limit,
+          windowMs: rule.windowMs,
+          now: now(),
+        })
+        if (!result.allowed) {
+          return withCors(
+            request,
+            json(
+              {
+                ok: false,
+                code: 'rate_limited',
+                message: 'Too many account attempts. Wait and try again.',
+              },
+              429,
+              { 'retry-after': String(result.retryAfterSeconds) }
+            )
+          )
+        }
+      }
+    } catch {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            code: 'rate_limit_unavailable',
+            message: 'Account creation is temporarily unavailable.',
+          },
+          503
+        )
+      )
+    }
+
+    const signupUrl = new URL(`${supabaseUrl}/auth/v1/signup`)
+    signupUrl.searchParams.set('redirect_to', confirmationRedirect(env))
+
+    let createResponse
+    try {
+      createResponse = await fetchImpl(signupUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          apikey: anonKey,
+          authorization: `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          data: {
+            display_name: displayName || email.split('@')[0],
+          },
+        }),
+      })
+    } catch {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Account creation is temporarily unavailable.' }, 503)
+      )
+    }
+
+    const responseBody = await createResponse.json().catch(() => ({}))
+
+    if (!createResponse.ok) {
+      const code = String(responseBody?.error_code || responseBody?.code || '')
+      const message = String(responseBody?.msg || responseBody?.message || responseBody?.error || '')
+      const lowered = `${code} ${message}`.toLowerCase()
+
+      if (lowered.includes('user_already_exists') || lowered.includes('already registered')) {
+        return withCors(
+          request,
+          json({ ok: false, code: 'user_exists', message: 'That email already has a RoachNet account. Sign in instead.' }, 409)
+        )
+      }
+
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            message: message || 'Account creation did not finish cleanly.',
+          },
+          createResponse.status
+        )
+      )
+    }
+
+    const requiresConfirmation = !responseBody?.access_token
+    return withCors(
+      request,
+      json({
+        ok: true,
+        requiresConfirmation,
+        message: requiresConfirmation
+          ? 'Check your email to confirm your account, then sign in.'
+          : 'Account created. Sign in to continue.',
+        userId: responseBody?.user?.id || responseBody?.id || null,
+      })
+    )
+  }
+}
+
+export default async (request) => createRegistrationHandler()(request)
+```
+
+## netlify/functions/roachclaw-chat.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="netlify-functions-roachclaw-chat-mjs" file="netlify/functions/roachclaw-chat.mjs"}
+import { mkdir } from 'node:fs/promises'
+
+const allowedOrigins = new Set([
+  'https://roachnet.org',
+  'https://accounts.roachnet.org',
+  'http://localhost:8888',
+  'http://localhost:3000',
+  'http://127.0.0.1:8888',
+  'http://127.0.0.1:3000',
+])
+
+function isAllowedRequestOrigin(request) {
+  const origin = request.headers.get('origin') || ''
+  return !origin || allowedOrigins.has(origin)
+}
+
+const defaultSystemPrompt =
+  'You are RoachClaw on the RoachNet web lane. Answer clearly, keep user data isolated to the authenticated account lane, never claim access to a local machine you cannot see, and prefer practical help over filler.'
+const roachBrainCacheDir = '/tmp/roachbrain-cloud-cache'
+const roachBrainCandidates = [
+  {
+    id: 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA',
+    label: 'SmolLM2 135M',
+  },
+  {
+    id: 'onnx-community/gemma-3-270m-it-ONNX',
+    label: 'Gemma 3 270M',
+  },
+]
+
+let roachBrainPipelinePromise = null
+
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+    },
+  })
+}
+
+function normalizeOrigin(request) {
+  const origin = request.headers.get('origin') || ''
+  if (allowedOrigins.has(origin)) {
+    return origin
+  }
+
+  return 'https://roachnet.org'
+}
+
+function withCors(request, response) {
+  const headers = new Headers(response.headers)
+  headers.set('access-control-allow-origin', normalizeOrigin(request))
+  headers.set('access-control-allow-methods', 'POST, OPTIONS')
+  headers.set('access-control-allow-headers', 'content-type, authorization')
+  headers.set('vary', 'origin')
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  })
+}
+
+function bearerToken(request) {
+  const header = request.headers.get('authorization') || ''
+  const [scheme, token] = header.split(' ')
+  if (scheme?.toLowerCase() !== 'bearer' || !token) {
+    return ''
+  }
+
+  return token.trim()
+}
+
+function sanitizeMessageContent(value) {
+  const text = String(value || '').trim()
+  return text.slice(0, 12000)
+}
+
+function sanitizeLabel(value) {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 120)
+}
+
+function normalizeBridgeUrl(value) {
+  const raw = String(value || '').trim()
+  if (!raw) {
+    return ''
+  }
+
+  try {
+    const url = new URL(raw)
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      return ''
+    }
+    url.pathname = ''
+    url.search = ''
+    url.hash = ''
+    return url.toString().replace(/\/$/, '')
+  } catch {
+    return ''
+  }
+}
+
+function isAllowedBridgeUrl(bridgeUrl, allowedOrigins) {
+  if (!bridgeUrl || !allowedOrigins.size) {
+    return false
+  }
+
+  return allowedOrigins.has(bridgeUrl)
+}
+
+function summarizePrompt(prompt) {
+  const flattened = prompt.replace(/\s+/g, ' ').trim()
+  if (!flattened) {
+    return 'New chat'
+  }
+
+  return flattened.length > 64 ? `${flattened.slice(0, 61)}...` : flattened
+}
+
+function summarizeReply(reply) {
+  const flattened = reply.replace(/\s+/g, ' ').trim()
+  return flattened.length > 180 ? `${flattened.slice(0, 177)}...` : flattened
+}
+
+async function verifyUserSession({ supabaseUrl, publishableKey, token }) {
+  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: {
+      apikey: publishableKey,
+      authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    return { user: null, error: 'This account session is not valid anymore.' }
+  }
+
+  const user = await response.json().catch(() => null)
+  if (!user?.id) {
+    return { user: null, error: 'Could not resolve the signed-in user.' }
+  }
+
+  return { user, error: '' }
+}
+
+function createDatabaseClient({ supabaseUrl, apiKey, authToken }) {
+  function restUrl(table, query = '') {
+    const suffix = query ? `?${query}` : ''
+    return `${supabaseUrl}/rest/v1/${table}${suffix}`
+  }
+
+  async function request(table, { method = 'GET', query = '', body, prefer = 'return=representation' } = {}) {
+    const response = await fetch(restUrl(table, query), {
+      method,
+      headers: {
+        'content-type': 'application/json',
+        apikey: apiKey,
+        authorization: `Bearer ${authToken}`,
+        prefer,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+    const payload = await response.json().catch(() => null)
+    if (!response.ok) {
+      const message =
+        payload?.message || payload?.hint || payload?.error || 'Database request did not finish cleanly.'
+      throw new Error(message)
+    }
+
+    return payload
+  }
+
+  return { request }
+}
+
+async function sendRoachClawRelay({
+  bridgeUrl,
+  bridgeToken,
+  model,
+  content,
+  remoteSessionId,
+  messages,
+}) {
+  const requestUrl = `${bridgeUrl}/api/companion/chat/send`
+  const response = await fetch(requestUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-roachnet-companion-token': bridgeToken,
+    },
+    redirect: 'error',
+    signal: AbortSignal.timeout(10_000),
+    body: JSON.stringify({
+      sessionId: remoteSessionId || undefined,
+      content,
+      model,
+      messages: Array.isArray(messages) ? messages.slice(-20) : [],
+    }),
+  })
+
+  const payload = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    const message = payload?.error || payload?.message || 'RoachClaw could not get a clean reply from your device.'
+    throw new Error(message)
+  }
+
+  const text = String(payload?.assistantMessage?.content || '').trim()
+  if (!text) {
+    throw new Error('RoachClaw returned an empty reply from the paired device.')
+  }
+
+  return {
+    text,
+    provider: 'RoachClaw local relay',
+    model: String(payload?.session?.model || model || '').trim() || null,
+    remoteSessionId: payload?.session?.id ? String(payload.session.id) : null,
+    remoteSessionTitle: sanitizeLabel(payload?.session?.title || ''),
+  }
+}
+
+function extractGeneratedReply(result) {
+  const generated = Array.isArray(result) ? result[0]?.generated_text ?? result[0] : result
+
+  if (Array.isArray(generated)) {
+    const assistant = [...generated].reverse().find((entry) => entry?.role === 'assistant' && entry?.content)
+    return String(assistant?.content || '').trim()
+  }
+
+  if (typeof generated === 'string') {
+    return generated.trim()
+  }
+
+  return ''
+}
+
+async function getRoachBrainPipeline() {
+  if (roachBrainPipelinePromise) {
+    return roachBrainPipelinePromise
+  }
+
+  roachBrainPipelinePromise = (async () => {
+    // Force the web runtime build so Netlify does not bundle the heavyweight
+    // native ONNX binaries for every platform into this function artifact.
+    const { env, pipeline } = await import('../../node_modules/@huggingface/transformers/dist/transformers.web.js')
+    await mkdir(roachBrainCacheDir, { recursive: true })
+    env.cacheDir = roachBrainCacheDir
+    env.allowLocalModels = false
+    env.allowRemoteModels = true
+    env.useFSCache = true
+
+    let lastError = null
+    for (const candidate of roachBrainCandidates) {
+      for (const dtype of ['q4', 'q8']) {
+        try {
+          const generator = await pipeline('text-generation', candidate.id, {
+            dtype,
+          })
+          return {
+            generator,
+            modelLabel: candidate.label,
+          }
+        } catch (error) {
+          lastError = error
+          console.warn(`RoachBrain Cloud model attempt failed for ${candidate.label} (${dtype}).`, error)
+        }
+      }
+    }
+
+    throw lastError || new Error('RoachBrain Cloud could not load a usable model.')
+  })().catch((error) => {
+    roachBrainPipelinePromise = null
+    throw error
+  })
+
+  return roachBrainPipelinePromise
+}
+
+async function generateRoachBrainReply({ history, prompt }) {
+  const { generator, modelLabel } = await getRoachBrainPipeline()
+
+  const conversation = [
+    {
+      role: 'system',
+      content: defaultSystemPrompt,
+    },
+    ...history
+      .map((item) => ({
+        role: item.role === 'assistant' ? 'assistant' : 'user',
+        content: sanitizeMessageContent(item.content),
+      }))
+      .filter((item) => item.content.length > 0)
+      .slice(-10),
+  ]
+
+  const result = await generator(conversation, {
+    max_new_tokens: 96,
+    do_sample: false,
+    repetition_penalty: 1.04,
+  })
+
+  const text = extractGeneratedReply(result)
+  if (!text) {
+    throw new Error('RoachBrain Cloud returned an empty reply.')
+  }
+
+  return {
+    text,
+    provider: 'RoachBrain Cloud',
+    model: modelLabel,
+    remoteSessionId: null,
+    remoteSessionTitle: '',
+  }
+}
+
+export default async (request) => {
+  if (!isAllowedRequestOrigin(request)) {
+    return json({ ok: false, message: 'Origin not allowed.' }, 403)
+  }
+
+  if (request.method === 'OPTIONS') {
+    return withCors(request, json({ ok: true }))
+  }
+
+  if (request.method !== 'POST') {
+    return withCors(request, json({ ok: false, message: 'Use POST for RoachClaw chat.' }, 405))
+  }
+
+  const supabaseUrl = process.env.ROACHNET_SUPABASE_URL || ''
+  const publishableKey = process.env.ROACHNET_SUPABASE_ANON_KEY || ''
+  const serviceRoleKey = process.env.ROACHNET_SUPABASE_SERVICE_ROLE_KEY || ''
+  const chatEnabled = process.env.ROACHNET_WEB_CHAT_ENABLED === '1'
+  const model = process.env.ROACHNET_WEB_CHAT_MODEL || 'RoachClaw relay'
+  const allowedBridgeOrigins = new Set(
+    (process.env.ROACHNET_ALLOWED_BRIDGE_ORIGINS || '')
+      .split(',')
+      .map(normalizeBridgeUrl)
+      .filter(Boolean)
+  )
+
+  if (!supabaseUrl || !publishableKey) {
+    return withCors(
+      request,
+      json({ ok: false, message: 'The hosted lane is missing its account backend configuration.' }, 503)
+    )
+  }
+
+  if (!chatEnabled || !model) {
+    return withCors(
+      request,
+      json(
+        {
+          ok: false,
+          code: 'lane_not_armed',
+          message: 'RoachClaw web is not armed on this deploy yet.',
+        },
+        503
+      )
+    )
+  }
+
+  const token = bearerToken(request)
+  if (!token) {
+    return withCors(request, json({ ok: false, message: 'Sign in first.' }, 401))
+  }
+
+  const { user, error: sessionError } = await verifyUserSession({
+    supabaseUrl,
+    publishableKey,
+    token,
+  })
+
+  if (!user) {
+    return withCors(request, json({ ok: false, message: sessionError }, 401))
+  }
+
+  let payload
+  try {
+    payload = await request.json()
+  } catch {
+    return withCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
+  }
+
+  const prompt = sanitizeMessageContent(payload?.message)
+  const threadId = String(payload?.threadId || '').trim()
+  const requestedBridgeUrl = normalizeBridgeUrl(payload?.bridgeUrl)
+  const bridgeToken = String(payload?.bridgeToken || '').trim()
+  const bridgeLabel = sanitizeLabel(payload?.bridgeLabel || '')
+
+  if (!prompt) {
+    return withCors(request, json({ ok: false, message: 'Enter a message first.' }, 400))
+  }
+
+  if (requestedBridgeUrl && !isAllowedBridgeUrl(requestedBridgeUrl, allowedBridgeOrigins)) {
+    return withCors(request, json({ ok: false, message: 'That paired-device address is not allowed.' }, 400))
+  }
+
+  const databaseClient = createDatabaseClient({
+    supabaseUrl,
+    apiKey: serviceRoleKey || publishableKey,
+    authToken: serviceRoleKey || token,
+  })
+
+  try {
+    let thread = null
+
+    if (threadId) {
+      const query = new URLSearchParams({
+        select: '*',
+        id: `eq.${threadId}`,
+        user_id: `eq.${user.id}`,
+        limit: '1',
+      })
+      const rows = await databaseClient.request('chat_threads', { query: query.toString() })
+      thread = rows?.[0] || null
+      if (!thread) {
+        return withCors(request, json({ ok: false, message: 'That chat is not yours anymore.' }, 404))
+      }
+    } else {
+      const inserted = await databaseClient.request('chat_threads', {
+        method: 'POST',
+        body: {
+          user_id: user.id,
+          title: summarizePrompt(prompt),
+          summary: null,
+          lane: 'roachclaw-web',
+          source: 'roachnet.org/roachclaw',
+          metadata: {
+            createdBy: 'web',
+          },
+        },
+      })
+      thread = inserted?.[0] || null
+    }
+
+    const existingRelay = thread?.metadata?.relay && typeof thread.metadata.relay === 'object' ? thread.metadata.relay : {}
+    const bridgeUrl = requestedBridgeUrl || normalizeBridgeUrl(existingRelay?.bridgeUrl)
+    if (bridgeUrl && !isAllowedBridgeUrl(bridgeUrl, allowedBridgeOrigins)) {
+      return withCors(request, json({ ok: false, message: 'That paired-device address is no longer allowed.' }, 400))
+    }
+    const useBridgeRelay = Boolean(bridgeUrl && bridgeToken)
+
+    const userInsert = await databaseClient.request('chat_messages', {
+      method: 'POST',
+      body: {
+        thread_id: thread.id,
+        user_id: user.id,
+        role: 'user',
+        content: prompt,
+        metadata: {
+          source: 'roachnet.org/roachclaw',
+        },
+      },
+    })
+
+    const messageQuery = new URLSearchParams({
+      select: 'role,content,created_at',
+      thread_id: `eq.${thread.id}`,
+      user_id: `eq.${user.id}`,
+      order: 'created_at.asc',
+      limit: '24',
+    })
+    const history = await databaseClient.request('chat_messages', { query: messageQuery.toString() })
+
+    const relayMessages = history
+      .map((item) => ({
+        role: item.role,
+        content: sanitizeMessageContent(item.content),
+      }))
+      .filter((item) => item.content.length > 0)
+
+    const reply = useBridgeRelay
+      ? await sendRoachClawRelay({
+          bridgeUrl,
+          bridgeToken,
+          model,
+          content: prompt,
+          remoteSessionId: String(existingRelay?.remoteSessionId || '').trim(),
+          messages: relayMessages,
+        })
+      : await generateRoachBrainReply({
+          history: relayMessages,
+          prompt,
+        })
+
+    const assistantInsert = await databaseClient.request('chat_messages', {
+      method: 'POST',
+      body: {
+        thread_id: thread.id,
+        user_id: user.id,
+        role: 'assistant',
+        content: reply.text,
+        provider: reply.provider,
+        model: reply.model,
+        metadata: {
+          source: 'roachnet.org/roachclaw',
+          relay: useBridgeRelay
+            ? {
+                kind: 'local-device',
+                bridgeUrl,
+                label: bridgeLabel || sanitizeLabel(existingRelay?.label || ''),
+              }
+            : {
+                kind: 'roachbrain-cloud',
+                label: 'RoachBrain Cloud',
+              },
+        },
+      },
+    })
+
+    const relayMetadata = useBridgeRelay
+      ? {
+          kind: 'local-device',
+          bridgeUrl,
+          label: bridgeLabel || sanitizeLabel(existingRelay?.label || ''),
+          remoteSessionId: reply.remoteSessionId || String(existingRelay?.remoteSessionId || '').trim() || null,
+          lastUsedAt: new Date().toISOString(),
+        }
+      : {
+          kind: 'roachbrain-cloud',
+          label: 'RoachBrain Cloud',
+          lastUsedAt: new Date().toISOString(),
+        }
+
+    const shouldRefreshTitle =
+      !thread.summary ||
+      thread.title === 'New chat' ||
+      thread.title === summarizePrompt(prompt)
+
+    const updatedThreadRows = await databaseClient.request('chat_threads', {
+      method: 'PATCH',
+      query: new URLSearchParams({
+        select: '*',
+        id: `eq.${thread.id}`,
+        user_id: `eq.${user.id}`,
+      }).toString(),
+      body: shouldRefreshTitle
+        ? {
+            title: sanitizeLabel(reply.remoteSessionTitle) || summarizePrompt(prompt),
+            summary: summarizeReply(reply.text),
+            metadata: {
+              ...(thread.metadata && typeof thread.metadata === 'object' ? thread.metadata : {}),
+              relay: relayMetadata,
+            },
+          }
+        : {
+            summary: thread.summary || summarizeReply(reply.text),
+            metadata: {
+              ...(thread.metadata && typeof thread.metadata === 'object' ? thread.metadata : {}),
+              relay: relayMetadata,
+            },
+          },
+    })
+
+    return withCors(
+      request,
+      json({
+        ok: true,
+        thread: updatedThreadRows?.[0] || thread,
+        userMessage: userInsert?.[0] || null,
+        assistantMessage: assistantInsert?.[0] || null,
+        provider: reply.provider,
+        model: reply.model,
+      })
+    )
+  } catch (error) {
+    return withCors(
+      request,
+      json(
+        {
+          ok: false,
+          message: error instanceof Error ? error.message : 'RoachClaw could not finish the request.',
+        },
+        500
+      )
+    )
+  }
+}
+```

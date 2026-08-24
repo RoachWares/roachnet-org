@@ -348,6 +348,8 @@ async function registerAccount({ email, password, displayName }) {
   if (!response.ok || result.ok !== true) {
     throw new Error(result.message || 'Account creation failed.')
   }
+
+  return result
 }
 
 async function loadAuthState() {
@@ -430,7 +432,17 @@ form?.addEventListener('submit', async (event) => {
 
   try {
     if (accountMode === 'signup') {
-      await registerAccount({ email, password, displayName })
+      const registration = await registerAccount({ email, password, displayName })
+      form.reset()
+      startedAtInput.value = String(Date.now())
+      captchaToken = ''
+      resetTurnstileIfPresent()
+      setMode('signin')
+      setFeedback(
+        registration.message || 'Check your email to confirm your account, then sign in.',
+        'live'
+      )
+      return
     }
 
     const result = await authState.client.auth.signInWithPassword({ email, password })
@@ -445,15 +457,7 @@ form?.addEventListener('submit', async (event) => {
 
     renderStatus()
     await syncSnapshot()
-    setFeedback(accountMode === 'signup' ? 'Account created and signed in.' : 'Signed in.', 'live')
-
-    if (accountMode === 'signup') {
-      form.reset()
-      startedAtInput.value = String(Date.now())
-      captchaToken = ''
-      resetTurnstileIfPresent()
-      setMode('signin')
-    }
+    setFeedback('Signed in.', 'live')
   } catch (error) {
     setFeedback(error?.message || 'Account request failed.', 'error')
     captchaToken = ''

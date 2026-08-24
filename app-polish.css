@@ -299,8 +299,8 @@ body:not([data-page="landing"]) .pillar-card::after {
 .roachclaw-panel h1,
 .account-poster h1,
 .store-featured-card__copy h3,
-body[data-page="apps"] .apps-section-head__copy h1,
-body[data-page="apps"] .apps-hero-panel__copy h1,
+body[data-page="apps"] .apps-section-head__copy h2,
+body[data-page="apps"] .apps-hero-panel__copy h2,
 body[data-page="apps"] .apps-row__head h2 {
   font-family: var(--rn-font-display);
 }
@@ -2344,7 +2344,7 @@ body[data-page="apps"] .apps-nav-item__icon {
     monospace;
 }
 
-body[data-page="apps"] .apps-section-head__copy h1 {
+body[data-page="apps"] .apps-section-head__copy h2 {
   max-width: 12ch;
 }
 
@@ -2497,7 +2497,7 @@ body[data-page="apps"] .apps-store-sidebar__card {
 body[data-page="roachclaw"] .roachclaw-panel--brand h1,
 body[data-page="roachclaw"] .roachclaw-panel--workspace-head h2,
 body[data-page="api"] .api-docs-hero h2,
-body[data-page="apps"] .apps-section-head__copy h1 {
+body[data-page="apps"] .apps-section-head__copy h2 {
   text-wrap: balance;
 }
 
@@ -5593,7 +5593,7 @@ body[data-page="apps"] .apps-card__copy h3 {
 
 body[data-page="apps"] .apps-store-brand__copy strong,
 body[data-page="apps"] .apps-store-sidebar__card h2,
-body[data-page="apps"] .apps-section-head__copy h1 {
+body[data-page="apps"] .apps-section-head__copy h2 {
   text-wrap: balance;
 }
 
@@ -13423,7 +13423,7 @@ body:not([data-page="landing"]) .site-header .site-nav a.is-current::before {
   opacity: 1 !important;
 }
 
-body[data-page="apps"] .apps-section-head__copy h1 {
+body[data-page="apps"] .apps-section-head__copy h2 {
   max-width: 14ch !important;
   font-size: clamp(2.05rem, 3.8vw, 3.55rem) !important;
   letter-spacing: -0.055em !important;
@@ -15605,4 +15605,41 @@ body:not([data-page="landing"]) .rn-dither-field::after {
     padding-inline: 0.62rem !important;
     font-size: 0.66rem !important;
   }
+}
+
+/* 2026-06-09: keep shader-style ambient layers visual-only so they never create horizontal scroll. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip !important;
+}
+
+body:not([data-page="landing"]) .rn-dither-field,
+body:not([data-page="landing"]) .rn-ambient-orbits {
+  position: fixed !important;
+  inset: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: clip !important;
+  contain: paint !important;
+  transform: none !important;
+}
+
+body:not([data-page="landing"]) .rn-dither-field canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  transform: none !important;
+}
+
+body:not([data-page="landing"]) .rn-ambient-orbits span {
+  max-width: min(22rem, 52vw);
+  max-height: min(22rem, 52vw);
 }

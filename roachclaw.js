@@ -42,6 +42,43 @@ if (root) {
     draft: 'Draft a concise message I can send from RoachNet. Keep it clean, direct, and practical.',
     debug: 'Help me debug a problem in my RoachNet stack. Ask the minimum questions you need and give me practical next steps.',
     summarize: 'Summarize the important parts of this topic in a way that is fast to scan and act on.',
+    cookbook: 'Run a RoachClaw Cookbook check. Ask about the machine if you need to, recommend the model lane that fits, and explain the tradeoff without hardware theater.',
+    research: 'Plan a deep research run. Name the source types, the verification pass, and the final brief I should save to the vault.',
+    compare: 'Compare two model routes on the same prompt. Hide the labels until after scoring accuracy, clarity, speed, and local suitability.',
+    memory: 'Run a RoachBrain audit. Find stale context, useful procedures, and one cleanup move that will make future prompts sharper.',
+    skills: 'Turn this successful workflow into a RoachClaw skill. Give it a name, trigger hints, guardrails, and the exact steps worth saving.',
+    searchcache: 'Plan a local search cache entry. Capture the query, source list, ranking notes, and the summary RoachNet should keep for later.',
+    drafts: 'Stage this as a native editor draft. Pick the format, title, target shelf, and the next edit that makes it worth saving.',
+    webhooks: 'Review a local webhook setup. Name the scope, secret-handling rule, trigger path, and the approval gate before anything runs.',
+    commanddeck: 'Design the RoachNet command deck for this workflow. Include the search phrase, preview panel, approval boundary, and what should happen on Ctrl-Cmd-R.',
+    contextrail: 'Build a contextual side rail for this task. List visible files, memories, compactions, search crumbs, and the one thing RoachClaw should not touch.',
+    vaultnav: 'Plan a Finder-like vault navigation pass. Name the shelves, previews, drag-and-drop imports, and reveal-in-Finder behavior that should exist.',
+    agentmonitor: 'Design an Activity Monitor-style agent view. Show active runs, stalled work, replay crumbs, resource pressure, and stop/retry actions.',
+    orchestration: 'Shape a multi-agent orchestration board. Assign roles, context budgets, handoffs, stop conditions, and the final evidence bundle.',
+    sessionboard: 'Design a RoachClaw session board. Include chat history, detached run replay, transcript save/export, context restore, and branch resume behavior.',
+    modelbench: 'Design a native model bench. Include fit scoring, blind comparison, serve plans, saved winners, and the model-pack route users should see next.',
+    themestudio: 'Design the RoachNet theme studio. Cover palette, density, motion, contrast, and safe export without turning settings into a junk drawer.',
+    agentruns: 'Plan a detached RoachClaw agent run. Name the session, status, replay crumbs, stop condition, and what should survive a closed browser tab.',
+    compactions: 'Create a context compaction note. Preserve goals, file paths, decisions, blockers, and the next move without hauling the whole chat around.',
+    streamingstability: 'Audit RoachClaw streaming stability. Cover append-only chunks, finalized markdown boundaries, open code fences, fallback rendering, and how hosted chat should avoid rewriting settled text.',
+    toolindex: 'Design a local RoachClaw tool index entry. Include the tool name, category, trigger hints, safety boundary, and when it should always be available.',
+    events: 'Set up a local RoachClaw event counter. Name the event, trigger threshold, owner scope, and the action that should fire when it earns it.',
+    documents: 'Help with a vault document. Summarize it, suggest edits, name the missing context, and give me the version worth saving.',
+    inbox: 'Plan a local-first inbox triage pass. Sort urgency, draft one reply, and list what should become a reminder instead of another unread email.',
+    calendar: 'Turn these notes into a sane schedule. Keep the plan local-first, include reminders, and avoid calendar theater.',
+    gallery: 'Plan a media cleanup lane. Import, tag, dedupe, and export the useful assets without creating a second junk drawer.',
+    diagnostics: 'Run a RoachNet diagnostics pass. Check provider probes, degraded services, settings that need scrubbing, and one safe next fix.',
+    servicehealth: 'Run the RoachNet service health report. Check Ollama, native agent, memory, embeddings, intake policy, scoped tools, updates, and catalog health. Keep the report secret-safe and point me at the first local fix.',
+    integrations: 'Review contacts, webhooks, provider routes, and external handoffs. Flag anything that should stay local, scoped, or disabled.',
+    reports: 'Plan a visual report and background job lane. Name the sources, the evidence, the output artifact, and how it should be saved to the vault.',
+    presets: 'Design a RoachClaw preset for this workflow. Include the system prompt, model behavior, context lanes, and the guardrails that keep it useful.',
+    signatures: 'Create a local signature lane plan for documents, vault notes, and RoachMail. Keep payloads local and name the UI needed to make it painless.',
+    backups: 'Plan a RoachClaw backup and restore pass. Include what to export, what to redact, how to verify it, and how to avoid copying secrets by accident.',
+    tokens: 'Review the local API token lane. Define scopes, rotation, one-time display rules, and the places plaintext should never be stored.',
+    scopedtools: 'Audit RoachClaw scoped tools. List the read, write, launch, document, calendar, memory, and mail scopes; name the approval gate; and flag anything too broad.',
+    providersecurity: 'Review provider security for a local-first setup. Cover scoped TLS bundles, upload limits, OAuth handoffs, URL safety, and what must never be exported.',
+    uploadpolicy: 'Design RoachNet intake limits. Cover chat attachments, vault imports, gallery media, RoachSpeech audio, calendar files, downloads, env overrides, and the public 413 messages users should actually understand.',
+    memoryprovider: 'Design the memory provider lane. Keep RoachBrain native memory as the default, then describe how an external provider can opt in without becoming invisible custody.',
   }
 
   let authState = null
@@ -60,6 +97,232 @@ if (root) {
       .replaceAll('>', '&gt;')
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#39;')
+  }
+
+  function renderInlineMarkdown(value) {
+    let html = escapeHtml(value)
+    const codeSpans = []
+    html = html.replace(/`([^`]+)`/g, (_match, code) => {
+      const index = codeSpans.push(`<code>${code}</code>`) - 1
+      return `@@CODE_SPAN_${index}@@`
+    })
+    html = html
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" rel="noreferrer" target="_blank">$1</a>')
+    codeSpans.forEach((span, index) => {
+      html = html.replace(`@@CODE_SPAN_${index}@@`, span)
+    })
+    return html
+  }
+
+  const markdownFencePattern = /^ {0,3}(`{3,}|~{3,})(.*)$/
+
+  function findStreamingBoundaries(text, fromOffset = 0) {
+    const boundaries = []
+    let inFence = false
+    let fenceMarker = ''
+    let index = Math.max(0, Math.min(Number(fromOffset) || 0, text.length))
+
+    while (index < text.length) {
+      const newlineIndex = text.indexOf('\n', index)
+      const lineEnd = newlineIndex === -1 ? text.length : newlineIndex
+      const afterNewline = newlineIndex === -1 ? text.length : newlineIndex + 1
+      const line = text.slice(index, lineEnd)
+      const fence = line.match(markdownFencePattern)
+
+      if (fence) {
+        const marker = fence[1]
+        if (!inFence) {
+          inFence = true
+          fenceMarker = marker
+        } else if (marker[0] === fenceMarker[0] && marker.length >= fenceMarker.length && fence[2].trim() === '') {
+          inFence = false
+          fenceMarker = ''
+          boundaries.push({ offset: afterNewline, afterClosedFence: true })
+        }
+        index = afterNewline
+        continue
+      }
+
+      if (!inFence && line.trim() === '') {
+        let nextIndex = afterNewline
+        while (nextIndex < text.length) {
+          const nextNewline = text.indexOf('\n', nextIndex)
+          const nextLineEnd = nextNewline === -1 ? text.length : nextNewline
+          if (text.slice(nextIndex, nextLineEnd).trim() !== '') break
+          if (nextNewline === -1) {
+            nextIndex = text.length
+            break
+          }
+          nextIndex = nextNewline + 1
+        }
+        boundaries.push({ offset: nextIndex, afterClosedFence: false })
+        index = nextIndex
+        continue
+      }
+
+      index = afterNewline
+    }
+
+    return boundaries
+  }
+
+  function splitMarkdownBlocks(value, { forceFinal = false } = {}) {
+    const text = String(value || '')
+    if (!text) return []
+    const lines = text.split('\n')
+    const blocks = []
+    let current = []
+    let inFence = false
+    let fenceMarker = ''
+    let fenceClosed = false
+
+    const pushCurrent = (forceFinal = false) => {
+      if (!current.length) return
+      blocks.push({
+        text: current.join('\n'),
+        closedFence: fenceClosed,
+        forceFinal,
+      })
+      current = []
+      fenceClosed = false
+    }
+
+    lines.forEach((line) => {
+      const fence = line.match(markdownFencePattern)
+      if (fence) {
+        const marker = fence[1]
+        current.push(line)
+        if (!inFence) {
+          inFence = true
+          fenceMarker = marker
+        } else if (marker[0] === fenceMarker[0] && marker.length >= fenceMarker.length && fence[2].trim() === '') {
+          inFence = false
+          fenceMarker = ''
+          fenceClosed = true
+          pushCurrent(true)
+        }
+        return
+      }
+
+      if (!inFence && line.trim() === '') {
+        pushCurrent(false)
+        return
+      }
+
+      current.push(line)
+    })
+
+    pushCurrent(false)
+    return blocks.map((block, index) => ({
+      ...block,
+      finalized: forceFinal || block.forceFinal || index < blocks.length - 1,
+    }))
+  }
+
+  function renderMarkdownBlock(block) {
+    const text = block.text || ''
+    const fence = text.match(/^ {0,3}(`{3,}|~{3,})([^\n]*)\n([\s\S]*?)(?:\n {0,3}\1\s*)?$/)
+    if (fence && (block.closedFence || text.includes('\n'))) {
+      const language = fence[2].trim().split(/\s+/)[0] || ''
+      return `<pre><code${language ? ` class="language-${escapeHtml(language)}"` : ''}>${escapeHtml(fence[3] || '')}</code></pre>`
+    }
+
+    if (/^#{1,3}\s+/.test(text)) {
+      const markdownLevel = Math.min(3, text.match(/^#+/)?.[0]?.length || 1)
+      const documentLevel = markdownLevel + 1
+      return `<h${documentLevel}>${renderInlineMarkdown(text.replace(/^#{1,3}\s+/, ''))}</h${documentLevel}>`
+    }
+
+    const lines = text.split('\n')
+    if (lines.length > 1 && lines.every((line) => /^\s*[-*]\s+/.test(line) || line.trim() === '')) {
+      const items = lines
+        .filter((line) => line.trim())
+        .map((line) => `<li>${renderInlineMarkdown(line.replace(/^\s*[-*]\s+/, ''))}</li>`)
+        .join('')
+      return `<ul>${items}</ul>`
+    }
+
+    return `<p>${lines.map((line) => renderInlineMarkdown(line)).join('<br>')}</p>`
+  }
+
+  function renderMarkdownSource(value, options = {}) {
+    return splitMarkdownBlocks(value, options)
+      .map((block) => `<div class="rc-md-block ${block.finalized ? 'is-finalized' : 'is-live'}">${renderMarkdownBlock(block)}</div>`)
+      .join('')
+  }
+
+  function splitFinalizedMarkdown(text, committedLen = 0) {
+    const safeCommittedLen = Math.max(0, Math.min(Number(committedLen) || 0, text.length))
+    const boundaries = findStreamingBoundaries(text, safeCommittedLen)
+    let best = safeCommittedLen
+    let segmentStart = safeCommittedLen
+
+    boundaries.forEach(({ offset, afterClosedFence }, index) => {
+      if (afterClosedFence) {
+        best = offset
+        segmentStart = offset
+        return
+      }
+
+      const nextOffset = index + 1 < boundaries.length ? boundaries[index + 1].offset : text.length
+      const before = text.slice(segmentStart, offset)
+      const after = text.slice(offset, nextOffset)
+      const separateRender = renderMarkdownSource(before, { forceFinal: true }) + renderMarkdownSource(after)
+      const joinedRender = renderMarkdownSource(before + after)
+
+      if (after.trim() && separateRender === joinedRender) {
+        best = offset
+      }
+      segmentStart = offset
+    })
+
+    return best
+  }
+
+  function describeOpenFence(text) {
+    const open = String(text || '').match(/^( {0,3})(`{3,}|~{3,})([^\n]*)\n/)
+    if (!open) return null
+    const marker = open[2]
+    const contentStart = open[0].length
+
+    for (let index = contentStart; index < text.length;) {
+      const newlineIndex = text.indexOf('\n', index)
+      const line = text.slice(index, newlineIndex === -1 ? text.length : newlineIndex)
+      const close = line.match(/^ {0,3}(`{3,}|~{3,})\s*$/)
+      if (close && close[1][0] === marker[0] && close[1].length >= marker.length) return null
+      if (newlineIndex === -1) break
+      index = newlineIndex + 1
+    }
+
+    return {
+      lang: (open[3] || '').trim().split(/\s+/)[0] || '',
+      contentStart,
+    }
+  }
+
+  function renderStreamingTail(tailText) {
+    const openFence = describeOpenFence(tailText)
+    if (!openFence) return renderMarkdownSource(tailText)
+
+    const language = openFence.lang
+    const code = tailText.slice(openFence.contentStart)
+    return `<div class="rc-md-block is-live" data-open-fence="true"><pre><code${language ? ` class="language-${escapeHtml(language)}"` : ''}>${escapeHtml(code)}</code></pre></div>`
+  }
+
+  function renderMessageContent(message) {
+    const isStreamingAssistant = message.role === 'assistant' && message.pending
+    const content = String(message.content || '')
+    if (!content) return '<div class="rc-message__content"></div>'
+    const finalizedLen = isStreamingAssistant ? splitFinalizedMarkdown(content) : content.length
+    const finalized = content.slice(0, finalizedLen)
+    const tail = content.slice(finalizedLen)
+    const body = [
+      finalized ? renderMarkdownSource(finalized, { forceFinal: true }) : '',
+      tail ? renderStreamingTail(tail) : '',
+    ].join('')
+    return `<div class="rc-message__content" data-streaming="${isStreamingAssistant ? 'append-only' : 'settled'}" data-finalized-chars="${finalizedLen}">${body}</div>`
   }
 
   function summarizePrompt(value) {
@@ -295,7 +558,7 @@ if (root) {
               <strong>${escapeHtml(label)}</strong>
               <span>${escapeHtml(meta)}</span>
             </header>
-            <p>${escapeHtml(message.content)}</p>
+            ${renderMessageContent(message)}
           </article>
         `
       })
@@ -554,6 +817,24 @@ if (root) {
       }
 
       activeThreadId = payload.thread?.id || activeThreadId
+      if (payload.assistantMessage?.content) {
+        messages = messages.map((entry) => {
+          if (entry.role === 'assistant' && entry.pending) {
+            return {
+              ...payload.assistantMessage,
+              pending: false,
+            }
+          }
+          if (entry.role === 'user' && entry.pending && payload.userMessage) {
+            return {
+              ...payload.userMessage,
+              pending: false,
+            }
+          }
+          return entry
+        })
+        renderMessages()
+      }
       setComposerFeedback(
         `Reply from ${payload.provider || 'RoachBrain Cloud'} · ${payload.model || authState.config?.webChat?.modelLabel || 'Hosted model'}`,
         'live'

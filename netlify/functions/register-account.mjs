@@ -1,3 +1,6 @@
+import { createHmac } from 'node:crypto'
+import { getStore } from '@netlify/blobs'
+
 const allowedOrigins = new Set([
   'https://accounts.roachnet.org',
   'https://roachnet.org',
@@ -7,28 +10,48 @@ const allowedOrigins = new Set([
   'http://127.0.0.1:3000',
 ])
 
-function json(body, status = 200) {
+const localOrigins = new Set([
+  'http://localhost:8888',
+  'http://localhost:3000',
+  'http://127.0.0.1:8888',
+  'http://127.0.0.1:3000',
+])
+
+const rateLimitRules = [
+  { scope: 'ip', limit: 5, windowMs: 15 * 60 * 1000 },
+  { scope: 'email', limit: 3, windowMs: 60 * 60 * 1000 },
+]
+
+function requestOrigin(request) {
+  return request.headers.get('origin') || ''
+}
+
+function isAllowedRequestOrigin(request) {
+  return allowedOrigins.has(requestOrigin(request))
+}
+
+function isLocalBypassEnabled(origin, env) {
+  return (
+    localOrigins.has(origin) &&
+    env.NETLIFY_DEV === 'true' &&
+    env.ROACHNET_ALLOW_LOCAL_REGISTRATION_BYPASS === '1'
+  )
+}
+
+function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       'content-type': 'application/json; charset=utf-8',
       'cache-control': 'no-store',
+      ...extraHeaders,
     },
   })
 }
 
-function normalizeOrigin(request) {
-  const origin = request.headers.get('origin') || ''
-  if (allowedOrigins.has(origin)) {
-    return origin
-  }
-
-  return 'https://accounts.roachnet.org'
-}
-
 function withCors(request, response) {
   const headers = new Headers(response.headers)
-  headers.set('access-control-allow-origin', normalizeOrigin(request))
+  headers.set('access-control-allow-origin', requestOrigin(request))
   headers.set('access-control-allow-methods', 'POST, OPTIONS')
   headers.set('access-control-allow-headers', 'content-type')
   headers.set('vary', 'origin')
@@ -43,17 +66,68 @@ function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-async function verifyTurnstile({ secret, token, remoteip }) {
+function clientIp(request, localBypass) {
+  const netlifyIp = request.headers.get('x-nf-client-connection-ip')?.trim() || ''
+  if (netlifyIp) return netlifyIp
+  if (!localBypass) return ''
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local-development'
+}
+
+function rateLimitKey(secret, scope, value) {
+  return `${scope}:${createHmac('sha256', secret).update(value).digest('hex')}`
+}
+
+async function consumeRateLimit({ store, key, limit, windowMs, now }) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const entry = await store.getWithMetadata(key, {
+      consistency: 'strong',
+      type: 'json',
+    })
+
+    if (!entry) {
+      const resetAt = now + windowMs
+      const result = await store.setJSON(
+        key,
+        { count: 1, resetAt },
+        { onlyIfNew: true }
+      )
+      if (result.modified) return { allowed: true, retryAfterSeconds: 0 }
+      continue
+    }
+
+    const count = Number(entry.data?.count)
+    const resetAt = Number(entry.data?.resetAt)
+    if (!Number.isSafeInteger(count) || count < 0 || !Number.isFinite(resetAt)) {
+      throw new Error('Invalid registration rate-limit state.')
+    }
+
+    if (now < resetAt && count >= limit) {
+      return {
+        allowed: false,
+        retryAfterSeconds: Math.max(1, Math.ceil((resetAt - now) / 1000)),
+      }
+    }
+
+    const nextState =
+      now >= resetAt
+        ? { count: 1, resetAt: now + windowMs }
+        : { count: count + 1, resetAt }
+    const result = await store.setJSON(key, nextState, { onlyIfMatch: entry.etag })
+    if (result.modified) return { allowed: true, retryAfterSeconds: 0 }
+  }
+
+  throw new Error('Registration rate-limit contention did not settle.')
+}
+
+async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
   const body = new URLSearchParams({
     secret,
     response: token,
   })
 
-  if (remoteip) {
-    body.set('remoteip', remoteip)
-  }
+  if (remoteip) body.set('remoteip', remoteip)
 
-  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+  const response = await fetchImpl('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
@@ -72,150 +146,272 @@ async function verifyTurnstile({ secret, token, remoteip }) {
   }
 }
 
-export default async (request) => {
-  if (request.method === 'OPTIONS') {
-    return withCors(request, json({ ok: true }))
-  }
-
-  if (request.method !== 'POST') {
-    return withCors(request, json({ ok: false, message: 'Use POST for account creation.' }, 405))
-  }
-
-  const supabaseUrl = process.env.ROACHNET_SUPABASE_URL
-  const serviceRoleKey = process.env.ROACHNET_SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    return withCors(
-      request,
-      json(
-        {
-          ok: false,
-          message: 'The account lane is missing its secure auth configuration.',
-        },
-        503
-      )
-    )
-  }
-
-  let payload
+function confirmationRedirect(env) {
+  const fallback = 'https://accounts.roachnet.org/'
   try {
-    payload = await request.json()
+    const configured = new URL(env.ROACHNET_AUTH_REDIRECT_URL || fallback)
+    return allowedOrigins.has(configured.origin) ? configured.href : fallback
   } catch {
-    return withCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
+    return fallback
   }
-
-  const email = String(payload?.email || '').trim().toLowerCase()
-  const password = String(payload?.password || '')
-  const displayName = String(payload?.displayName || '').trim()
-  const honeypot = String(payload?.company || '').trim()
-  const captchaToken = String(payload?.captchaToken || '').trim()
-  const startedAt = Number(payload?.startedAt || 0)
-
-  if (honeypot) {
-    return withCors(request, json({ ok: false, message: 'Request rejected.' }, 400))
-  }
-
-  if (!validateEmail(email)) {
-    return withCors(request, json({ ok: false, message: 'Enter a real email address.' }, 400))
-  }
-
-  if (password.length < 10) {
-    return withCors(
-      request,
-      json({ ok: false, message: 'Use a password with at least 10 characters.' }, 400)
-    )
-  }
-
-  if (displayName.length > 60) {
-    return withCors(
-      request,
-      json({ ok: false, message: 'Keep the display name under 60 characters.' }, 400)
-    )
-  }
-
-  if (startedAt && Date.now() - startedAt < 900) {
-    return withCors(
-      request,
-      json({ ok: false, message: 'Hold for a second and try again.' }, 429)
-    )
-  }
-
-  const turnstileSecret = process.env.ROACHNET_TURNSTILE_SECRET_KEY || ''
-  if (turnstileSecret) {
-    if (!captchaToken) {
-      return withCors(
-        request,
-        json({ ok: false, code: 'captcha_required', message: 'Finish the human check first.' }, 400)
-      )
-    }
-
-    const remoteip =
-      request.headers.get('x-nf-client-connection-ip') ||
-      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      ''
-
-    const captcha = await verifyTurnstile({
-      secret: turnstileSecret,
-      token: captchaToken,
-      remoteip,
-    })
-
-    if (!captcha.success) {
-      return withCors(
-        request,
-        json({ ok: false, code: 'captcha_failed', message: captcha.message }, 403)
-      )
-    }
-  }
-
-  const createResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      apikey: serviceRoleKey,
-      authorization: `Bearer ${serviceRoleKey}`,
-    },
-    body: JSON.stringify({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        display_name: displayName || email.split('@')[0],
-      },
-    }),
-  })
-
-  const responseBody = await createResponse.json().catch(() => ({}))
-
-  if (!createResponse.ok) {
-    const message = String(responseBody?.msg || responseBody?.message || responseBody?.error || '')
-    const lowered = message.toLowerCase()
-
-    if (lowered.includes('already been registered') || lowered.includes('already registered')) {
-      return withCors(
-        request,
-        json({ ok: false, code: 'user_exists', message: 'That email already has a RoachNet account. Sign in instead.' }, 409)
-      )
-    }
-
-    return withCors(
-      request,
-      json(
-        {
-          ok: false,
-          message: message || 'Account creation did not finish cleanly.',
-        },
-        createResponse.status
-      )
-    )
-  }
-
-  return withCors(
-    request,
-    json({
-      ok: true,
-      message: 'Account created.',
-      userId: responseBody?.id || null,
-    })
-  )
 }
+
+export function createRegistrationHandler({
+  env = process.env,
+  fetchImpl = globalThis.fetch,
+  getRateLimitStore = () => getStore('roachnet-registration-rate-limits'),
+  now = Date.now,
+} = {}) {
+  return async (request) => {
+    if (!isAllowedRequestOrigin(request)) {
+      return json({ ok: false, message: 'Origin not allowed.' }, 403)
+    }
+
+    if (request.method === 'OPTIONS') {
+      return withCors(request, json({ ok: true }))
+    }
+
+    if (request.method !== 'POST') {
+      return withCors(request, json({ ok: false, message: 'Use POST for account creation.' }, 405))
+    }
+
+    const supabaseUrl = String(env.ROACHNET_SUPABASE_URL || '').replace(/\/$/, '')
+    const anonKey = env.ROACHNET_SUPABASE_ANON_KEY || ''
+
+    if (!supabaseUrl || !anonKey) {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            message: 'The account lane is missing its secure auth configuration.',
+          },
+          503
+        )
+      )
+    }
+
+    let payload
+    try {
+      payload = await request.json()
+    } catch {
+      return withCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
+    }
+
+    const email = String(payload?.email || '').trim().toLowerCase()
+    const password = String(payload?.password || '')
+    const displayName = String(payload?.displayName || '').trim()
+    const honeypot = String(payload?.company || '').trim()
+    const captchaToken = String(payload?.captchaToken || '').trim()
+    const startedAt = Number(payload?.startedAt || 0)
+
+    if (honeypot) {
+      return withCors(request, json({ ok: false, message: 'Request rejected.' }, 400))
+    }
+
+    if (!validateEmail(email)) {
+      return withCors(request, json({ ok: false, message: 'Enter a real email address.' }, 400))
+    }
+
+    if (password.length < 10) {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Use a password with at least 10 characters.' }, 400)
+      )
+    }
+
+    if (displayName.length > 60) {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Keep the display name under 60 characters.' }, 400)
+      )
+    }
+
+    if (startedAt && now() - startedAt < 900) {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Hold for a second and try again.' }, 429)
+      )
+    }
+
+    const origin = requestOrigin(request)
+    const localBypass = isLocalBypassEnabled(origin, env)
+    const turnstileSecret = env.ROACHNET_TURNSTILE_SECRET_KEY || ''
+    const remoteip = clientIp(request, localBypass)
+
+    if (!localBypass) {
+      if (!turnstileSecret) {
+        return withCors(
+          request,
+          json(
+            {
+              ok: false,
+              code: 'captcha_unavailable',
+              message: 'Account creation is unavailable until human verification is configured.',
+            },
+            503
+          )
+        )
+      }
+
+      if (!captchaToken) {
+        return withCors(
+          request,
+          json({ ok: false, code: 'captcha_required', message: 'Finish the human check first.' }, 400)
+        )
+      }
+
+      let captcha
+      try {
+        captcha = await verifyTurnstile({
+          fetchImpl,
+          secret: turnstileSecret,
+          token: captchaToken,
+          remoteip,
+        })
+      } catch {
+        return withCors(
+          request,
+          json(
+            {
+              ok: false,
+              code: 'captcha_unavailable',
+              message: 'Captcha verification is temporarily unavailable.',
+            },
+            503
+          )
+        )
+      }
+
+      if (!captcha.success) {
+        return withCors(
+          request,
+          json({ ok: false, code: 'captcha_failed', message: captcha.message }, 403)
+        )
+      }
+    }
+
+    if (!remoteip) {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            code: 'rate_limit_unavailable',
+            message: 'Account creation could not establish abuse protection.',
+          },
+          503
+        )
+      )
+    }
+
+    try {
+      const store = getRateLimitStore()
+      const keySecret = turnstileSecret || 'local-development-only'
+      const values = { ip: remoteip, email }
+      for (const rule of rateLimitRules) {
+        const result = await consumeRateLimit({
+          store,
+          key: rateLimitKey(keySecret, rule.scope, values[rule.scope]),
+          limit: rule.limit,
+          windowMs: rule.windowMs,
+          now: now(),
+        })
+        if (!result.allowed) {
+          return withCors(
+            request,
+            json(
+              {
+                ok: false,
+                code: 'rate_limited',
+                message: 'Too many account attempts. Wait and try again.',
+              },
+              429,
+              { 'retry-after': String(result.retryAfterSeconds) }
+            )
+          )
+        }
+      }
+    } catch {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            code: 'rate_limit_unavailable',
+            message: 'Account creation is temporarily unavailable.',
+          },
+          503
+        )
+      )
+    }
+
+    const signupUrl = new URL(`${supabaseUrl}/auth/v1/signup`)
+    signupUrl.searchParams.set('redirect_to', confirmationRedirect(env))
+
+    let createResponse
+    try {
+      createResponse = await fetchImpl(signupUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          apikey: anonKey,
+          authorization: `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          data: {
+            display_name: displayName || email.split('@')[0],
+          },
+        }),
+      })
+    } catch {
+      return withCors(
+        request,
+        json({ ok: false, message: 'Account creation is temporarily unavailable.' }, 503)
+      )
+    }
+
+    const responseBody = await createResponse.json().catch(() => ({}))
+
+    if (!createResponse.ok) {
+      const code = String(responseBody?.error_code || responseBody?.code || '')
+      const message = String(responseBody?.msg || responseBody?.message || responseBody?.error || '')
+      const lowered = `${code} ${message}`.toLowerCase()
+
+      if (lowered.includes('user_already_exists') || lowered.includes('already registered')) {
+        return withCors(
+          request,
+          json({ ok: false, code: 'user_exists', message: 'That email already has a RoachNet account. Sign in instead.' }, 409)
+        )
+      }
+
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            message: message || 'Account creation did not finish cleanly.',
+          },
+          createResponse.status
+        )
+      )
+    }
+
+    const requiresConfirmation = !responseBody?.access_token
+    return withCors(
+      request,
+      json({
+        ok: true,
+        requiresConfirmation,
+        message: requiresConfirmation
+          ? 'Check your email to confirm your account, then sign in.'
+          : 'Account created. Sign in to continue.',
+        userId: responseBody?.user?.id || responseBody?.id || null,
+      })
+    )
+  }
+}
+
+export default async (request) => createRegistrationHandler()(request)

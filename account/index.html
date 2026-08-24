@@ -30,8 +30,8 @@
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="stylesheet" href="/app.css" />
-    <link rel="stylesheet" href="/app-polish.css" />
-    <link rel="stylesheet" href="/roachclaw-web.css" />
+    <link rel="stylesheet" href="/app-polish.css?v=20260609-overflow" />
+    <link rel="stylesheet" href="/roachclaw-web.css?v=20260609-auth-gate" />
   </head>
   <body data-page="account">
     <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
@@ -41,6 +41,7 @@
     <!-- ACCOUNT PAGE                                          -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <div class="page-view page-view--account" id="view-account">
+      <a class="rn-skip-link" href="#account-main">Skip to main content</a>
       <header class="site-header account-topbar">
         <a class="brand-lockup" href="https://roachnet.org/" aria-label="Back to RoachNet">
           <img class="brand-mark" src="/assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
@@ -69,7 +70,7 @@
         </div>
       </header>
 
-      <main class="account-page">
+      <main class="account-page" id="account-main" tabindex="-1">
         <section class="account-hero" data-reveal-group>
           <article class="account-poster">
             <span class="eyebrow">Account</span>
@@ -260,6 +261,7 @@
     <!-- ROACHCLAW PAGE                                        -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <div class="page-view page-view--roachclaw" id="view-roachclaw" hidden>
+      <a class="rn-skip-link" href="#account-roachclaw-main">Skip to main content</a>
       <div class="rc-sidebar-overlay" aria-hidden="true"></div>
       <div class="rc-layout">
         <!-- Sidebar -->
@@ -316,7 +318,7 @@
         </aside>
 
         <!-- Main content -->
-        <main class="rc-main">
+        <section class="rc-main" id="account-roachclaw-main" tabindex="-1">
           <header class="rc-main__topbar">
             <div class="rc-main__topbar-left">
               <button class="rc-sidebar-toggle" id="rc-sidebar-toggle" type="button" aria-label="Toggle sidebar">
@@ -371,6 +373,48 @@
                     <strong>Summarize content</strong>
                     <span>Condense a doc, thread, or page into the parts worth keeping.</span>
                   </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="cookbook">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M7 2.5v3M13 2.5v3M7 14.5v3M13 14.5v3M2.5 7h3M14.5 7h3M2.5 13h3M14.5 13h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>RoachClaw Cookbook</strong>
+                    <span>Pick the model lane that fits your machine, including quantized and MoE packs that lie about their weight.</span>
+                  </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="research">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 3.5h7l4 4v9h-11v-13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 3.5v4h4M7 11h6M7 14h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <strong>Deep research</strong>
+                    <span>Gather sources, read them, and turn the mess into a vault-ready brief.</span>
+                  </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="compare">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4" width="6" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="4" width="6" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M9 10h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>Compare models</strong>
+                    <span>Blind-test two routes so the confident answer has to earn the crown.</span>
+                  </button>
+                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="memory">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 6.5a3 3 0 116 0v1h.5A2.5 2.5 0 0116 10v2.5A3.5 3.5 0 0112.5 16h-5A3.5 3.5 0 014 12.5V10a2.5 2.5 0 012.5-2.5H7v-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 11h4M10 9v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>RoachBrain audit</strong>
+                    <span>Find useful context, stale habits, and saved procedures worth keeping.</span>
+                  </button>
+                  <button class="rc-starter-card" type="button" data-starter="diagnostics">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 4.5h10M6.5 8h7M8 11.5h4M9.5 15h1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 3h12v14H4V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                    </div>
+                    <strong>Diagnostics</strong>
+                    <span>Probe providers, scrub settings, and find the failure before it grows teeth.</span>
+                  </button>
+                  <button class="rc-starter-card" type="button" data-starter="integrations">
+                    <div class="rc-starter-card__icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="5" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.2 8.8l5.6-2.6M7.2 11.2l5.6 2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </div>
+                    <strong>Hooks and contacts</strong>
+                    <span>Check recipients, webhooks, provider routes, and handoffs that should stay scoped.</span>
+                  </button>
                 </div>
 
                 <div class="rc-info-strip">
@@ -403,7 +447,7 @@
               <p class="rc-composer__disclaimer">The web lane uses hosted models. Pair RoachNet when the prompt needs your vault, projects, or private files.</p>
             </div>
           </div>
-        </main>
+        </section>
       </div>
 
       <div class="rc-auth-gate" id="roachclaw-auth-gate" hidden>

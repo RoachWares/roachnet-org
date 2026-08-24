@@ -1937,7 +1937,7 @@ function renderPreviewStage(item, options = {}) {
       <div class="apps-hero-panel__copy">
         <p class="apps-hero-panel__eyebrow">${escapeHtml(eyebrow)}</p>
         <span class="apps-card__code apps-card__code--hero">${escapeHtml(item.codeLabel)}</span>
-        <h1>${escapeHtml(item.title)}</h1>
+        <h2>${escapeHtml(item.title)}</h2>
         <p class="apps-hero-panel__lead">${escapeHtml(lead)}</p>
         <p class="apps-hero-panel__body">${escapeHtml(body)}</p>
         ${secondary ? `<p class="apps-preview-stage__secondary">${escapeHtml(secondary)}</p>` : ''}
@@ -2015,7 +2015,7 @@ function renderCategoryView() {
   renderSectionHead(`
     <div class="apps-section-head__copy">
       <p class="apps-section-head__eyebrow">${escapeHtml(isSearch ? 'Search results' : activeSection.eyebrow)}</p>
-      <h1>${escapeHtml(isSearch ? `Results in ${activeSection.navLabel}` : activeSection.title)}</h1>
+      <h2>${escapeHtml(isSearch ? `Results in ${activeSection.navLabel}` : activeSection.title)}</h2>
       <p>${escapeHtml(isSearch ? `Showing ${countLabel} in ${activeSection.navLabel} matching “${state.query.trim()}”.` : activeSection.description)}</p>
     </div>
     <div class="apps-section-head__meta">

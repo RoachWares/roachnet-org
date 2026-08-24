@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -23,7 +23,8 @@ async function main() {
     'site-account.js',
     'site-polish.js',
     'site-config.js',
-    'assets',
+    'assets/roachnet-logo.webp',
+    'assets/roachclaw-logo.webp',
     'favicon.ico',
     'favicon-16x16.png',
     'favicon-32x32.png',
@@ -31,7 +32,9 @@ async function main() {
   ]
 
   for (const target of copyTargets) {
-    await cp(path.join(repoRoot, target), path.join(outputRoot, target), {
+    const destination = path.join(outputRoot, target)
+    await mkdir(path.dirname(destination), { recursive: true })
+    await cp(path.join(repoRoot, target), destination, {
       recursive: true,
       force: true,
     })
@@ -40,13 +43,42 @@ async function main() {
   await cp(path.join(repoRoot, 'account/index.html'), path.join(outputRoot, 'index.html'), {
     force: true,
   })
+  await cp(path.join(repoRoot, 'robots-accounts.txt'), path.join(outputRoot, 'robots.txt'))
+  await cp(path.join(repoRoot, 'sitemap-accounts.xml'), path.join(outputRoot, 'sitemap.xml'))
+  await cp(path.join(repoRoot, '404.html'), path.join(outputRoot, '404.html'))
+
+  const accountPage = path.join(outputRoot, 'index.html')
+  await writeFile(accountPage, (await readFile(accountPage, 'utf8'))
+    .replace('class="site-header__actions" aria-label', 'class="site-header__actions" role="group" aria-label')
+    .replace('class="account-chip-row" aria-label', 'class="account-chip-row" role="group" aria-label')
+    .replace('<label class="account-honeypot" aria-hidden="true">', '<div class="account-honeypot" aria-hidden="true">')
+    .replace('              </label>\n\n              <div class="account-turnstile"', '              </div>\n\n              <div class="account-turnstile"')
+    .replaceAll('class="rc-lane-dot rc-lane-dot--web" aria-label', 'class="rc-lane-dot rc-lane-dot--web" role="img" aria-label')
+    .replace('class="rc-lane-dot rc-lane-dot--local" aria-label', 'class="rc-lane-dot rc-lane-dot--local" role="img" aria-label')
+    .replaceAll('<div class="rc-starter-card__icon">', '<span class="rc-starter-card__icon">')
+    .replaceAll('</svg>\n                    </div>\n                    <strong>', '</svg>\n                    </span>\n                    <strong>'), 'utf8')
 
   await writeFile(
     path.join(outputRoot, '_redirects'),
     [
       '/account / 301',
       '/account/* /:splat 301',
-      '/* /index.html 200',
+      '/roachclaw /index.html 200',
+      '/404.html /404.html 404',
+    ].join('\n') + '\n',
+    'utf8'
+  )
+
+  await writeFile(
+    path.join(outputRoot, '_headers'),
+    [
+      '/*',
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      '  X-Frame-Options: DENY',
+      '  X-Content-Type-Options: nosniff',
+      '  Referrer-Policy: strict-origin-when-cross-origin',
+      '  Strict-Transport-Security: max-age=31536000; includeSubDomains',
+      '  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()',
     ].join('\n') + '\n',
     'utf8'
   )

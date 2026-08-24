@@ -5,18 +5,34 @@
   "type": "module",
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
+    "@netlify/blobs": "11.0.1",
     "sharp": "file:./vendor/sharp-stub"
   },
   "overrides": {
     "sharp": "file:./vendor/sharp-stub"
   },
   "scripts": {
+    "build": "npm run verify && npm run build:main && npm run build:accounts && npm run build:apps",
+    "build:main": "node scripts/build-main-site.mjs",
+    "build:main:deploy": "npm run verify && npm run build:main",
     "build:config": "node scripts/render-site-config.mjs",
     "build:catalog": "node scripts/build-app-store-catalog.mjs",
     "build:apps": "node scripts/build-apps-site.mjs",
     "stage:apps-model-packs": "node scripts/stage-apps-model-packs.mjs",
     "publish:apps-model-packs:ia": "node scripts/upload-apps-model-packs-ia.mjs",
-    "build:accounts": "node scripts/build-accounts-site.mjs"
+    "build:accounts": "node scripts/build-accounts-site.mjs",
+    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs",
+    "test": "node test/site-outcomes.mjs && node --test test/register-account.test.mjs",
+    "verify": "npm run lint && npm run test && npm run tangle:verify",
+    "validate:html": "node scripts/validate-html.mjs",
+    "test:browser": "node scripts/site-browser-outcomes.mjs",
+    "verify:local": "npm run build && npm run validate:html && npm run test:browser && node scripts/check-links.mjs && npm run tangle:verify && npm audit --omit=dev --audit-level=high",
+    "tangle:verify": "node scripts/tangle.mjs --verify",
+    "tangle:write": "node scripts/tangle.mjs --write && node scripts/tangle.mjs --verify"
+  },
+  "devDependencies": {
+    "html-validate": "10.9.0",
+    "puppeteer-core": "25.8.0"
   },
   "optionalDependencies": {
     "@img/sharp-linux-x64": "^0.34.5"

@@ -30,9 +30,10 @@
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
     <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css" />
+    <link rel="stylesheet" href="../app-polish.css?v=20260609-overflow" />
   </head>
   <body data-page="api">
+    <a class="rn-skip-link" href="#api-main">Skip to main content</a>
     <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
     <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
 
@@ -48,7 +49,7 @@
 
         <section class="api-docs-sidebar__intro">
           <span class="api-docs-kicker">Reference</span>
-          <h1>The blueprint, labeled.</h1>
+          <h2>The blueprint, labeled.</h2>
           <p>Setup, runtime, Homebrew, iOS, RoachClaw, RoachTail, local context, and model-pack installs. Calls, inputs, and boundaries are labeled so nobody has to guess which wire is live.</p>
         </section>
 
@@ -65,7 +66,8 @@
         </div>
       </aside>
 
-      <main class="api-docs-main">
+      <main class="api-docs-main" id="api-main" tabindex="-1">
+        <h1 class="sr-only">RoachNet API reference</h1>
         <header class="api-docs-topbar">
           <div class="api-docs-topbar__title">
             <span class="api-docs-kicker">API</span>

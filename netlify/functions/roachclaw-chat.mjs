@@ -9,6 +9,11 @@ const allowedOrigins = new Set([
   'http://127.0.0.1:3000',
 ])
 
+function isAllowedRequestOrigin(request) {
+  const origin = request.headers.get('origin') || ''
+  return !origin || allowedOrigins.has(origin)
+}
+
 const defaultSystemPrompt =
   'You are RoachClaw on the RoachNet web lane. Answer clearly, keep user data isolated to the authenticated account lane, never claim access to a local machine you cannot see, and prefer practical help over filler.'
 const roachBrainCacheDir = '/tmp/roachbrain-cloud-cache'
@@ -99,6 +104,14 @@ function normalizeBridgeUrl(value) {
   }
 }
 
+function isAllowedBridgeUrl(bridgeUrl, allowedOrigins) {
+  if (!bridgeUrl || !allowedOrigins.size) {
+    return false
+  }
+
+  return allowedOrigins.has(bridgeUrl)
+}
+
 function summarizePrompt(prompt) {
   const flattened = prompt.replace(/\s+/g, ' ').trim()
   if (!flattened) {
@@ -179,6 +192,8 @@ async function sendRoachClawRelay({
       'content-type': 'application/json',
       'x-roachnet-companion-token': bridgeToken,
     },
+    redirect: 'error',
+    signal: AbortSignal.timeout(10_000),
     body: JSON.stringify({
       sessionId: remoteSessionId || undefined,
       content,
@@ -302,6 +317,10 @@ async function generateRoachBrainReply({ history, prompt }) {
 }
 
 export default async (request) => {
+  if (!isAllowedRequestOrigin(request)) {
+    return json({ ok: false, message: 'Origin not allowed.' }, 403)
+  }
+
   if (request.method === 'OPTIONS') {
     return withCors(request, json({ ok: true }))
   }
@@ -315,6 +334,12 @@ export default async (request) => {
   const serviceRoleKey = process.env.ROACHNET_SUPABASE_SERVICE_ROLE_KEY || ''
   const chatEnabled = process.env.ROACHNET_WEB_CHAT_ENABLED === '1'
   const model = process.env.ROACHNET_WEB_CHAT_MODEL || 'RoachClaw relay'
+  const allowedBridgeOrigins = new Set(
+    (process.env.ROACHNET_ALLOWED_BRIDGE_ORIGINS || '')
+      .split(',')
+      .map(normalizeBridgeUrl)
+      .filter(Boolean)
+  )
 
   if (!supabaseUrl || !publishableKey) {
     return withCors(
@@ -369,6 +394,10 @@ export default async (request) => {
     return withCors(request, json({ ok: false, message: 'Enter a message first.' }, 400))
   }
 
+  if (requestedBridgeUrl && !isAllowedBridgeUrl(requestedBridgeUrl, allowedBridgeOrigins)) {
+    return withCors(request, json({ ok: false, message: 'That paired-device address is not allowed.' }, 400))
+  }
+
   const databaseClient = createDatabaseClient({
     supabaseUrl,
     apiKey: serviceRoleKey || publishableKey,
@@ -409,6 +438,9 @@ export default async (request) => {
 
     const existingRelay = thread?.metadata?.relay && typeof thread.metadata.relay === 'object' ? thread.metadata.relay : {}
     const bridgeUrl = requestedBridgeUrl || normalizeBridgeUrl(existingRelay?.bridgeUrl)
+    if (bridgeUrl && !isAllowedBridgeUrl(bridgeUrl, allowedBridgeOrigins)) {
+      return withCors(request, json({ ok: false, message: 'That paired-device address is no longer allowed.' }, 400))
+    }
     const useBridgeRelay = Boolean(bridgeUrl && bridgeToken)
 
     const userInsert = await databaseClient.request('chat_messages', {

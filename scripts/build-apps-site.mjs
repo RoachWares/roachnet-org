@@ -103,7 +103,8 @@ async function main() {
     'site-config.js',
     'collections',
     'downloads',
-    'assets',
+    'assets/app-icons',
+    'assets/roachnet-logo.webp',
     'favicon.ico',
     'favicon-16x16.png',
     'favicon-32x32.png',
@@ -111,7 +112,9 @@ async function main() {
   ]
 
   for (const target of copyTargets) {
-    await cp(path.join(repoRoot, target), path.join(outputRoot, target), {
+    const destination = path.join(outputRoot, target)
+    await mkdir(path.dirname(destination), { recursive: true })
+    await cp(path.join(repoRoot, target), destination, {
       recursive: true,
       force: true,
     })
@@ -120,13 +123,36 @@ async function main() {
   await cp(path.join(repoRoot, 'app-store.html'), path.join(outputRoot, 'index.html'), {
     force: true,
   })
+  await cp(path.join(repoRoot, 'robots-apps.txt'), path.join(outputRoot, 'robots.txt'))
+  await cp(path.join(repoRoot, 'sitemap-apps.xml'), path.join(outputRoot, 'sitemap.xml'))
+  await cp(path.join(repoRoot, '404.html'), path.join(outputRoot, '404.html'))
+
+  const appStore = path.join(outputRoot, 'index.html')
+  await writeFile(appStore, (await readFile(appStore, 'utf8'))
+    .replace('class="apps-artifact-lane" aria-label', 'class="apps-artifact-lane" role="group" aria-label')
+    .replace('class="apps-store-sidebar__quick" aria-label', 'class="apps-store-sidebar__quick" role="group" aria-label')
+    .replace('class="apps-store-topbar__status" aria-label', 'class="apps-store-topbar__status" role="group" aria-label'), 'utf8')
 
   await writeFile(
     path.join(outputRoot, '_redirects'),
     [
       '/app-store.html / 301',
       '/downloads/* /downloads/:splat 200',
-      '/* /index.html 200',
+      '/404.html /404.html 404',
+    ].join('\n') + '\n',
+    'utf8'
+  )
+
+  await writeFile(
+    path.join(outputRoot, '_headers'),
+    [
+      '/*',
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.github.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      '  X-Frame-Options: DENY',
+      '  X-Content-Type-Options: nosniff',
+      '  Referrer-Policy: strict-origin-when-cross-origin',
+      '  Strict-Transport-Security: max-age=31536000; includeSubDomains',
+      '  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()',
     ].join('\n') + '\n',
     'utf8'
   )

@@ -31,9 +31,10 @@
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link rel="preload" as="image" href="../assets/screens/roachnet-native-home.webp" imagesrcset="../assets/screens/roachnet-native-home.webp" />
     <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css" />
+    <link rel="stylesheet" href="../app-polish.css?v=20260609-overflow" />
   </head>
   <body data-page="home">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
     <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
     <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
 
@@ -65,7 +66,7 @@
       </div>
     </header>
 
-    <main id="top" class="page-shell">
+    <main id="top" class="page-shell" tabindex="-1">
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow">RoachNet</p>
@@ -85,7 +86,7 @@
           </div>
 
           <p class="hero-footnote">RoachNet is Apple Silicon native first. Pair it with RoachNet iOS and take your context and documents with you. Built for the nights when the router gives up and you want your files to keep working anyway.</p>
-          <p class="download-meta" id="download-meta">RoachNet v1.0.5 · Setup.app or Homebrew. Either way it lands in <code>~/RoachNet</code> and stays where you put it.</p>
+          <p class="download-meta" id="download-meta">RoachNet v1.0.5 is not Apple-notarized · Setup.app or Homebrew. Either way it lands in <code>~/RoachNet</code> and stays where you put it.</p>
           <div class="homebrew-inline">
             <button class="cta cta--ghost cta--compact" data-homebrew-copy type="button">Copy brew command</button>
             <span class="homebrew-inline__command"><code>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</code></span>

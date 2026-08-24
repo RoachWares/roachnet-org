@@ -31,9 +31,10 @@
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link rel="preload" as="image" href="../assets/screens/roachnet-native-home.webp" imagesrcset="../assets/screens/roachnet-native-home.webp" />
     <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css" />
+    <link rel="stylesheet" href="../app-polish.css?v=20260609-overflow" />
   </head>
   <body data-page="brew">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
     <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
     <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
 
@@ -65,7 +66,7 @@
       </div>
     </header>
 
-    <main id="top" class="page-shell">
+    <main id="top" class="page-shell" tabindex="-1">
       <section class="hero hero--brew">
         <div class="hero-copy">
           <p class="eyebrow">RoachNet Brew</p>
@@ -82,7 +83,7 @@
           <p class="hero-footnote">Apple Silicon only. Assumes Homebrew is already installed. If it is not, <a href="https://brew.sh" target="_blank" rel="noreferrer">install it first</a>, then come back. RoachNet is not going anywhere.</p>
           <p class="download-meta">Current cask target: RoachNet 1.0.5 · DMG SHA-256 <code>332057c4f85d136882971957d907bec82e7657833272d30d0849990590e1d122</code> · <code>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</code></p>
           <p class="homebrew-note" id="homebrew-note">
-            The cask writes the contained config, clears only launch-blocking bundle metadata, and boots the runtime without leaning on host Homebrew libraries.
+            RoachNet v1.0.5 is not Apple-notarized. The cask writes the contained config, clears only launch-blocking bundle metadata, and boots the runtime without leaning on host Homebrew libraries.
           </p>
         </div>
 

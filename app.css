@@ -4324,8 +4324,8 @@ body[data-page="apps"] .apps-section-head__copy {
   max-width: 860px;
 }
 
-body[data-page="apps"] .apps-section-head__copy h1,
-body[data-page="apps"] .apps-hero-panel__copy h1 {
+body[data-page="apps"] .apps-section-head__copy h2,
+body[data-page="apps"] .apps-hero-panel__copy h2 {
   margin: 10px 0 0;
   font-size: clamp(2.2rem, 5vw, 4.6rem);
   line-height: 0.96;
@@ -5193,6 +5193,28 @@ body[data-page="apps"] .apps-card:nth-child(3n) {
 
   body[data-page="apps"] .apps-card__head {
     grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  body[data-page="apps"] .apps-hero-panel__strip {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  body[data-page="apps"] .apps-hero-panel__strip strong {
+    justify-self: start;
+    overflow-wrap: anywhere;
+  }
+
+  body[data-page="apps"] .apps-row {
+    padding: 18px;
+  }
+
+  body[data-page="apps"] .apps-row__scroller {
+    grid-auto-columns: min(288px, calc(100% - 1px));
+  }
+
+  body[data-page="apps"] .apps-card {
+    min-width: 0;
   }
 
   body[data-page="apps"] .app-detail-overlay {
