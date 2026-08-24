@@ -81,7 +81,7 @@ force = true
 for = "/*"
 
   [headers.values]
-  Content-Security-Policy = "default-src 'self'; base-uri 'self'; connect-src 'self' https://api.github.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data: https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:; upgrade-insecure-requests"
+  Content-Security-Policy = "default-src 'self'; base-uri 'none'; connect-src 'self' https://api.github.com https://challenges.cloudflare.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data: https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com https://cdn.jsdelivr.net 'sha256-QiHqwLZuL/pVgJffI8ko4lWWbhUgm8d98y+2YTSbnBU=' 'sha256-qLy8IxmePVj8e3iEGcT8WZulBFGCcodug2V4DgZ6pFw='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:; upgrade-insecure-requests"
   X-Frame-Options = "DENY"
   X-Content-Type-Options = "nosniff"
   Referrer-Policy = "strict-origin-when-cross-origin"

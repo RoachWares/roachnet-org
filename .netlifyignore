@@ -1,0 +1,8 @@
+.git/
+.netlify/
+.wrangler/
+node_modules/
+live-site-snapshots/
+website-main-dist/
+website-accounts-dist/
+website-apps-dist/

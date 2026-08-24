@@ -1,10 +1,60 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { cp, mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const outDir = path.join(repoRoot, "website-main-dist");
+const stagingDir = path.join(repoRoot, `.website-main-dist-${process.pid}-${randomUUID()}`);
+const previousDir = path.join(repoRoot, `.website-main-dist-previous-${process.pid}-${randomUUID()}`);
+const promotionLock = path.join(repoRoot, ".website-main-dist.lock");
+
+async function promote(stagedDirectory) {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    try {
+      await mkdir(promotionLock);
+      break;
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      let age;
+      try {
+        age = Date.now() - (await stat(promotionLock)).mtimeMs;
+      } catch (statError) {
+        if (statError.code === "ENOENT") continue;
+        throw statError;
+      }
+      if (age > 300_000) {
+        await rm(promotionLock, { recursive: true, force: true });
+        continue;
+      }
+      if (attempt === 199) throw new Error("Timed out waiting to publish website-main-dist");
+      await delay(25);
+    }
+  }
+
+  let hadPrevious = false
+  try {
+    try {
+      await rename(outDir, previousDir);
+      hadPrevious = true;
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+
+    try {
+      await rename(stagedDirectory, outDir);
+    } catch (error) {
+      if (hadPrevious) await rename(previousDir, outDir);
+      throw error;
+    }
+
+    if (hadPrevious) await rm(previousDir, { recursive: true, force: true, maxRetries: 20, retryDelay: 50 });
+  } finally {
+    await rm(promotionLock, { recursive: true, force: true, maxRetries: 20, retryDelay: 50 });
+  }
+}
 
 function optimizeLandingDocument(document) {
   const removableResources = [
@@ -60,17 +110,24 @@ const copyList = [
   "sitemap",
 ];
 
-await rm(outDir, { recursive: true, force: true });
-await mkdir(outDir, { recursive: true });
+await rm(stagingDir, { recursive: true, force: true });
+await mkdir(stagingDir, { recursive: true });
 
-for (const entry of copyList) {
-  const source = path.join(repoRoot, entry);
-  const destination = path.join(outDir, entry);
-  await cp(source, destination, { recursive: true });
+try {
+  for (const entry of copyList) {
+    const source = path.join(repoRoot, entry);
+    const destination = path.join(stagingDir, entry);
+    await cp(source, destination, { recursive: true });
+  }
+
+  const mainIndex = path.join(stagingDir, "index.html");
+  await writeFile(mainIndex, optimizeLandingDocument((await readFile(mainIndex, "utf8"))
+    .replace('data-landing-shortcut aria-label', 'data-landing-shortcut role="group" aria-label')), "utf8");
+
+  await promote(stagingDir);
+} catch (error) {
+  await rm(stagingDir, { recursive: true, force: true });
+  throw error;
 }
-
-const mainIndex = path.join(outDir, "index.html");
-await writeFile(mainIndex, optimizeLandingDocument((await readFile(mainIndex, "utf8"))
-  .replace('data-landing-shortcut aria-label', 'data-landing-shortcut role="group" aria-label')), "utf8");
 
 console.log(`Built main site into ${outDir}`);

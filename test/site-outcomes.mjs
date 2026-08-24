@@ -21,6 +21,10 @@ assert.match(netlify, /Strict-Transport-Security/)
 assert.match(netlify, /Permissions-Policy/)
 assert.match(netlify, /Content-Security-Policy/)
 assert.match(netlify, /frame-ancestors 'none'/)
+assert.match(netlify, /script-src[^"\n]*https:\/\/cdn\.jsdelivr\.net/)
+assert.match(netlify, /script-src[^"\n]*sha256-QiHqwLZuL\/pVgJffI8ko4lWWbhUgm8d98y\+2YTSbnBU=/)
+assert.match(netlify, /script-src[^"\n]*sha256-qLy8IxmePVj8e3iEGcT8WZulBFGCcodug2V4DgZ6pFw=/)
+assert.match(netlify, /script-src-attr 'none'/)
 assert.doesNotMatch(await source('sitemap.xml'), /https:\/\/(apps|accounts)\.roachnet\.org|https:\/\/www\.roachwares\.org/)
 
 const appsBuild = await source('scripts/build-apps-site.mjs')
@@ -39,7 +43,10 @@ for (const build of [appsBuild, accountsBuild]) {
 assert.doesNotMatch(accountsBuild, /^\s*'assets',$/m)
 assert.doesNotMatch(appsBuild, /^\s*'assets',$/m)
 
-await run(process.execPath, ['scripts/build-main-site.mjs'], { cwd: root })
+await Promise.all([
+  run(process.execPath, ['scripts/build-main-site.mjs'], { cwd: root }),
+  run(process.execPath, ['scripts/build-main-site.mjs'], { cwd: root }),
+])
 assert.equal(
   await source('website-main-dist/404.html'),
   await source('404.html'),
