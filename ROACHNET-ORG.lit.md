@@ -6899,22 +6899,48 @@ const outDir = path.join(repoRoot, "website-main-dist");
 const stagingDir = path.join(repoRoot, `.website-main-dist-${process.pid}-${randomUUID()}`);
 const previousDir = path.join(repoRoot, `.website-main-dist-previous-${process.pid}-${randomUUID()}`);
 const promotionLock = path.join(repoRoot, ".website-main-dist.lock");
+const promotionLockOwner = path.join(promotionLock, "owner.json");
 
-async function promote(stagedDirectory) {
+function processIsAlive(pid) {
+  if (!Number.isSafeInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    if (error.code === "EPERM") return true;
+    if (error.code === "ESRCH") return false;
+    throw error;
+  }
+}
+
+async function acquirePromotionLock() {
+  const token = `${process.pid}:${randomUUID()}`;
   for (let attempt = 0; attempt < 200; attempt += 1) {
     try {
       await mkdir(promotionLock);
-      break;
+      await writeFile(promotionLockOwner, JSON.stringify({ pid: process.pid, token }), "utf8");
+      return token;
     } catch (error) {
       if (error.code !== "EEXIST") throw error;
-      let age;
+
+      let owner;
       try {
-        age = Date.now() - (await stat(promotionLock)).mtimeMs;
-      } catch (statError) {
-        if (statError.code === "ENOENT") continue;
-        throw statError;
+        owner = JSON.parse(await readFile(promotionLockOwner, "utf8"));
+      } catch (ownerError) {
+        if (ownerError.code !== "ENOENT" && !(ownerError instanceof SyntaxError)) throw ownerError;
+        let age;
+        try {
+          age = Date.now() - (await stat(promotionLock)).mtimeMs;
+        } catch (statError) {
+          if (statError.code === "ENOENT") continue;
+          throw statError;
+        }
+        if (age > 5_000) await rm(promotionLock, { recursive: true, force: true });
+        await delay(25);
+        continue;
       }
-      if (age > 300_000) {
+
+      if (!processIsAlive(owner.pid)) {
         await rm(promotionLock, { recursive: true, force: true });
         continue;
       }
@@ -6922,6 +6948,22 @@ async function promote(stagedDirectory) {
       await delay(25);
     }
   }
+  throw new Error("Unable to acquire website-main-dist promotion lock");
+}
+
+async function releasePromotionLock(token) {
+  try {
+    const owner = JSON.parse(await readFile(promotionLockOwner, "utf8"));
+    if (owner.token === token) {
+      await rm(promotionLock, { recursive: true, force: true, maxRetries: 20, retryDelay: 50 });
+    }
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+}
+
+async function promote(stagedDirectory) {
+  const lockToken = await acquirePromotionLock();
 
   let hadPrevious = false
   try {
@@ -6941,7 +6983,7 @@ async function promote(stagedDirectory) {
 
     if (hadPrevious) await rm(previousDir, { recursive: true, force: true, maxRetries: 20, retryDelay: 50 });
   } finally {
-    await rm(promotionLock, { recursive: true, force: true, maxRetries: 20, retryDelay: 50 });
+    await releasePromotionLock(lockToken);
   }
 }
 
