@@ -51,7 +51,7 @@ function expand(name, chunks, stack = []) {
 }
 
 const sourceFiles = [
-  '404.html', 'account.js', 'account/index.html', 'html-validate.json', 'index.html', 'landing.css', 'landing-script.js', 'netlify.toml', 'package-lock.json', 'package.json', 'robots-accounts.txt', 'robots-apps.txt',
+  '404.html', 'account.js', 'account/index.html', 'app-store.js', 'html-validate.json', 'index.html', 'landing.css', 'landing-script.js', 'netlify.toml', 'package-lock.json', 'package.json', 'robots-accounts.txt', 'robots-apps.txt',
   'scripts/build-accounts-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-main-site.mjs', 'scripts/check-links.mjs',
   'scripts/site-browser-outcomes.mjs', 'scripts/snapshot-live-sites.mjs', 'scripts/tangle.mjs', 'scripts/validate-html.mjs',
   'sitemap-accounts.xml', 'sitemap-apps.xml', 'test/register-account.test.mjs', 'test/site-outcomes.mjs', 'netlify/functions/register-account.mjs', 'netlify/functions/roachclaw-chat.mjs',

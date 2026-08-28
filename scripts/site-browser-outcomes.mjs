@@ -225,6 +225,51 @@ async function checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl) {
   }
 }
 
+async function checkAppDetailKeyboardFlow(browser, baseUrl) {
+  const page = await browser.newPage()
+  const failures = []
+  page.on('console', (message) => {
+    if (message.type() === 'error') failures.push(`console: ${message.text()}`)
+  })
+  try {
+    const response = await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
+    assert.equal(response?.status(), 200, 'Apps catalog response')
+    await page.waitForSelector('[data-preview-id]', { timeout: 15_000 })
+    const triggers = await page.$$('[data-preview-id]')
+    const triggerCandidates = await Promise.all(triggers.map(async (candidate) => ({
+      candidate,
+      visible: await candidate.isVisible(),
+      selected: await candidate.evaluate((element) => element.closest('.apps-card')?.classList.contains('is-selected') || false),
+    })))
+    const trigger = triggerCandidates.find(({ visible, selected }) => visible && !selected)?.candidate
+      || triggerCandidates.find(({ visible }) => visible)?.candidate
+    assert.ok(trigger, 'Apps catalog needs a visible preview trigger')
+    const triggerId = await trigger.evaluate((element) => element.getAttribute('data-preview-id'))
+    await trigger.focus()
+    await trigger.evaluate((element) => element.click())
+    await page.waitForSelector('#apps-detail-overlay:not([hidden])', { timeout: 5_000 })
+    await page.waitForFunction(() => document.activeElement?.id === 'apps-detail-close', { timeout: 5_000 })
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'apps-detail-close', 'Apps detail must move focus to its close control')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('Tab')
+    await page.keyboard.up('Shift')
+    assert.equal(await page.evaluate(() => {
+      const overlay = document.querySelector('#apps-detail-overlay')
+      const focusable = [...overlay.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+        .filter((element) => element instanceof HTMLElement && element.getClientRects().length > 0)
+      return document.activeElement === focusable.at(-1)
+    }), true, 'Apps detail must reverse-tab to its final focusable control')
+    await page.keyboard.press('Tab')
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'apps-detail-close', 'Apps detail must cycle forward to its close control')
+    await page.keyboard.press('Escape')
+    await page.waitForSelector('#apps-detail-overlay[hidden]', { timeout: 5_000 })
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('data-preview-id')), triggerId, 'Apps detail must return focus to its original trigger')
+    assert.deepEqual(failures, [], 'Apps detail keyboard browser failures')
+  } finally {
+    await page.close()
+  }
+}
+
 const browser = await puppeteer.launch({ executablePath: await findChromium(), headless: true, timeout: 60_000, args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'] })
 try {
   for (const site of sites) {
@@ -248,6 +293,9 @@ try {
       }
       if (site.name === 'main') {
         await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)
+      }
+      if (site.name === 'apps') {
+        await checkAppDetailKeyboardFlow(browser, baseUrl)
       }
     } finally {
       await close(server)

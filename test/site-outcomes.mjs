@@ -108,6 +108,12 @@ for (const page of publicPages) {
   const html = await source(page)
   assert.match(html, /class="rn-skip-link"/, `${page} needs a keyboard bypass link`)
   assert.match(html, /<main[^>]+id="[^"]+"/, `${page} needs a skip-link main target`)
+  const footers = [...html.matchAll(/<footer\b[\s\S]*?<\/footer>/gi)].map(([footer]) => footer)
+  assert.ok(footers.length > 0, `${page} needs a footer`)
+  for (const [index, footer] of footers.entries()) {
+    const sitemapLinks = [...footer.matchAll(/<a\s+[^>]*href="https:\/\/roachnet\.org\/sitemap\/"[^>]*>\s*Sitemap\s*<\/a>/gi)]
+    assert.equal(sitemapLinks.length, 1, `${page} footer ${index + 1} needs exactly one Sitemap link`)
+  }
 }
 assert.match(await source('app-store.html'), /<h1[ >]/)
 for (const page of ['index.html', 'home/index.html', 'brew/index.html', 'app-store.html']) {

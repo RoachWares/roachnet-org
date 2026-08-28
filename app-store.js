@@ -615,6 +615,7 @@ let shouldScrollPreviewIntoView = false
 let sidebarNavBound = false
 let sidebarNavResizeObserver = null
 let initialHashScrollHandled = false
+let detailTrigger = null
 
 function getSiteChromeOffset() {
   const siteHeader = document.querySelector('.site-header')
@@ -2164,13 +2165,17 @@ function renderDetail(item) {
   `
 }
 
-function openDetail(id) {
+function openDetail(id, trigger) {
   const item = findItemById(id)
   if (!item || !detailOverlay || !detailContent) return
 
+  detailTrigger = trigger instanceof HTMLElement ? trigger : document.activeElement instanceof HTMLElement ? document.activeElement : null
   detailContent.innerHTML = renderDetail(item)
   detailOverlay.hidden = false
   document.body.classList.add('app-detail-open')
+  requestAnimationFrame(() => {
+    if (!detailOverlay.hidden) detailClose?.focus()
+  })
 }
 
 function closeDetail() {
@@ -2179,6 +2184,9 @@ function closeDetail() {
   detailOverlay.hidden = true
   detailContent.innerHTML = ''
   document.body.classList.remove('app-detail-open')
+  const trigger = detailTrigger
+  detailTrigger = null
+  if (trigger?.isConnected) trigger.focus()
 }
 
 function returnToRoachNetHome(event) {
@@ -2290,7 +2298,8 @@ storeStage?.addEventListener('click', (event) => {
       renderStore()
     }
     event.preventDefault()
-    openDetail(previewId)
+    const currentTrigger = storeStage?.querySelector(`[data-preview-id="${previewId}"]`) || previewButton
+    openDetail(previewId, currentTrigger)
     return
   }
 
@@ -2334,6 +2343,19 @@ detailOverlay?.addEventListener('click', (event) => {
 })
 
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Tab' && detailOverlay && !detailOverlay.hidden) {
+    const focusable = [...detailOverlay.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter((element) => element instanceof HTMLElement && element.getClientRects().length > 0)
+    if (!focusable.length) return
+    const activeIndex = focusable.indexOf(document.activeElement)
+    const nextIndex = event.shiftKey
+      ? (activeIndex <= 0 ? focusable.length - 1 : activeIndex - 1)
+      : (activeIndex < 0 || activeIndex >= focusable.length - 1 ? 0 : activeIndex + 1)
+    event.preventDefault()
+    focusable[nextIndex].focus()
+    return
+  }
+
   if (event.key === 'Escape' && detailOverlay && !detailOverlay.hidden) {
     event.preventDefault()
     closeDetail()
