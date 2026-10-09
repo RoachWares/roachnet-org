@@ -450,15 +450,15 @@ if (root) {
     if (accountChip) {
       accountChip.textContent = session?.user ? sessionLabel(session) : 'Sign in'
       accountChip.dataset.state = session?.user ? 'live' : 'ready'
-      accountChip.title = session?.user ? 'Click to sign out.' : 'Sign in to use RoachClaw.'
+      accountChip.title = session?.user ? 'Sign out' : 'Sign in to use RoachClaw'
     }
 
     if (modelBadgeText) {
-      modelBadgeText.textContent = session?.user ? 'Hosted web lane' : 'Auth required'
+      modelBadgeText.textContent = session?.user ? 'Hosted model' : 'Sign in first'
     }
 
     if (hint) {
-      hint.textContent = session?.user ? 'Web lane · hosted models' : 'Sign in to chat'
+      hint.textContent = session?.user ? 'In the browser · hosted model' : 'Sign in to start chatting'
     }
 
     if (threadTitle) {
@@ -470,17 +470,17 @@ if (root) {
     if (!threadList) return
 
     if (!authState?.enabled) {
-      threadList.innerHTML = '<div class="rc-thread-empty"><p>This deploy does not have RoachClaw auth armed yet.</p></div>'
+      threadList.innerHTML = '<div class="rc-thread-empty"><p>Sign-in is not switched on for this site yet. Check back soon.</p></div>'
       return
     }
 
     if (!authState?.session?.user) {
-      threadList.innerHTML = '<div class="rc-thread-empty"><p>Sign in to load the threads tied to your account.</p></div>'
+      threadList.innerHTML = '<div class="rc-thread-empty"><p>Sign in to see your conversations.</p></div>'
       return
     }
 
     if (!threads.length) {
-      threadList.innerHTML = '<div class="rc-thread-empty"><p>No saved threads yet. Start the first one from the composer.</p></div>'
+      threadList.innerHTML = '<div class="rc-thread-empty"><p>Nothing saved yet. Type below to start your first conversation.</p></div>'
       return
     }
 
@@ -591,7 +591,7 @@ if (root) {
       .order('created_at', { ascending: true })
 
     if (error) {
-      setComposerFeedback(error.message || 'Could not load that thread.', 'error')
+      setComposerFeedback(error.message || 'That conversation would not load. Try again.', 'error')
       return
     }
 
@@ -613,7 +613,7 @@ if (root) {
       .limit(40)
 
     if (error) {
-      setComposerFeedback(error.message || 'Could not load your threads.', 'error')
+      setComposerFeedback(error.message || 'Your conversations would not load. Try again.', 'error')
       return
     }
 
@@ -687,7 +687,7 @@ if (root) {
     event.preventDefault()
 
     if (!authState?.enabled || !authState?.client) {
-      setGateFeedback('This deploy does not have live auth enabled.', 'error')
+      setGateFeedback('Sign-in is not switched on for this site yet.', 'error')
       return
     }
 
@@ -696,7 +696,7 @@ if (root) {
     const displayName = String(authNameInput?.value || '').trim()
 
     if (!email || !password) {
-      setGateFeedback('Enter both email and password.', 'error')
+      setGateFeedback('Enter your email and password to continue.', 'error')
       return
     }
 
@@ -723,7 +723,7 @@ if (root) {
       renderChrome()
       await loadThreads()
     } catch (error) {
-      setGateFeedback(error?.message || 'Sign-in did not finish cleanly.', 'error')
+      setGateFeedback(error?.message || 'Sign-in did not go through. Try again.', 'error')
     } finally {
       setAuthBusy(false)
     }
@@ -753,13 +753,13 @@ if (root) {
 
     const message = String(input?.value || '').trim()
     if (!message) {
-      setComposerFeedback('Enter a prompt first.', 'error')
+      setComposerFeedback('Type a message first.', 'error')
       return
     }
 
     const accessToken = authState.session.access_token
     if (!accessToken) {
-      setComposerFeedback('This session is missing its access token. Sign in again.', 'error')
+      setComposerFeedback('Your session expired. Sign in again to keep going.', 'error')
       return
     }
 
@@ -795,7 +795,7 @@ if (root) {
     }
 
     setChatBusy(true)
-    setComposerFeedback('Sending through the hosted RoachClaw lane…')
+    setComposerFeedback('Sending…')
     renderMessages()
 
     try {
@@ -848,7 +848,7 @@ if (root) {
         input.value = message
         syncInputHeight()
       }
-      setComposerFeedback(error?.message || 'RoachClaw could not finish the request.', 'error')
+      setComposerFeedback(error?.message || 'RoachClaw could not finish that one. Try again.', 'error')
     } finally {
       setChatBusy(false)
     }
@@ -860,12 +860,12 @@ if (root) {
 
     if (!enabled) {
       if (authGateCopy) {
-        authGateCopy.textContent = authState?.reason || 'This deploy does not have account auth armed yet.'
+        authGateCopy.textContent = authState?.reason || 'Sign-in is not switched on for this site yet.'
       }
-      setGateFeedback('This deploy cannot sign in yet.', 'error')
+      setGateFeedback('Sign-in is not available here yet.', 'error')
       showGate()
       setAuthBusy(true)
-      setComposerFeedback(authState?.reason || 'Account auth is not armed on this deploy yet.', 'error')
+      setComposerFeedback(authState?.reason || 'Sign-in is not switched on for this site yet.', 'error')
       renderChrome()
       setChatBusy(true)
       return
@@ -887,7 +887,7 @@ if (root) {
     }
     setGateFeedback('')
     showGate()
-    setComposerFeedback('Sign in to use your account-scoped threads.', 'muted')
+    setComposerFeedback('Sign in to save and revisit your conversations.', 'muted')
   }
 
   async function initializeAuthState() {
@@ -944,7 +944,7 @@ if (root) {
     messages = []
     renderThreadList()
     renderMessages()
-    setComposerFeedback('Fresh thread ready.', 'muted')
+    setComposerFeedback('New conversation ready.', 'muted')
     input?.focus()
     closeSidebar()
   })

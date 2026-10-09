@@ -31,7 +31,8 @@
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link rel="preload" as="image" href="../assets/screens/roachnet-native-home.webp" imagesrcset="../assets/screens/roachnet-native-home.webp" />
     <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css?v=20260609-overflow" />
+    <link rel="stylesheet" href="../app-polish.css" />
+    <link rel="stylesheet" href="../motion-layer.css" />
   </head>
   <body data-page="home">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
@@ -85,22 +86,22 @@
             <a href="https://roachnet.org/api/">API blueprint</a>
           </div>
 
-          <p class="hero-footnote">RoachNet is Apple Silicon native first. Pair it with RoachNet iOS and take your context and documents with you. Built for the nights when the router gives up and you want your files to keep working anyway.</p>
-          <p class="download-meta" id="download-meta">RoachNet v1.0.5 is not Apple-notarized · Setup.app or Homebrew. Either way it lands in <code>~/RoachNet</code> and stays where you put it.</p>
+          <p class="hero-footnote">Built for Apple Silicon first. Pair it with RoachNet iOS and your notes and documents come with you. Made for the nights when the router gives up and you'd like your files to carry on regardless.</p>
+          <p class="download-meta" id="download-meta">RoachNet v1.0.5 · Setup app or Homebrew. Either way it lands in <code>~/RoachNet</code> and stays exactly where you put it.</p>
           <div class="homebrew-inline">
             <button class="cta cta--ghost cta--compact" data-homebrew-copy type="button">Copy brew command</button>
             <span class="homebrew-inline__command"><code>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</code></span>
           </div>
           <p class="homebrew-note" id="homebrew-note">
-            Mac only. Unfortunately browsers cannot launch Terminal safely, so this downloads a small helper that will open Terminal and run the Homebrew install for you. Feel free to inspect it first.
+            Mac only. Browsers aren't allowed to open Terminal, so this downloads a tiny helper that opens it for you and runs the Homebrew install. Read it first if you like &mdash; we'd think more of you.
           </p>
 
           <div class="hero-status" aria-label="RoachNet status row">
             <span data-hero-time>--:-- --</span>
-            <span class="hero-status__pill" data-hero-connectivity data-state="pending">Checking link</span>
-            <span data-hero-storage>Storage estimate pending</span>
+            <span class="hero-status__pill" data-hero-connectivity data-state="pending">Checking connection</span>
+            <span data-hero-storage>Checking free space</span>
           </div>
-          <p class="hero-status__note">Local time and storage are estimated in-browser until the native app is installed.</p>
+          <p class="hero-status__note">Rough browser estimates until the app is installed. The real numbers live in RoachNet.</p>
         </div>
 
         <div class="hero-visual" aria-hidden="true">
@@ -110,7 +111,7 @@
               src="../assets/screens/roachnet-native-home.webp"
               width="1568"
               height="1032"
-              alt="RoachNet native home command grid"
+              alt="RoachNet home screen"
               fetchpriority="high"
               decoding="async"
             />
@@ -126,11 +127,11 @@
           <div class="hero-signal-board">
             <article class="hero-signal-card">
               <span>Local AI</span>
-              <strong>RoachClaw is a local-first AI assistant with optional cloud provider support, the RoachBrain context system, code assist, TTS & STT, voice cloning support, and many more features still in development. RoachClaw is always a call away.</strong>
+              <strong>RoachClaw is your local-first AI assistant: your own models by default, cloud providers when you want them, plus RoachBrain memory, code help, text-to-speech, speech-to-text, and voice cloning. More lands every release. Always a shortcut away.</strong>
             </article>
             <article class="hero-signal-card">
-              <span>One root</span>
-              <strong>App, runtime, tools, vault, and receipts in <code>~/RoachNet</code>.</strong>
+              <span>One folder</span>
+              <strong>The app, the models, your tools, and your vault all live in <code>~/RoachNet</code>.</strong>
             </article>
             <article class="hero-signal-card">
               <span>Offline ready</span>
@@ -144,41 +145,41 @@
         <div class="section-head">
           <p class="eyebrow">Mission</p>
           <h2>Offline on purpose. Not by chance.</h2>
-          <p>One root on your machine. Easier to trust, easier to move, and still useful when the network stops pretending.</p>
+          <p>One folder on your machine. Easier to trust, easier to move, and still useful when the network stops pretending.</p>
         </div>
 
         <div class="pillar-grid" role="list">
           <article class="pillar-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Local models first</span>
-            <h3>Local models stay on your hardware first.</h3>
-            <p>Open RoachClaw anywhere, and hand over vault or project context only when you choose to. No API keys, no cloud dependency.</p>
+            <h3>Your models stay on your hardware.</h3>
+            <p>Open RoachClaw anywhere and share vault or project context only when you decide to. No API keys, nothing phoning home.</p>
           </article>
 
           <article class="pillar-card" role="listitem" data-reveal>
-            <span class="feature-card__eyebrow">Contained by default</span>
-            <h3>One folder. Take it anywhere. Nuke it anytime. RoachNet is designed to be portable and easy to maintain.</h3>
-            <p>Everything lives under <code>~/RoachNet</code>. Easier to move, easier to back up, easier to wipe, and easier to trust.</p>
+            <span class="feature-card__eyebrow">One folder, that's it</span>
+            <h3>One folder. Take it anywhere. Delete it in a second.</h3>
+            <p>Everything lives under <code>~/RoachNet</code>. Easy to move, easy to back up, easy to wipe, easy to trust.</p>
           </article>
 
           <article class="pillar-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">Designed to disappear</span>
               <h3>Quick when called. Quiet when not.</h3>
-              <p>Open it and focus on the task at hand, close it when you are done. RoachNet is designed to be a tool, not a distraction.</p>
+              <p>Open it, do the thing, close it. RoachNet is a tool, not a place to lose an afternoon.</p>
           </article>
         </div>
       </section>
 
       <section class="content-section content-section--surfaces" id="screens">
         <div class="section-head">
-          <p class="eyebrow">Native surfaces</p>
-          <h2>Native surfaces that do real work.</h2>
-          <p>Everything you need in one place. No hunt through complex interfaces or tabs that simply won't load without a connection. RoachNet is always there when you need it.</p>
+          <p class="eyebrow">The app</p>
+          <h2>Screens that do real work.</h2>
+          <p>Everything in one place. No digging through tabs that refuse to load without a connection.</p>
         </div>
 
         <div class="surface-grid" role="list">
           <article class="surface-card surface-card--featured" role="listitem" data-reveal>
             <div class="surface-card__shot app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-native-home.webp" width="1568" height="1032" alt="RoachNet native home command grid" loading="lazy" decoding="async" />
+              <img src="../assets/screens/roachnet-native-home.webp" width="1568" height="1032" alt="RoachNet home screen" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v1.0.5</span>
             </div>
             <div class="surface-card__copy">
@@ -190,50 +191,50 @@
 
           <article class="surface-card" role="listitem" data-reveal>
             <div class="surface-card__shot app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-native-dev.webp" width="1538" height="1016" alt="RoachNet native Dev workspace" loading="lazy" decoding="async" />
+              <img src="../assets/screens/roachnet-native-dev.webp" width="1538" height="1016" alt="Dev workspace in RoachNet" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v1.0.5</span>
             </div>
             <div class="surface-card__copy">
               <span class="feature-card__eyebrow">Dev</span>
               <h3>The native coding workspace.</h3>
-              <p>RoachNet's Dev interface is still a work in progress, but it's a good place to start a new project or open a file and get coding. With RoachBrain context and RoachClaw as your IDE assistant, you can get started quickly and focus on the code.</p>
+              <p>Dev is still a work in progress, but it's already a fine place to start a project, open a file, and get going. RoachBrain remembers your project, RoachClaw sits in as your pair, and you get to think about the code instead of the setup.</p>
             </div>
           </article>
 
           <article class="surface-card surface-card--featured-secondary" role="listitem" data-reveal>
             <div class="surface-card__shot app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-native-roachclaw.webp" width="1568" height="1032" alt="RoachNet native RoachClaw workbench" loading="lazy" decoding="async" />
+              <img src="../assets/screens/roachnet-native-roachclaw.webp" width="1568" height="1032" alt="RoachClaw screen in RoachNet" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v1.0.5</span>
             </div>
             <div class="surface-card__copy">
               <span class="feature-card__eyebrow">RoachClaw</span>
               <h3>The local AI workbench.</h3>
-              <p>Local AI inference with model control, global voice input, and full vault context when you allow it. Swap models, see what is loaded, and pull project context without playing prompt telephone.</p>
-              <p>RoachClaw is your local AI assistant. With project and document context, it can help you with your code, notes, and more. RoachClaw is always one shortcut or voice request away.</p>
+              <p>Run models on your own machine, switch between them, see exactly what's loaded, and pull in project context without playing prompt telephone.</p>
+              <p>Give it your projects and documents and it'll help with code, notes, and everything in between &mdash; always a shortcut or a spoken word away.</p>
             </div>
           </article>
 
           <article class="surface-card" role="listitem" data-reveal>
             <div class="surface-card__shot app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-native-vault.webp" width="1556" height="1016" alt="RoachNet native vault surface" loading="lazy" decoding="async" />
+              <img src="../assets/screens/roachnet-native-vault.webp" width="1556" height="1016" alt="RoachNet vault screen" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v1.0.5</span>
             </div>
             <div class="surface-card__copy">
               <span class="feature-card__eyebrow">Vault</span>
-              <h3>The living shelf.</h3>
-              <p>Notes, maps, education packs, books, web captures, music, video, and RoachNet App Store content right at your fingertips. It's your vault, your library, and your playground.</p>
+              <h3>Your library, offline.</h3>
+              <p>Notes, maps, courses, books, saved web pages, music, video, and anything you've installed from RoachNet Apps. Part library, part workshop, entirely yours.</p>
             </div>
           </article>
 
           <article class="surface-card" role="listitem" data-reveal>
             <div class="surface-card__shot app-screen-shot app-screen-shot--dark">
-              <img src="../assets/screens/roachnet-native-runtime.webp" width="1568" height="1032" alt="RoachNet native runtime surface" loading="lazy" decoding="async" />
+              <img src="../assets/screens/roachnet-native-runtime.webp" width="1568" height="1032" alt="RoachNet runtime screen" loading="lazy" decoding="async" />
               <span class="screen-version-chip">v1.0.5</span>
             </div>
             <div class="surface-card__copy">
               <span class="feature-card__eyebrow">Runtime</span>
               <h3>Where the real work happens.</h3>
-              <p>RoachNet's runtime is the engine that powers everything. It's where the real work happens. It's where you can see what is actually live, and where any issues may be hiding.</p>
+              <p>The engine room. See what's actually running, what's downloading, and where a problem is hiding &mdash; without opening a single log file by hand.</p>
             </div>
           </article>
 
@@ -244,23 +245,23 @@
         <div class="section-head">
           <p class="eyebrow">Where RoachNet fits</p>
           <h2>Where it actually helps.</h2>
-          <p>RoachNet is for people who want their files, tools, and context to work when the internet doesn't. If you want to be in control of your own hardware and data, RoachNet is for you.</p>
+          <p>RoachNet is for people who want their files, tools, and context to work when the internet doesn't. If you like owning your own hardware and your own data, you're in the right place.</p>
         </div>
 
         <div class="usecase-grid" role="list">
           <article class="usecase-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Studio days</span>
-            <h3>All your docs, stems, notes, and AI in one place instead of the usual eleven-tab disaster with a loop and a metronome playing in the background. There even when the studio's Wi-Fi goes down.</h3>
+            <h3>Docs, stems, notes, and AI in one window instead of the usual eleven-tab disaster. Still there when the studio Wi-Fi taps out mid-take.</h3>
           </article>
 
           <article class="usecase-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Travel</span>
-            <h3>Pack it like a suitcase. RoachNet is made to be portable, and keeps working even in airplane mode.</h3>
+            <h3>Pack it like a suitcase. Airplane mode changes nothing.</h3>
           </article>
 
           <article class="usecase-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Outages</span>
-            <h3>When your internet goes out, or a service is down, your files, models, maps, and vault are still there, ready to go, right where you left them.</h3>
+            <h3>Internet down, service down, whatever. Your files, models, maps, and vault are exactly where you left them.</h3>
           </article>
         </div>
       </section>
@@ -268,29 +269,29 @@
       <section class="content-section content-section--inside" id="inside">
         <div class="section-head">
           <p class="eyebrow">What’s inside RoachNet</p>
-          <h2>Apps and packs worth installing.</h2>
-          <p>Whether it be Wikipedia, a map pack, reference materials, or a RoachNet App Store app, RoachNet is the place to keep it all, right where you need it.</p>
+          <h2>Things worth installing.</h2>
+          <p>Wikipedia, a map pack, a medical reference, an app from RoachNet Apps &mdash; it all lands in the same place, ready when you need it.</p>
         </div>
 
         <div class="shelf-grid" role="list">
           <article class="shelf-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Map Regions</span>
-            <h3>Offline atlas packs by region. Pair it with the RoachNet iOS companion's RoachAtlas GPS feature and you've got a portable offline atlas that works anywhere.</h3>
+            <h3>Offline atlases, region by region. Add RoachAtlas GPS on the iOS app and you're navigating with no signal at all.</h3>
           </article>
 
           <article class="shelf-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Medicine</span>
-            <h3>Remedies, treatments, and medical references, offline. For people who actually prepare instead of trusting search results under pressure.</h3>
+            <h3>Remedies, treatments, and medical references, offline. For people who prepare instead of trusting search results under pressure.</h3>
           </article>
 
           <article class="shelf-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Dev &amp; ML</span>
-            <h3>API references, CLI guides, and machine learning materials, all in one place. No more hunting for documentation when you need it most.</h3>
+            <h3>API references, command-line guides, and machine learning material. No hunting for docs at the exact moment you need them.</h3>
           </article>
 
           <article class="shelf-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Wikipedia &amp; Reference</span>
-            <h3>Curated Wikipedia packs. Start with something small, like the top 100,000 articles, or go all the way up to the complete Wikipedia archive and everything in between. Offline and indexed for quick reference.</h3>
+            <h3>Start with the top 100,000 articles, go all the way to the whole encyclopedia, or land somewhere in between. Offline and searchable.</h3>
           </article>
         </div>
 
@@ -302,29 +303,29 @@
       <section class="content-section content-section--runtime" id="runtime">
         <div class="section-head">
           <p class="eyebrow">What RoachNet runs for you</p>
-          <h2>The runtime behind the shell.</h2>
-          <p>RoachNet is a powerful tool, but the real power is the contained runtime behind it.</p>
+          <h2>What's under the hood.</h2>
+          <p>The window is the nice part. The engine underneath is the good part.</p>
         </div>
 
         <div class="runtime-grid" role="list">
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Local runtime</span>
-            <h3>Everything RoachNet needs to run lives inside <code>~/RoachNet</code>. RoachNet is meant to be a self-contained system, not scattered in folders across your home directory.</h3>
+            <h3>Everything RoachNet needs lives inside <code>~/RoachNet</code>. One folder, not a confetti trail of files across your home directory.</h3>
           </article>
 
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">RoachClaw</span>
-            <h3>With RoachClaw we have wired together a local AI assistant that can help you with your code, notes, and more. RoachClaw is always one shortcut or voice request away. No API keys, no cloud dependency required.</h3>
+            <h3>A local AI assistant for your code, your notes, and everything in between. One shortcut or one spoken word away. No API keys, no cloud required.</h3>
           </article>
 
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Dev Studio</span>
-            <h3>Write code, manage projects, run shell commands, and get AI assistance in a workspace that learns your patterns and preferences as you work.</h3>
+            <h3>Write code, manage projects, run commands, and get AI help in a workspace that picks up your habits as you go.</h3>
           </article>
 
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Maps &amp; Vault</span>
-            <h3>Imagine this: you're planning a trip in your notes, and you want to know what the weather is going to be like. You open RoachNet, open the map pack, and ask RoachClaw the weather forecast for your destination. RoachClaw gives you the forecast, gives you the best route, and RoachAtlas covers navigation. All from the same app.</h3>
+            <h3>Planning a trip in your notes? Open the map pack, ask RoachClaw about the forecast and the best route, let RoachAtlas handle the turns. Same app, no tab-hopping.</h3>
           </article>
         </div>
       </section>
@@ -333,37 +334,37 @@
         <div class="section-head">
           <p class="eyebrow">Download</p>
           <h2>Get it on your machine.</h2>
-          <p>Whether you download it here, or you use Homebrew. The result stays the same. RoachNet lands on hardware you own, under a folder you can back up or nuke anytime.</p>
+          <p>Installer or Homebrew, the ending is the same: RoachNet on hardware you own, in a folder you can back up, move, or delete in one drag.</p>
         </div>
 
         <div class="home-download-note" data-reveal>
-          <strong>Yeah, we've got brew covered.</strong>
-          <span>You can use the Setup app, but if Homebrew is more your style we've got you covered. Both land in <code>~/RoachNet</code> so your entire RoachNet installation and added content stays in one folder that you can take anywhere.</span>
+          <strong>Yes, there's a brew formula.</strong>
+          <span>Setup app or Homebrew &mdash; both land in <code>~/RoachNet</code>, so the whole thing stays in one folder you can carry anywhere.</span>
         </div>
 
         <div class="download-layout">
           <button class="download-hero-card" data-platform="mac" type="button" data-reveal>
             <span class="download-card__label">macOS · Apple Silicon</span>
-            <strong>Download RoachNet now and see what it can do for you! Everything installs right in <code>~/RoachNet</code>.</strong>
+            <strong>Download RoachNet. It all lands in <code>~/RoachNet</code>.</strong>
             <small>Download RoachNet-Setup-macOS.dmg</small>
           </button>
 
           <div class="download-side-grid">
             <button class="download-side-card" data-homebrew-install type="button" data-reveal>
               <span class="download-card__label">Homebrew · Apple Silicon</span>
-              <strong>Oh, you're more of a Terminal type? These three commands install RoachNet to <code>~/RoachNet</code> without the need for the setup GUI.</strong>
+              <strong>More of a Terminal person? Three commands, same <code>~/RoachNet</code>, no setup window.</strong>
               <small>brew update && brew tap --force RoachWares/roachnet && brew install --cask roachnet</small>
             </button>
 
             <a class="download-side-card" href="https://roachnet.org/ios/" data-reveal>
               <span class="download-card__label">iPhone &amp; iPad · SideStore + AltStore</span>
-              <strong>RoachNet iOS. Access your chats and vault anywhere over the secure RoachTail sync feature. With RoachNet App Store installs right from the mobile app, and a quick view of the RoachNet runtime in the palm of your hand.</strong>
+              <strong>RoachNet iOS. Your chats and vault, synced over RoachTail, plus app installs and a live look at what's running &mdash; all from your pocket.</strong>
               <small>Download RoachNetiOS-v0.1.5-unsigned.ipa</small>
             </a>
 
             <a class="download-side-card" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer" data-reveal>
               <span class="download-card__label">Source · RoachWares</span>
-              <strong>Check out RoachWares on GitHub and see the code that makes all this work.</strong>
+              <strong>Read the code that makes all of this work.</strong>
               <small>View latest GitHub release</small>
             </a>
           </div>
@@ -386,8 +387,8 @@
         <div class="home-support-shell">
           <article class="home-support-intro" data-reveal>
             <span class="feature-card__eyebrow">Independent</span>
-            <h3>RoachNet is developed by RoachWares LLC, a founder run company with one member. Everything we do comes from a desire to create something we love.</h3>
-            <p>Being a solo developer means less arguments about the direction of the app, and more time to focus on priorities. It also means direct support from people like you actually matters.</p>
+            <h3>RoachNet is made by RoachWares LLC &mdash; one person, one company, no committee. It exists because we wanted it to exist.</h3>
+            <p>A team of one means fewer arguments about direction and more time spent on the things that matter. It also means support from people like you lands directly.</p>
             <div class="support-card__actions">
               <a class="cta cta--ghost support-card__cta" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Read the changelog</a>
               <a class="cta cta--ghost support-card__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">Browse the source</a>
@@ -397,15 +398,15 @@
           <div class="home-support-grid">
             <article class="support-card" data-reveal>
               <span class="feature-card__eyebrow">RoachWares LLC</span>
-              <h3>RoachWares LLC is the company behind RoachNet. Independently built and maintained by a stubborn Roach, we build apps and tools that are not only useful, but that we actually use.</h3>
+              <h3>The company behind RoachNet. Built and maintained by one stubborn Roach who only ships tools he actually uses.</h3>
               <div class="support-card__actions">
                 <a class="cta cta--primary support-card__cta" href="https://www.roachwares.org/">Meet RoachWares</a>
               </div>
             </article>
 
             <article class="support-card" data-reveal>
-              <span class="feature-card__eyebrow">Support RoachNet's Development</span>
-              <h3>Bug fixes, new features, cleaner runtimes. All backed by your support.</h3>
+              <span class="feature-card__eyebrow">Chip in</span>
+              <h3>Bug fixes, new features, a faster app. All of it runs on your support.</h3>
               <div class="support-card__actions">
                 <a class="cta cta--primary support-card__cta" href="https://www.paypal.com/ncp/payment/ZV8RL9DWQXHGE" target="_blank" rel="noreferrer">Donate to RoachNet</a>
               </div>
@@ -465,6 +466,7 @@
     <script src="../site-config.js"></script>
     <script src="../app.js" type="module"></script>
     <script src="../site-polish.js" type="module"></script>
+    <script src="../motion-layer.js" type="module"></script>
     <script>
       // Live release badge: fetch latest tag from GitHub and update chip
       ;(async () => {
@@ -488,5 +490,5 @@
         } catch (_) {}
       })()
     </script>
-  </body>
+</body>
 </html>

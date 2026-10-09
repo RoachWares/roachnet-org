@@ -1,0 +1,698 @@
+/* ==========================================================================
+   RoachNet motion layer
+   Loads after app.css / app-polish.css / landing.css and layers a second
+   generation of micro-interactions on top of site-polish.js.
+
+   Naming: everything here is prefixed `rnm-` (RoachNet Motion) and every
+   custom property is `--rnm-*`, so nothing collides with the existing
+   `--rn-*` variables that site-polish.js already writes.
+
+   Every effect is opt-in via a class or data attribute added by
+   motion-layer.js, and everything switches off under
+   `prefers-reduced-motion: reduce`.
+   ========================================================================== */
+
+:root {
+  --rnm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --rnm-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --rnm-ease-swift: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --rnm-cyan: var(--rn-cyan, #48e6ff);
+  --rnm-blue: var(--rn-blue, #4d8dff);
+  --rnm-green: var(--rn-green, #4bffa5);
+
+  /* Written every frame by motion-layer.js */
+  --rnm-vel: 0;
+  --rnm-vel-abs: 0;
+  --rnm-progress: 0;
+  --rnm-px: 50%;
+  --rnm-py: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   1. Aurora field — a slow drifting gradient wash behind everything.
+   Cheap: three blurred radial blobs on a single composited layer.
+   -------------------------------------------------------------------------- */
+
+.rnm-aurora {
+  position: fixed;
+  inset: -20vmax;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  contain: strict;
+  will-change: opacity, transform;
+  transition: opacity 1.6s var(--rnm-ease-out);
+  mix-blend-mode: screen;
+}
+
+.rnm-aurora.is-rnm-lit {
+  opacity: 0.5;
+}
+
+.rnm-aurora__blob {
+  position: absolute;
+  width: 62vmax;
+  height: 62vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.34;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.rnm-aurora__blob--a {
+  left: 4%;
+  top: 2%;
+  background: radial-gradient(circle at 40% 40%, rgba(77, 141, 255, 0.72), transparent 68%);
+  animation: rnm-drift-a 34s var(--rnm-ease-swift) infinite alternate;
+}
+
+.rnm-aurora__blob--b {
+  right: 2%;
+  top: 24%;
+  background: radial-gradient(circle at 55% 45%, rgba(72, 230, 255, 0.6), transparent 66%);
+  animation: rnm-drift-b 43s var(--rnm-ease-swift) infinite alternate;
+}
+
+.rnm-aurora__blob--c {
+  left: 26%;
+  bottom: 0%;
+  background: radial-gradient(circle at 50% 60%, rgba(75, 255, 165, 0.42), transparent 64%);
+  animation: rnm-drift-c 51s var(--rnm-ease-swift) infinite alternate;
+}
+
+@keyframes rnm-drift-a {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(14vmax, 8vmax, 0) scale(1.14); }
+  100% { transform: translate3d(-6vmax, 16vmax, 0) scale(0.94); }
+}
+
+@keyframes rnm-drift-b {
+  0% { transform: translate3d(0, 0, 0) scale(1.06); }
+  50% { transform: translate3d(-16vmax, 12vmax, 0) scale(0.9); }
+  100% { transform: translate3d(8vmax, -10vmax, 0) scale(1.18); }
+}
+
+@keyframes rnm-drift-c {
+  0% { transform: translate3d(0, 0, 0) scale(0.95); }
+  50% { transform: translate3d(12vmax, -14vmax, 0) scale(1.2); }
+  100% { transform: translate3d(-14vmax, -4vmax, 0) scale(1.02); }
+}
+
+/* Scan sweep — a single faint horizontal light bar crossing the viewport. */
+.rnm-scan {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 34vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(72, 230, 255, 0.05) 44%,
+    rgba(140, 210, 255, 0.09) 50%,
+    rgba(72, 230, 255, 0.05) 56%,
+    transparent
+  );
+  animation: rnm-scan-pass 18s linear infinite;
+}
+
+.rnm-scan.is-rnm-lit {
+  opacity: 1;
+}
+
+@keyframes rnm-scan-pass {
+  0% { transform: translate3d(0, -40vh, 0); }
+  100% { transform: translate3d(0, 120vh, 0); }
+}
+
+/* Keep page content above the atmospherics. */
+body > header,
+body > main,
+body > footer,
+body > .page-shell,
+body > .apps-store-shell,
+body > .api-docs-shell,
+body > .page-view {
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   2. Cursor companion — a spring-lagged ring that swells over targets.
+   Complements (does not replace) the `.rn-cursor-light` glow.
+   -------------------------------------------------------------------------- */
+
+.rnm-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1px solid rgba(140, 220, 255, 0.55);
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.35s var(--rnm-ease-out), width 0.3s var(--rnm-ease-spring),
+    height 0.3s var(--rnm-ease-spring), border-color 0.3s var(--rnm-ease-out),
+    background-color 0.3s var(--rnm-ease-out), margin 0.3s var(--rnm-ease-spring);
+}
+
+body[data-rnm-pointer='fine'] .rnm-cursor.is-rnm-lit {
+  opacity: 0.85;
+}
+
+.rnm-cursor.is-rnm-target {
+  width: 62px;
+  height: 62px;
+  margin: -31px 0 0 -31px;
+  border-color: rgba(75, 255, 165, 0.7);
+  background: rgba(72, 230, 255, 0.07);
+}
+
+.rnm-cursor.is-rnm-press {
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.rnm-cursor__dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: rgba(190, 240, 255, 0.9);
+  transition: transform 0.3s var(--rnm-ease-spring);
+}
+
+.rnm-cursor.is-rnm-target .rnm-cursor__dot {
+  transform: scale(0.4);
+}
+
+/* --------------------------------------------------------------------------
+   3. Reveal choreography — staggered, direction-aware entrances.
+   `--rnm-i` is the stagger index inside a group, written by JS.
+   -------------------------------------------------------------------------- */
+
+[data-rnm-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0) scale(0.985);
+  filter: blur(6px);
+  transition:
+    opacity 0.78s var(--rnm-ease-out),
+    transform 0.86s var(--rnm-ease-out),
+    filter 0.6s var(--rnm-ease-out);
+  transition-delay: calc(var(--rnm-i, 0) * 68ms);
+  will-change: opacity, transform, filter;
+}
+
+[data-rnm-reveal='left'] {
+  transform: translate3d(-34px, 12px, 0) scale(0.985);
+}
+
+[data-rnm-reveal='right'] {
+  transform: translate3d(34px, 12px, 0) scale(0.985);
+}
+
+[data-rnm-reveal='tilt'] {
+  transform: perspective(1100px) translate3d(0, 40px, -40px) rotateX(9deg);
+  transform-origin: 50% 100%;
+}
+
+[data-rnm-reveal].is-rnm-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Once the entrance has played, drop the hints so hover transforms are free. */
+[data-rnm-reveal].is-rnm-settled {
+  will-change: auto;
+  transition-delay: 0ms;
+}
+
+/* --------------------------------------------------------------------------
+   4. Headline cascade — per-character rise on first view.
+   -------------------------------------------------------------------------- */
+
+.rnm-split {
+  display: inline-block;
+}
+
+/* Depth lives on the heading so every character shares one vanishing point. */
+.rnm-split-host {
+  perspective: 620px;
+}
+
+.rnm-split__char {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 0.55em, 0) rotateX(-58deg);
+  transform-origin: 50% 100%;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.5s var(--rnm-ease-out),
+    transform 0.72s var(--rnm-ease-spring);
+  transition-delay: calc(var(--rnm-i, 0) * 22ms);
+}
+
+.rnm-split__word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.is-rnm-in .rnm-split__char,
+.rnm-split.is-rnm-in .rnm-split__char {
+  opacity: 1;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Tilt cards — pointer-tracked 3D with a specular sheen.
+   Two-class selectors so these land after the single-class hover rules
+   already defined in app-polish.css / landing.css.
+   -------------------------------------------------------------------------- */
+
+.rnm-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--rnm-ease-out), box-shadow 0.5s var(--rnm-ease-out);
+}
+
+.rnm-tilt.is-rnm-tracking {
+  transition: transform 0.12s linear, box-shadow 0.4s var(--rnm-ease-out);
+  transform:
+    perspective(var(--rnm-depth, 900px))
+    translate3d(var(--rn-magnet-x, 0px), calc(var(--rn-magnet-y, 0px) - 4px), 0)
+    rotateX(var(--rnm-rx, 0deg))
+    rotateY(var(--rnm-ry, 0deg))
+    scale(1.012);
+  box-shadow:
+    0 24px 60px -28px rgba(6, 12, 20, 0.85),
+    0 0 0 1px rgba(120, 200, 255, 0.14);
+}
+
+.rnm-tilt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s var(--rnm-ease-out);
+  background: radial-gradient(
+    420px circle at var(--rnm-px) var(--rnm-py),
+    rgba(160, 225, 255, 0.16),
+    rgba(160, 225, 255, 0.05) 38%,
+    transparent 62%
+  );
+  z-index: 2;
+}
+
+.rnm-tilt.is-rnm-tracking::after {
+  opacity: 1;
+}
+
+/* Edge light that traces the pointer around the card border. */
+.rnm-tilt::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s var(--rnm-ease-out);
+  padding: 1px;
+  background: radial-gradient(
+    260px circle at var(--rnm-px) var(--rnm-py),
+    rgba(120, 220, 255, 0.75),
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  z-index: 3;
+}
+
+.rnm-tilt.is-rnm-tracking::before {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   6. Buttons — shine sweep, spring press, spark burst.
+   -------------------------------------------------------------------------- */
+
+.rnm-shine {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.32s var(--rnm-ease-spring), box-shadow 0.32s var(--rnm-ease-out),
+    filter 0.32s var(--rnm-ease-out);
+}
+
+.rnm-shine > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rnm-shine::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: -40%;
+  width: 34%;
+  pointer-events: none;
+  z-index: 0;
+  transform: translate3d(-260%, 0, 0) rotate(18deg);
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.34),
+    transparent
+  );
+  opacity: 0;
+}
+
+.rnm-shine.is-rnm-hover::after {
+  animation: rnm-sweep 0.85s var(--rnm-ease-swift) forwards;
+}
+
+@keyframes rnm-sweep {
+  0% { transform: translate3d(-260%, 0, 0) rotate(18deg); opacity: 0; }
+  16% { opacity: 1; }
+  100% { transform: translate3d(560%, 0, 0) rotate(18deg); opacity: 0; }
+}
+
+.rnm-shine.is-rnm-hover {
+  transform: translate3d(0, -2px, 0);
+  filter: brightness(1.06);
+}
+
+.rnm-shine.is-rnm-press {
+  transform: translate3d(0, 1px, 0) scale(0.972);
+  filter: brightness(0.97);
+}
+
+/* Spark burst fired from the click point. */
+.rnm-spark {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9997;
+  will-change: transform, opacity;
+  animation: rnm-spark-fly var(--rnm-spark-life, 620ms) var(--rnm-ease-out) forwards;
+}
+
+@keyframes rnm-spark-fly {
+  0% {
+    transform: translate3d(var(--rnm-sx0, 0px), var(--rnm-sy0, 0px), 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--rnm-sx1, 0px), var(--rnm-sy1, 0px), 0) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Media reveal — a clip wipe plus a light streak across screenshots.
+   -------------------------------------------------------------------------- */
+
+.rnm-wipe {
+  position: relative;
+  overflow: hidden;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.05s var(--rnm-ease-out);
+}
+
+.rnm-wipe.is-rnm-in {
+  clip-path: inset(0 0 0 0);
+}
+
+.rnm-wipe img {
+  transform: scale(1.08);
+  transition: transform 1.4s var(--rnm-ease-out);
+}
+
+.rnm-wipe.is-rnm-in img {
+  transform: scale(1);
+}
+
+.rnm-wipe::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    104deg,
+    transparent 38%,
+    rgba(180, 235, 255, 0.3) 50%,
+    transparent 62%
+  );
+  transform: translate3d(-120%, 0, 0);
+  opacity: 0;
+}
+
+.rnm-wipe.is-rnm-in::after {
+  animation: rnm-streak 1.25s 0.28s var(--rnm-ease-swift) forwards;
+}
+
+@keyframes rnm-streak {
+  0% { transform: translate3d(-120%, 0, 0); opacity: 0; }
+  22% { opacity: 1; }
+  100% { transform: translate3d(120%, 0, 0); opacity: 0; }
+}
+
+/* Idle float for hero art, nudged by scroll velocity. */
+.rnm-float {
+  animation: rnm-bob 9s ease-in-out infinite alternate;
+}
+
+@keyframes rnm-bob {
+  from { transform: translate3d(0, -6px, 0) rotate(-0.25deg); }
+  to { transform: translate3d(0, 8px, 0) rotate(0.25deg); }
+}
+
+/* --------------------------------------------------------------------------
+   8. Chips, pills and nav — spring pop and travelling underline.
+   -------------------------------------------------------------------------- */
+
+.rnm-pop {
+  transition: transform 0.34s var(--rnm-ease-spring), color 0.28s var(--rnm-ease-out),
+    border-color 0.28s var(--rnm-ease-out), background-color 0.28s var(--rnm-ease-out);
+}
+
+.rnm-pop.is-rnm-hover {
+  transform: translate3d(0, -2px, 0) scale(1.045);
+}
+
+.rnm-underline {
+  position: relative;
+}
+
+.rnm-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--rnm-blue), var(--rnm-cyan), var(--rnm-green));
+  transform: scaleX(0);
+  transform-origin: var(--rnm-origin, 0%) 50%;
+  transition: transform 0.42s var(--rnm-ease-out);
+}
+
+.rnm-underline.is-rnm-hover::after,
+.rnm-underline.is-current::after {
+  transform: scaleX(1);
+}
+
+/* Breathing status dots. */
+.rnm-pulse {
+  position: relative;
+}
+
+.rnm-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 1px solid currentColor;
+  opacity: 0;
+  animation: rnm-halo 2.8s var(--rnm-ease-out) infinite;
+  pointer-events: none;
+}
+
+@keyframes rnm-halo {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   9. Scroll-reactive section skew — very small, keyed off scroll velocity.
+   -------------------------------------------------------------------------- */
+
+.rnm-kinetic {
+  transform: skewY(calc(var(--rnm-vel, 0) * 0.32deg));
+  transition: transform 0.5s var(--rnm-ease-out);
+  will-change: transform;
+}
+
+/* Section headings get a gradient sweep as you scroll past them. */
+.rnm-gradient-text {
+  background: linear-gradient(
+    92deg,
+    currentColor 0%,
+    currentColor 30%,
+    var(--rnm-cyan) 48%,
+    var(--rnm-green) 56%,
+    currentColor 74%,
+    currentColor 100%
+  );
+  background-size: 260% 100%;
+  background-position: calc(120% - var(--rnm-sweep, 0) * 140%) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   10. Page veil — a soft curtain on load and on internal navigation.
+   -------------------------------------------------------------------------- */
+
+.rnm-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(24, 44, 68, 0.9), transparent 70%),
+    var(--rn-bg, #070b10);
+  transition: opacity 0.62s var(--rnm-ease-out);
+}
+
+.rnm-veil.is-rnm-clear {
+  opacity: 0;
+}
+
+.rnm-veil.is-rnm-leaving {
+  opacity: 1;
+  transition-duration: 0.3s;
+}
+
+.rnm-veil__mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 210, 255, 0.5);
+  border-top-color: rgba(75, 255, 165, 0.95);
+  animation: rnm-spin 1.1s linear infinite;
+  opacity: 0.85;
+}
+
+.rnm-veil.is-rnm-clear .rnm-veil__mark {
+  opacity: 0;
+  transition: opacity 0.3s var(--rnm-ease-out);
+}
+
+@keyframes rnm-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   11. Focus — keyboard users get the same flourish, without the pointer work.
+   -------------------------------------------------------------------------- */
+
+body[data-rn-modality='keyboard'] .rnm-shine:focus-visible,
+body[data-rn-modality='keyboard'] .rnm-pop:focus-visible {
+  transform: translate3d(0, -2px, 0) scale(1.03);
+  outline-offset: 4px;
+}
+
+body[data-rn-modality='keyboard'] .rnm-cursor {
+  opacity: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   12. Reduced motion — everything above collapses to a plain, static site.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .rnm-aurora,
+  .rnm-scan,
+  .rnm-cursor,
+  .rnm-veil,
+  .rnm-spark {
+    display: none !important;
+  }
+
+  [data-rnm-reveal],
+  [data-rnm-reveal].is-rnm-in,
+  .rnm-split__char,
+  .rnm-wipe,
+  .rnm-wipe img,
+  .rnm-tilt,
+  .rnm-tilt.is-rnm-tracking,
+  .rnm-shine,
+  .rnm-pop,
+  .rnm-kinetic,
+  .rnm-float {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .rnm-tilt::before,
+  .rnm-tilt::after,
+  .rnm-shine::after,
+  .rnm-wipe::after,
+  .rnm-pulse::after {
+    display: none !important;
+  }
+
+  .rnm-gradient-text {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    color: inherit;
+  }
+}
+
+/* Small screens: keep the atmosphere, drop the per-pointer work. */
+@media (max-width: 720px) {
+  .rnm-aurora.is-rnm-lit { opacity: 0.34; }
+  .rnm-scan { display: none; }
+  .rnm-tilt.is-rnm-tracking { transform: none; }
+  .rnm-tilt::before { display: none; }
+}

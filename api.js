@@ -4,7 +4,7 @@ const apiGroups = [
     label: 'Setup API',
     scope: 'setup',
     basePath: '/api',
-    summary: 'Stages contained installs before the full runtime exists.',
+    summary: 'Prepares a self-contained install before the full runtime exists.',
     stack: 'Setup server -> run-roachnet-setup.mjs -> staged install + portable embedded Node runtime + bundled runtime helpers',
     callers: ['RoachNet Setup.app'],
     endpoints: [
@@ -33,7 +33,7 @@ const apiGroups = [
         method: 'POST',
         path: '/install',
         title: 'Start install workflow',
-        summary: 'Starts the contained install and native-app handoff task.',
+        summary: 'Starts the install and hands off to the native app.',
         handler: 'handleInstallRequest',
         request: [
           'Body: installer config payload from the setup UI',
@@ -86,7 +86,7 @@ const apiGroups = [
     ],
   },
   {
-    id: 'homebrew-lane',
+    id: 'homebrew-install',
     label: 'Homebrew Install',
     scope: 'packaging',
     basePath: '/brew',
@@ -138,7 +138,7 @@ const apiGroups = [
         id: 'brew-runtime-layout',
         method: 'GET',
         path: '/runtime',
-        title: 'Contained Homebrew runtime',
+        title: 'Self-contained Homebrew runtime',
         summary: 'Explains where the compiled runtime is staged and how it differs from the standard setup path.',
         handler: 'run-roachnet.mjs build-runtime bootstrap',
         request: ['No HTTP body. Static documentation for the contained runtime layout.'],
@@ -162,7 +162,7 @@ const apiGroups = [
     label: 'RoachNetiOS Distribution',
     scope: 'packaging',
     basePath: '/iOS',
-    summary: 'Unsigned IPA plus shared SideStore and AltStore source contracts for the RoachNet iOS lane.',
+    summary: 'Unsigned IPA plus the shared SideStore and AltStore source used to install RoachNet iOS.',
     stack: 'RoachNet-iOS release assets -> RoachNet-SideStore AltSource -> SideStore / AltStore signing flow -> RoachNetiOS first launch + RoachTail pairing',
     callers: ['roachnet.org/iOS', 'RoachNet-SideStore apps.json', 'SideStore source flow', 'AltStore source flow', 'RoachNetiOS first launch'],
     endpoints: [
@@ -201,15 +201,15 @@ const apiGroups = [
           'Use the same raw source URL in AltStore when adding the feed manually.',
         ],
         implementation:
-          'AltStore uses the same RoachNet AltSource JSON as SideStore. Keeping both lanes on RoachNet-SideStore avoids duplicate metadata, stale IPA URLs, and mismatched permission copy between sideload clients.',
-        usedBy: ['roachnet.org/iOS AltStore lane', 'RoachNet SideStore repo', 'AltStore add-source flow'],
+          'AltStore uses the same RoachNet AltSource JSON as SideStore. Keeping both on RoachNet-SideStore avoids duplicate metadata, stale IPA URLs, and mismatched permission copy between sideload clients.',
+        usedBy: ['roachnet.org/iOS AltStore instructions', 'RoachNet SideStore repo', 'AltStore add-source flow'],
       },
       {
         id: 'ios-direct-ipa',
         method: 'GET',
         path: '/ipa',
         title: 'Direct IPA install contract',
-        summary: 'Documents the direct IPA lane for SideStore or AltStore when the source is not used.',
+        summary: 'Documents the direct IPA download for SideStore or AltStore when the shared source is not used.',
         handler: 'RoachNet-iOS release asset',
         request: ['No HTTP body. Static packaging contract for sideload tooling.'],
         response: [
@@ -219,7 +219,7 @@ const apiGroups = [
           'Display name: RoachNetiOS',
         ],
         implementation:
-          'The direct IPA lane keeps the current unsigned artifact available for manual SideStore or AltStore import. On-device, the user downloads the IPA and imports it through the sideload client instead of relying on an undocumented install deep link. RoachNetiOS still lands in the same pairing, foreground RoachAtlas GPS bridge, and offline-capable RoachBrain flow after signing.',
+          'The direct download keeps the current unsigned build available for manual SideStore or AltStore import. On-device, the user downloads the IPA and imports it through the sideload client instead of relying on an undocumented install deep link. RoachNetiOS still lands in the same pairing, foreground RoachAtlas GPS bridge, and offline-capable RoachBrain flow after signing.',
         usedBy: ['roachnet.org/iOS install CTA', 'manual SideStore / AltStore import flow'],
       },
     ],
@@ -279,7 +279,7 @@ const apiGroups = [
     basePath: 'local://roachnet',
     summary: 'Permissioned local context for RoachClaw, the command bar, voice prompts, and Dev inline assist.',
     stack: 'RoachNet native shell -> WorkspaceModel -> RoachBrainStore -> RoachBrainWikiStore -> RoachClaw prompt builder',
-    callers: ['Native RoachClaw lane', 'Global RoachClaw panel', 'Command bar', 'Dev workspace inline assist', 'Voice prompt composer'],
+    callers: ['RoachClaw workspace', 'Global RoachClaw panel', 'Command bar', 'Dev workspace inline assist', 'Voice prompt composer'],
     endpoints: [
       {
         id: 'local-roachbrain-wiki',
@@ -341,7 +341,7 @@ const apiGroups = [
         ],
         implementation:
           'Voice requests use the same prompt draft, context permission toggles, selected model, and RoachBrain context as typed requests. This keeps RoachClaw usable as a normal chat assistant while still letting the user escalate into task work when they ask for it.',
-        usedBy: ['Full RoachClaw lane', 'Global RoachClaw panel', 'Command bar voice action'],
+        usedBy: ['RoachClaw workspace', 'Global RoachClaw panel', 'Command bar voice action'],
       },
       {
         id: 'dev-inline-agent-context',
@@ -502,7 +502,7 @@ const apiGroups = [
         method: 'GET',
         path: '/roachtail',
         title: 'RoachTail status',
-        summary: 'Returns the private-device lane used by the companion app.',
+        summary: 'Returns the private device-to-device connection the iOS app uses.',
         handler: 'CompanionController.roachtail',
         request: ['Token-gated request, no body required'],
         response: ['enabled, networkName, deviceName, deviceId, status, relayHost, advertisedUrl, runtimeOrigin?, runtimeTunnelUrl?, joinCode?, joinCodeIssuedAt?, joinCodeExpiresAt?, pairingPayload?, pairingIssuedAt?, notes, peers'],
@@ -547,7 +547,7 @@ const apiGroups = [
         method: 'GET',
         path: '/roachsync',
         title: 'RoachSync status',
-        summary: 'Returns the contained sync snapshot the desktop and phone use for shared vault state.',
+        summary: 'Returns the sync snapshot the desktop and phone share for vault state.',
         handler: 'CompanionController.roachsync',
         request: ['Token-gated request, no body required'],
         response: ['enabled, provider, networkName, deviceName, deviceId, status, folderId, folderPath, guiUrl?, apiUrl?, notes, peers'],
@@ -560,7 +560,7 @@ const apiGroups = [
         method: 'POST',
         path: '/roachsync/affect',
         title: 'Mutate RoachSync state',
-        summary: 'Turns contained sync on or off, refreshes its state, and clears peer metadata.',
+        summary: 'Turns sync on or off, refreshes its state, and clears paired-device metadata.',
         handler: 'CompanionController.affectRoachSync',
         request: [
           'Body: { action, folderPath? }',
@@ -859,7 +859,7 @@ const apiGroups = [
     label: 'RoachSpeech',
     scope: 'runtime',
     basePath: '/api/roachspeech',
-    summary: 'Native Core ML speech model-pack discovery and install lane.',
+    summary: 'Finds and installs Core ML speech model packs.',
     stack: 'run-roachnet-native-api.mjs -> RoachSpeechPack manifest validation -> ~/RoachNet/storage/RoachSpeech/ModelPacks',
     callers: ['RoachClaw voice controls', 'Vault transcript actions', 'Apps.RoachNet.org model-pack installs', 'ManagedAppRuntime.downloadRoachSpeechPack'],
     endpoints: [
@@ -876,7 +876,7 @@ const apiGroups = [
           'packs include packID, root, installed, and parsed RoachSpeechPack manifest',
         ],
         implementation:
-          'Reads the local RoachSpeech shelf under ~/RoachNet/storage/RoachSpeech/ModelPacks and returns only manifest-backed packs. Hidden staging, backup, extraction, and download folders stay out of the installed-pack list.',
+          'Reads the local RoachSpeech folder under ~/RoachNet/storage/RoachSpeech/ModelPacks and returns only manifest-backed packs. Hidden staging, backup, extraction, and download folders stay out of the installed-pack list.',
         usedBy: ['RoachSpeech settings/status', 'Apps install confirmation', 'support diagnostics'],
       },
       {
@@ -884,7 +884,7 @@ const apiGroups = [
         method: 'POST',
         path: '/model-packs/download',
         title: 'Download and install speech pack',
-        summary: 'Queues a first-party RoachSpeech archive download and atomically installs it into the local model shelf.',
+        summary: 'Downloads a first-party RoachSpeech archive and installs it into the local model folder in one atomic step.',
         handler: 'queueDownload + installRoachSpeechPackArchive',
         request: [
           'Body: { url, packID, kind }',
@@ -923,7 +923,7 @@ const apiGroups = [
     label: 'Ollama',
     scope: 'runtime',
     basePath: '/api/ollama',
-    summary: 'Contained model catalog, local/cloud chat, and model lifecycle operations.',
+    summary: 'Local model catalog, local and cloud chat, and model lifecycle operations.',
     stack: 'OllamaController -> OllamaService / RagService / ChatService',
     callers: ['RoachClaw', 'AI chat', 'model store', 'ManagedAppRuntime'],
     endpoints: [
@@ -1082,7 +1082,7 @@ const apiGroups = [
         method: 'GET',
         path: '/profile',
         title: 'Portable RoachClaw profile',
-        summary: 'Returns the contained RoachClaw portable profile used by the desktop runtime and future web surfaces.',
+        summary: 'Returns the portable RoachClaw profile used by the desktop app and, later, the web.',
         handler: 'getProfile',
         request: ['No body required'],
         response: ['Portable RoachClaw profile object with portableRoot, workspacePath, stateDir, defaultModel, provider URLs, and launch hints'],
@@ -2088,7 +2088,7 @@ function renderRouteList() {
     routeList.innerHTML = `
       <div class="api-empty-state">
         <span class="api-docs-kicker">No matches</span>
-        <h3>Nothing lines up with that filter.</h3>
+        <h3>Nothing matches that.</h3>
         <p>Try a different group, method, or search term.</p>
       </div>
     `
@@ -2140,7 +2140,7 @@ function renderDetail() {
       <div class="api-empty-state api-empty-state--detail">
         <span class="api-docs-kicker">Select a route</span>
         <h3>Pick an endpoint.</h3>
-        <p>Click any route on the left and the request, response, and implementation contract snap in here.</p>
+        <p>Click any route on the left and its request, response, and implementation details land here.</p>
       </div>
     `
     return

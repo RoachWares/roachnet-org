@@ -49,7 +49,7 @@ function initSkipLink() {
   const link = document.createElement('a')
   link.className = 'rn-skip-link'
   link.href = `#${target.id}`
-  link.textContent = 'Skip the chrome'
+  link.textContent = 'Skip to main content'
   document.body.prepend(link)
 }
 

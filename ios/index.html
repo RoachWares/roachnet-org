@@ -6,7 +6,7 @@
     <title>RoachNet iOS: RoachNet in your pocket</title>
     <meta
       name="description"
-      content="RoachNet iOS keeps RoachClaw, vault reads, app queues, runtime checks, and RoachAtlas GPS close when your Mac is paired. Pocket control, not a second desktop."
+      content="RoachNet iOS puts RoachClaw, your vault, app installs, and RoachAtlas GPS in your pocket. A companion for your Mac, not a second desktop."
     />
     <meta name="theme-color" content="#0b1016" />
     <link rel="canonical" href="https://roachnet.org/ios/" />
@@ -18,7 +18,7 @@
     <meta property="og:title" content="RoachNet iOS: RoachNet in your pocket" />
     <meta
       property="og:description"
-      content="Use RoachNet iOS for chat, vault reads, app queues, runtime checks, and RoachAtlas GPS handoff from your phone or iPad."
+      content="Chat, read your vault, queue up installs, check on your Mac, and share GPS with RoachAtlas — from your phone or iPad."
     />
     <meta property="og:url" content="https://roachnet.org/ios/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.webp" />
@@ -26,12 +26,13 @@
     <meta name="twitter:title" content="RoachNet iOS: RoachNet in your pocket" />
     <meta
       name="twitter:description"
-      content="Use RoachNet iOS for chat, vault reads, app queues, runtime checks, and RoachAtlas GPS handoff from your phone or iPad."
+      content="Chat, read your vault, queue up installs, check on your Mac, and share GPS with RoachAtlas — from your phone or iPad."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.webp" />
     <link rel="preload" as="image" href="../assets/screens/roachnet-ios-companion-chat-v015.webp" imagesrcset="../assets/screens/roachnet-ios-companion-chat-v015.webp" />
     <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css?v=20260609-overflow" />
+    <link rel="stylesheet" href="../app-polish.css" />
+    <link rel="stylesheet" href="../motion-layer.css" />
   </head>
   <body data-page="ios">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
@@ -72,7 +73,7 @@
           <p class="eyebrow">RoachNet iOS</p>
           <h1>RoachNet in your pocket.</h1>
           <p class="hero-body">
-            RoachClaw first. Vault reads, runtime checks, app queues, and RoachAtlas GPS stay close without pretending the phone should be the desktop. Control in your pocket, not the whole desk.
+            RoachClaw first, then your files, your installs, a look at what the Mac is doing, and GPS for RoachAtlas. It knows it's a phone, and it's good at it.
           </p>
 
           <div class="hero-actions">
@@ -81,13 +82,13 @@
             <a class="cta cta--ghost" href="https://altstore.io/" target="_blank" rel="noreferrer">AltStore guide</a>
           </div>
 
-          <p class="hero-footnote">Unsigned IPA for SideStore or AltStore. Pair it when you want. Cached reads stay useful when the Mac is asleep or the network drops.</p>
+          <p class="hero-footnote">An unsigned build for SideStore or AltStore. Connect your Mac whenever you feel like it &mdash; what you've already loaded still works when it's asleep.</p>
           <p class="download-meta">Current release: v0.1.5 · built for iPhone and iPad</p>
         </div>
 
         <div class="hero-visual ios-hero-visual" aria-hidden="true">
           <div class="app-screen-shot app-screen-shot--dark ios-hero-shot">
-            <img src="../assets/screens/roachnet-ios-companion-chat-v015.webp" width="1206" height="2622" alt="RoachNet iOS chat surface" fetchpriority="high" decoding="async" />
+            <img src="../assets/screens/roachnet-ios-companion-chat-v015.webp" width="1206" height="2622" alt="RoachNet iOS chat screen" fetchpriority="high" decoding="async" />
             <span class="screen-version-chip">v0.1.5</span>
           </div>
           <div class="screen-chip-row">
@@ -104,7 +105,7 @@
         <div class="section-head">
           <p class="eyebrow">Screens</p>
           <h2>Chat first. The rest stays one tap away.</h2>
-          <p>One companion shell for chat, vault reads, app queues, runtime checks, and local GPS handoff. Same posture as the desktop lane. Pocket-sized, not toy-sized.</p>
+          <p>Chat, your vault, app installs, a live look at the desktop, and GPS for RoachAtlas. Pocket-sized, not toy-sized.</p>
         </div>
 
         <div class="ios-shot-wall ios-shot-wall--editorial">
@@ -116,7 +117,7 @@
             <div class="ios-shot-card__copy">
               <span class="feature-card__eyebrow">Chat</span>
               <h3>Keep the thread going.</h3>
-              <p>Use your paired machine when it is there. Keep the thread moving when it is not, with the same RoachClaw posture and clear account boundaries.</p>
+              <p>Your Mac answers when it can. When it can't, the conversation carries on anyway &mdash; same RoachClaw, same account, no dead ends.</p>
             </div>
           </article>
 
@@ -128,7 +129,7 @@
             <div class="ios-shot-card__copy">
               <span class="feature-card__eyebrow">Apps</span>
               <h3>Queue packs from anywhere.</h3>
-              <p>Browse packs, queue installs, and hand them to the Mac when the bridge comes back. Field shopping, but for files you actually asked for.</p>
+              <p>Browse, line up installs, and let them land on the Mac the moment it's reachable again. Window shopping, except the things you pick actually show up.</p>
             </div>
           </article>
 
@@ -140,7 +141,7 @@
             <div class="ios-shot-card__copy">
               <span class="feature-card__eyebrow">Runtime</span>
               <h3>Check the desktop fast.</h3>
-              <p>See what is live, what is downloading, what needs attention, and whether the RoachAtlas GPS bridge is actually feeding the Mac.</p>
+              <p>See what's running, what's downloading, what needs a look, and whether RoachAtlas is actually feeding GPS to the Mac.</p>
             </div>
           </article>
 
@@ -151,8 +152,8 @@
             </div>
             <div class="ios-shot-card__copy">
               <span class="feature-card__eyebrow">Vault</span>
-              <h3>Read the shelf without opening the shell.</h3>
-              <p>Vault shelf cards, map and education pack summaries, archive reads, and media/document handoff on your phone, still readable when the bridge drops.</p>
+              <h3>Read your library without opening the laptop.</h3>
+              <p>Maps, courses, saved pages, media, and documents &mdash; all readable on your phone, even after the connection to the Mac drops.</p>
             </div>
           </article>
         </div>
@@ -162,26 +163,26 @@
         <div class="section-head">
           <p class="eyebrow">What’s in 0.1.5</p>
           <h2>Small companion. Real utility.</h2>
-          <p>The companion opens quicker, pairs faster, and adds a local GPS bridge for RoachAtlas. Small app, actual job.</p>
+          <p>Opens quicker, connects faster, and now feeds GPS to RoachAtlas. Small app, real job.</p>
         </div>
 
         <div class="ios-feature-shell">
           <article class="ios-story-card ios-story-card--feature" data-reveal>
-            <span class="feature-card__eyebrow">Companion shell</span>
+            <span class="feature-card__eyebrow">The app</span>
             <h3>Built for the moments when you are not at the desk.</h3>
-            <p>It stays chat-first, keeps runtime state readable, and mirrors the desktop shell closely enough that handoff feels familiar.</p>
+            <p>Chat comes first, the desktop stays readable at a glance, and everything sits close enough to the Mac version that you never have to relearn it.</p>
             <div class="hero-signal-board hero-signal-board--compact">
               <article class="hero-signal-card">
                 <span>Fast launch</span>
-                <strong>Cached state means less waiting and fewer blank starts.</strong>
+                <strong>Opens on what you last looked at instead of a loading spinner.</strong>
               </article>
               <article class="hero-signal-card">
                 <span>Useful offline</span>
-                <strong>Cached runtime and vault reads still give answers when the bridge drops.</strong>
+                <strong>Still answers from what it already has when the Mac is out of reach.</strong>
               </article>
               <article class="hero-signal-card">
                 <span>Atlas GPS</span>
-                <strong>Foreground-only BLE packets can feed the desktop RoachAtlas receiver.</strong>
+                <strong>Sends your location to RoachAtlas on the Mac &mdash; only while the app is open.</strong>
               </article>
             </div>
           </article>
@@ -189,32 +190,32 @@
           <div class="card-grid card-grid--three ios-feature-grid" role="list">
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">Faster start</span>
-              <h3>Cached state on launch. Opens where you left it instead of starting from a blank page.</h3>
+              <h3>Opens right where you left off instead of staring at a blank page.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">RoachTail</span>
-              <h3>Each device gets its own signed peer token. Revoke one without touching the others.</h3>
+              <h3>Every device gets its own key. Cut one off without disturbing the rest.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">QR pairing</span>
-              <h3>Scan the QR from the Mac. No typing a 32-character token into a phone keyboard.</h3>
+              <h3>Scan the code on your Mac. Nobody should have to thumb a 32-character key into a phone.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">RoachSync</span>
-              <h3>Sync state, folder health, linked devices. Same view as chat and installs.</h3>
+              <h3>See what's synced, what's off, and which devices are connected &mdash; in the same place as everything else.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">RoachAtlas GPS</span>
-              <h3>Start the iPhone BLE advertiser only when you need it. Location stays local to the paired desktop receiver.</h3>
+              <h3>Turn location sharing on only when you want it. It goes to your own Mac and nowhere else.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">Offline RoachBrain</span>
-              <h3>When the Mac goes dark, cached runtime, vault state, and RoachBrain summaries still give you something useful.</h3>
+              <h3>When the Mac goes dark, your saved notes, files, and summaries are still there to work with.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
@@ -229,12 +230,12 @@
         <div class="section-head">
           <p class="eyebrow">Install</p>
           <h2>SideStore and AltStore, with the routes labeled.</h2>
-          <p>Add the shared source or use the IPA. Same build, two clean sideload lanes.</p>
+          <p>Add the shared source or grab the file directly. Same build either way.</p>
         </div>
 
         <div class="ios-install-shell">
           <article class="ios-story-card ios-story-card--install" data-reveal>
-            <span class="feature-card__eyebrow">SideStore lane</span>
+            <span class="feature-card__eyebrow">SideStore</span>
             <h3>Add the source, or hand SideStore the IPA directly.</h3>
             <p>Both routes land the same companion build. The source is cleaner. The IPA is there when you need the direct file.</p>
             <div class="section-actions">
@@ -276,7 +277,7 @@
           </div>
 
           <article class="ios-story-card ios-story-card--install" data-reveal>
-            <span class="feature-card__eyebrow">AltStore lane</span>
+            <span class="feature-card__eyebrow">AltStore</span>
             <h3>Use the same RoachNet source in AltStore.</h3>
             <p>The shared AltSource points at the current unsigned IPA and keeps the source repo in one place, where future-you can find it.</p>
             <div class="section-actions">
@@ -312,7 +313,7 @@
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">3</span>
-              <h3>Refresh before the signing window expires. Pair the Mac after first launch.</h3>
+              <h3>Refresh before the signature expires, then connect your Mac on first launch.</h3>
             </article>
           </div>
         </div>
@@ -322,14 +323,14 @@
         <div class="section-head">
           <p class="eyebrow">Pairing</p>
           <h2>Pair once. Keep the phone useful.</h2>
-          <p>The desktop still owns the models, vault, installs, and secure network host. The phone stays quick because it is a companion, not a second desktop.</p>
+          <p>Your Mac keeps the models, the vault, and the installs. The phone stays fast because it isn't trying to be a second desktop.</p>
         </div>
 
         <div class="ios-pair-shell">
           <article class="ios-story-card ios-story-card--pair" data-reveal>
-            <span class="feature-card__eyebrow">RoachTail pairing</span>
+            <span class="feature-card__eyebrow">Connecting</span>
             <h3>Point the phone at the alias or scan the QR.</h3>
-            <p>The secure bridge belongs to the desktop runtime. The phone just needs a fast path in and a clean fallback when the machine goes dark.</p>
+            <p>Your Mac hosts the connection. The phone just needs a quick way in, and something sensible to fall back on when the Mac goes dark.</p>
             <div class="hero-signal-board hero-signal-board--compact">
               <article class="hero-signal-card">
                 <span>Alias</span>
@@ -337,7 +338,7 @@
               </article>
               <article class="hero-signal-card">
                 <span>Fallback</span>
-                <strong>Cached reads hold the line until the desktop comes back.</strong>
+                <strong>What you already loaded keeps working until the Mac reappears.</strong>
               </article>
             </div>
             <div class="section-actions">
@@ -348,17 +349,17 @@
           <div class="card-grid card-grid--three ios-pair-grid" role="list">
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">RoachTail alias</span>
-              <h3><code>https://roachnet.roachtail</code> or scan the QR from the desktop shell.</h3>
+              <h3><code>https://roachnet.roachtail</code>, or just scan the code on your Mac.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">Pair code</span>
-              <h3>Scan the RoachTail QR or type the join code. Either way you get a signed peer token for this device.</h3>
+              <h3>Scan the code on your Mac or type the join code. Either way this device gets its own key.</h3>
             </article>
 
             <article class="support-card" role="listitem" data-reveal>
               <span class="feature-card__eyebrow">Fallback</span>
-              <h3>Bridge goes offline? Cached chat, vault reads, and runtime snapshots hold until the Mac comes back online.</h3>
+              <h3>Mac offline? Your recent chats, files, and status are still there until it comes back.</h3>
             </article>
           </div>
         </div>
@@ -368,7 +369,7 @@
     <footer class="site-footer">
       <div class="site-footer__copy">
         <strong>RoachNet iOS</strong>
-        <span>RoachNet for iPhone and iPad. Chat, vault reads, runtime checks, app queues, and RoachAtlas GPS handoff without opening the laptop.</span>
+        <span>RoachNet for iPhone and iPad. Chat, files, installs, status, and GPS &mdash; without opening the laptop.</span>
       </div>
       <nav class="site-footer__nav" aria-label="Footer">
         <a href="https://roachnet.org/home/">Home</a>
@@ -398,6 +399,7 @@
     </footer>
     <script src="../app.js" type="module"></script>
     <script src="../site-polish.js" type="module"></script>
+    <script src="../motion-layer.js" type="module"></script>
     <script>
       (() => {
         const isIOS =
@@ -468,5 +470,5 @@
         if (altStoreDesktopHint) altStoreDesktopHint.hidden = false
       })()
     </script>
-  </body>
+</body>
 </html>

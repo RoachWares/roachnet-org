@@ -98,20 +98,12 @@ async function promote(stagedDirectory) {
   }
 }
 
+// The Mission landing shares the site shell (app.css, app.js, motion layer), so the build
+// keeps its resources and only pins the Netlify badge size to avoid layout shift.
 function optimizeLandingDocument(document) {
-  const removableResources = [
-    /\n    <link\n      rel="stylesheet"\n      href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&family=JetBrains\+Mono:wght@400;600&display=swap"\n    \/>/,
-    /\n    <link rel="stylesheet" href="\.\/app\.css" \/>/,
-    /\n    <link rel="stylesheet" href="\.\/app-polish\.css\?v=20260609-overflow" \/>/,
-    /\n    <script src="\.\/site-config\.js"><\/script>/,
-    /\n    <script src="\.\/app\.js" type="module"><\/script>/,
-    /\n    <script src="\.\/site-polish\.js" type="module"><\/script>/,
-  ];
-
-  return removableResources.reduce((result, resource) => {
-    if (!resource.test(result)) throw new Error(`Landing resource was not found: ${resource}`);
-    return result.replace(resource, "");
-  }, document).replace(
+  // The Mission page shares the site shell (nav, motion layer), so it keeps every
+  // stylesheet and script it links. The build only sizes the Netlify badge.
+  return document.replace(
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"',
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" width="114" height="32"'
   );
@@ -129,6 +121,8 @@ const copyList = [
   "app-store-catalog.json",
   "landing.css",
   "landing-script.js",
+  "motion-layer.css",
+  "motion-layer.js",
   "roachclaw.js",
   "roachclaw-web.css",
   "router.js",

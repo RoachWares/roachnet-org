@@ -268,11 +268,11 @@ const storeSectionMeta = {
     blurb: 'Preparedness manuals, survival references, and practical offline field material.',
   },
   'Education & Reference': {
-    eyebrow: 'Reference shelf',
+    eyebrow: 'Reference',
     blurb: 'Course material and reference libraries curated into installable study packs.',
   },
   'DIY & Repair': {
-    eyebrow: 'Repair shelf',
+    eyebrow: 'Repair',
     blurb: 'Fix guides, repair notes, and hands-on practical references for the real world.',
   },
   'Agriculture & Food': {
@@ -292,7 +292,7 @@ const storeSectionMeta = {
     blurb: 'Production, sound-design, and audio-engineering material for studio sessions.',
   },
   'IT & Infrastructure': {
-    eyebrow: 'Infra shelf',
+    eyebrow: 'Infrastructure',
     blurb: 'Networking, systems, and infrastructure learning packs for operators and builders.',
   },
   Wikipedia: {
@@ -301,7 +301,7 @@ const storeSectionMeta = {
   },
   'Model Packs': {
     eyebrow: 'RoachClaw models',
-    blurb: 'Contained RoachClaw-ready model installs for the native AI workspace.',
+    blurb: 'Models that install straight into RoachClaw and run on your own machine.',
   },
   'Voice Packs': {
     eyebrow: 'RoachVoice packs',
@@ -357,7 +357,7 @@ const fallbackCatalog = {
       includes: [
         'Pacific region collection manifest',
         'Regional downloads for Alaska, California, Hawaii, Oregon, and Washington',
-        'Mapped install path inside the field-ops shelf',
+        'Lands in your field guides, already sorted',
       ],
       installLabel: 'Install to RoachNet',
       detailLabel: 'Open collection',
@@ -382,8 +382,8 @@ const fallbackCatalog = {
       machineFit: 'Fast add-on for any supported machine',
       includes: [
         'Focused JavaScript fundamentals course',
-        'One-course install handoff into RoachNet',
-        'Good first coding shelf for a clean machine',
+        'One tap and the whole course is in RoachNet',
+        'A good first coding set for a fresh machine',
       ],
       installLabel: 'Install to RoachNet',
       detailLabel: 'Open manifest',
@@ -397,14 +397,14 @@ const fallbackCatalog = {
     {
       id: 'course-open-music-theory',
       title: 'Open Music Theory',
-      subtitle: 'Harmony, notation, rhythm, and ear-training in one offline shelf',
+      subtitle: 'Harmony, notation, rhythm, and ear training, all offline',
       category: 'Essential',
       section: 'Music Production & Audio',
       size: '78 MB',
       status: 'Great first install',
       source: 'Open Music Theory via Kiwix',
       summary:
-        'A real course app for RoachNet’s music shelf, mirrored cleanly so the user can install focused theory content without dragging in a whole site or provider wrapper.',
+        'A real course app for the music section, mirrored cleanly so you get the theory content without dragging in an entire website.',
       accent: 'magenta',
       machineFit: 'Fast add-on for any supported machine',
       includes: [
@@ -431,13 +431,13 @@ const fallbackCatalog = {
       status: 'Recommended next install',
       source: 'Cloudflare Learning Center via Kiwix',
       summary:
-        'A focused infrastructure course app that lands in RoachNet as its own install target instead of masquerading as a generic provider shelf.',
+        'A focused infrastructure course that installs as its own app instead of hiding inside a generic bundle.',
       accent: 'bronze',
       machineFit: 'Easy install once the core workspace is already healthy',
       includes: [
         'Practical edge and networking reference',
-        'Offline ops shelf for the RoachNet vault',
-        'Direct native install handoff',
+        'Offline operations reference for your vault',
+        'Installs straight into the app',
       ],
       installLabel: 'Install to RoachNet',
       detailLabel: 'Open manifest',
@@ -451,19 +451,19 @@ const fallbackCatalog = {
     {
       id: 'roachclaw-quickstart',
       title: 'RoachClaw Quickstart',
-      subtitle: 'Contained qwen2.5-coder:1.5b model',
+      subtitle: 'qwen2.5-coder:1.5b, self-contained',
       category: 'AI',
       section: 'AI Packs',
       size: '1-2 GB',
       status: 'Best first boot',
-      source: 'Contained Ollama runtime',
+      source: 'Runs on RoachNet’s own Ollama',
       icon: './assets/app-store/roachclaw-quickstart.svg',
       summary:
-        'Open RoachNet and queue the fast contained starter model so RoachClaw can answer on a clean machine without borrowing a host Ollama install.',
+        'Queue the quick starter model and RoachClaw can answer on a fresh machine, using RoachNet’s own Ollama rather than borrowing yours.',
       accent: 'violet',
       machineFit: 'Best on all Apple Silicon Macs, especially 16 GB systems',
       includes: [
-        'Contained Ollama-backed model download',
+        'Downloads through RoachNet’s own Ollama',
         'RoachClaw bootstrap queue on first launch',
         'Cloud fallback remains available while the model downloads',
       ],
@@ -478,20 +478,20 @@ const fallbackCatalog = {
     {
       id: 'roachclaw-studio',
       title: 'RoachClaw Studio',
-      subtitle: 'Contained qwen2.5-coder:7b upgrade',
+      subtitle: 'qwen2.5-coder:7b, the step up',
       category: 'AI',
       section: 'AI Packs',
       size: '4-5 GB',
       status: 'For larger Apple Silicon Macs',
-      source: 'Contained Ollama runtime',
+      source: 'Runs on RoachNet’s own Ollama',
       icon: './assets/app-store/roachclaw-studio.svg',
       summary:
         'A bigger local coding model for machines with more headroom. Queue it from the site and RoachNet will open directly into the RoachClaw workbench to stage the download.',
       accent: 'violet',
       machineFit: 'Best on M2 Pro, Max, and higher-memory Apple Silicon',
       includes: [
-        'Contained 7B coding model queue',
-        'RoachClaw workbench handoff',
+        'Queues the 7B coding model locally',
+        'Ready in RoachClaw when it finishes',
         'Larger local model for stronger coding and agent tasks',
       ],
       installLabel: 'Get',
@@ -683,7 +683,7 @@ function updateConnectivity() {
 
   const isOnline = navigator.onLine
   heroConnectivity.dataset.state = isOnline ? 'online' : 'offline'
-  heroConnectivity.textContent = isOnline ? 'Online Now' : 'Offline Ready'
+  heroConnectivity.textContent = isOnline ? 'Online' : 'Offline, and fine with it'
 }
 
 async function updateStorageEstimate() {
@@ -692,7 +692,7 @@ async function updateStorageEstimate() {
   }
 
   if (!navigator.storage?.estimate) {
-    heroStorage.textContent = 'Disk check in app'
+    heroStorage.textContent = 'Check free space in the app'
     return
   }
 
@@ -701,13 +701,13 @@ async function updateStorageEstimate() {
     const available = Math.max(0, quota - usage)
 
     if (!available) {
-      heroStorage.textContent = 'Storage estimate unavailable'
+      heroStorage.textContent = 'Free space unknown'
       return
     }
 
-    heroStorage.textContent = `${formatCompactBytes(available)} storage est.`
+    heroStorage.textContent = `${formatCompactBytes(available)} free (approx.)`
   } catch (error) {
-    heroStorage.textContent = 'Storage estimate unavailable'
+    heroStorage.textContent = 'Free space unknown'
     console.error(error)
   }
 }
@@ -1061,7 +1061,7 @@ function renderCuratedStoreStrip(visibleItems, primaryFeatured) {
       <div class="app-store-curated__head">
         <div>
           <p class="app-store-curated__eyebrow">Quick installs</p>
-          <h3>Install-ready picks from around the RoachNet shelf.</h3>
+          <h3>Ready-to-install picks from across the catalog.</h3>
         </div>
         <span class="app-store-curated__note">Each button hands the selected pack straight into the native app.</span>
       </div>
@@ -1293,7 +1293,7 @@ function updateAppStoreResults(visibleItems, totalItems) {
   }
 
   const sectionLabel =
-    appStoreActiveSection === 'All' ? 'all shelves' : `${appStoreActiveSection.toLowerCase()}`
+    appStoreActiveSection === 'All' ? 'everything' : `${appStoreActiveSection.toLowerCase()}`
   const queryLabel = appStoreSearchQuery.trim() ? ` matching “${appStoreSearchQuery.trim()}”` : ''
   appStoreResults.textContent = `Showing ${visibleItems.length} of ${totalItems} apps across ${sectionLabel}${queryLabel}.`
 }
@@ -1368,7 +1368,7 @@ function renderAppStoreCatalog(catalog) {
           (item) => (item.section || 'Catalog') === section
         )
         const sectionMeta = storeSectionMeta[section] || {
-          eyebrow: 'Install shelf',
+          eyebrow: 'Ready to install',
           blurb: 'Install-ready content packs mirrored into the native RoachNet app.',
         }
 
@@ -1445,11 +1445,11 @@ function renderAppDetailSheet(item) {
         </section>
         <section>
           <h4>Machine fit</h4>
-          <p>${item.machineFit || 'Designed for the contained RoachNet install path on supported Macs.'}</p>
+          <p>${item.machineFit || 'Built for RoachNet on supported Macs.'}</p>
         </section>
         <section>
           <h4>Install behavior</h4>
-          <p>Pressing Get opens the native app with a <code>roachnet://</code> handoff so the selected pack lands in the right module instead of downloading into a random folder.</p>
+          <p>Get opens RoachNet directly, so the pack lands in the part of the app that uses it instead of some random folder.</p>
         </section>
       </div>
     </article>

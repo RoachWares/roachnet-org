@@ -18,7 +18,7 @@
     <meta property="og:title" content="RoachNet API: The blueprint, labeled" />
     <meta
       property="og:description"
-      content="Setup, runtime, companion, RoachClaw, and app-install routes with inputs, callers, and handoffs labeled."
+      content="Setup, runtime, iOS, RoachClaw, and app-install routes, with inputs and callers labelled."
     />
     <meta property="og:url" content="https://roachnet.org/api/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
@@ -26,11 +26,12 @@
     <meta name="twitter:title" content="RoachNet API: The blueprint, labeled" />
     <meta
       name="twitter:description"
-      content="Setup, runtime, companion, RoachClaw, and app-install routes with inputs, callers, and handoffs labeled."
+      content="Setup, runtime, iOS, RoachClaw, and app-install routes, with inputs and callers labelled."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
     <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css?v=20260609-overflow" />
+    <link rel="stylesheet" href="../app-polish.css" />
+    <link rel="stylesheet" href="../motion-layer.css" />
   </head>
   <body data-page="api">
     <a class="rn-skip-link" href="#api-main">Skip to main content</a>
@@ -49,8 +50,8 @@
 
         <section class="api-docs-sidebar__intro">
           <span class="api-docs-kicker">Reference</span>
-          <h2>The blueprint, labeled.</h2>
-          <p>Setup, runtime, Homebrew, iOS, RoachClaw, RoachTail, local context, and model-pack installs. Calls, inputs, and boundaries are labeled so nobody has to guess which wire is live.</p>
+          <h1>The blueprint, labeled.</h1>
+          <p>Setup, runtime, Homebrew, iOS, RoachClaw, RoachTail, local context, and model installs. Every call and input is labelled, so nobody has to guess which wire is live.</p>
         </section>
 
         <div class="api-docs-sidebar__stats" id="api-stats"></div>
@@ -76,7 +77,7 @@
 
           <label class="api-docs-search" for="api-search">
             <span class="sr-only">Search RoachNet API routes</span>
-            <input id="api-search" type="search" autocomplete="off" placeholder="Search route, service, caller, or handoff" />
+            <input id="api-search" type="search" autocomplete="off" placeholder="Search routes, services, or callers" />
           </label>
 
           <div class="api-docs-topbar__links">
@@ -106,7 +107,7 @@
     <footer class="site-footer">
       <div class="site-footer__copy">
         <strong>RoachNet API</strong>
-        <span>RoachNet v1.0.5 setup, runtime, companion, RoachClaw, RoachTail, local context, and app-pack handoffs. Compact docs for the parts that move.</span>
+        <span>RoachNet v1.0.5 &mdash; setup, runtime, iOS, RoachClaw, RoachTail, local context, and app installs. Compact docs for the parts that move.</span>
       </div>
       <nav class="site-footer__nav" aria-label="Footer">
         <a href="https://roachnet.org/home/">Home</a>
@@ -139,5 +140,6 @@
     <script src="../app.js"></script>
     <script src="../api.js" type="module"></script>
     <script src="../site-polish.js" type="module"></script>
-  </body>
+    <script src="../motion-layer.js" type="module"></script>
+</body>
 </html>
