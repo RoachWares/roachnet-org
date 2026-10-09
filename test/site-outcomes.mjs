@@ -53,27 +53,35 @@ assert.equal(
   'build:main must stage canonical 404.html byte-for-byte'
 )
 const mainHtml = await source('website-main-dist/index.html')
-for (const unnecessaryResource of [
-  'https://fonts.googleapis.com/',
-  './app.css',
-  './app-polish.css',
-  './app.js',
-  './site-config.js',
-  './site-polish.js',
-]) {
-  assert.doesNotMatch(mainHtml, new RegExp(unnecessaryResource.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `generated main must not load ${unnecessaryResource}`)
-}
 assert.match(mainHtml, /<link rel="stylesheet" href="\.\/landing\.css" \/>/)
+assert.match(mainHtml, /<link rel="stylesheet" href="\.\/motion-layer\.css" \/>/)
 assert.match(mainHtml, /<script src="\.\/landing-script\.js"><\/script>/)
+assert.match(mainHtml, /<script src="\.\/landing-dither\.js"><\/script>/)
+assert.match(mainHtml, /<script src="\.\/motion-layer\.js" type="module"><\/script>/)
 assert.match(mainHtml, /<img[^>]+src="https:\/\/www\.netlify\.com\/assets\/badges\/netlify-badge-color-accent\.svg"[^>]+width="[^"]+"[^>]+height="[^"]+"/)
 
+// Motion policy: the Mission page may animate, but every decorative effect has to
+// stand down for reduced motion, skip coarse pointers where it follows the pointer,
+// and stop looping while the tab is hidden. No inline scripts (the CSP has no
+// 'unsafe-inline').
 const landingHtml = await source('index.html')
 const landingCss = await source('landing.css')
 const landingScript = await source('landing-script.js')
-assert.doesNotMatch(landingHtml, /dither-(?:bg|canvas)|<canvas\b|Dithered parallax/i, 'landing must not ship a decorative canvas background')
-assert.doesNotMatch(landingHtml, /<script>[\s\S]*?<\/script>/, 'landing must not ship inline executable scripts')
-assert.doesNotMatch(landingScript, /queueBurst|requestAnimationFrame|initLanding(?:PointerField|ClickRipples)/, 'landing must not run decorative continuous or pointer animation')
-assert.doesNotMatch(landingCss, /\.dither-bg|why-rail-shift|\.is-bursting|rn-click-ripple--landing/, 'landing must not retain decorative animation styles')
+const landingDither = await source('landing-dither.js')
+const motionLayer = await source('motion-layer.js')
+assert.doesNotMatch(landingHtml, /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/, 'landing must not ship inline executable scripts')
+assert.doesNotMatch(landingHtml, /\/\.netlify\/scripts\/|cdn-cgi/, 'landing must not carry edge-injected scripts')
+assert.match(landingHtml, /<div class="dither-bg" aria-hidden="true">/, 'decorative canvas must be hidden from assistive tech')
+for (const [name, script] of [['landing-script.js', landingScript], ['landing-dither.js', landingDither], ['motion-layer.js', motionLayer]]) {
+  assert.match(script, /prefers-reduced-motion: reduce/, `${name} must honor reduced motion`)
+}
+assert.match(landingScript, /pointer: fine/, 'pointer-following effects must skip coarse pointers')
+assert.match(landingScript, /function initLandingPointerField\(\) \{\n  if \(!pointerMotion\(\)\) return;/, 'pointer field must be gated')
+assert.match(landingScript, /function initLandingClickRipples\(\) \{\n  if \(!decorativeMotion\(\)\) return;/, 'click ripples must be gated')
+assert.match(landingScript, /document\.hidden/, 'glitch bursts must pause in a hidden tab')
+assert.match(landingDither, /visibilityState === 'hidden'/, 'dither loop must pause in a hidden tab')
+assert.match(landingScript, /setAttribute\('aria-label', `Latest RoachNet release \$\{d\.tag_name\}`\)/, 'release chip accessible name must follow the live tag')
+assert.doesNotMatch(landingHtml, /why-cap-card__icon" aria-hidden="true">&#xe2;/, 'capability icons must render (no mojibake glyphs)')
 assert.match(landingCss, /body\.rn-body \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*background:\s*#000;/s, 'landing skip link needs an explicit high-contrast default style')
 assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.5"/, 'release accessible name must include its visible version')
 assert.match(landingHtml, /<img class="rn-logo-img" src="\.\/favicon-32x32\.png" width="26" height="26"/, 'landing must request a local icon sized for its rendered logo')

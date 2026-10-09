@@ -121,6 +121,7 @@ const copyList = [
   "app-store-catalog.json",
   "landing.css",
   "landing-script.js",
+  "landing-dither.js",
   "motion-layer.css",
   "motion-layer.js",
   "roachclaw.js",

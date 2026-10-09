@@ -10,6 +10,12 @@ const heroSignal = document.querySelector(".why-hero__signal");
 const heroSignalCore = document.querySelector(".why-hero__signal-core");
 const bottomMark = document.querySelector(".why-bottom-mark");
 const root = document.documentElement;
+// Decorative motion is opt-out: reduced motion turns it off, coarse pointers skip
+// the pointer effects, and nothing loops while the tab is hidden.
+const calmMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const finePointer = window.matchMedia("(pointer: fine)");
+const decorativeMotion = () => !calmMotion.matches;
+const pointerMotion = () => decorativeMotion() && finePointer.matches;
 let landingScrollTimer = 0;
 let lastScrollY = window.scrollY;
 
@@ -69,7 +75,7 @@ function burstGlitch(target) {
   window.setTimeout(() => target.classList.remove("is-bursting"), 320);
 }
 
-if (heroSignal && heroSignalCore) {
+if (heroSignal && heroSignalCore && decorativeMotion()) {
   let heroX = 0;
   let heroY = 0;
   let rafId = 0;
@@ -103,9 +109,11 @@ if (heroSignal && heroSignalCore) {
   });
 
   const queueBurst = () => {
-    burstGlitch(heroSignal);
-    if (bottomMark) {
-      burstGlitch(bottomMark);
+    if (!document.hidden && decorativeMotion()) {
+      burstGlitch(heroSignal);
+      if (bottomMark) {
+        burstGlitch(bottomMark);
+      }
     }
     const nextDelay = 2600 + Math.round(Math.random() * 2800);
     window.setTimeout(queueBurst, nextDelay);
@@ -146,6 +154,7 @@ window.addEventListener("scroll", syncNavShell, { passive: true });
 syncNavShell();
 
 function initLandingPointerField() {
+  if (!pointerMotion()) return;
   let rafId = 0;
   let pointerLiveTimer = 0;
   let pointerX = 0.5;
@@ -174,6 +183,7 @@ function initLandingPointerField() {
 }
 
 function initLandingClickRipples() {
+  if (!decorativeMotion()) return;
   const selector = [
     ".rn-nav a",
     ".rn-btn",
@@ -227,7 +237,7 @@ const microTargets = document.querySelectorAll(
   ].join(", ")
 );
 
-microTargets.forEach((target) => {
+if (pointerMotion()) microTargets.forEach((target) => {
   target.addEventListener("pointermove", (event) => {
     const rect = target.getBoundingClientRect();
     const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / Math.max(rect.width, 1)));
@@ -244,3 +254,20 @@ microTargets.forEach((target) => {
 
 initLandingPointerField();
 initLandingClickRipples();
+
+// Footer release chip: show the latest GitHub release tag when the API answers.
+;(async () => {
+  const badge = document.getElementById('footer-release-badge')
+  if (!badge) return
+  try {
+    const r = await fetch('https://api.github.com/repos/RoachWares/RoachNet/releases/latest', {
+      headers: { Accept: 'application/vnd.github+json' }
+    })
+    if (!r.ok) return
+    const d = await r.json()
+    if (d.tag_name) {
+      badge.textContent = d.tag_name
+      badge.setAttribute('aria-label', `Latest RoachNet release ${d.tag_name}`)
+    }
+  } catch (_) {}
+})()

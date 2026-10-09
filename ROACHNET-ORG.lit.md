@@ -3479,7 +3479,7 @@ This root is reconciled byte-for-byte from the current production source.
     <title>RoachNet – Offline-first AI, Archiving & Dev Stack</title>
     <meta
       name="description"
-      content="You weren't crazy. The cloud got loud. RoachNet brings AI, code, maps, and your archive back into one contained stack on your machine."
+      content="You weren't crazy. The cloud got loud. RoachNet brings your AI, code, maps, and archive back to one place: your own machine."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/" />
@@ -3491,7 +3491,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta property="og:title" content="RoachNet" />
     <meta
       property="og:description"
-      content="The cloud got loud. RoachNet brings AI, code, maps, and your archive back into one contained stack on your machine."
+      content="The cloud got loud. RoachNet brings your AI, code, maps, and archive back to one place: your own machine."
     />
     <meta property="og:url" content="https://roachnet.org/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
@@ -3499,7 +3499,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:title" content="RoachNet" />
     <meta
       name="twitter:description"
-      content="Bring the important stuff home. RoachNet keeps AI, code, maps, and your archive in one contained stack on your machine."
+      content="Bring the important stuff home. RoachNet keeps your AI, code, maps, and archive on the machine in front of you."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link
@@ -3507,17 +3507,23 @@ This root is reconciled byte-for-byte from the current production source.
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
     />
     <link rel="stylesheet" href="./app.css" />
-    <link rel="stylesheet" href="./app-polish.css?v=20260609-overflow" />
+    <link rel="stylesheet" href="./app-polish.css" />
+    <link rel="stylesheet" href="./motion-layer.css" />
     <link rel="stylesheet" href="./landing.css" />
   </head>
   <body class="rn-body" data-page="landing">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
 
+    <!-- Dithered parallax background -->
+    <div class="dither-bg" aria-hidden="true">
+      <canvas id="dither-canvas"></canvas>
+    </div>
+
     <!-- Navigation -->
     <header class="rn-nav">
       <div class="rn-nav-inner">
         <a href="https://roachnet.org/" class="rn-logo" aria-label="RoachNet landing page">
-          <img class="rn-logo-img" src="./favicon-32x32.png" width="26" height="26" alt="RoachNet logo" />
+          <img class="rn-logo-img" src="./favicon-32x32.png" width="26" height="26" alt="RoachNet logo" decoding="async" />
           <span class="rn-logo-text">RoachNet</span>
         </a>
         <nav class="rn-nav-links" aria-label="Primary">
@@ -3573,9 +3579,10 @@ This root is reconciled byte-for-byte from the current production source.
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <p class="why-prose">
-            Now your work lives in a dozen tabs, three identity providers, and
-            however many SaaS dashboards decided to redesign themselves this
-            quarter. Your "stack" feels less like a system and more like a pile.
+            Now your work lives in a dozen tabs, three different logins, and
+            however many dashboards decided to redesign themselves this
+            quarter. Your setup stopped feeling like a system and started
+            feeling like a pile.
           </p>
         </div>
       </section>
@@ -3607,10 +3614,10 @@ This root is reconciled byte-for-byte from the current production source.
             development that actually lives on your machines.
           </p>
           <p class="why-prose">
-            RoachNet treats your computer like a computer again. It&rsquo;s a
-            self-contained environment where your models, your tools, and your
-            data run locally, sync on your terms, and don&rsquo;t vanish when a
-            login expires or a product manager gets bored.
+            RoachNet treats your computer like a computer again. Your models,
+            your tools, and your files run right here, sync when you say so,
+            and refuse to vanish because a login expired or a product manager
+            got bored.
           </p>
           <p class="why-prose">
             Instead of asking &ldquo;which service holds this?&rdquo;, you always
@@ -3624,10 +3631,10 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="why-section__inner">
           <h2 class="why-heading">Bring the important stuff home.</h2>
           <p class="why-prose">
-            Spin up local AI with RoachClaw. Keep a durable archive of the web,
-            docs, and projects you care about. Ship code from a reproducible dev
-            environment that&rsquo;s the same on your desktop, your laptop, or your
-            lab machine.
+            Start local AI with RoachClaw. Keep the web pages, docs, and
+            projects you care about somewhere they&rsquo;ll still be in five
+            years. Write code in a setup that looks identical on your desktop,
+            your laptop, and that machine in the closet.
           </p>
         </div>
       </section>
@@ -3636,19 +3643,19 @@ This root is reconciled byte-for-byte from the current production source.
       <section class="why-section" data-reveal>
         <div class="why-capabilities">
           <article class="why-cap-card" data-reveal>
-            <span class="why-cap-card__icon" aria-hidden="true">&#xe2;</span>
+            <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9.5 9.5h5v5h-5z"/><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3"/></svg></span>
             <h3>Local AI</h3>
-            <p>Spin up RoachClaw with contained models. No API keys, no cloud dependency. Run models on your own metal.</p>
+            <p>Real models, running on your own Mac. No API keys, no monthly meter, no asking anyone's permission.</p>
           </article>
           <article class="why-cap-card" data-reveal>
-            <span class="why-cap-card__icon" aria-hidden="true">&#x26B6;</span>
-            <h3>Durable Archive</h3>
-            <p>Keep the web, docs, playlists, and projects you care about in a vault that doesn't expire or leak.</p>
+            <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9"/><path d="M10 13h4"/></svg></span>
+            <h3>Your own archive</h3>
+            <p>Park the pages, docs, playlists, and projects you care about somewhere they'll still be in five years.</p>
           </article>
           <article class="why-cap-card" data-reveal>
-            <span class="why-cap-card__icon" aria-hidden="true">&#x2318;</span>
-            <h3>Dev Environment</h3>
-            <p>Ship code from a reproducible setup &mdash; same on every machine you own, no browser required.</p>
+            <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9.5l3 2.5-3 2.5"/><path d="M12.5 15h4.5"/></svg></span>
+            <h3>A place to build</h3>
+            <p>The same setup on your desktop, your laptop, and that machine in the closet. No browser required.</p>
           </article>
         </div>
       </section>
@@ -3672,9 +3679,9 @@ This root is reconciled byte-for-byte from the current production source.
             whole relationship with computing shifts.
           </p>
           <ul class="why-list">
-            <li>Keeping your core tools close, instead of chasing new dashboards.</li>
-            <li>Treating the internet as an optional bonus, not a dependency.</li>
-            <li>Designing workflows that can't be turned off from someone else's control panel.</li>
+            <li>Keep your favourite tools close instead of chasing the next dashboard.</li>
+            <li>Treat the internet as a bonus round, not a requirement.</li>
+            <li>Build the kind of setup nobody else can switch off from a control panel.</li>
           </ul>
         </div>
       </section>
@@ -3683,13 +3690,13 @@ This root is reconciled byte-for-byte from the current production source.
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <p class="why-prose">
-            RoachNet is built for that mindset. For people who like to own the
-            stack they rely on, even if they still use plenty of cloud on top.
+            RoachNet is built for that mindset. For people who like owning the
+            tools they lean on, even if they still use plenty of cloud on top.
           </p>
           <p class="why-prose">
-            It's not nostalgia. It's just a quieter, saner foundation for modern
-            work &mdash; one where your AI, your archive, and your dev tools are
-            portable, offline-capable, and under your control.
+            It's not nostalgia. It's a quieter, saner place to work &mdash; one
+            where your AI, your archive, and your editor travel with you and
+            answer to you.
           </p>
         </div>
       </section>
@@ -3716,9 +3723,9 @@ This root is reconciled byte-for-byte from the current production source.
             Press <span class="why-cta__kbd">&#x21E7;</span><span class="why-cta__kbd">&#x2318;</span><span class="why-cta__kbd">R</span> to download RoachNet and take your environment back.
           </p>
           <p class="why-cta__status" data-landing-download-status>
-            Press the shortcut to start the macOS download. We will send you into Home right after.
+            Hit the shortcut and the macOS download starts. We&rsquo;ll drop you at Home right after.
           </p>
-          <p class="why-cta__status">RoachNet v1.0.5 is not Apple-notarized; macOS may require manual approval on first launch.</p>
+          <p class="why-cta__status why-cta__status--fine">RoachNet v1.0.5 is not Apple-notarized; macOS may ask you to approve it on first launch.</p>
           <div class="why-cta__buttons">
             <button class="rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
             <a class="rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
@@ -3785,7 +3792,9 @@ This root is reconciled byte-for-byte from the current production source.
     <script src="./app.js" type="module"></script>
     <script src="./landing-script.js"></script>
     <script src="./site-polish.js" type="module"></script>
-  </body>
+    <script src="./motion-layer.js" type="module"></script>
+    <script src="./landing-dither.js"></script>
+</body>
 </html>
 ```
 
@@ -3836,11 +3845,6 @@ body.rn-body {
 body.rn-body::before,
 body.rn-body::after {
   display: none;
-}
-
-body.rn-body .rn-skip-link {
-  color: #fff;
-  background: #000;
 }
 
 /* Hide old site-level layout artifacts */
@@ -4055,6 +4059,7 @@ body.rn-body .site-footer { display: none; }
     radial-gradient(ellipse at 50% 46%, rgba(145, 56, 216, 0.24), rgba(145, 56, 216, 0.07) 44%, transparent 72%),
     radial-gradient(ellipse at 50% 82%, rgba(50, 255, 126, 0.12), transparent 64%);
   opacity: 1;
+  animation: why-signal-mobile-breathe 6.2s ease-in-out infinite;
   --hero-scroll-shift: 0px;
   position: relative;
   isolation: isolate;
@@ -4072,6 +4077,7 @@ body.rn-body .site-footer { display: none; }
   filter: blur(18px);
   opacity: 0.9;
   transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * 0.35), 0);
+  animation: why-signal-halo 7.8s ease-in-out infinite;
 }
 
 .why-hero__signal-core {
@@ -4097,6 +4103,7 @@ body.rn-body .site-footer { display: none; }
     radial-gradient(circle at 70% 32%, rgba(92, 141, 255, 0.2), rgba(92, 141, 255, 0) 58%);
   filter: blur(26px);
   opacity: 0.94;
+  animation: why-core-haze 9s ease-in-out infinite;
 }
 
 .why-hero__signal-core-ring,
@@ -4120,6 +4127,7 @@ body.rn-body .site-footer { display: none; }
 .why-hero__signal-core-ring:nth-child(1) {
   width: min(100%, 268px);
   height: 84px;
+  animation: why-core-breathe 8.8s ease-in-out infinite;
 }
 
 .why-hero__signal-core-ring:nth-child(2) {
@@ -4129,6 +4137,7 @@ body.rn-body .site-footer { display: none; }
   box-shadow:
     0 0 0 1px rgba(92, 141, 255, 0.08),
     0 0 32px rgba(92, 141, 255, 0.18);
+  animation: why-core-breathe 7.1s ease-in-out infinite reverse;
 }
 
 .why-hero__signal-core-dot {
@@ -4142,6 +4151,22 @@ body.rn-body .site-footer { display: none; }
     0 0 0 6px rgba(145, 56, 216, 0.08),
     0 0 20px rgba(145, 56, 216, 0.48),
     0 0 44px rgba(92, 141, 255, 0.2);
+  animation: why-core-pulse 4.6s ease-in-out infinite;
+}
+
+.why-hero__signal.is-bursting,
+.why-bottom-mark.is-bursting {
+  animation: glitch-flicker 300ms steps(2, end) 1;
+}
+
+.why-hero__signal.is-bursting .why-hero__signal-core-ring:nth-child(1),
+.why-bottom-mark.is-bursting .why-bottom-wordmark::before {
+  animation: glitch-shift-1 260ms steps(2, end) 1;
+}
+
+.why-hero__signal.is-bursting .why-hero__signal-core-ring:nth-child(2),
+.why-bottom-mark.is-bursting .why-bottom-wordmark::after {
+  animation: glitch-shift-2 260ms steps(2, end) 1;
 }
 
 .why-hero__signal-rails {
@@ -4165,6 +4190,11 @@ body.rn-body .site-footer { display: none; }
       rgba(145, 56, 216, 0) 100%
     );
   opacity: 0.72;
+  transform: translateX(calc(var(--hero-rail-shift, 0px) + var(--hero-scroll-shift, 0px)));
+  transform-origin: center;
+  animation:
+    why-rail-shift 7s cubic-bezier(0.22, 1, 0.36, 1) infinite,
+    why-rail-glow 4.8s ease-in-out infinite;
 }
 
 .why-hero__signal-rails span:nth-child(2) {
@@ -4305,10 +4335,31 @@ body.rn-body .site-footer { display: none; }
 }
 
 .why-cap-card__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  color: #b06cf0;
+  background: radial-gradient(circle at 30% 25%, rgba(145, 56, 216, 0.28), rgba(145, 56, 216, 0.06) 70%);
+  border: 1px solid rgba(176, 108, 240, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 30px rgba(145, 56, 216, 0.12);
+}
+
+.why-cap-card__icon svg {
   display: block;
-  font-size: 1.5rem;
-  margin-bottom: 14px;
-  opacity: 0.6;
+}
+
+.why-cta__status--fine {
+  font-size: 12px;
+  opacity: 0.72;
+}
+
+/* Keyboard bypass: hidden until focused, high contrast when it shows. */
+body.rn-body .rn-skip-link {
+  color: #fff;
+  background: #000;
 }
 
 .why-cap-card h3 {
@@ -5146,6 +5197,21 @@ body.rn-body .site-footer { display: none; }
   transform: translateY(-2px);
 }
 
+.rn-click-ripple--landing {
+  position: fixed;
+  z-index: 9999;
+  width: 14px;
+  aspect-ratio: 1;
+  margin: -7px 0 0 -7px;
+  border-radius: 999px;
+  pointer-events: none;
+  border: 1px solid rgba(183, 117, 255, 0.7);
+  box-shadow:
+    0 0 24px rgba(145, 56, 216, 0.38),
+    inset 0 0 16px rgba(50, 255, 126, 0.16);
+  animation: landing-click-ripple 600ms ease-out forwards;
+}
+
 @keyframes landing-click-ripple {
   0% {
     opacity: 0.94;
@@ -5170,6 +5236,38 @@ body.rn-body [data-reveal]:not(.is-visible) {
 body.rn-body [data-reveal].is-visible {
   filter: blur(0) saturate(1);
   transform: translateY(0) scale(1);
+}
+
+body.rn-body.is-scrolling .dither-bg {
+  filter: saturate(1.28) contrast(1.14);
+  opacity: 0.98;
+}
+
+.dither-bg::before,
+.dither-bg::after {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  pointer-events: none;
+}
+
+.dither-bg::before {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(145, 56, 216, 0.28), transparent 26%),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(50, 255, 126, 0.12), transparent 28%);
+  mix-blend-mode: screen;
+  opacity: 0.74;
+  transform:
+    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -46px), 0)
+    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 5deg));
+}
+
+.dither-bg::after {
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(90deg, rgba(145, 56, 216, 0.08) 0 1px, transparent 1px 13px);
+  opacity: 0.16;
+  animation: landing-scan-drift 12s linear infinite;
 }
 
 @keyframes landing-scan-drift {
@@ -5207,7 +5305,11 @@ body.rn-body [data-reveal].is-visible {
   96% { transform: translate(0); }
 }
 
-
+@keyframes why-rail-shift {
+  0%, 100% {
+    transform: translateX(-1.5%) scaleX(0.98);
+    opacity: 0.48;
+  }
   35% {
     transform: translateX(1.25%) scaleX(1);
     opacity: 0.86;
@@ -5216,6 +5318,28 @@ body.rn-body [data-reveal].is-visible {
     transform: translateX(-0.75%) scaleX(0.94);
     opacity: 0.66;
   }
+}
+
+/* 15b) Dithered parallax background */
+.dither-bg {
+  position: fixed;
+  inset: -8vh -4vw;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.92;
+  filter: saturate(1.16) contrast(1.08);
+  mask-image: radial-gradient(ellipse at 50% 36%, #000 0 60%, rgba(0, 0, 0, 0.68) 78%, transparent 100%);
+}
+
+.dither-bg canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  opacity: 0.9;
 }
 
 /* 16) Reveal animations */
@@ -5483,6 +5607,11 @@ body.rn-body .why-cap-card[data-reveal]:nth-child(3) { transition-delay: 240ms; 
     animation: none !important;
   }
 
+  .dither-bg::after,
+  .rn-click-ripple--landing {
+    animation: none !important;
+  }
+
   .rn-nav,
   .rn-logo,
   .rn-nav-link,
@@ -5492,6 +5621,11 @@ body.rn-body .why-cap-card[data-reveal]:nth-child(3) { transition-delay: 240ms; 
   body.rn-body [data-reveal],
   body.rn-body [data-reveal].is-visible {
     transition: none !important;
+  }
+
+  .dither-bg {
+    opacity: 0.34;
+    filter: saturate(0.9) contrast(0.9);
   }
 }
 
@@ -5541,6 +5675,28 @@ body.rn-body .why-cap-card[data-reveal]:nth-child(3) { transition-delay: 240ms; 
     0 0 0 1px rgba(50, 255, 126, 0.06),
     0 14px 36px rgba(0, 0, 0, 0.28),
     0 0 26px rgba(145, 56, 216, 0.1);
+}
+
+.dither-bg {
+  opacity: 0.72;
+  filter: saturate(1.04) contrast(1.06);
+}
+
+.dither-bg canvas {
+  opacity: 0.66;
+}
+
+.dither-bg::before {
+  opacity: 0.5;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(145, 56, 216, 0.18), transparent 24%),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(50, 255, 126, 0.09), transparent 28%);
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body:hover .dither-bg {
+  opacity: 0.86;
+  filter: saturate(1.18) contrast(1.1);
 }
 
 @keyframes why-title-mobile-glow {
@@ -5651,6 +5807,40 @@ body.rn-body .why-cap-card[data-reveal]:nth-child(3) { transition-delay: 240ms; 
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
+.dither-bg {
+  inset: -12vh -8vw;
+  opacity: 0.58;
+  filter: saturate(1.08) contrast(1.14);
+  mask-image: radial-gradient(ellipse at 50% 20%, #000 0 30%, rgba(0, 0, 0, 0.64) 54%, transparent 90%);
+}
+
+.dither-bg canvas {
+  opacity: 0.52;
+}
+
+.dither-bg::before {
+  opacity: 0.62;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(145, 56, 216, 0.2), transparent 20rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(50, 255, 126, 0.1), transparent 22rem),
+    linear-gradient(115deg, transparent 0 18%, rgba(50, 255, 126, 0.025) 42%, transparent 58%, rgba(145, 56, 216, 0.03) 78%, transparent 100%);
+  animation: landing-signal-field-breathe 12s ease-in-out infinite alternate;
+}
+
+.dither-bg::after {
+  opacity: 0.18;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 8px, rgba(255, 255, 255, 0.018) 9px, transparent 10px),
+    repeating-linear-gradient(90deg, rgba(145, 56, 216, 0.036) 0 1px, transparent 1px 18px);
+  animation: landing-scan-drift 12s linear infinite;
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body:hover .dither-bg {
+  opacity: 0.74;
+  filter: saturate(1.22) contrast(1.18);
+}
+
 @media (max-width: 760px) {
   .rn-nav-inner {
     max-width: 100%;
@@ -5669,6 +5859,11 @@ body.rn-body .why-cap-card[data-reveal]:nth-child(3) { transition-delay: 240ms; 
   .rn-nav-ghost,
   .rn-nav-primary {
     justify-content: center;
+  }
+
+  .dither-bg {
+    opacity: 0.44;
+    mask-image: radial-gradient(ellipse at 50% 18%, #000 0 30%, rgba(0, 0, 0, 0.58) 56%, transparent 92%);
   }
 }
 
@@ -5756,6 +5951,38 @@ html {
   transform: translate3d(var(--rn-magnet-x, 0px), var(--rn-magnet-y, 0px), 0);
 }
 
+.dither-bg {
+  opacity: 0.54;
+  filter: saturate(1.12) contrast(1.18) brightness(0.96);
+  will-change: opacity, filter, transform;
+  background:
+    radial-gradient(circle at calc(16% + (var(--landing-scroll-ratio, 0) * 18%)) -10%, rgba(50, 255, 126, 0.07), transparent 34rem),
+    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 12%)) 10%, rgba(145, 56, 216, 0.1), transparent 32rem),
+    linear-gradient(180deg, #000 0%, #010202 50%, #000 100%);
+}
+
+.dither-bg canvas {
+  opacity: 0.46;
+  image-rendering: pixelated;
+}
+
+.dither-bg::before {
+  opacity: 0.66;
+  transform:
+    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -48px), 0)
+    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
+}
+
+.dither-bg::after {
+  opacity: 0.2;
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body:hover .dither-bg {
+  opacity: 0.68;
+  filter: saturate(1.22) contrast(1.2) brightness(1);
+}
+
 @media (max-width: 760px) {
   .rn-nav {
     background:
@@ -5772,7 +5999,19 @@ html {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
+
+  .dither-bg {
+    opacity: 0.42;
+  }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .dither-bg,
+  .dither-bg::before,
+  .dither-bg::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* 2026-05 worker pass: Mission chrome aligned with the black-first site system. */
@@ -5907,6 +6146,51 @@ body.rn-body {
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
+.dither-bg {
+  inset: -16vh -12vw;
+  opacity: 0.56;
+  filter: saturate(1.18) contrast(1.2) brightness(0.94);
+  will-change: opacity, filter, transform;
+  mask-image: radial-gradient(ellipse at 50% 18%, #000 0 28%, rgba(0, 0, 0, 0.62) 54%, transparent 91%);
+  background:
+    radial-gradient(circle at calc(12% + (var(--landing-scroll-ratio, 0) * 16%)) -12%, rgba(54, 255, 132, 0.06), transparent 34rem),
+    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 12%)) 10%, rgba(150, 74, 255, 0.095), transparent 32rem),
+    linear-gradient(180deg, #000 0%, #010101 50%, #000 100%);
+}
+
+.dither-bg canvas {
+  opacity: 0.48;
+  image-rendering: pixelated;
+}
+
+.dither-bg::before {
+  opacity: 0.68;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(150, 74, 255, 0.19), transparent 20rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(54, 255, 132, 0.1), transparent 22rem),
+    radial-gradient(circle at 52% calc(12% + (var(--landing-scroll-ratio, 0) * 24%)), rgba(255, 255, 255, 0.028), transparent 18rem),
+    linear-gradient(118deg, transparent 0 18%, rgba(54, 255, 132, 0.024) 42%, transparent 58%, rgba(150, 74, 255, 0.034) 80%, transparent 100%);
+  transform:
+    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -58px), 0)
+    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
+  animation: landing-signal-field-breathe 12s ease-in-out infinite alternate;
+}
+
+.dither-bg::after {
+  opacity: 0.24;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.72), transparent 18%, transparent 72%, rgba(0, 0, 0, 0.74)),
+    repeating-linear-gradient(0deg, transparent 0 7px, rgba(255, 255, 255, 0.019) 8px, transparent 9px),
+    repeating-linear-gradient(90deg, rgba(150, 74, 255, 0.033) 0 1px, transparent 1px 17px);
+  animation: landing-worker-scan-crawl 13s linear infinite;
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body.is-pointer-live .dither-bg {
+  opacity: 0.7;
+  filter: saturate(1.28) contrast(1.22) brightness(1);
+}
+
 @media (max-width: 760px) {
   .rn-nav {
     background:
@@ -5949,6 +6233,11 @@ body.rn-body {
     padding-inline: 9px;
     font-size: 0.72rem;
   }
+
+  .dither-bg {
+    opacity: 0.44;
+    mask-image: radial-gradient(ellipse at 50% 16%, #000 0 31%, rgba(0, 0, 0, 0.56) 58%, transparent 94%);
+  }
 }
 
 @keyframes landing-worker-scan-crawl {
@@ -5960,6 +6249,26 @@ body.rn-body {
     background-position: 0 18px, 0 36px, 28px 0;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .dither-bg::before,
+  .dither-bg::after {
+    animation: none !important;
+  }
+}
+
+/* Final decorative containment guard: keep the animated field vivid without
+   letting its fixed canvas create a horizontal scroll lane on small screens. */
+.dither-bg {
+  inset: 0 !important;
+  width: auto !important;
+  max-width: 100vw !important;
+  overflow: clip !important;
+  contain: paint !important;
+}
+
+.dither-bg canvas {
+  max-width: 100vw !important;
 }
 
 /* 2026-05 worker pass B: Mission shares the same black signal chrome as the app pages. */
@@ -6099,6 +6408,48 @@ body.rn-body {
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
+.dither-bg {
+  inset: -15vh -11vw;
+  opacity: 0.5 !important;
+  filter: saturate(1.1) contrast(1.18) brightness(0.9);
+  will-change: opacity, filter, transform;
+  mask-image: radial-gradient(ellipse at 50% 18%, #000 0 30%, rgba(0, 0, 0, 0.56) 58%, transparent 92%) !important;
+  background:
+    radial-gradient(circle at calc(10% + (var(--landing-scroll-ratio, 0) * 12%)) -12%, rgba(var(--rn-site-green), 0.06), transparent 34rem),
+    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 10%)) 10%, rgba(var(--rn-site-purple), 0.096), transparent 32rem),
+    linear-gradient(180deg, #000 0%, #010101 50%, #000 100%) !important;
+}
+
+.dither-bg canvas {
+  opacity: 0.56 !important;
+  image-rendering: pixelated;
+}
+
+.dither-bg::before {
+  opacity: 0.5 !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(var(--rn-site-purple), 0.2), transparent 22rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(var(--rn-site-green), 0.105), transparent 24rem),
+    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1turn) at 50% 50%, rgba(var(--rn-site-green), 0.024), transparent 20%, rgba(var(--rn-site-blue), 0.028), transparent 54%, rgba(var(--rn-site-purple), 0.035), transparent 78%, rgba(var(--rn-site-green), 0.018)) !important;
+  transform:
+    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -64px), 0)
+    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
+}
+
+.dither-bg::after {
+  opacity: 0.23 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.76), transparent 18%, transparent 72%, rgba(0, 0, 0, 0.78)),
+    repeating-linear-gradient(0deg, transparent 0 8px, rgba(255, 255, 255, 0.022) 9px, transparent 10px),
+    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.03) 0 1px, transparent 1px 19px) !important;
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body.is-pointer-live .dither-bg {
+  opacity: 0.64 !important;
+  filter: saturate(1.24) contrast(1.2) brightness(0.98);
+}
+
 @media (max-width: 760px) {
   .rn-nav {
     min-height: 0;
@@ -6138,7 +6489,23 @@ body.rn-body {
     min-height: 30px;
     padding-inline: 10px;
   }
+
+  .dither-bg {
+    opacity: 0.42 !important;
+    mask-image: radial-gradient(ellipse at 50% 16%, #000 0 33%, rgba(0, 0, 0, 0.54) 62%, transparent 94%) !important;
+  }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .dither-bg,
+  .dither-bg::before,
+  .dither-bg::after,
+  .rn-nav-link,
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* 2026-05 worker pass C: Mission gets the same black-first signal field as the site pages. */
@@ -6178,6 +6545,46 @@ body.rn-body::after {
   z-index: -1;
 }
 
+.dither-bg {
+  inset: -18vh -12vw !important;
+  opacity: 0.56 !important;
+  filter: saturate(1.18) contrast(1.22) brightness(0.88);
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(ellipse at 50% 16%, #000 0 33%, rgba(0, 0, 0, 0.68) 60%, transparent 95%) !important;
+  will-change: opacity, filter, transform;
+}
+
+.dither-bg canvas {
+  opacity: 0.84 !important;
+  image-rendering: pixelated;
+  transform:
+    translate3d(calc(var(--landing-scroll-ratio, 0) * -10px), calc(var(--landing-dither-scroll, 0) * -22px), 0)
+    scale(1.016);
+}
+
+.dither-bg::before {
+  opacity: 0.62 !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 24%), rgba(var(--rn-site-purple), 0.19), transparent 21rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 84%, rgba(var(--rn-site-green), 0.1), transparent 27rem),
+    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1.15turn) at 50% 48%, rgba(var(--rn-site-green), 0.03), transparent 15%, rgba(var(--rn-site-blue), 0.022), transparent 38%, rgba(var(--rn-site-purple), 0.045), transparent 66%, rgba(var(--rn-site-green), 0.02), transparent 86%),
+    repeating-radial-gradient(circle at 50% 30%, transparent 0 28px, rgba(var(--rn-site-purple), 0.026) 29px, transparent 30px 58px) !important;
+  transform:
+    translate3d(calc((var(--landing-scroll-ratio, 0) - 0.5) * -20px), calc(var(--landing-scroll-ratio, 0) * -64px), 0)
+    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
+  animation: landing-signal-vault-breathe 13s ease-in-out infinite alternate;
+}
+
+.dither-bg::after {
+  opacity: 0.24 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.82), transparent 16%, transparent 72%, rgba(0, 0, 0, 0.86)),
+    repeating-linear-gradient(0deg, transparent 0 7px, rgba(255, 255, 255, 0.026) 8px, transparent 9px),
+    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.035) 0 1px, transparent 1px 17px),
+    repeating-linear-gradient(45deg, transparent 0 34px, rgba(var(--rn-site-green), 0.018) 35px, transparent 36px 78px) !important;
+  animation: landing-signal-scan-crawl 12s linear infinite;
+}
+
 body.rn-body::before {
   opacity: 0.48 !important;
   background:
@@ -6200,6 +6607,12 @@ body.rn-body::after {
     repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 7px),
     radial-gradient(ellipse at 50% calc(14% + (var(--landing-scroll-ratio, 0) * 42%)), rgba(var(--rn-site-green), 0.03), transparent 38%) !important;
   animation: landing-signal-scan-crawl 15s linear infinite;
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body.is-pointer-live .dither-bg {
+  opacity: 0.64 !important;
+  filter: saturate(1.32) contrast(1.26) brightness(0.94);
 }
 
 @keyframes landing-signal-depth-field {
@@ -6242,13 +6655,42 @@ body.rn-body::after {
   body.rn-body::after {
     opacity: 0.2 !important;
   }
+
+  .dither-bg {
+    inset: -12vh -16vw !important;
+    opacity: 0.38 !important;
+    filter: saturate(1.12) contrast(1.15) brightness(0.86);
+  }
+
+  body.rn-body.is-scrolling .dither-bg,
+  body.rn-body.is-pointer-live .dither-bg {
+    opacity: 0.48 !important;
+  }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  body.rn-body::before,
+  body.rn-body::after,
+  .dither-bg,
+  .dither-bg canvas,
+  .dither-bg::before,
+  .dither-bg::after {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* VISUAL-CLAW EOF priority: these repeat the landing chrome guards after all earlier polish layers. */
 body[data-page="landing"] {
   background: #000 !important;
   overflow-x: clip !important;
+}
+
+body[data-page="landing"] .dither-bg {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 20%), rgba(63, 255, 139, 0.05), transparent 22rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 14%, rgba(145, 56, 216, 0.07), transparent 28rem),
+    #000 !important;
 }
 
 body[data-page="landing"] .rn-nav-inner {
@@ -6356,6 +6798,16 @@ body[data-page="landing"] .rn-footer {
   }
 }
 
+/* MOBILE-CLAW EOF guard: repeat after the visual EOF block so phones do not inherit wide bleed. */
+body[data-page="landing"] .dither-bg {
+  inset-inline: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  max-width: 100% !important;
+  contain: paint !important;
+}
+
 @media (max-width: 640px) {
   body[data-page="landing"],
   body[data-page="landing"] .rn-main,
@@ -6428,6 +6880,22 @@ body[data-page="landing"] {
   body[data-page="landing"] {
     overflow-x: hidden !important;
   }
+}
+
+body[data-page="landing"] .dither-bg {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 20%), rgba(var(--landing-claw-green), 0.05), transparent 22rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 14%, rgba(var(--landing-claw-purple), 0.07), transparent 28rem),
+    #000 !important;
+}
+
+body[data-page="landing"] .dither-bg::before {
+  background:
+    radial-gradient(circle at calc(18% + var(--landing-scroll-ratio, 0) * 20%) 16%, rgba(var(--landing-claw-green), 0.13), transparent 18rem),
+    radial-gradient(circle at calc(84% - var(--landing-scroll-ratio, 0) * 16%) 18%, rgba(var(--landing-claw-purple), 0.14), transparent 22rem),
+    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1.35turn) at 52% 40%, transparent 0 15%, rgba(var(--landing-claw-green), 0.08) 20%, transparent 31%, rgba(var(--landing-claw-purple), 0.09) 45%, transparent 59%, rgba(var(--landing-claw-cyan), 0.048) 72%, transparent 90%),
+    repeating-linear-gradient(118deg, transparent 0 48px, rgba(var(--landing-claw-green), 0.036) 49px, transparent 50px 104px),
+    repeating-linear-gradient(42deg, transparent 0 64px, rgba(var(--landing-claw-purple), 0.03) 65px, transparent 66px 124px) !important;
 }
 
 body[data-page="landing"] .rn-nav-inner {
@@ -6680,6 +7148,16 @@ body[data-page="landing"] .rn-footer {
   }
 }
 
+/* MOBILE-CLAW final guard: keep the mission hero signal inside the phone viewport. */
+body[data-page="landing"] .dither-bg {
+  inset-inline: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  max-width: 100% !important;
+  contain: paint !important;
+}
+
 @media (max-width: 640px) {
   body[data-page="landing"],
   body[data-page="landing"] .rn-main,
@@ -6791,6 +7269,49 @@ body.rn-body::after {
     repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.026) 0 1px, transparent 1px 19px),
     radial-gradient(ellipse at 50% calc(12% + (var(--landing-scroll-ratio, 0) * 46%)), rgba(var(--rn-site-green), 0.033), transparent 36%) !important;
   animation: landing-code-therapy-vhs-scan 14s linear infinite;
+}
+
+.dither-bg {
+  inset: -20vh -14vw !important;
+  opacity: 0.58 !important;
+  filter: saturate(1.24) contrast(1.28) brightness(0.88);
+  mask-image: radial-gradient(ellipse at 50% 14%, #000 0 34%, rgba(0, 0, 0, 0.68) 58%, transparent 94%) !important;
+}
+
+.dither-bg canvas {
+  opacity: 0.9 !important;
+  transform:
+    translate3d(calc(var(--landing-scroll-ratio, 0) * -12px), calc(var(--landing-dither-scroll, 0) * -26px), 0)
+    scale(1.02);
+}
+
+.dither-bg::before {
+  opacity: 0.68 !important;
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 24%), rgba(var(--rn-site-purple), 0.2), transparent 21rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 83%, rgba(var(--rn-site-green), 0.11), transparent 28rem),
+    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1.2turn) at 50% 45%, rgba(var(--rn-site-green), 0.035), transparent 14%, rgba(var(--rn-site-blue), 0.024), transparent 36%, rgba(var(--rn-site-purple), 0.055), transparent 64%, rgba(var(--rn-site-green), 0.02), transparent 88%),
+    repeating-radial-gradient(circle at 52% 24%, transparent 0 26px, rgba(var(--rn-site-purple), 0.028) 27px, transparent 28px 56px),
+    linear-gradient(60deg, transparent 0 47%, rgba(var(--rn-site-green), 0.022) 48%, transparent 49% 100%),
+    linear-gradient(-60deg, transparent 0 49%, rgba(var(--rn-site-purple), 0.024) 50%, transparent 51% 100%) !important;
+  background-size: auto, auto, auto, auto, 92px 92px, 92px 92px;
+  animation: landing-code-therapy-vault-pulse 12s ease-in-out infinite alternate;
+}
+
+.dither-bg::after {
+  opacity: 0.27 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.86), transparent 15%, transparent 72%, rgba(0, 0, 0, 0.88)),
+    repeating-linear-gradient(0deg, transparent 0 6px, rgba(255, 255, 255, 0.03) 7px, transparent 8px),
+    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.038) 0 1px, transparent 1px 17px),
+    repeating-linear-gradient(45deg, transparent 0 32px, rgba(var(--rn-site-green), 0.021) 33px, transparent 34px 76px) !important;
+  animation: landing-code-therapy-vhs-scan 10s linear infinite;
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body.is-pointer-live .dither-bg {
+  opacity: 0.68 !important;
+  filter: saturate(1.38) contrast(1.32) brightness(0.94);
 }
 
 .rn-nav {
@@ -6951,13 +7472,38 @@ body.rn-body::after {
     padding-inline: 9px;
     font-size: 0.72rem;
   }
+
+  .dither-bg {
+    opacity: 0.42 !important;
+  }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  body.rn-body::before,
+  body.rn-body::after,
+  .dither-bg,
+  .dither-bg canvas,
+  .dither-bg::before,
+  .dither-bg::after,
+  .rn-nav-link,
+  .rn-nav-ghost,
+  .rn-nav-primary {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* VISUAL-CLAW EOF priority: these repeat the landing chrome guards after all earlier polish layers. */
 body[data-page="landing"] {
   background: #000 !important;
   overflow-x: clip !important;
+}
+
+body[data-page="landing"] .dither-bg {
+  background:
+    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 20%), rgba(63, 255, 139, 0.05), transparent 22rem),
+    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 14%, rgba(145, 56, 216, 0.07), transparent 28rem),
+    #000 !important;
 }
 
 body[data-page="landing"] .rn-nav-inner {
@@ -7048,31 +7594,1890 @@ body[data-page="landing"] .rn-footer {
 This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="landing-script-js" file="landing-script.js"}
-const progressBar = document.querySelector('.landing-scroll-progress')
-const downloadButton = document.querySelector('[data-landing-download-button]')
-const downloadStatus = document.querySelector('[data-landing-download-status]')
+/* ===========================
+   landing-script.js
+   Scroll progress bar and reveal observer for the
+   RoachNet Mission landing page.
+   =========================== */
+
+// Scroll progress bar
+const progressBar = document.querySelector(".landing-scroll-progress");
+const heroSignal = document.querySelector(".why-hero__signal");
+const heroSignalCore = document.querySelector(".why-hero__signal-core");
+const bottomMark = document.querySelector(".why-bottom-mark");
+const root = document.documentElement;
+// Decorative motion is opt-out: reduced motion turns it off, coarse pointers skip
+// the pointer effects, and nothing loops while the tab is hidden.
+const calmMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const finePointer = window.matchMedia("(pointer: fine)");
+const decorativeMotion = () => !calmMotion.matches;
+const pointerMotion = () => decorativeMotion() && finePointer.matches;
+let landingScrollTimer = 0;
+let lastScrollY = window.scrollY;
 
 function syncScrollProgress() {
-  if (!progressBar) return
-  const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
-  progressBar.style.width = `${Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)).toFixed(2)}%`
-}
+  const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  const ratio = Math.min(1, Math.max(0, window.scrollY / scrollable));
+  const pct = ratio * 100;
 
-function startDownload() {
-  window.location.assign('https://roachnet.org/home/')
-}
+  root.style.setProperty("--landing-scroll-ratio", ratio.toFixed(4));
+  root.style.setProperty("--landing-scroll-px", window.scrollY.toFixed(2));
 
-window.addEventListener('scroll', syncScrollProgress, { passive: true })
-syncScrollProgress()
-
-if (downloadButton) downloadButton.addEventListener('click', startDownload)
-window.addEventListener('keydown', (event) => {
-  if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'r') {
-    event.preventDefault()
-    if (downloadStatus) downloadStatus.textContent = 'Opening Home to start the macOS download.'
-    startDownload()
+  if (progressBar) {
+    progressBar.style.width = pct.toFixed(2) + "%";
   }
+}
+
+function syncHeroScrollMotion() {
+  if (!heroSignal) return;
+
+  const rect = heroSignal.getBoundingClientRect();
+  const viewport = Math.max(window.innerHeight, 1);
+  const offset = ((rect.top + rect.height * 0.45) - viewport * 0.5) / viewport;
+  const clamped = Math.max(-1, Math.min(1, offset));
+
+  heroSignal.style.setProperty("--hero-scroll-shift", `${(-clamped * 18).toFixed(2)}px`);
+
+  if (heroSignalCore) {
+    heroSignalCore.style.setProperty("--hero-scroll-y", `${(-clamped * 10).toFixed(2)}px`);
+  }
+}
+
+window.addEventListener("scroll", () => {
+  const currentY = window.scrollY;
+  const direction = currentY >= lastScrollY ? "down" : "up";
+  document.body.classList.add("is-scrolling", `is-scrolling-${direction}`);
+  document.body.classList.toggle("is-scrolling-down", direction === "down");
+  document.body.classList.toggle("is-scrolling-up", direction === "up");
+  lastScrollY = currentY;
+
+  window.clearTimeout(landingScrollTimer);
+  landingScrollTimer = window.setTimeout(() => {
+    document.body.classList.remove("is-scrolling", "is-scrolling-down", "is-scrolling-up");
+  }, 180);
+
+  syncScrollProgress();
+  syncHeroScrollMotion();
+}, { passive: true });
+window.addEventListener("resize", syncHeroScrollMotion, { passive: true });
+syncScrollProgress();
+syncHeroScrollMotion();
+
+function burstGlitch(target) {
+  if (!target) return;
+  target.classList.remove("is-bursting");
+  void target.offsetWidth;
+  target.classList.add("is-bursting");
+  window.setTimeout(() => target.classList.remove("is-bursting"), 320);
+}
+
+if (heroSignal && heroSignalCore && decorativeMotion()) {
+  let heroX = 0;
+  let heroY = 0;
+  let rafId = 0;
+
+  const syncHeroDrift = () => {
+    rafId = 0;
+    heroSignalCore.style.setProperty("--hero-core-x", `${heroX.toFixed(2)}px`);
+    heroSignalCore.style.setProperty("--hero-core-y", `${heroY.toFixed(2)}px`);
+    heroSignal.style.setProperty("--hero-rail-shift", `${(heroX * 0.45).toFixed(2)}px`);
+  };
+
+  const queueHeroDrift = () => {
+    if (!rafId) {
+      rafId = window.requestAnimationFrame(syncHeroDrift);
+    }
+  };
+
+  heroSignal.addEventListener("pointermove", (event) => {
+    const rect = heroSignal.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / Math.max(rect.width, 1)) * 2 - 1;
+    const y = ((event.clientY - rect.top) / Math.max(rect.height, 1)) * 2 - 1;
+    heroX = x * 6;
+    heroY = y * 3;
+    queueHeroDrift();
+  });
+
+  heroSignal.addEventListener("pointerleave", () => {
+    heroX = 0;
+    heroY = 0;
+    queueHeroDrift();
+  });
+
+  const queueBurst = () => {
+    if (!document.hidden && decorativeMotion()) {
+      burstGlitch(heroSignal);
+      if (bottomMark) {
+        burstGlitch(bottomMark);
+      }
+    }
+    const nextDelay = 2600 + Math.round(Math.random() * 2800);
+    window.setTimeout(queueBurst, nextDelay);
+  };
+
+  window.setTimeout(queueBurst, 1400);
+}
+
+// Reveal observer for data-reveal elements
+const revealTargets = document.querySelectorAll("[data-reveal]");
+
+if (revealTargets.length && "IntersectionObserver" in window) {
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+  );
+
+  revealTargets.forEach((el) => revealObserver.observe(el));
+} else {
+  revealTargets.forEach((el) => el.classList.add("is-visible"));
+}
+
+const navShell = document.querySelector(".site-nav, .rn-nav");
+
+function syncNavShell() {
+  if (!navShell) return;
+  navShell.classList.toggle("is-scrolled", window.scrollY > 14);
+}
+
+window.addEventListener("scroll", syncNavShell, { passive: true });
+syncNavShell();
+
+function initLandingPointerField() {
+  if (!pointerMotion()) return;
+  let rafId = 0;
+  let pointerLiveTimer = 0;
+  let pointerX = 0.5;
+  let pointerY = 0.24;
+
+  const syncPointer = () => {
+    rafId = 0;
+    root.style.setProperty("--landing-pointer-x", `${(pointerX * 100).toFixed(2)}%`);
+    root.style.setProperty("--landing-pointer-y", `${(pointerY * 100).toFixed(2)}%`);
+  };
+
+  window.addEventListener("pointermove", (event) => {
+    pointerX = Math.max(0, Math.min(1, event.clientX / Math.max(window.innerWidth, 1)));
+    pointerY = Math.max(0, Math.min(1, event.clientY / Math.max(window.innerHeight, 1)));
+    document.body.classList.add("is-pointer-live");
+    window.clearTimeout(pointerLiveTimer);
+    pointerLiveTimer = window.setTimeout(() => {
+      document.body.classList.remove("is-pointer-live");
+    }, 900);
+    if (!rafId) {
+      rafId = window.requestAnimationFrame(syncPointer);
+    }
+  }, { passive: true });
+
+  syncPointer();
+}
+
+function initLandingClickRipples() {
+  if (!decorativeMotion()) return;
+  const selector = [
+    ".rn-nav a",
+    ".rn-btn",
+    ".why-cap-card",
+    ".company-status__grid a",
+    ".company-card",
+    ".rn-release-chip",
+  ].join(", ");
+
+  document.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    const target = event.target.closest(selector);
+    if (!target) return;
+
+    const ripple = document.createElement("span");
+    ripple.className = "rn-click-ripple rn-click-ripple--landing";
+    ripple.style.left = `${event.clientX}px`;
+    ripple.style.top = `${event.clientY}px`;
+    document.body.appendChild(ripple);
+
+    window.setTimeout(() => ripple.remove(), 620);
+  }, { passive: true });
+}
+
+const microTargets = document.querySelectorAll(
+  [
+    ".cta",
+    ".rn-btn",
+    ".rn-nav-primary",
+    ".rn-nav-ghost",
+    ".rn-logo",
+    ".site-header__action",
+    ".app-store-card__action",
+    ".app-detail-sheet__primary",
+    ".app-detail-sheet__secondary",
+    ".app-detail-sheet__close",
+    ".feature-card",
+    ".support-card",
+    ".account-mini-card",
+    ".app-store-card",
+    ".app-store-featured",
+    ".apps-toolbar",
+    ".app-detail-sheet",
+    ".apps-return-strip",
+    ".feature-ledger__row",
+    ".apps-hero-ledger__item",
+    ".api-route-card",
+    ".api-docs-hero__meta article",
+    ".brew-card",
+    ".ios-card",
+  ].join(", ")
+);
+
+if (pointerMotion()) microTargets.forEach((target) => {
+  target.addEventListener("pointermove", (event) => {
+    const rect = target.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / Math.max(rect.width, 1)));
+    const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / Math.max(rect.height, 1)));
+    target.style.setProperty("--rn-hover-x", `${(x * 100).toFixed(2)}%`);
+    target.style.setProperty("--rn-hover-y", `${(y * 100).toFixed(2)}%`);
+  });
+
+  target.addEventListener("pointerleave", () => {
+    target.style.setProperty("--rn-hover-x", "50%");
+    target.style.setProperty("--rn-hover-y", "50%");
+  });
+});
+
+initLandingPointerField();
+initLandingClickRipples();
+
+// Footer release chip: show the latest GitHub release tag when the API answers.
+;(async () => {
+  const badge = document.getElementById('footer-release-badge')
+  if (!badge) return
+  try {
+    const r = await fetch('https://api.github.com/repos/RoachWares/RoachNet/releases/latest', {
+      headers: { Accept: 'application/vnd.github+json' }
+    })
+    if (!r.ok) return
+    const d = await r.json()
+    if (d.tag_name) {
+      badge.textContent = d.tag_name
+      badge.setAttribute('aria-label', `Latest RoachNet release ${d.tag_name}`)
+    }
+  } catch (_) {}
+})()
+```
+
+## landing-dither.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="landing-dither-js" file="landing-dither.js"}
+// Mission page dithered parallax background (moved out of index.html for the CSP).
+/* Dithered parallax background */
+;(function () {
+  const canvas = document.getElementById('dither-canvas');
+  if (!canvas) return;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+  if (!ctx) return;
+  let w, h, cols, rows;
+  let scrollY = 0;
+  let pointerX = 0.5;
+  let pointerY = 0.28;
+  let smoothX = pointerX;
+  let smoothY = pointerY;
+  let start = performance.now();
+  let lastDraw = 0;
+  let raf;
+
+  function resize() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    const scale = w < 720 ? 9 : w > 1680 ? 8 : 7;
+    canvas.width = Math.ceil(w / scale);
+    canvas.height = Math.ceil(h / scale);
+    cols = canvas.width;
+    rows = canvas.height;
+  }
+
+  // Bayer 4x4 dither matrix (normalized 0-1)
+  const bayer = [
+    [ 0/16,  8/16,  2/16, 10/16],
+    [12/16,  4/16, 14/16,  6/16],
+    [ 3/16, 11/16,  1/16,  9/16],
+    [15/16,  7/16, 13/16,  5/16]
+  ];
+
+  function hash(x, y) {
+    const value = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
+    return value - Math.floor(value);
+  }
+
+  function clamp01(value) {
+    return Math.max(0, Math.min(1, value));
+  }
+
+  function smoothstep(edge0, edge1, value) {
+    const t = clamp01((value - edge0) / Math.max(0.0001, edge1 - edge0));
+    return t * t * (3 - 2 * t);
+  }
+
+  function valueNoise(x, y) {
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const fx = x - ix;
+    const fy = y - iy;
+    const ux = fx * fx * (3 - 2 * fx);
+    const uy = fy * fy * (3 - 2 * fy);
+    const a = hash(ix, iy);
+    const b = hash(ix + 1, iy);
+    const c = hash(ix, iy + 1);
+    const d = hash(ix + 1, iy + 1);
+    const ab = a + (b - a) * ux;
+    const cd = c + (d - c) * ux;
+    return ab + (cd - ab) * uy;
+  }
+
+  function fbm(x, y) {
+    let value = 0;
+    let amplitude = 0.5;
+    let frequency = 1;
+    for (let octave = 0; octave < 4; octave++) {
+      value += valueNoise(x * frequency, y * frequency) * amplitude;
+      frequency *= 2.04;
+      amplitude *= 0.52;
+    }
+    return value;
+  }
+
+  function draw(now) {
+    if (document.visibilityState === 'hidden') {
+      raf = 0;
+      return;
+    }
+
+    if (!reducedMotion.matches && lastDraw && now - lastDraw < 50) {
+      raf = requestAnimationFrame(draw);
+      return;
+    }
+
+    lastDraw = now;
+    const time = reducedMotion.matches ? 0 : (now - start) / 1000;
+    const imgData = ctx.createImageData(cols, rows);
+    const data = imgData.data;
+    const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const scroll = Math.min(1, Math.max(0, scrollY / scrollable));
+    smoothX += (pointerX - smoothX) * 0.075;
+	          smoothY += (pointerY - smoothY) * 0.075;
+	          const centerX = smoothX * 0.58 + 0.21;
+	          const centerY = smoothY * 0.48 + 0.12 + scroll * 0.05;
+	          const aspect = w / Math.max(h, 1);
+	          const rayOriginX = 0.5 + (smoothX - 0.5) * 0.18;
+	          const rayOriginY = -0.16 + smoothY * 0.16;
+
+    const beacons = [
+      [0.14, 0.18, 0.62, 0],
+      [0.48, 0.25, 1.0, 1],
+      [0.78, 0.16, 0.66, 1],
+      [0.18, 0.58, 0.5, 0],
+      [0.82, 0.7, 0.42, 2],
+    ];
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+	              const px = x / cols;
+	              const py = y / rows;
+	              const ax = (px - 0.5) * aspect + 0.5;
+	              const dx = px - centerX;
+	              const dy = py - centerY;
+	              const radius = Math.sqrt(dx * dx + dy * dy);
+	              const horizon = Math.max(0, 1 - Math.abs(py - 0.32 - scroll * 0.08) * 2.72);
+	              const vanishing = Math.max(0, 1 - Math.abs(px - 0.5) * 1.44);
+	              const noiseA = fbm(px * 3.15 + time * 0.035 + scroll * 0.72, py * 3.8 - time * 0.028 + smoothY * 0.62);
+	              const noiseB = fbm(px * 7.2 - time * 0.055 + smoothX, py * 5.4 + time * 0.04 + scroll * 0.9);
+	              const layer1 = Math.sin(radius * 58 - time * 1.64 + scroll * 10.5 + noiseA * 2.1);
+	              const layer2 = Math.sin(px * 15 + py * 8.6 + time * 0.44 + scroll * 4.8 + noiseB * 2.6);
+	              const layer3 = Math.cos((px - py) * 28 - time * 0.32 + smoothX * 1.2);
+	              const lattice = Math.sin((px + smoothX * 0.22) * 43) * Math.cos((py - smoothY * 0.16) * 29);
+	              const rayDx = (ax - rayOriginX) * 1.12;
+	              const rayDy = py - rayOriginY;
+	              const rayDistance = Math.sqrt(rayDx * rayDx + rayDy * rayDy);
+	              const rayAngle = Math.atan2(rayDy, rayDx);
+	              const rayNoise = fbm(rayAngle * 2.1 + time * 0.05, rayDistance * 5.8 - time * 0.12 + scroll);
+	              const rayStripe = Math.max(0, Math.sin(rayAngle * 17 + rayNoise * 5.2 + time * 0.34 + scroll * 2.2));
+	              const godRay = smoothstep(0.46, 0.96, rayStripe + rayNoise * 0.42) * Math.pow(Math.max(0, 1 - rayDistance * 0.8), 2.1);
+	              const hexA = Math.abs(Math.sin((ax * 9.1 + py * 3.35 + scroll * 0.8 + time * 0.05) * Math.PI));
+	              const hexB = Math.abs(Math.sin((ax * -4.55 + py * 8.55 - scroll * 0.55 + time * 0.04) * Math.PI));
+	              const hexC = Math.abs(Math.sin((ax * 4.55 + py * 8.55 + smoothX * 0.5 - time * 0.045) * Math.PI));
+	              const hexGrid = Math.max(0, 1 - Math.min(hexA, hexB, hexC) * 15) * (0.42 + noiseB * 0.74);
+	              const plasma = Math.sin((noiseA * 5.8 + noiseB * 3.4 + px * 3.1 - py * 2.6 + time * 0.21 + scroll * 1.5) * Math.PI);
+	              const wireA = Math.max(0, 1 - Math.abs(Math.sin((px * 2.22 + py * 1.48 + scroll * 0.7) * Math.PI * 8 + time * 0.26)) * 13);
+	              const wireB = Math.max(0, 1 - Math.abs(Math.sin((px * -1.2 + py * 2.08 + scroll * 0.42) * Math.PI * 7 - time * 0.22)) * 17);
+	              const scanBand = Math.max(0, 1 - Math.abs(py - (0.15 + scroll * 0.36)) * 7.5);
+	              const corridor = Math.max(0, 1 - Math.abs(py - (0.77 - Math.abs(px - 0.5) * 0.48 + scroll * 0.05)) * 11);
+	              const dustSeed = hash(x, y);
+	              const dust = dustSeed > 0.938 ? (dustSeed - 0.938) * 1.55 : 0;
+	              const starSeed = hash(Math.floor(px * 116 + scroll * 11), Math.floor(py * 92 - time * 2.2));
+	              const star = starSeed > 0.991 ? (starSeed - 0.991) * 42 : 0;
+	              const vhsTear = Math.max(0, 1 - Math.abs(Math.sin((py + noiseA * 0.08 + time * 0.035) * 122)) * 28) * (0.26 + noiseB * 0.6);
+	              let beacon = 0;
+	              let beaconTone = 0;
+
+        for (const [bx, by, power, tone] of beacons) {
+          const driftX = bx + Math.sin(time * 0.13 + tone * 1.8 + scroll * 2) * 0.024;
+          const driftY = by + Math.cos(time * 0.11 + tone * 1.4 + scroll * 1.6) * 0.018;
+          const bdx = px - driftX;
+          const bdy = py - driftY;
+          const beamCore = Math.max(0, 1 - Math.sqrt(bdx * bdx + bdy * bdy) * 3.9) * power;
+	                const beamSweep = Math.max(0, 1 - Math.abs(Math.atan2(bdy, bdx) - Math.sin(time * 0.17 + tone + noiseA) * 0.9) * 0.5) * beamCore;
+	                const beam = beamCore + beamSweep * 0.2;
+          if (beam > beacon) {
+            beacon = beam;
+            beaconTone = tone;
+          }
+        }
+
+	              const combined = 0.045 + layer1 * 0.18 + layer2 * 0.17 + layer3 * 0.12 + lattice * 0.13 + (noiseA - 0.5) * 0.24 + (noiseB - 0.5) * 0.12 + plasma * 0.08 + horizon * 0.12 + vanishing * corridor * 0.12 + scanBand * 0.18 + wireA * 0.19 + wireB * 0.12 + godRay * 0.5 + hexGrid * 0.22 + dust * 0.16 + star * 0.16 + vhsTear * 0.08 + beacon * 0.5;
+	              const vignette = Math.max(0, 1 - radius * 1.55);
+	              const threshold = bayer[y % 4][x % 4] + 0.24 - vignette * 0.055 - beacon * 0.32 - scanBand * 0.085 - wireA * 0.075 - godRay * 0.16 - hexGrid * 0.05;
+	              const on = combined > threshold ? 1 : 0;
+	              const idx = (y * cols + x) * 4;
+	              const tonePhase = Math.sin(px * 7 - py * 10 + time * 0.44 + scroll * 3.6 + noiseB);
+	              const purple = beaconTone === 1 || tonePhase > 0.28 || godRay > 0.34;
+	              const blue = beaconTone === 2 && tonePhase < -0.18;
+	              data[idx] = on ? (purple ? 125 + Math.round(vignette * 48 + beacon * 22 + godRay * 16) : blue ? 28 : 18 + Math.round(scanBand * 10 + star * 10)) : 2;
+	              data[idx + 1] = on ? (purple ? 46 + Math.round(horizon * 28 + beacon * 12) : blue ? 82 : 84 + Math.round(vignette * 74 + horizon * 38 + hexGrid * 18)) : 2;
+	              data[idx + 2] = on ? (purple ? 188 + Math.round(vignette * 34 + beacon * 18 + godRay * 18) : blue ? 138 + Math.round(horizon * 46) : 82 + Math.round((vignette + horizon) * 23)) : 8;
+	              data[idx + 3] = on ? 9 + Math.round(vignette * 20 + horizon * 10 + scanBand * 14 + beacon * 38 + wireA * 11 + godRay * 22 + hexGrid * 9 + star * 18) : Math.round(godRay * 2);
+      }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+    canvas.parentElement?.style.setProperty('--landing-dither-scroll', scroll.toFixed(4));
+    if (!reducedMotion.matches) {
+      raf = requestAnimationFrame(draw);
+    }
+  }
+
+  window.addEventListener('scroll', function () {
+    scrollY = window.scrollY;
+  }, { passive: true });
+
+  window.addEventListener('pointermove', function (event) {
+    pointerX = Math.max(0, Math.min(1, event.clientX / Math.max(1, w)));
+    pointerY = Math.max(0, Math.min(1, event.clientY / Math.max(1, h)));
+  }, { passive: true });
+
+  window.addEventListener('resize', function () {
+    resize();
+    draw(performance.now());
+  });
+
+  resize();
+  draw(performance.now());
+  reducedMotion.addEventListener?.('change', function () {
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    start = performance.now();
+    draw(performance.now());
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && !raf) {
+      start = performance.now();
+      raf = requestAnimationFrame(draw);
+    }
+  });
+})();
+```
+
+## motion-layer.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="motion-layer-css" file="motion-layer.css"}
+/* ==========================================================================
+   RoachNet motion layer
+   Loads after app.css / app-polish.css / landing.css and layers a second
+   generation of micro-interactions on top of site-polish.js.
+
+   Naming: everything here is prefixed `rnm-` (RoachNet Motion) and every
+   custom property is `--rnm-*`, so nothing collides with the existing
+   `--rn-*` variables that site-polish.js already writes.
+
+   Every effect is opt-in via a class or data attribute added by
+   motion-layer.js, and everything switches off under
+   `prefers-reduced-motion: reduce`.
+   ========================================================================== */
+
+:root {
+  --rnm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --rnm-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --rnm-ease-swift: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --rnm-cyan: var(--rn-cyan, #48e6ff);
+  --rnm-blue: var(--rn-blue, #4d8dff);
+  --rnm-green: var(--rn-green, #4bffa5);
+
+  /* Written every frame by motion-layer.js */
+  --rnm-vel: 0;
+  --rnm-vel-abs: 0;
+  --rnm-progress: 0;
+  --rnm-px: 50%;
+  --rnm-py: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   1. Aurora field — a slow drifting gradient wash behind everything.
+   Cheap: three blurred radial blobs on a single composited layer.
+   -------------------------------------------------------------------------- */
+
+.rnm-aurora {
+  position: fixed;
+  inset: -20vmax;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  contain: strict;
+  will-change: opacity, transform;
+  transition: opacity 1.6s var(--rnm-ease-out);
+  mix-blend-mode: screen;
+}
+
+.rnm-aurora.is-rnm-lit {
+  opacity: 0.5;
+}
+
+.rnm-aurora__blob {
+  position: absolute;
+  width: 62vmax;
+  height: 62vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.34;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.rnm-aurora__blob--a {
+  left: 4%;
+  top: 2%;
+  background: radial-gradient(circle at 40% 40%, rgba(77, 141, 255, 0.72), transparent 68%);
+  animation: rnm-drift-a 34s var(--rnm-ease-swift) infinite alternate;
+}
+
+.rnm-aurora__blob--b {
+  right: 2%;
+  top: 24%;
+  background: radial-gradient(circle at 55% 45%, rgba(72, 230, 255, 0.6), transparent 66%);
+  animation: rnm-drift-b 43s var(--rnm-ease-swift) infinite alternate;
+}
+
+.rnm-aurora__blob--c {
+  left: 26%;
+  bottom: 0%;
+  background: radial-gradient(circle at 50% 60%, rgba(75, 255, 165, 0.42), transparent 64%);
+  animation: rnm-drift-c 51s var(--rnm-ease-swift) infinite alternate;
+}
+
+@keyframes rnm-drift-a {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(14vmax, 8vmax, 0) scale(1.14); }
+  100% { transform: translate3d(-6vmax, 16vmax, 0) scale(0.94); }
+}
+
+@keyframes rnm-drift-b {
+  0% { transform: translate3d(0, 0, 0) scale(1.06); }
+  50% { transform: translate3d(-16vmax, 12vmax, 0) scale(0.9); }
+  100% { transform: translate3d(8vmax, -10vmax, 0) scale(1.18); }
+}
+
+@keyframes rnm-drift-c {
+  0% { transform: translate3d(0, 0, 0) scale(0.95); }
+  50% { transform: translate3d(12vmax, -14vmax, 0) scale(1.2); }
+  100% { transform: translate3d(-14vmax, -4vmax, 0) scale(1.02); }
+}
+
+/* Scan sweep — a single faint horizontal light bar crossing the viewport. */
+.rnm-scan {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 34vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(72, 230, 255, 0.05) 44%,
+    rgba(140, 210, 255, 0.09) 50%,
+    rgba(72, 230, 255, 0.05) 56%,
+    transparent
+  );
+  animation: rnm-scan-pass 18s linear infinite;
+}
+
+.rnm-scan.is-rnm-lit {
+  opacity: 1;
+}
+
+@keyframes rnm-scan-pass {
+  0% { transform: translate3d(0, -40vh, 0); }
+  100% { transform: translate3d(0, 120vh, 0); }
+}
+
+/* Keep page content above the atmospherics. */
+body > header,
+body > main,
+body > footer,
+body > .page-shell,
+body > .apps-store-shell,
+body > .api-docs-shell,
+body > .page-view {
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   2. Cursor companion — a spring-lagged ring that swells over targets.
+   Complements (does not replace) the `.rn-cursor-light` glow.
+   -------------------------------------------------------------------------- */
+
+.rnm-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1px solid rgba(140, 220, 255, 0.55);
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.35s var(--rnm-ease-out), width 0.3s var(--rnm-ease-spring),
+    height 0.3s var(--rnm-ease-spring), border-color 0.3s var(--rnm-ease-out),
+    background-color 0.3s var(--rnm-ease-out), margin 0.3s var(--rnm-ease-spring);
+}
+
+body[data-rnm-pointer='fine'] .rnm-cursor.is-rnm-lit {
+  opacity: 0.85;
+}
+
+.rnm-cursor.is-rnm-target {
+  width: 62px;
+  height: 62px;
+  margin: -31px 0 0 -31px;
+  border-color: rgba(75, 255, 165, 0.7);
+  background: rgba(72, 230, 255, 0.07);
+}
+
+.rnm-cursor.is-rnm-press {
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.rnm-cursor__dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: rgba(190, 240, 255, 0.9);
+  transition: transform 0.3s var(--rnm-ease-spring);
+}
+
+.rnm-cursor.is-rnm-target .rnm-cursor__dot {
+  transform: scale(0.4);
+}
+
+/* --------------------------------------------------------------------------
+   3. Reveal choreography — staggered, direction-aware entrances.
+   `--rnm-i` is the stagger index inside a group, written by JS.
+   -------------------------------------------------------------------------- */
+
+[data-rnm-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0) scale(0.985);
+  filter: blur(6px);
+  transition:
+    opacity 0.78s var(--rnm-ease-out),
+    transform 0.86s var(--rnm-ease-out),
+    filter 0.6s var(--rnm-ease-out);
+  transition-delay: calc(var(--rnm-i, 0) * 68ms);
+  will-change: opacity, transform, filter;
+}
+
+[data-rnm-reveal='left'] {
+  transform: translate3d(-34px, 12px, 0) scale(0.985);
+}
+
+[data-rnm-reveal='right'] {
+  transform: translate3d(34px, 12px, 0) scale(0.985);
+}
+
+[data-rnm-reveal='tilt'] {
+  transform: perspective(1100px) translate3d(0, 40px, -40px) rotateX(9deg);
+  transform-origin: 50% 100%;
+}
+
+[data-rnm-reveal].is-rnm-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Once the entrance has played, drop the hints so hover transforms are free. */
+[data-rnm-reveal].is-rnm-settled {
+  will-change: auto;
+  transition-delay: 0ms;
+}
+
+/* --------------------------------------------------------------------------
+   4. Headline cascade — per-character rise on first view.
+   -------------------------------------------------------------------------- */
+
+.rnm-split {
+  display: inline-block;
+}
+
+/* Depth lives on the heading so every character shares one vanishing point. */
+.rnm-split-host {
+  perspective: 620px;
+}
+
+.rnm-split__char {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 0.55em, 0) rotateX(-58deg);
+  transform-origin: 50% 100%;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.5s var(--rnm-ease-out),
+    transform 0.72s var(--rnm-ease-spring);
+  transition-delay: calc(var(--rnm-i, 0) * 22ms);
+}
+
+.rnm-split__word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.is-rnm-in .rnm-split__char,
+.rnm-split.is-rnm-in .rnm-split__char {
+  opacity: 1;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Tilt cards — pointer-tracked 3D with a specular sheen.
+   Two-class selectors so these land after the single-class hover rules
+   already defined in app-polish.css / landing.css.
+   -------------------------------------------------------------------------- */
+
+.rnm-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--rnm-ease-out), box-shadow 0.5s var(--rnm-ease-out);
+}
+
+.rnm-tilt.is-rnm-tracking {
+  transition: transform 0.12s linear, box-shadow 0.4s var(--rnm-ease-out);
+  transform:
+    perspective(var(--rnm-depth, 900px))
+    translate3d(var(--rn-magnet-x, 0px), calc(var(--rn-magnet-y, 0px) - 4px), 0)
+    rotateX(var(--rnm-rx, 0deg))
+    rotateY(var(--rnm-ry, 0deg))
+    scale(1.012);
+  box-shadow:
+    0 24px 60px -28px rgba(6, 12, 20, 0.85),
+    0 0 0 1px rgba(120, 200, 255, 0.14);
+}
+
+.rnm-tilt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s var(--rnm-ease-out);
+  background: radial-gradient(
+    420px circle at var(--rnm-px) var(--rnm-py),
+    rgba(160, 225, 255, 0.16),
+    rgba(160, 225, 255, 0.05) 38%,
+    transparent 62%
+  );
+  z-index: 2;
+}
+
+.rnm-tilt.is-rnm-tracking::after {
+  opacity: 1;
+}
+
+/* Edge light that traces the pointer around the card border. */
+.rnm-tilt::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s var(--rnm-ease-out);
+  padding: 1px;
+  background: radial-gradient(
+    260px circle at var(--rnm-px) var(--rnm-py),
+    rgba(120, 220, 255, 0.75),
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  z-index: 3;
+}
+
+.rnm-tilt.is-rnm-tracking::before {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   6. Buttons — shine sweep, spring press, spark burst.
+   -------------------------------------------------------------------------- */
+
+.rnm-shine {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.32s var(--rnm-ease-spring), box-shadow 0.32s var(--rnm-ease-out),
+    filter 0.32s var(--rnm-ease-out);
+}
+
+.rnm-shine > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rnm-shine::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: -40%;
+  width: 34%;
+  pointer-events: none;
+  z-index: 0;
+  transform: translate3d(-260%, 0, 0) rotate(18deg);
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.34),
+    transparent
+  );
+  opacity: 0;
+}
+
+.rnm-shine.is-rnm-hover::after {
+  animation: rnm-sweep 0.85s var(--rnm-ease-swift) forwards;
+}
+
+@keyframes rnm-sweep {
+  0% { transform: translate3d(-260%, 0, 0) rotate(18deg); opacity: 0; }
+  16% { opacity: 1; }
+  100% { transform: translate3d(560%, 0, 0) rotate(18deg); opacity: 0; }
+}
+
+.rnm-shine.is-rnm-hover {
+  transform: translate3d(0, -2px, 0);
+  filter: brightness(1.06);
+}
+
+.rnm-shine.is-rnm-press {
+  transform: translate3d(0, 1px, 0) scale(0.972);
+  filter: brightness(0.97);
+}
+
+/* Spark burst fired from the click point. */
+.rnm-spark {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9997;
+  will-change: transform, opacity;
+  animation: rnm-spark-fly var(--rnm-spark-life, 620ms) var(--rnm-ease-out) forwards;
+}
+
+@keyframes rnm-spark-fly {
+  0% {
+    transform: translate3d(var(--rnm-sx0, 0px), var(--rnm-sy0, 0px), 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--rnm-sx1, 0px), var(--rnm-sy1, 0px), 0) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Media reveal — a clip wipe plus a light streak across screenshots.
+   -------------------------------------------------------------------------- */
+
+.rnm-wipe {
+  position: relative;
+  overflow: hidden;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.05s var(--rnm-ease-out);
+}
+
+.rnm-wipe.is-rnm-in {
+  clip-path: inset(0 0 0 0);
+}
+
+.rnm-wipe img {
+  transform: scale(1.08);
+  transition: transform 1.4s var(--rnm-ease-out);
+}
+
+.rnm-wipe.is-rnm-in img {
+  transform: scale(1);
+}
+
+.rnm-wipe::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    104deg,
+    transparent 38%,
+    rgba(180, 235, 255, 0.3) 50%,
+    transparent 62%
+  );
+  transform: translate3d(-120%, 0, 0);
+  opacity: 0;
+}
+
+.rnm-wipe.is-rnm-in::after {
+  animation: rnm-streak 1.25s 0.28s var(--rnm-ease-swift) forwards;
+}
+
+@keyframes rnm-streak {
+  0% { transform: translate3d(-120%, 0, 0); opacity: 0; }
+  22% { opacity: 1; }
+  100% { transform: translate3d(120%, 0, 0); opacity: 0; }
+}
+
+/* Idle float for hero art, nudged by scroll velocity. */
+.rnm-float {
+  animation: rnm-bob 9s ease-in-out infinite alternate;
+}
+
+@keyframes rnm-bob {
+  from { transform: translate3d(0, -6px, 0) rotate(-0.25deg); }
+  to { transform: translate3d(0, 8px, 0) rotate(0.25deg); }
+}
+
+/* --------------------------------------------------------------------------
+   8. Chips, pills and nav — spring pop and travelling underline.
+   -------------------------------------------------------------------------- */
+
+.rnm-pop {
+  transition: transform 0.34s var(--rnm-ease-spring), color 0.28s var(--rnm-ease-out),
+    border-color 0.28s var(--rnm-ease-out), background-color 0.28s var(--rnm-ease-out);
+}
+
+.rnm-pop.is-rnm-hover {
+  transform: translate3d(0, -2px, 0) scale(1.045);
+}
+
+.rnm-underline {
+  position: relative;
+}
+
+.rnm-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--rnm-blue), var(--rnm-cyan), var(--rnm-green));
+  transform: scaleX(0);
+  transform-origin: var(--rnm-origin, 0%) 50%;
+  transition: transform 0.42s var(--rnm-ease-out);
+}
+
+.rnm-underline.is-rnm-hover::after,
+.rnm-underline.is-current::after {
+  transform: scaleX(1);
+}
+
+/* Breathing status dots. */
+.rnm-pulse {
+  position: relative;
+}
+
+.rnm-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 1px solid currentColor;
+  opacity: 0;
+  animation: rnm-halo 2.8s var(--rnm-ease-out) infinite;
+  pointer-events: none;
+}
+
+@keyframes rnm-halo {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   9. Scroll-reactive section skew — very small, keyed off scroll velocity.
+   -------------------------------------------------------------------------- */
+
+.rnm-kinetic {
+  transform: skewY(calc(var(--rnm-vel, 0) * 0.32deg));
+  transition: transform 0.5s var(--rnm-ease-out);
+  will-change: transform;
+}
+
+/* Section headings get a gradient sweep as you scroll past them. */
+.rnm-gradient-text {
+  background: linear-gradient(
+    92deg,
+    currentColor 0%,
+    currentColor 30%,
+    var(--rnm-cyan) 48%,
+    var(--rnm-green) 56%,
+    currentColor 74%,
+    currentColor 100%
+  );
+  background-size: 260% 100%;
+  background-position: calc(120% - var(--rnm-sweep, 0) * 140%) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   10. Page veil — a soft curtain on load and on internal navigation.
+   -------------------------------------------------------------------------- */
+
+.rnm-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(24, 44, 68, 0.9), transparent 70%),
+    var(--rn-bg, #070b10);
+  transition: opacity 0.62s var(--rnm-ease-out);
+}
+
+.rnm-veil.is-rnm-clear {
+  opacity: 0;
+}
+
+.rnm-veil.is-rnm-leaving {
+  opacity: 1;
+  transition-duration: 0.3s;
+}
+
+.rnm-veil__mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 210, 255, 0.5);
+  border-top-color: rgba(75, 255, 165, 0.95);
+  animation: rnm-spin 1.1s linear infinite;
+  opacity: 0.85;
+}
+
+.rnm-veil.is-rnm-clear .rnm-veil__mark {
+  opacity: 0;
+  transition: opacity 0.3s var(--rnm-ease-out);
+}
+
+@keyframes rnm-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   11. Focus — keyboard users get the same flourish, without the pointer work.
+   -------------------------------------------------------------------------- */
+
+body[data-rn-modality='keyboard'] .rnm-shine:focus-visible,
+body[data-rn-modality='keyboard'] .rnm-pop:focus-visible {
+  transform: translate3d(0, -2px, 0) scale(1.03);
+  outline-offset: 4px;
+}
+
+body[data-rn-modality='keyboard'] .rnm-cursor {
+  opacity: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   12. Reduced motion — everything above collapses to a plain, static site.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .rnm-aurora,
+  .rnm-scan,
+  .rnm-cursor,
+  .rnm-veil,
+  .rnm-spark {
+    display: none !important;
+  }
+
+  [data-rnm-reveal],
+  [data-rnm-reveal].is-rnm-in,
+  .rnm-split__char,
+  .rnm-wipe,
+  .rnm-wipe img,
+  .rnm-tilt,
+  .rnm-tilt.is-rnm-tracking,
+  .rnm-shine,
+  .rnm-pop,
+  .rnm-kinetic,
+  .rnm-float {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .rnm-tilt::before,
+  .rnm-tilt::after,
+  .rnm-shine::after,
+  .rnm-wipe::after,
+  .rnm-pulse::after {
+    display: none !important;
+  }
+
+  .rnm-gradient-text {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    color: inherit;
+  }
+}
+
+/* Small screens: keep the atmosphere, drop the per-pointer work. */
+@media (max-width: 720px) {
+  .rnm-aurora.is-rnm-lit { opacity: 0.34; }
+  .rnm-scan { display: none; }
+  .rnm-tilt.is-rnm-tracking { transform: none; }
+  .rnm-tilt::before { display: none; }
+}
+```
+
+## motion-layer.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="motion-layer-js" file="motion-layer.js"}
+/* ==========================================================================
+   RoachNet motion layer
+   A second pass of micro-interactions layered on top of site-polish.js.
+
+   Ground rules this file follows:
+   - Never touch anything site-polish.js already owns (`.rn-cursor-light`,
+     `.rn-click-ripple`, `[data-reveal]`, the nav indicator, scroll meter).
+   - Everything is additive and opt-in: elements are tagged from here, so a
+     failure in one module can't take the page down with it.
+   - `prefers-reduced-motion: reduce` disables the whole layer.
+   ========================================================================== */
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+const finePointer = window.matchMedia('(pointer: fine)')
+const smallScreen = window.matchMedia('(max-width: 720px)')
+
+const root = document.documentElement
+const body = document.body
+const page = body?.dataset?.page || ''
+
+/** Run a module in isolation — one broken effect shouldn't kill the rest. */
+function safely(name, fn) {
+  try {
+    fn()
+  } catch (error) {
+    console.warn(`[motion-layer] ${name} skipped:`, error)
+  }
+}
+
+function prefersReduced() {
+  return reduceMotion.matches
+}
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
+
+/* --------------------------------------------------------------------------
+   Atmosphere: aurora wash + slow scan sweep
+   -------------------------------------------------------------------------- */
+
+function mountAtmosphere() {
+  if (prefersReduced()) return
+
+  const aurora = document.createElement('div')
+  aurora.className = 'rnm-aurora'
+  aurora.setAttribute('aria-hidden', 'true')
+  aurora.innerHTML =
+    '<span class="rnm-aurora__blob rnm-aurora__blob--a"></span>' +
+    '<span class="rnm-aurora__blob rnm-aurora__blob--b"></span>' +
+    '<span class="rnm-aurora__blob rnm-aurora__blob--c"></span>'
+  body.prepend(aurora)
+
+  if (!smallScreen.matches) {
+    const scan = document.createElement('div')
+    scan.className = 'rnm-scan'
+    scan.setAttribute('aria-hidden', 'true')
+    body.prepend(scan)
+    requestAnimationFrame(() => scan.classList.add('is-rnm-lit'))
+  }
+
+  requestAnimationFrame(() => aurora.classList.add('is-rnm-lit'))
+}
+
+/* --------------------------------------------------------------------------
+   Cursor companion — a spring-lagged ring that swells over anything clickable
+   -------------------------------------------------------------------------- */
+
+const TARGET_SELECTOR =
+  'a, button, [role="button"], input, select, textarea, summary, [data-platform], [data-homebrew-install], [data-homebrew-copy]'
+
+function mountCursor() {
+  if (prefersReduced() || !finePointer.matches) return
+
+  const ring = document.createElement('div')
+  ring.className = 'rnm-cursor'
+  ring.setAttribute('aria-hidden', 'true')
+  ring.innerHTML = '<span class="rnm-cursor__dot"></span>'
+  body.appendChild(ring)
+
+  body.dataset.rnmPointer = 'fine'
+
+  let targetX = window.innerWidth / 2
+  let targetY = window.innerHeight / 2
+  let x = targetX
+  let y = targetY
+  let running = false
+
+  function frame() {
+    // Critically-ish damped follow: fast enough to feel attached, slow
+    // enough to read as a separate object.
+    x += (targetX - x) * 0.18
+    y += (targetY - y) * 0.18
+    ring.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`
+
+    if (Math.abs(targetX - x) > 0.1 || Math.abs(targetY - y) > 0.1) {
+      requestAnimationFrame(frame)
+    } else {
+      running = false
+    }
+  }
+
+  function kick() {
+    if (running) return
+    running = true
+    requestAnimationFrame(frame)
+  }
+
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (event.pointerType !== 'mouse') return
+      targetX = event.clientX
+      targetY = event.clientY
+      ring.classList.add('is-rnm-lit')
+      ring.classList.toggle('is-rnm-target', Boolean(event.target?.closest?.(TARGET_SELECTOR)))
+      kick()
+    },
+    { passive: true }
+  )
+
+  window.addEventListener('pointerdown', () => ring.classList.add('is-rnm-press'), { passive: true })
+  window.addEventListener('pointerup', () => ring.classList.remove('is-rnm-press'), { passive: true })
+  document.addEventListener('mouseleave', () => ring.classList.remove('is-rnm-lit'))
+  document.addEventListener('mouseenter', () => ring.classList.add('is-rnm-lit'))
+}
+
+/* --------------------------------------------------------------------------
+   Reveal choreography
+   Only elements WITHOUT the existing `data-reveal` attribute get tagged, so
+   the two systems never fight over the same transform.
+   -------------------------------------------------------------------------- */
+
+const REVEAL_TARGETS = [
+  ['.hero-copy > *', 'up'],
+  ['.section-head > *', 'up'],
+  ['.sitemap-card li', 'up'],
+  ['.hero-signal-card', 'tilt'],
+  ['.screen-chip', 'up'],
+  ['.hero-links a', 'up'],
+  ['.download-layout > *', 'tilt'],
+  ['.downloads-actions > *', 'up'],
+  ['.rc-starter-card', 'tilt'],
+  ['.rc-info-strip__item', 'up'],
+  ['.apps-store-sidebar__card > *', 'left'],
+  ['.api-docs-sidebar__intro > *', 'left'],
+  ['.site-footer__copy > *', 'up'],
+]
+
+function tagReveals() {
+  const groups = new Map()
+
+  REVEAL_TARGETS.forEach(([selector, direction]) => {
+    document.querySelectorAll(selector).forEach((node) => {
+      if (node.hasAttribute('data-reveal') || node.hasAttribute('data-rnm-reveal')) return
+      node.setAttribute('data-rnm-reveal', direction)
+
+      const parent = node.parentElement || body
+      const index = groups.get(parent) ?? 0
+      node.style.setProperty('--rnm-i', String(Math.min(index, 9)))
+      groups.set(parent, index + 1)
+    })
+  })
+}
+
+function observeReveals() {
+  const nodes = Array.from(
+    document.querySelectorAll('[data-rnm-reveal], .rnm-wipe, .rnm-split')
+  ).filter((node) => node.dataset.rnmObserved !== 'on')
+
+  if (!nodes.length) return
+  nodes.forEach((node) => {
+    node.dataset.rnmObserved = 'on'
+  })
+
+  if (prefersReduced() || typeof IntersectionObserver !== 'function') {
+    nodes.forEach((node) => node.classList.add('is-rnm-in', 'is-rnm-settled'))
+    return
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return
+        const node = entry.target
+        node.classList.add('is-rnm-in')
+        window.setTimeout(() => node.classList.add('is-rnm-settled'), 1400)
+        observer.unobserve(node)
+      })
+    },
+    { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+  )
+
+  nodes.forEach((node) => observer.observe(node))
+}
+
+/* --------------------------------------------------------------------------
+   Headline cascade
+   Split only headings that are a single plain text node, wrap words so lines
+   still break correctly, and hand screen readers the original string.
+   -------------------------------------------------------------------------- */
+
+const SPLIT_SELECTOR = '.hero-copy h1, .section-head h2, .sitemap-hero h1, .rc-empty-state__heading'
+
+function splitHeadings() {
+  if (prefersReduced() || smallScreen.matches) return
+
+  document.querySelectorAll(SPLIT_SELECTOR).forEach((heading) => {
+    if (heading.dataset.rnmSplit === 'done') return
+    if (heading.childNodes.length !== 1 || heading.firstChild.nodeType !== Node.TEXT_NODE) return
+
+    const text = heading.textContent.trim()
+    if (!text || text.length > 90) return
+
+    const wrapper = document.createElement('span')
+    wrapper.className = 'rnm-split'
+    wrapper.setAttribute('aria-hidden', 'true')
+
+    let charIndex = 0
+    text.split(' ').forEach((word, wordIndex, words) => {
+      const wordSpan = document.createElement('span')
+      wordSpan.className = 'rnm-split__word'
+
+      Array.from(word).forEach((char) => {
+        const charSpan = document.createElement('span')
+        charSpan.className = 'rnm-split__char'
+        charSpan.style.setProperty('--rnm-i', String(charIndex))
+        charSpan.textContent = char
+        wordSpan.appendChild(charSpan)
+        charIndex += 1
+      })
+
+      wrapper.appendChild(wordSpan)
+
+      if (wordIndex < words.length - 1) {
+        wrapper.appendChild(document.createTextNode(' '))
+        charIndex += 1
+      }
+    })
+
+    heading.setAttribute('aria-label', text)
+    heading.textContent = ''
+    heading.appendChild(wrapper)
+    heading.dataset.rnmSplit = 'done'
+    heading.classList.add('rnm-split-host')
+  })
+}
+
+/* --------------------------------------------------------------------------
+   Tilt cards — pointer-tracked 3D with a specular sheen and a traced edge
+   -------------------------------------------------------------------------- */
+
+const TILT_SELECTOR = [
+  '.support-card',
+  '.runtime-card',
+  '.usecase-card',
+  '.shelf-card',
+  '.surface-card',
+  '.feature-card',
+  '.sitemap-card',
+  '.ios-shot-card',
+  '.ios-story-card',
+  '.hero-signal-card',
+  '.download-hero-card',
+  '.download-side-card',
+  '.apps-card',
+  '.rc-starter-card',
+  '.why-cap-card',
+  '.landing-why__capability',
+].join(', ')
+
+function mountTilt() {
+  if (prefersReduced() || !finePointer.matches || smallScreen.matches) return
+
+  const cards = Array.from(document.querySelectorAll(TILT_SELECTOR))
+  if (!cards.length) return
+
+  cards.forEach((card) => {
+    if (card.dataset.rnmTilt === 'on') return
+    card.dataset.rnmTilt = 'on'
+    card.classList.add('rnm-tilt')
+
+    // The sheen and edge light are absolutely positioned pseudo-elements.
+    if (getComputedStyle(card).position === 'static') {
+      card.style.position = 'relative'
+    }
+
+    let frame = 0
+    let rect = null
+
+    function track(event) {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        if (!rect) rect = card.getBoundingClientRect()
+        if (!rect.width || !rect.height) return
+
+        const px = (event.clientX - rect.left) / rect.width
+        const py = (event.clientY - rect.top) / rect.height
+
+        // Bigger cards get a shallower tilt so nothing looks warped.
+        const strength = clamp(9 - rect.width / 260, 3.5, 9)
+
+        card.style.setProperty('--rnm-ry', `${((px - 0.5) * strength).toFixed(2)}deg`)
+        card.style.setProperty('--rnm-rx', `${((0.5 - py) * strength).toFixed(2)}deg`)
+        card.style.setProperty('--rnm-px', `${(px * 100).toFixed(1)}%`)
+        card.style.setProperty('--rnm-py', `${(py * 100).toFixed(1)}%`)
+      })
+    }
+
+    card.addEventListener(
+      'pointerenter',
+      (event) => {
+        if (event.pointerType !== 'mouse') return
+        rect = card.getBoundingClientRect()
+        card.classList.add('is-rnm-tracking')
+        track(event)
+      },
+      { passive: true }
+    )
+
+    card.addEventListener('pointermove', track, { passive: true })
+
+    card.addEventListener(
+      'pointerleave',
+      () => {
+        rect = null
+        if (frame) {
+          cancelAnimationFrame(frame)
+          frame = 0
+        }
+        card.classList.remove('is-rnm-tracking')
+        card.style.removeProperty('--rnm-rx')
+        card.style.removeProperty('--rnm-ry')
+      },
+      { passive: true }
+    )
+  })
+
+  // Cached rects go stale the moment the layout moves.
+  window.addEventListener(
+    'scroll',
+    () => {
+      document.querySelectorAll('.rnm-tilt.is-rnm-tracking').forEach((card) => {
+        card.classList.remove('is-rnm-tracking')
+      })
+    },
+    { passive: true }
+  )
+}
+
+/* --------------------------------------------------------------------------
+   Buttons — shine sweep on hover, spring press, spark burst on click
+   -------------------------------------------------------------------------- */
+
+const SHINE_SELECTOR = '.cta, .apps-card__install, .rc-composer__send, .apps-store-sidebar__download'
+const POP_SELECTOR =
+  '.site-action-pill, .screen-chip, .apps-store-status-chip, .rc-auth-gate__chip, .site-header__status, .screen-version-chip'
+
+const SPARK_COLORS = ['rgba(120, 220, 255, 0.95)', 'rgba(75, 255, 165, 0.9)', 'rgba(160, 190, 255, 0.9)']
+
+function mountButtons() {
+  if (prefersReduced()) return
+
+  document.querySelectorAll(SHINE_SELECTOR).forEach((el) => {
+    if (el.dataset.rnmShine === 'on') return
+    el.dataset.rnmShine = 'on'
+    el.classList.add('rnm-shine')
+
+    el.addEventListener('pointerenter', () => el.classList.add('is-rnm-hover'), { passive: true })
+    el.addEventListener(
+      'pointerleave',
+      () => el.classList.remove('is-rnm-hover', 'is-rnm-press'),
+      { passive: true }
+    )
+    el.addEventListener('pointerdown', () => el.classList.add('is-rnm-press'), { passive: true })
+    el.addEventListener('pointerup', () => el.classList.remove('is-rnm-press'), { passive: true })
+  })
+
+  document.querySelectorAll(POP_SELECTOR).forEach((el) => {
+    if (el.dataset.rnmPop === 'on') return
+    el.dataset.rnmPop = 'on'
+    el.classList.add('rnm-pop')
+    el.addEventListener('pointerenter', () => el.classList.add('is-rnm-hover'), { passive: true })
+    el.addEventListener('pointerleave', () => el.classList.remove('is-rnm-hover'), { passive: true })
+  })
+
+  document.querySelectorAll('.site-footer__nav a, .hero-links a').forEach((el) => {
+    if (el.dataset.rnmUnderline === 'on') return
+    el.dataset.rnmUnderline = 'on'
+    el.classList.add('rnm-underline')
+
+    el.addEventListener(
+      'pointerenter',
+      (event) => {
+        const rect = el.getBoundingClientRect()
+        const origin = rect.width ? ((event.clientX - rect.left) / rect.width) * 100 : 0
+        el.style.setProperty('--rnm-origin', `${clamp(origin, 0, 100).toFixed(0)}%`)
+        el.classList.add('is-rnm-hover')
+      },
+      { passive: true }
+    )
+    el.addEventListener('pointerleave', () => el.classList.remove('is-rnm-hover'), { passive: true })
+  })
+
+  document.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (prefersReduced()) return
+      const trigger = event.target?.closest?.(SHINE_SELECTOR)
+      if (!trigger) return
+      burst(event.clientX, event.clientY)
+    },
+    { passive: true }
+  )
+}
+
+function burst(clientX, clientY) {
+  const count = smallScreen.matches ? 6 : 12
+  const fragment = document.createDocumentFragment()
+
+  for (let i = 0; i < count; i += 1) {
+    const spark = document.createElement('span')
+    spark.className = 'rnm-spark'
+
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5
+    const distance = 26 + Math.random() * 52
+
+    spark.style.left = `${clientX}px`
+    spark.style.top = `${clientY}px`
+    spark.style.background = SPARK_COLORS[i % SPARK_COLORS.length]
+    spark.style.setProperty('--rnm-sx1', `${(Math.cos(angle) * distance).toFixed(1)}px`)
+    spark.style.setProperty('--rnm-sy1', `${(Math.sin(angle) * distance).toFixed(1)}px`)
+    spark.style.setProperty('--rnm-spark-life', `${520 + Math.random() * 320}ms`)
+
+    spark.addEventListener('animationend', () => spark.remove(), { once: true })
+    fragment.appendChild(spark)
+  }
+
+  body.appendChild(fragment)
+}
+
+/* --------------------------------------------------------------------------
+   Media — clip wipe on entry, gentle float on hero art
+   -------------------------------------------------------------------------- */
+
+const WIPE_SELECTOR = '.screen-frame, .app-screen-shot, .ios-hero-shot'
+
+function mountMedia() {
+  if (prefersReduced()) return
+
+  document.querySelectorAll(WIPE_SELECTOR).forEach((frame) => {
+    if (frame.dataset.rnmWipe === 'on') return
+    frame.dataset.rnmWipe = 'on'
+    frame.classList.add('rnm-wipe')
+  })
+
+  if (!smallScreen.matches) {
+    document.querySelectorAll('.hero-visual .screen-frame--hero, .ios-hero-visual .ios-hero-shot').forEach((el) => {
+      el.classList.add('rnm-float')
+    })
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Status dots — a slow halo so "live" actually reads as live
+   -------------------------------------------------------------------------- */
+
+function mountPulses() {
+  if (prefersReduced()) return
+  document
+    .querySelectorAll('.rc-lane-dot--web, .hero-status__pill[data-state="online"]')
+    .forEach((el) => el.classList.add('rnm-pulse'))
+}
+
+/* --------------------------------------------------------------------------
+   Scroll kinetics — velocity variable, heading gradient sweep, section skew
+   -------------------------------------------------------------------------- */
+
+function mountScrollKinetics() {
+  if (prefersReduced()) return
+
+  const sweepTargets = Array.from(document.querySelectorAll('.section-head h2')).filter((el) => {
+    // Never hijack a heading that already paints itself with a gradient.
+    const styles = getComputedStyle(el)
+    return styles.backgroundImage === 'none' && styles.webkitTextFillColor !== 'rgba(0, 0, 0, 0)'
+  })
+
+  sweepTargets.forEach((el) => el.classList.add('rnm-gradient-text'))
+
+  document.querySelectorAll('.card-grid, .runtime-grid, .usecase-grid, .shelf-grid, .sitemap-grid').forEach((el) => {
+    el.classList.add('rnm-kinetic')
+  })
+
+  let lastY = window.scrollY
+  let velocity = 0
+  let ticking = false
+
+  function update() {
+    ticking = false
+
+    const y = window.scrollY
+    const delta = y - lastY
+    lastY = y
+    velocity += (delta - velocity) * 0.25
+    const clamped = clamp(velocity / 26, -1, 1)
+
+    root.style.setProperty('--rnm-vel', clamped.toFixed(3))
+    root.style.setProperty('--rnm-vel-abs', Math.abs(clamped).toFixed(3))
+
+    const viewport = window.innerHeight || 1
+    sweepTargets.forEach((el) => {
+      const rect = el.getBoundingClientRect()
+      if (rect.bottom < -200 || rect.top > viewport + 200) return
+      const progress = clamp(1 - (rect.top + rect.height / 2) / viewport, 0, 1)
+      el.style.setProperty('--rnm-sweep', progress.toFixed(3))
+    })
+  }
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(update)
+    },
+    { passive: true }
+  )
+
+  update()
+}
+
+/* --------------------------------------------------------------------------
+   Page veil — a short curtain when leaving for another RoachNet page
+   -------------------------------------------------------------------------- */
+
+const ROACHNET_HOSTS = new Set([
+  'roachnet.org',
+  'www.roachnet.org',
+  'apps.roachnet.org',
+  'accounts.roachnet.org',
+  window.location.host,
+])
+
+const FILE_LIKE = /\.(dmg|ipa|zip|pkg|json|png|jpg|jpeg|webp|svg|txt|xml|ico)$/i
+
+function mountVeil() {
+  if (prefersReduced()) return
+
+  const veil = document.createElement('div')
+  veil.className = 'rnm-veil is-rnm-clear'
+  veil.setAttribute('aria-hidden', 'true')
+  veil.innerHTML = '<span class="rnm-veil__mark"></span>'
+  body.appendChild(veil)
+
+  // Coming back through the bfcache must never leave the curtain drawn.
+  window.addEventListener('pageshow', () => {
+    veil.classList.add('is-rnm-clear')
+    veil.classList.remove('is-rnm-leaving')
+  })
+
+  document.addEventListener('click', (event) => {
+    if (event.defaultPrevented || event.button !== 0) return
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+
+    const link = event.target?.closest?.('a[href]')
+    if (!link) return
+    if (link.target && link.target !== '_self') return
+    if (link.hasAttribute('download')) return
+
+    let url
+    try {
+      url = new URL(link.getAttribute('href'), window.location.href)
+    } catch {
+      return
+    }
+
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return
+    if (!ROACHNET_HOSTS.has(url.host)) return
+    if (FILE_LIKE.test(url.pathname)) return
+    // In-page anchors are not navigations.
+    if (url.pathname === window.location.pathname && url.hash) return
+
+    event.preventDefault()
+    veil.classList.remove('is-rnm-clear')
+    veil.classList.add('is-rnm-leaving')
+
+    // Navigate on the animation, with a hard fallback if it never fires.
+    let navigated = false
+    const go = () => {
+      if (navigated) return
+      navigated = true
+      window.location.href = url.href
+    }
+
+    veil.addEventListener('transitionend', (transition) => {
+      // Child transitions bubble; only the curtain itself means "covered".
+      if (transition.target === veil) go()
+    })
+    window.setTimeout(go, 420)
+  })
+}
+
+/* --------------------------------------------------------------------------
+   Late arrivals — the Apps and API pages render their content from JS,
+   so re-tag whenever the main stage changes.
+   -------------------------------------------------------------------------- */
+
+function watchDynamicContent() {
+  const stages = ['#apps-store-stage', '#api-route-list', '#api-detail-pane', '#roachclaw-log']
+    .map((selector) => document.querySelector(selector))
+    .filter(Boolean)
+
+  if (!stages.length || typeof MutationObserver !== 'function') return
+
+  let pending = 0
+  const observer = new MutationObserver(() => {
+    if (pending) return
+    pending = window.setTimeout(() => {
+      pending = 0
+      safely('tilt:rescan', mountTilt)
+      safely('buttons:rescan', mountButtons)
+      safely('media:rescan', mountMedia)
+      safely('reveal:rescan', () => {
+        tagReveals()
+        observeReveals()
+      })
+    }, 140)
+  })
+
+  stages.forEach((stage) => observer.observe(stage, { childList: true, subtree: true }))
+}
+
+/* --------------------------------------------------------------------------
+   Boot
+   -------------------------------------------------------------------------- */
+
+function boot() {
+  if (!body) return
+
+  body.dataset.rnmMotion = prefersReduced() ? 'reduced' : 'full'
+
+  safely('atmosphere', mountAtmosphere)
+  safely('cursor', mountCursor)
+  safely('headings', splitHeadings)
+  safely('reveal', () => {
+    tagReveals()
+    observeReveals()
+  })
+  safely('tilt', mountTilt)
+  safely('buttons', mountButtons)
+  safely('media', mountMedia)
+  safely('pulses', mountPulses)
+  safely('scroll', mountScrollKinetics)
+  safely('veil', mountVeil)
+  safely('dynamic', watchDynamicContent)
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot, { once: true })
+} else {
+  boot()
+}
+
+// Someone flipping the OS motion switch mid-session should see it take effect.
+reduceMotion.addEventListener?.('change', () => {
+  if (!prefersReduced()) return
+  document.querySelectorAll('.rnm-aurora, .rnm-scan, .rnm-cursor, .rnm-veil, .rnm-spark').forEach((el) => el.remove())
+  document.querySelectorAll('[data-rnm-reveal], .rnm-wipe, .rnm-split').forEach((el) => {
+    el.classList.add('is-rnm-in', 'is-rnm-settled')
+  })
+  body.dataset.rnmMotion = 'reduced'
 })
+
+// The landing page keeps its own bespoke canvas work; this flag lets that
+// script know a second motion layer is present if it ever needs to back off.
+window.__ROACHNET_MOTION_LAYER__ = { version: 1, page, reduced: prefersReduced() }
 ```
 
 ## netlify.toml
@@ -9373,20 +11778,12 @@ async function promote(stagedDirectory) {
   }
 }
 
+// The Mission landing shares the site shell (app.css, app.js, motion layer), so the build
+// keeps its resources and only pins the Netlify badge size to avoid layout shift.
 function optimizeLandingDocument(document) {
-  const removableResources = [
-    /\n    <link\n      rel="stylesheet"\n      href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter:wght@400;500;600;700;800&family=JetBrains\+Mono:wght@400;600&display=swap"\n    \/>/,
-    /\n    <link rel="stylesheet" href="\.\/app\.css" \/>/,
-    /\n    <link rel="stylesheet" href="\.\/app-polish\.css\?v=20260609-overflow" \/>/,
-    /\n    <script src="\.\/site-config\.js"><\/script>/,
-    /\n    <script src="\.\/app\.js" type="module"><\/script>/,
-    /\n    <script src="\.\/site-polish\.js" type="module"><\/script>/,
-  ];
-
-  return removableResources.reduce((result, resource) => {
-    if (!resource.test(result)) throw new Error(`Landing resource was not found: ${resource}`);
-    return result.replace(resource, "");
-  }, document).replace(
+  // The Mission page shares the site shell (nav, motion layer), so it keeps every
+  // stylesheet and script it links. The build only sizes the Netlify badge.
+  return document.replace(
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"',
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" width="114" height="32"'
   );
@@ -9404,6 +11801,9 @@ const copyList = [
   "app-store-catalog.json",
   "landing.css",
   "landing-script.js",
+  "landing-dither.js",
+  "motion-layer.css",
+  "motion-layer.js",
   "roachclaw.js",
   "roachclaw-web.css",
   "router.js",
@@ -10052,7 +12452,7 @@ function expand(name, chunks, stack = []) {
 }
 
 const sourceFiles = [
-  '404.html', 'account.js', 'account/index.html', 'app-store.js', 'html-validate.json', 'index.html', 'landing.css', 'landing-script.js', 'netlify.toml', 'package-lock.json', 'package.json', 'robots-accounts.txt', 'robots-apps.txt',
+  '404.html', 'account.js', 'account/index.html', 'app-store.js', 'html-validate.json', 'index.html', 'landing.css', 'landing-script.js', 'landing-dither.js', 'motion-layer.css', 'motion-layer.js', 'netlify.toml', 'package-lock.json', 'package.json', 'robots-accounts.txt', 'robots-apps.txt',
   'scripts/build-accounts-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-main-site.mjs', 'scripts/check-links.mjs',
   'scripts/site-browser-outcomes.mjs', 'scripts/snapshot-live-sites.mjs', 'scripts/tangle.mjs', 'scripts/validate-html.mjs',
   'sitemap-accounts.xml', 'sitemap-apps.xml', 'test/register-account.test.mjs', 'test/site-outcomes.mjs', 'netlify/functions/register-account.mjs', 'netlify/functions/roachclaw-chat.mjs',
@@ -10432,27 +12832,35 @@ assert.equal(
   'build:main must stage canonical 404.html byte-for-byte'
 )
 const mainHtml = await source('website-main-dist/index.html')
-for (const unnecessaryResource of [
-  'https://fonts.googleapis.com/',
-  './app.css',
-  './app-polish.css',
-  './app.js',
-  './site-config.js',
-  './site-polish.js',
-]) {
-  assert.doesNotMatch(mainHtml, new RegExp(unnecessaryResource.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `generated main must not load ${unnecessaryResource}`)
-}
 assert.match(mainHtml, /<link rel="stylesheet" href="\.\/landing\.css" \/>/)
+assert.match(mainHtml, /<link rel="stylesheet" href="\.\/motion-layer\.css" \/>/)
 assert.match(mainHtml, /<script src="\.\/landing-script\.js"><\/script>/)
+assert.match(mainHtml, /<script src="\.\/landing-dither\.js"><\/script>/)
+assert.match(mainHtml, /<script src="\.\/motion-layer\.js" type="module"><\/script>/)
 assert.match(mainHtml, /<img[^>]+src="https:\/\/www\.netlify\.com\/assets\/badges\/netlify-badge-color-accent\.svg"[^>]+width="[^"]+"[^>]+height="[^"]+"/)
 
+// Motion policy: the Mission page may animate, but every decorative effect has to
+// stand down for reduced motion, skip coarse pointers where it follows the pointer,
+// and stop looping while the tab is hidden. No inline scripts (the CSP has no
+// 'unsafe-inline').
 const landingHtml = await source('index.html')
 const landingCss = await source('landing.css')
 const landingScript = await source('landing-script.js')
-assert.doesNotMatch(landingHtml, /dither-(?:bg|canvas)|<canvas\b|Dithered parallax/i, 'landing must not ship a decorative canvas background')
-assert.doesNotMatch(landingHtml, /<script>[\s\S]*?<\/script>/, 'landing must not ship inline executable scripts')
-assert.doesNotMatch(landingScript, /queueBurst|requestAnimationFrame|initLanding(?:PointerField|ClickRipples)/, 'landing must not run decorative continuous or pointer animation')
-assert.doesNotMatch(landingCss, /\.dither-bg|why-rail-shift|\.is-bursting|rn-click-ripple--landing/, 'landing must not retain decorative animation styles')
+const landingDither = await source('landing-dither.js')
+const motionLayer = await source('motion-layer.js')
+assert.doesNotMatch(landingHtml, /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/, 'landing must not ship inline executable scripts')
+assert.doesNotMatch(landingHtml, /\/\.netlify\/scripts\/|cdn-cgi/, 'landing must not carry edge-injected scripts')
+assert.match(landingHtml, /<div class="dither-bg" aria-hidden="true">/, 'decorative canvas must be hidden from assistive tech')
+for (const [name, script] of [['landing-script.js', landingScript], ['landing-dither.js', landingDither], ['motion-layer.js', motionLayer]]) {
+  assert.match(script, /prefers-reduced-motion: reduce/, `${name} must honor reduced motion`)
+}
+assert.match(landingScript, /pointer: fine/, 'pointer-following effects must skip coarse pointers')
+assert.match(landingScript, /function initLandingPointerField\(\) \{\n  if \(!pointerMotion\(\)\) return;/, 'pointer field must be gated')
+assert.match(landingScript, /function initLandingClickRipples\(\) \{\n  if \(!decorativeMotion\(\)\) return;/, 'click ripples must be gated')
+assert.match(landingScript, /document\.hidden/, 'glitch bursts must pause in a hidden tab')
+assert.match(landingDither, /visibilityState === 'hidden'/, 'dither loop must pause in a hidden tab')
+assert.match(landingScript, /setAttribute\('aria-label', `Latest RoachNet release \$\{d\.tag_name\}`\)/, 'release chip accessible name must follow the live tag')
+assert.doesNotMatch(landingHtml, /why-cap-card__icon" aria-hidden="true">&#xe2;/, 'capability icons must render (no mojibake glyphs)')
 assert.match(landingCss, /body\.rn-body \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*background:\s*#000;/s, 'landing skip link needs an explicit high-contrast default style')
 assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.5"/, 'release accessible name must include its visible version')
 assert.match(landingHtml, /<img class="rn-logo-img" src="\.\/favicon-32x32\.png" width="26" height="26"/, 'landing must request a local icon sized for its rendered logo')
