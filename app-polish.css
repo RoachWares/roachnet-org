@@ -13576,7 +13576,9 @@ body:not([data-page="landing"])::before {
   opacity: 0.7;
 }
 
-body:not([data-page="landing"]) > :not(.rn-dither-field):not(.rn-ambient-orbits):not(.rn-cursor-light):not(.rn-click-ripple) {
+/* Lift page content above the ambient layers, but leave the fixed overlays the
+   scripts inject (skip link, scroll meter, motion layer) out of the flow. */
+body:not([data-page="landing"]) > :not(.rn-dither-field):not(.rn-ambient-orbits):not(.rn-cursor-light):not(.rn-click-ripple):not(.rn-skip-link):not(.rn-scroll-meter):not(.bg-glow):not([class^="rnm-"]) {
   position: relative;
   z-index: 1;
 }
