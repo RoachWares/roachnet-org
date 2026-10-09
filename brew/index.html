@@ -73,7 +73,7 @@
           <p class="eyebrow">RoachNet Brew</p>
           <h1>Terminal type? Three commands to <code>~/RoachNet</code>.</h1>
           <p class="hero-body">
-            Same app, same folder, same easy goodbye if you change your mind. This way skips the setup window entirely and lets Homebrew do the walking.
+            Same app, same folder, same easy goodbye if you change your mind. This route skips the setup window and lets Homebrew do the walking.
           </p>
 
           <div class="hero-actions">
@@ -81,10 +81,10 @@
             <button class="cta cta--ghost" data-homebrew-copy type="button">Copy brew command</button>
           </div>
 
-          <p class="hero-footnote">Apple Silicon only. Assumes Homebrew is already installed. If it is not, <a href="https://brew.sh" target="_blank" rel="noreferrer">install it first</a>, then come back. RoachNet is not going anywhere.</p>
-          <p class="download-meta">Installs RoachNet 1.0.5 · DMG SHA-256 <code>332057c4f85d136882971957d907bec82e7657833272d30d0849990590e1d122</code> · <code>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</code></p>
+          <p class="hero-footnote">Apple Silicon only. Needs Homebrew. If you don't have it yet, <a href="https://brew.sh" target="_blank" rel="noreferrer">install it first</a>, then come back. RoachNet will wait.</p>
+          <p class="download-meta">Installs RoachNet 1.0.6 · DMG SHA-256 <code>28ed912658901a36d43312b21aa67f5fd1768cd8fd30e015431fef14ec2f9d0d</code> · <code>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</code></p>
           <p class="homebrew-note" id="homebrew-note">
-            RoachNet v1.0.5 is not Apple-notarized, so the cask clears only the macOS flags that would block launch. It sets up its own config and runs on its own bundled tools rather than borrowing yours.
+            RoachNet v1.0.6 is not Apple-notarized yet, so the cask clears only the macOS flags that would block launch, then runs the same native installer the Setup app uses. It brings its own tools instead of borrowing yours.
           </p>
         </div>
 
@@ -151,25 +151,25 @@
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">App bundle</span>
             <h3><code>~/RoachNet/app/RoachNet.app</code></h3>
-            <p>The same download the Setup app uses, unlocked so macOS will open it without an argument.</p>
+            <p>The same app the Setup app installs, cleared so macOS opens it without an argument. The Setup app itself stays in <code>~/RoachNet/setup</code> for repairs.</p>
           </article>
 
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Storage root</span>
             <h3><code>~/RoachNet/storage</code></h3>
-            <p>Models, logs, vault, and everything else live here. Nothing gets scattered into <code>/usr/local</code>, <code>/tmp</code>, or some staging folder you'll never find again.</p>
+            <p>Models, logs, the vault and everything else live here. Nothing gets scattered into <code>/usr/local</code>, <code>/tmp</code>, or some staging folder you'll never find again.</p>
           </article>
 
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Local tools</span>
             <h3><code>~/RoachNet/bin</code></h3>
-            <p>Helper tools sit right next to the app. Clean install, clean uninstall, nothing left behind for future-you to curse at.</p>
+            <p>Helper tools sit next to the app. Clean install, clean uninstall, nothing left behind for future-you to curse at.</p>
           </article>
 
           <article class="runtime-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Config writes</span>
             <h3><code>~/Library/Application Support/roachnet</code></h3>
-            <p>Settings land here so the app knows where everything is the first time it opens. No setup scavenger hunt.</p>
+            <p>A small settings file so the app knows where everything is the first time it opens. No scavenger hunt.</p>
           </article>
         </div>
       </section>
@@ -182,23 +182,23 @@
 
         <div class="card-grid card-grid--support" role="list">
           <article class="support-card" role="listitem" data-reveal>
-            <span class="feature-card__eyebrow">Portable Node</span>
-            <h3>Brings its own Node. Your global install stays exactly as you left it, whatever Homebrew decided to upgrade this week.</h3>
+            <span class="feature-card__eyebrow">Native installer</span>
+            <h3>The cask runs RoachNet's own Swift installer: preflight checks, a smoke test, and a swap that keeps your storage. No Node, no source tree, nothing global.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Launch-safe</span>
-            <h3>Clears the macOS quarantine flags that stop a fresh download from opening &mdash; and only those. Nothing else gets touched.</h3>
+            <h3>Clears the macOS quarantine flags that stop a fresh download from opening, and only those. Nothing else gets touched.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Cache that stays put</span>
-            <h3>Cache lives in <code>~/RoachNet/storage/state/runtime-cache</code>, not <code>/tmp</code>. It will not vanish on reboot and act surprised next launch.</h3>
+            <h3>Cache lives in <code>~/RoachNet/storage/state/runtime-cache</code>, not <code>/tmp</code>. It won't vanish on reboot and act surprised next launch.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Safer first boot</span>
-            <h3>Remote access is off until you turn it on. And if the first launch goes sideways, RoachNet tries to fix itself once before it bothers you about it.</h3>
+            <h3>The phone bridge stays off until you turn it on. If the first launch goes sideways, RoachNet tries to fix itself once before it bothers you.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
@@ -208,12 +208,12 @@
 
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Identical either way</span>
-            <h3>Same API, same behaviour as the Setup.app install. Only the way it gets there is different.</h3>
+            <h3>Same API and same behaviour as the Setup app install. Only the route is different.</h3>
           </article>
 
           <article class="support-card" role="listitem" data-reveal>
             <span class="feature-card__eyebrow">Checksum</span>
-            <h3><code>332057c4f85d136882971957d907bec82e7657833272d30d0849990590e1d122</code>. Setup app and Homebrew pull the exact same file, straight from the public release. Check it yourself.</h3>
+            <h3><code>28ed912658901a36d43312b21aa67f5fd1768cd8fd30e015431fef14ec2f9d0d</code>. The Setup app and Homebrew pull the exact same file from the public release. Check it yourself.</h3>
           </article>
         </div>
 

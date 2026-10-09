@@ -1070,7 +1070,7 @@ This root is reconciled byte-for-byte from the current production source.
 ```text {chunk="app-store-js" file="app-store.js"}
 const owner = 'RoachWares'
 const repo = 'RoachNet'
-const releaseVersion = window.__ROACHNET_SITE_CONFIG__?.releaseVersion || '1.0.5'
+const releaseVersion = window.__ROACHNET_SITE_CONFIG__?.releaseVersion || '1.0.6'
 const latestReleaseApi = `https://api.github.com/repos/${owner}/${repo}/releases/latest`
 const latestReleasePage = `https://github.com/${owner}/${repo}/releases/latest`
 const latestDownloadBase = `https://github.com/${owner}/${repo}/releases/latest/download`
@@ -3725,7 +3725,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="why-cta__status" data-landing-download-status>
             Hit the shortcut and the macOS download starts. We&rsquo;ll drop you at Home right after.
           </p>
-          <p class="why-cta__status why-cta__status--fine">RoachNet v1.0.5 is not Apple-notarized; macOS may ask you to approve it on first launch.</p>
+          <p class="why-cta__status why-cta__status--fine">RoachNet v1.0.6 is not Apple-notarized; macOS may ask you to approve it on first launch.</p>
           <div class="why-cta__buttons">
             <button class="rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
             <a class="rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
@@ -3768,8 +3768,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.5"
-          >v1.0.5</a>
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
           <a
             class="rn-netlify-badge"
             href="https://www.netlify.com"
@@ -9568,7 +9568,7 @@ force = true
 for = "/*"
 
   [headers.values]
-  Content-Security-Policy = "default-src 'self'; base-uri 'none'; connect-src 'self' https://api.github.com https://challenges.cloudflare.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data: https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com https://cdn.jsdelivr.net 'sha256-QiHqwLZuL/pVgJffI8ko4lWWbhUgm8d98y+2YTSbnBU=' 'sha256-qLy8IxmePVj8e3iEGcT8WZulBFGCcodug2V4DgZ6pFw='; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:; upgrade-insecure-requests"
+  Content-Security-Policy = "default-src 'self'; base-uri 'none'; connect-src 'self' https://api.github.com https://challenges.cloudflare.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data: https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com https://cdn.jsdelivr.net; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:; upgrade-insecure-requests"
   X-Frame-Options = "DENY"
   X-Content-Type-Options = "nosniff"
   Referrer-Policy = "strict-origin-when-cross-origin"
@@ -9583,13 +9583,13 @@ This root is reconciled byte-for-byte from the current production source.
 ```text {chunk="package-lock-json" file="package-lock.json"}
 {
   "name": "roachnet-org",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
       "name": "roachnet-org",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "dependencies": {
         "@huggingface/transformers": "^3.8.1",
         "@netlify/blobs": "11.0.1",
@@ -11342,7 +11342,7 @@ This root is reconciled byte-for-byte from the current production source.
 {
   "name": "roachnet-org",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
@@ -12801,8 +12801,7 @@ assert.match(netlify, /Permissions-Policy/)
 assert.match(netlify, /Content-Security-Policy/)
 assert.match(netlify, /frame-ancestors 'none'/)
 assert.match(netlify, /script-src[^"\n]*https:\/\/cdn\.jsdelivr\.net/)
-assert.match(netlify, /script-src[^"\n]*sha256-QiHqwLZuL\/pVgJffI8ko4lWWbhUgm8d98y\+2YTSbnBU=/)
-assert.match(netlify, /script-src[^"\n]*sha256-qLy8IxmePVj8e3iEGcT8WZulBFGCcodug2V4DgZ6pFw=/)
+assert.doesNotMatch(netlify, /script-src [^;"\n]*(?:'unsafe-inline'|sha256-)/, 'no page needs inline scripts, so the CSP allows none')
 assert.match(netlify, /script-src-attr 'none'/)
 assert.doesNotMatch(await source('sitemap.xml'), /https:\/\/(apps|accounts)\.roachnet\.org|https:\/\/www\.roachwares\.org/)
 
@@ -12862,7 +12861,7 @@ assert.match(landingDither, /visibilityState === 'hidden'/, 'dither loop must pa
 assert.match(landingScript, /setAttribute\('aria-label', `Latest RoachNet release \$\{d\.tag_name\}`\)/, 'release chip accessible name must follow the live tag')
 assert.doesNotMatch(landingHtml, /why-cap-card__icon" aria-hidden="true">&#xe2;/, 'capability icons must render (no mojibake glyphs)')
 assert.match(landingCss, /body\.rn-body \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*background:\s*#000;/s, 'landing skip link needs an explicit high-contrast default style')
-assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.5"/, 'release accessible name must include its visible version')
+assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.6"/, 'release accessible name must include its visible version')
 assert.match(landingHtml, /<img class="rn-logo-img" src="\.\/favicon-32x32\.png" width="26" height="26"/, 'landing must request a local icon sized for its rendered logo')
 const landingLogo = await readFile(path.join(root, 'favicon-32x32.png'))
 assert.equal(landingLogo.readUInt32BE(16), 32, 'landing logo width budget')
@@ -12893,6 +12892,7 @@ const publicPages = [
 ]
 for (const page of publicPages) {
   const html = await source(page)
+  assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>[\s\S]*?<\/script>/, `${page} must not ship inline executable scripts (CSP)`)
   assert.match(html, /class="rn-skip-link"/, `${page} needs a keyboard bypass link`)
   assert.match(html, /<main[^>]+id="[^"]+"/, `${page} needs a skip-link main target`)
   const footers = [...html.matchAll(/<footer\b[\s\S]*?<\/footer>/gi)].map(([footer]) => footer)

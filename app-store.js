@@ -1,6 +1,6 @@
 const owner = 'RoachWares'
 const repo = 'RoachNet'
-const releaseVersion = window.__ROACHNET_SITE_CONFIG__?.releaseVersion || '1.0.5'
+const releaseVersion = window.__ROACHNET_SITE_CONFIG__?.releaseVersion || '1.0.6'
 const latestReleaseApi = `https://api.github.com/repos/${owner}/${repo}/releases/latest`
 const latestReleasePage = `https://github.com/${owner}/${repo}/releases/latest`
 const latestDownloadBase = `https://github.com/${owner}/${repo}/releases/latest/download`

@@ -22,8 +22,7 @@ assert.match(netlify, /Permissions-Policy/)
 assert.match(netlify, /Content-Security-Policy/)
 assert.match(netlify, /frame-ancestors 'none'/)
 assert.match(netlify, /script-src[^"\n]*https:\/\/cdn\.jsdelivr\.net/)
-assert.match(netlify, /script-src[^"\n]*sha256-QiHqwLZuL\/pVgJffI8ko4lWWbhUgm8d98y\+2YTSbnBU=/)
-assert.match(netlify, /script-src[^"\n]*sha256-qLy8IxmePVj8e3iEGcT8WZulBFGCcodug2V4DgZ6pFw=/)
+assert.doesNotMatch(netlify, /script-src [^;"\n]*(?:'unsafe-inline'|sha256-)/, 'no page needs inline scripts, so the CSP allows none')
 assert.match(netlify, /script-src-attr 'none'/)
 assert.doesNotMatch(await source('sitemap.xml'), /https:\/\/(apps|accounts)\.roachnet\.org|https:\/\/www\.roachwares\.org/)
 
@@ -83,7 +82,7 @@ assert.match(landingDither, /visibilityState === 'hidden'/, 'dither loop must pa
 assert.match(landingScript, /setAttribute\('aria-label', `Latest RoachNet release \$\{d\.tag_name\}`\)/, 'release chip accessible name must follow the live tag')
 assert.doesNotMatch(landingHtml, /why-cap-card__icon" aria-hidden="true">&#xe2;/, 'capability icons must render (no mojibake glyphs)')
 assert.match(landingCss, /body\.rn-body \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*background:\s*#000;/s, 'landing skip link needs an explicit high-contrast default style')
-assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.5"/, 'release accessible name must include its visible version')
+assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.6"/, 'release accessible name must include its visible version')
 assert.match(landingHtml, /<img class="rn-logo-img" src="\.\/favicon-32x32\.png" width="26" height="26"/, 'landing must request a local icon sized for its rendered logo')
 const landingLogo = await readFile(path.join(root, 'favicon-32x32.png'))
 assert.equal(landingLogo.readUInt32BE(16), 32, 'landing logo width budget')
@@ -114,6 +113,7 @@ const publicPages = [
 ]
 for (const page of publicPages) {
   const html = await source(page)
+  assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>[\s\S]*?<\/script>/, `${page} must not ship inline executable scripts (CSP)`)
   assert.match(html, /class="rn-skip-link"/, `${page} needs a keyboard bypass link`)
   assert.match(html, /<main[^>]+id="[^"]+"/, `${page} needs a skip-link main target`)
   const footers = [...html.matchAll(/<footer\b[\s\S]*?<\/footer>/gi)].map(([footer]) => footer)

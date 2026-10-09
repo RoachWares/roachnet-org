@@ -213,9 +213,9 @@ const apiGroups = [
         handler: 'RoachNet-iOS release asset',
         request: ['No HTTP body. Static packaging contract for sideload tooling.'],
         response: [
-          'Release asset: https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.1.5-unsigned.ipa',
+          'Release asset: https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa',
           'Download the IPA and import it through SideStore or AltStore on-device.',
-          'Version: 0.1.5',
+          'Version: 0.2.0',
           'Display name: RoachNetiOS',
         ],
         implementation:
@@ -913,7 +913,7 @@ const apiGroups = [
           'Release-ready packs require RoachWares/RoachNet provenance and non-empty .mlmodelc payloads',
         ],
         implementation:
-          'The public v1.0.5 bundle ships RoachWhisper plus the small Kokoro narrator by default, while Chatterbox voice cloning installs as an optional first-party pack surfaced by Apps.RoachNet.org. The App Store hosts the descriptor and checksum contract; the large archive resolves from public source rails so the setup app stays lean without losing the feature.',
+          'The public v1.0.6 bundle ships RoachWhisper plus the small Kokoro narrator by default, while Chatterbox voice cloning installs as an optional first-party pack surfaced by Apps.RoachNet.org. The App Store hosts the descriptor and checksum contract; the large archive resolves from public source rails so the setup app stays lean without losing the feature.',
         usedBy: ['RoachSpeech release gate', 'RoachNet Apps catalog', 'public model-pack docs'],
       },
     ],
