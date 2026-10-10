@@ -1458,6 +1458,9 @@ function bySections(sectionKeys, limit = sectionKeys.length) {
   for (const section of sectionKeys) {
     const candidate = getSectionItems(section).find((item) => {
       if (seen.has(item.id)) return false
+      // Shelf rows are install suggestions; an item whose source is
+      // withdrawn or unsupported still shows in its section, not here.
+      if (item.availability) return false
       return item.id !== todayFeaturedId
     })
 
