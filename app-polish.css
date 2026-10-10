@@ -2261,7 +2261,7 @@ body[data-page="ios"] .ios-hero-visual::before {
   border-radius: 30px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
-    url("./assets/screens/roachnet-ios-companion-chat.jpg") center / cover no-repeat;
+    url("./assets/screens/roachnet-ios-020-roachclaw.webp") center / cover no-repeat;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.28),

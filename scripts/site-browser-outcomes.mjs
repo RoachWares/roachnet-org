@@ -149,6 +149,32 @@ async function checkPage(browser, baseUrl, pathname, viewport, label) {
   }
 }
 
+async function checkScreenshotsReveal(browser, baseUrl, pathname) {
+  // The motion layer clips screenshots shut and wipes them open on entry; every
+  // one of them has to end up visible once scrolled to (it once stayed clipped).
+  const page = await browser.newPage()
+  try {
+    await page.setViewport({ width: 1440, height: 900 })
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }])
+    await page.goto(`${baseUrl}${pathname}`, { waitUntil: 'load', timeout: 15_000 })
+    const count = await page.evaluate(() => document.querySelectorAll('.screen-frame, .app-screen-shot, .ios-hero-shot').length)
+    assert.ok(count > 0, `${pathname} has screenshots to check`)
+    await page.evaluate(async () => {
+      for (const frame of document.querySelectorAll('.screen-frame, .app-screen-shot, .ios-hero-shot')) {
+        frame.scrollIntoView({ block: 'center' })
+        await new Promise((resolve) => setTimeout(resolve, 120))
+      }
+    })
+    await new Promise((resolve) => setTimeout(resolve, 1_400))
+    const clipped = await page.evaluate(() => [...document.querySelectorAll('.screen-frame, .app-screen-shot, .ios-hero-shot')]
+      .filter((frame) => getComputedStyle(frame).clipPath.includes('100%'))
+      .map((frame) => frame.querySelector('img')?.getAttribute('src') || frame.className))
+    assert.deepEqual(clipped, [], `${pathname} screenshots stayed clipped after scrolling into view`)
+  } finally {
+    await page.close()
+  }
+}
+
 async function checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl) {
   const page = await browser.newPage()
   const failures = []
@@ -293,6 +319,7 @@ try {
       }
       if (site.name === 'main') {
         await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)
+        for (const pathname of ['/home/', '/ios/', '/brew/']) await checkScreenshotsReveal(browser, baseUrl, pathname)
       }
       if (site.name === 'apps') {
         await checkAppDetailKeyboardFlow(browser, baseUrl)

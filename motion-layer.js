@@ -176,20 +176,28 @@ function observeReveals() {
     return
   }
 
+  // A wipe frame starts fully clipped, and Chrome won't report a fully clipped
+  // element as intersecting, so wipes are watched through their parent instead.
+  const watched = new Map()
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return
-        const node = entry.target
-        node.classList.add('is-rnm-in')
-        window.setTimeout(() => node.classList.add('is-rnm-settled'), 1400)
-        observer.unobserve(node)
+        for (const node of watched.get(entry.target) || [entry.target]) {
+          node.classList.add('is-rnm-in')
+          window.setTimeout(() => node.classList.add('is-rnm-settled'), 1400)
+        }
+        observer.unobserve(entry.target)
       })
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
   )
 
-  nodes.forEach((node) => observer.observe(node))
+  nodes.forEach((node) => {
+    const target = node.classList.contains('rnm-wipe') && node.parentElement ? node.parentElement : node
+    watched.set(target, [...(watched.get(target) || []), node])
+    observer.observe(target)
+  })
 }
 
 /* --------------------------------------------------------------------------
@@ -458,6 +466,11 @@ function mountMedia() {
       el.classList.add('rnm-float')
     })
   }
+
+  // The wipe starts clipped shut, so every frame tagged here has to be watched.
+  // (boot() runs the reveal observer before this module; without this call the
+  // screenshots stayed clipped forever.)
+  observeReveals()
 }
 
 /* --------------------------------------------------------------------------

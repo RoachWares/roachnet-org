@@ -8981,20 +8981,28 @@ function observeReveals() {
     return
   }
 
+  // A wipe frame starts fully clipped, and Chrome won't report a fully clipped
+  // element as intersecting, so wipes are watched through their parent instead.
+  const watched = new Map()
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return
-        const node = entry.target
-        node.classList.add('is-rnm-in')
-        window.setTimeout(() => node.classList.add('is-rnm-settled'), 1400)
-        observer.unobserve(node)
+        for (const node of watched.get(entry.target) || [entry.target]) {
+          node.classList.add('is-rnm-in')
+          window.setTimeout(() => node.classList.add('is-rnm-settled'), 1400)
+        }
+        observer.unobserve(entry.target)
       })
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
   )
 
-  nodes.forEach((node) => observer.observe(node))
+  nodes.forEach((node) => {
+    const target = node.classList.contains('rnm-wipe') && node.parentElement ? node.parentElement : node
+    watched.set(target, [...(watched.get(target) || []), node])
+    observer.observe(target)
+  })
 }
 
 /* --------------------------------------------------------------------------
@@ -9263,6 +9271,11 @@ function mountMedia() {
       el.classList.add('rnm-float')
     })
   }
+
+  // The wipe starts clipped shut, so every frame tagged here has to be watched.
+  // (boot() runs the reveal observer before this module; without this call the
+  // screenshots stayed clipped forever.)
+  observeReveals()
 }
 
 /* --------------------------------------------------------------------------
@@ -12043,6 +12056,32 @@ async function checkPage(browser, baseUrl, pathname, viewport, label) {
   }
 }
 
+async function checkScreenshotsReveal(browser, baseUrl, pathname) {
+  // The motion layer clips screenshots shut and wipes them open on entry; every
+  // one of them has to end up visible once scrolled to (it once stayed clipped).
+  const page = await browser.newPage()
+  try {
+    await page.setViewport({ width: 1440, height: 900 })
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }])
+    await page.goto(`${baseUrl}${pathname}`, { waitUntil: 'load', timeout: 15_000 })
+    const count = await page.evaluate(() => document.querySelectorAll('.screen-frame, .app-screen-shot, .ios-hero-shot').length)
+    assert.ok(count > 0, `${pathname} has screenshots to check`)
+    await page.evaluate(async () => {
+      for (const frame of document.querySelectorAll('.screen-frame, .app-screen-shot, .ios-hero-shot')) {
+        frame.scrollIntoView({ block: 'center' })
+        await new Promise((resolve) => setTimeout(resolve, 120))
+      }
+    })
+    await new Promise((resolve) => setTimeout(resolve, 1_400))
+    const clipped = await page.evaluate(() => [...document.querySelectorAll('.screen-frame, .app-screen-shot, .ios-hero-shot')]
+      .filter((frame) => getComputedStyle(frame).clipPath.includes('100%'))
+      .map((frame) => frame.querySelector('img')?.getAttribute('src') || frame.className))
+    assert.deepEqual(clipped, [], `${pathname} screenshots stayed clipped after scrolling into view`)
+  } finally {
+    await page.close()
+  }
+}
+
 async function checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl) {
   const page = await browser.newPage()
   const failures = []
@@ -12187,6 +12226,7 @@ try {
       }
       if (site.name === 'main') {
         await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)
+        for (const pathname of ['/home/', '/ios/', '/brew/']) await checkScreenshotsReveal(browser, baseUrl, pathname)
       }
       if (site.name === 'apps') {
         await checkAppDetailKeyboardFlow(browser, baseUrl)
