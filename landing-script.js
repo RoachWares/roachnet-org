@@ -234,6 +234,7 @@ const microTargets = document.querySelectorAll(
     ".api-docs-hero__meta article",
     ".brew-card",
     ".ios-card",
+    ".why-cap-card",
   ].join(", ")
 );
 
@@ -254,6 +255,27 @@ if (pointerMotion()) microTargets.forEach((target) => {
 
 initLandingPointerField();
 initLandingClickRipples();
+
+
+// App showcase: tilts flat and brightens as it scrolls into view.
+const showcase = document.querySelector("[data-why-showcase]");
+if (showcase && decorativeMotion()) {
+  let showcaseFrame = 0;
+  const syncShowcase = () => {
+    showcaseFrame = 0;
+    const rect = showcase.getBoundingClientRect();
+    const viewport = Math.max(window.innerHeight, 1);
+    // 0 when the top edge enters the bottom of the viewport, 1 once it's 35% up.
+    const progress = Math.min(1, Math.max(0, (viewport - rect.top) / (viewport * 0.65)));
+    showcase.style.setProperty("--why-showcase-progress", progress.toFixed(3));
+  };
+  const queueShowcase = () => {
+    if (!showcaseFrame) showcaseFrame = window.requestAnimationFrame(syncShowcase);
+  };
+  window.addEventListener("scroll", queueShowcase, { passive: true });
+  window.addEventListener("resize", queueShowcase, { passive: true });
+  syncShowcase();
+}
 
 // Footer release chip: show the latest GitHub release tag when the API answers.
 ;(async () => {
