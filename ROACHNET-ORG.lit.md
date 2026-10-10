@@ -22,19 +22,40 @@ This root is reconciled byte-for-byte from the current production source.
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#05060a" />
     <title>Page not found | RoachNet</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="stylesheet" href="/app.css" />
+    <link rel="stylesheet" href="/app-polish.css" />
+    <style>
+      .rn-404 { min-height: 100svh; display: grid; place-items: center; padding: 48px 16px; }
+      .rn-404__card { width: min(640px, 100%); }
+      .rn-404__term {
+        margin: 28px 0 32px; padding: 18px 20px; border-radius: 14px;
+        border: 1px solid rgba(54, 255, 132, 0.22); background: rgba(5, 10, 8, 0.82);
+        font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 14px; line-height: 1.8; color: #9affc0;
+      }
+      .rn-404__term span { color: rgba(240, 240, 240, 0.56); }
+      .rn-404__links { display: flex; flex-wrap: wrap; gap: 12px; }
+    </style>
   </head>
-  <body>
-    <main class="page-shell">
-      <section class="hero">
-        <div class="hero-copy">
-          <span class="eyebrow">404</span>
-          <h1>That route is not on this machine.</h1>
-          <p class="hero-body">The page may have moved, or the address may be wrong.</p>
-          <div class="hero-actions"><a class="cta cta--primary" href="https://roachnet.org/">Return to RoachNet</a></div>
+  <body data-page="404">
+    <main class="rn-404" id="top">
+      <div class="rn-404__card">
+        <span class="eyebrow">404 · route not found</span>
+        <h1>That page isn't on this machine.</h1>
+        <p class="hero-body">The link may be old, mistyped or gone. Nothing on your end broke, and everything else is still here.</p>
+        <div class="rn-404__term" aria-hidden="true">
+          $ open ./this-page<br />
+          <span>No such file or directory</span><br />
+          $ open https://roachnet.org/home/
         </div>
-      </section>
+        <div class="rn-404__links">
+          <a class="cta cta--primary" href="https://roachnet.org/home/">Go to RoachNet Home</a>
+          <a class="cta cta--ghost" href="https://roachnet.org/sitemap/">See every page</a>
+          <a class="cta cta--ghost" href="https://roachnet.org/">Read the mission</a>
+        </div>
+      </div>
     </main>
   </body>
 </html>
