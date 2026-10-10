@@ -10,7 +10,29 @@ const paths = {
   maps: path.join(repoRoot, 'collections/maps.json'),
   kiwix: path.join(repoRoot, 'collections/kiwix-categories.json'),
   wikipedia: path.join(repoRoot, 'collections/wikipedia.json'),
+  packs: path.join(repoRoot, 'collections/packs.json'),
   output: path.join(repoRoot, 'app-store-catalog.json'),
+}
+
+// Models the storefront lists that the native RoachInference engine cannot run
+// yet (it loads llama, mistral, qwen2 and qwen3 GGUF architectures). They stay
+// visible with the reason instead of a button that fails after a 10 GB pull.
+const nativeUnsupportedModels = {
+  'gemma3:4b': 'Gemma 3 is not supported by the native RoachInference engine yet.',
+  'gemma3:12b': 'Gemma 3 is not supported by the native RoachInference engine yet.',
+  'gpt-oss:20b': 'gpt-oss (MoE) is not supported by the native RoachInference engine yet.',
+  'qwen3-coder:30b': 'Qwen3-Coder MoE is not supported by the native RoachInference engine yet.',
+}
+
+// The map files' public source (github.com/RoachWares/RoachNet-Maps) is gone
+// and no mirror holds them; installs stay off until they are re-hosted.
+const mapsAvailability = {
+  state: 'unavailable',
+  reason: 'Map files are being re-hosted. Installs come back as soon as the new mirror is live.',
+}
+
+function resourceIsAvailable(resource) {
+  return !resource?.unavailable
 }
 
 const mapAccentCycle = ['blue', 'cyan', 'green', 'violet', 'gold', 'bronze']
@@ -105,7 +127,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '1.5 GB',
     status: 'Best first boot',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'Get RoachClaw talking quickly on a clean machine with the small contained coding model RoachNet already recommends for first boot.',
     accent: 'violet',
@@ -130,7 +152,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '2.0 GB',
     status: 'Lean coding lane',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A roomier coding lane than Quickstart without jumping straight to the heavier packs. Good when you want better local code help without tying up the whole machine.',
     accent: 'cyan',
@@ -155,7 +177,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '4.8 GB',
     status: 'For larger Apple Silicon Macs',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'Move up to the larger local coding lane for longer refactors, stronger reasoning, and more comfortable day-to-day coding assist.',
     accent: 'violet',
@@ -180,7 +202,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '4.7 GB',
     status: 'Balanced local lane',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A broader local model for notes, drafting, planning, and general assistant work when you want something less coding-specific than the default lane.',
     accent: 'cyan',
@@ -205,7 +227,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '2.0 GB',
     status: 'Fast everyday replies',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A lighter general model for quick chat, short notes, and mobile-minded pairings when you want local answers without loading one of the larger shelves.',
     accent: 'green',
@@ -230,7 +252,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '3.3 GB',
     status: 'Balanced research lane',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A practical middleweight model for reading, summarizing, and working through ideas when you want something broader than the coder packs but still reasonably light.',
     accent: 'blue',
@@ -255,7 +277,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '8.1 GB',
     status: 'Deep local analysis',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A heavier local analyst shelf for longer reads, tighter summaries, and more patient reasoning when the small lanes start to feel cramped.',
     accent: 'magenta',
@@ -280,7 +302,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '9.0 GB',
     status: 'Heavy local install',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A bigger local coding model for machines with real headroom and users who want the strongest local-first Dev Studio pairing RoachNet can comfortably stage.',
     accent: 'magenta',
@@ -305,7 +327,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '19 GB',
     status: 'Big machine only',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'The heavyweight local coding shelf for machines with real headroom. This is the one you queue when you want the strongest contained coding lane RoachNet can sensibly carry.',
     accent: 'violet',
@@ -330,7 +352,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '2.6 GB',
     status: 'Modern small lane',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A newer small general lane for notes, summaries, and fast local answers when you want something sharper than the first-boot pack without waking the whole bunker.',
     accent: 'green',
@@ -355,7 +377,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '5.2 GB',
     status: 'Better local thinking',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A stronger modern general lane for users who want more patient local reasoning without jumping straight into workstation-only territory.',
     accent: 'cyan',
@@ -380,7 +402,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '13 GB',
     status: 'Open-weight heavy lane',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A heavier open-weight reasoning shelf for machines with headroom. It is not the first thing you install on a cramped Mac, but it earns its space when the work gets thorny.',
     accent: 'magenta',
@@ -405,7 +427,7 @@ const aiPacks = [
     section: 'Model Packs',
     size: '19 GB',
     status: 'Big code shelf',
-    source: 'Contained Ollama lane',
+    source: 'Local model lane',
     summary:
       'A modern heavyweight coding shelf for long-context work and serious refactors. It is for Macs with headroom, not for pretending a tiny machine is a server rack.',
     accent: 'blue',
@@ -421,7 +443,115 @@ const aiPacks = [
     },
     iconBand: 'RoachClaw',
     iconMonogram: 'QC30',
+  },  {
+    id: 'roachclaw-tiny-scout',
+    title: 'RoachClaw Tiny Scout',
+    subtitle: 'Native qwen2.5:0.5b for instant replies',
+    category: 'Local AI',
+    section: 'Model Packs',
+    size: '0.4 GB',
+    status: 'Smallest native lane',
+    source: 'Native RoachInference engine',
+    summary:
+      'The smallest model the native engine ships a digest for. Instant on any Apple Silicon Mac, good for quick rewrites, summaries and command help; not for deep reasoning.',
+    accent: 'cyan',
+    machineFit: 'Runs on every supported Mac, including 8 GB machines',
+    includes: ['Native RoachInference pull with SHA-256 verification', 'Sub-second first token on M1 and later', 'A sensible fallback lane next to a bigger model'],
+    installIntent: { action: 'roachclaw-model', model: 'qwen2.5:0.5b' },
+    iconBand: 'RoachClaw',
+    iconMonogram: 'Q05',
   },
+  {
+    id: 'roachclaw-modern-tiny',
+    title: 'RoachClaw Modern Tiny',
+    subtitle: 'Native qwen3:0.6b thinking-capable micro model',
+    category: 'Local AI',
+    section: 'Model Packs',
+    size: '0.4 GB',
+    status: 'Modern micro lane',
+    source: 'Native RoachInference engine',
+    summary:
+      'Qwen3 at its smallest: a modern micro model with the newer chat template and optional thinking mode, for machines where every gigabyte counts.',
+    accent: 'cyan',
+    machineFit: 'Runs on every supported Mac',
+    includes: ['Native RoachInference pull with SHA-256 verification', 'Qwen3 chat template and thinking toggle', 'Pairs well with RoachClaw Modern Generalist as the fast lane'],
+    installIntent: { action: 'roachclaw-model', model: 'qwen3:0.6b' },
+    iconBand: 'RoachClaw',
+    iconMonogram: 'Q06',
+  },
+  {
+    id: 'roachclaw-llama-balanced',
+    title: 'RoachClaw Llama Balanced',
+    subtitle: 'Native llama3.1:8b general assistant',
+    category: 'Local AI',
+    section: 'Model Packs',
+    size: '4.9 GB',
+    status: 'Balanced general lane',
+    source: 'Native RoachInference engine',
+    summary:
+      'Meta’s Llama 3.1 8B as a dependable everyday assistant: writing, explanation, planning and tool-style replies with a long context window.',
+    accent: 'violet',
+    machineFit: 'Best on 16 GB Apple Silicon Macs and up',
+    includes: ['Native RoachInference pull with SHA-256 verification', '128K context window', 'A good second opinion next to the Qwen coders'],
+    installIntent: { action: 'roachclaw-model', model: 'llama3.1:8b' },
+    iconBand: 'RoachClaw',
+    iconMonogram: 'L31',
+  },
+  {
+    id: 'roachclaw-mistral-classic',
+    title: 'RoachClaw Mistral Classic',
+    subtitle: 'Native mistral:7b instruct',
+    category: 'Local AI',
+    section: 'Model Packs',
+    size: '4.4 GB',
+    status: 'Classic 7B lane',
+    source: 'Native RoachInference engine',
+    summary:
+      'Mistral 7B Instruct: a fast, well-understood 7B that stays coherent on long drafts and is light on memory for its size.',
+    accent: 'violet',
+    machineFit: 'Comfortable on 16 GB Apple Silicon Macs',
+    includes: ['Native RoachInference pull with SHA-256 verification', 'Fast decode on the Metal backend', 'Good for drafting, rewriting and Q&A'],
+    installIntent: { action: 'roachclaw-model', model: 'mistral:7b' },
+    iconBand: 'RoachClaw',
+    iconMonogram: 'M7B',
+  },
+  {
+    id: 'roachclaw-smol-pocket',
+    title: 'RoachClaw Smol Pocket',
+    subtitle: 'Native smollm2:135m for on-device utilities',
+    category: 'Local AI',
+    section: 'Model Packs',
+    size: '0.1 GB',
+    status: 'Utility micro model',
+    source: 'Native RoachInference engine',
+    summary:
+      'SmolLM2 135M is a utility model, not a chat partner: classification, short completions, and smoke tests of the native lane on the smallest machines.',
+    accent: 'cyan',
+    machineFit: 'Runs anywhere; useful for testing the native engine',
+    includes: ['Native RoachInference pull with SHA-256 verification', 'Loads in under a second', 'Handy for automation steps that need a tiny model'],
+    installIntent: { action: 'roachclaw-model', model: 'smollm2:135m' },
+    iconBand: 'RoachClaw',
+    iconMonogram: 'S13',
+  },
+  {
+    id: 'roachclaw-smol-compact',
+    title: 'RoachClaw Smol Compact',
+    subtitle: 'Native smollm2:1.7b small assistant',
+    category: 'Local AI',
+    section: 'Model Packs',
+    size: '1.1 GB',
+    status: 'Small assistant lane',
+    source: 'Native RoachInference engine',
+    summary:
+      'SmolLM2 1.7B: a small assistant that answers quickly and keeps memory low, for Macs that need RoachClaw responsive rather than exhaustive.',
+    accent: 'cyan',
+    machineFit: 'Runs on every supported Mac, including 8 GB machines',
+    includes: ['Native RoachInference pull with SHA-256 verification', 'Low memory footprint', 'A step up from the micro models without a big download'],
+    installIntent: { action: 'roachclaw-model', model: 'smollm2:1.7b' },
+    iconBand: 'RoachClaw',
+    iconMonogram: 'S17',
+  },
+
 ]
 
 const roachVoicePacks = [
@@ -1293,7 +1423,8 @@ function toCatalog() {
     readFile(paths.maps, 'utf8').then(JSON.parse),
     readFile(paths.kiwix, 'utf8').then(JSON.parse),
     readFile(paths.wikipedia, 'utf8').then(JSON.parse),
-  ]).then(([mapsData, kiwixData, wikipediaData]) => {
+    readFile(paths.packs, 'utf8').then(JSON.parse),
+  ]).then(([mapsData, kiwixData, wikipediaData, packsData]) => {
     const baseAtlas = {
       id: 'base-atlas',
       title: 'Base Atlas',
@@ -1378,7 +1509,7 @@ function toCatalog() {
         const level = tierLevel(tier.slug)
         const tierLabel = titleCaseWords(tier.name)
 
-        return tier.resources.map((resource) => ({
+        return tier.resources.filter(resourceIsAvailable).map((resource) => ({
           id: `course-${resource.id}`,
           title: resource.title,
           subtitle: resource.description,
@@ -1420,7 +1551,7 @@ function toCatalog() {
     const stackItems = curatedTierPacks.map((pack) => {
       const category = kiwixData.categories.find((candidate) => candidate.slug === pack.categorySlug)
       const tier = category?.tiers.find((candidate) => candidate.slug === pack.tierSlug)
-      const resources = tier?.resources || []
+      const resources = (tier?.resources || []).filter(resourceIsAvailable)
       const totalSizeMB = resources.reduce((sum, resource) => sum + (resource.size_mb || 0), 0)
 
       return {
@@ -1457,7 +1588,7 @@ function toCatalog() {
     })
 
     const wikipediaItems = wikipediaData.options
-      .filter((option) => option.id !== 'none')
+      .filter((option) => option.id !== 'none' && resourceIsAvailable(option))
       .map((option) => ({
         id: `wiki-${option.id}`,
         title: option.name,
@@ -1498,10 +1629,59 @@ function toCatalog() {
         iconAsset: iconAssetForItem(`wiki-${option.id}`),
       }))
 
+    const packItems = packsData.packs.map((pack) => {
+      const resource = pack.resources?.[0] || {}
+      const bytes = (pack.resources || []).reduce((sum, entry) => sum + (entry.bytes || 0), 0)
+      const voice = pack.install?.kind === 'roachWhisper' ? 'listener' : 'narrator'
+      return {
+        id: `pack-${pack.id}`,
+        title: pack.name,
+        subtitle: pack.summary,
+        category: 'Feature Packs',
+        section: 'Feature Packs',
+        size: formatSizeFromBytes(bytes),
+        status: 'RoachNet 1.1 or later',
+        source: 'Apps descriptor + Internet Archive mirror',
+        summary: `${pack.summary} Installs through Settings › Packs in RoachNet 1.1: the runtime checks the published SHA-256 before anything is unpacked, and Remove keeps your data unless you say otherwise.`,
+        accent: voice === 'listener' ? 'cyan' : 'violet',
+        machineFit: bytes > 1_000_000_000 ? 'Large pack — best on Macs with real storage headroom' : 'Fits any supported Apple Silicon Mac',
+        includes: [
+          `Pack id ${pack.id}, version ${pack.version}`,
+          `Needs the ${pack.dependencies?.map((dependency) => dependency.id).join(', ') || 'core'} feature${(pack.dependencies?.length || 0) > 1 ? 's' : ''} switched on`,
+          'Verified by checksum, installed transactionally, removable from Settings › Packs',
+        ],
+        minimumRoachNet: pack.requires?.roachnet || '1.1.0',
+        installLabel: 'Install with Pack Manager',
+        detailLabel: 'Open pack catalog',
+        detailUrl: './collections/packs.json',
+        installIntent: {
+          action: 'pack',
+          pack: pack.id,
+        },
+        artifact: {
+          provider: artifactOrigin.provider,
+          bucket: null,
+          key: resource.path || null,
+          url: resource.url || null,
+          status: 'descriptor-backed',
+          sourceUrl: resource.url || null,
+          checksumUrl: resource.url ? resource.url.replace(/\.json$/, '.zip.sha256') : null,
+          sha256: resource.sha256 || null,
+          bytes,
+          note: 'Feature packs resolve through the same signed descriptor the voice-pack lane uses; the manifest carries the digest the runtime verifies.',
+        },
+        iconBand: 'PACK',
+        iconMonogram: shortMonogram(pack.name),
+        iconFamily: 'voice',
+        iconAsset: iconAssetForItem(`pack-${pack.id}`),
+      }
+    })
+
     const items = [
-      baseAtlas,
+      { ...baseAtlas, availability: mapsAvailability },
       ...curatedMapPacks.map((item) => ({
         ...item,
+        availability: mapsAvailability,
         category: 'Maps',
         section: 'Map Picks',
         size: formatSizeFromBytes(item.sizeBytes),
@@ -1527,12 +1707,16 @@ function toCatalog() {
         iconAsset: iconAssetForItem(item.id),
         iconMonogram: shortMonogram(item.title),
       })),
-      ...mapItems,
+      ...mapItems.map((item) => ({ ...item, availability: mapsAvailability })),
       ...stackItems,
       ...educationItems,
       ...wikipediaItems,
+      ...packItems,
       ...aiPacks.map((item) => ({
         ...item,
+        ...(nativeUnsupportedModels[item.installIntent.model]
+          ? { availability: { state: 'unsupported', reason: nativeUnsupportedModels[item.installIntent.model] } }
+          : {}),
         installLabel: modelPackInstallLabel(),
         detailLabel: 'Open RoachClaw',
         detailUrl: 'https://roachnet.org/#screens',

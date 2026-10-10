@@ -29,6 +29,7 @@ async function validateAppStoreInstallContract() {
     'wikipedia-option',
     'roachclaw-model',
     'roachspeech-pack',
+    'pack',
   ])
 
   for (const item of items) {
@@ -72,6 +73,12 @@ async function validateAppStoreInstallContract() {
     }
     if (action === 'roachspeech-pack') {
       assertInstallIntent(item, intent.url && intent.pack && intent.kind, 'RoachSpeech packs need url, pack, and kind')
+    }
+    if (action === 'pack') {
+      assertInstallIntent(item, intent.pack, 'feature packs need the catalog pack id')
+    }
+    if (item.availability) {
+      assertInstallIntent(item, ['unavailable', 'unsupported'].includes(item.availability.state) && item.availability.reason, 'availability needs a state and a reason')
     }
 
     assertInstallIntent(item, item.iconAsset, 'missing iconAsset')

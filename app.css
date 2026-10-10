@@ -4521,6 +4521,26 @@ body[data-page="apps"] .apps-card__install:hover {
   box-shadow: 0 16px 34px rgba(25, 182, 108, 0.26);
 }
 
+/* Sources that are down or models the native engine can't run: say so instead of a button that fails. */
+body[data-page="apps"] .apps-card__install--disabled,
+body[data-page="apps"] .apps-card__install--disabled:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.62);
+  font-weight: 600;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+body[data-page="apps"] .apps-card__availability {
+  flex-basis: 100%;
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.58);
+}
+
 body[data-page="apps"] .apps-card__secondary,
 body[data-page="apps"] .apps-card__more {
   background: rgba(255, 255, 255, 0.045);

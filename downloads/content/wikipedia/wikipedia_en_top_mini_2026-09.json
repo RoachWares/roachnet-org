@@ -1,0 +1,36 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "wiki-top-mini",
+  "title": "Quick Reference",
+  "category": "Wikipedia",
+  "section": "Wikipedia",
+  "action": "wikipedia-option",
+  "kind": null,
+  "tier": null,
+  "filename": "wikipedia_en_top_mini_2026-09.zim",
+  "key": "content/wikipedia/wikipedia_en_top_mini_2026-09.zim",
+  "internetArchiveKey": "content__wikipedia__wikipedia_en_top_mini_2026-09.zim",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/content/wikipedia/wikipedia_en_top_mini_2026-09.json",
+  "bytes": null,
+  "size": "297 MB",
+  "sha256": null,
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "public-source",
+      "label": "Original public source",
+      "url": "https://download.kiwix.org/zim/wikipedia/wikipedia_en_top_mini_2026-09.zim",
+      "status": "active"
+    },
+    {
+      "type": "internet-archive",
+      "label": "RoachNet Internet Archive mirror",
+      "url": "https://archive.org/download/roachnet-apps-catalog-v1_0_5/content__wikipedia__wikipedia_en_top_mini_2026-09.zim",
+      "status": "mirror-pending"
+    }
+  ],
+  "checksumUrl": null,
+  "status": "descriptor-ready-public-source-first",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. Large archives live on public source rails and Internet Archive mirrors, not this machine, Netlify, GitHub source, or R2."
+}

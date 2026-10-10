@@ -1,0 +1,36 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "course-anonymousplanet.org_en_all",
+  "title": "Anonymous Planet",
+  "category": "Comprehensive",
+  "section": "Travel, Mobility & Outdoors",
+  "action": "education-resource",
+  "kind": null,
+  "tier": null,
+  "filename": "anonymousplanet.org_en_all_2026-05.zim",
+  "key": "content/zim/anonymousplanet.org_en_all_2026-05.zim",
+  "internetArchiveKey": "content__zim__anonymousplanet.org_en_all_2026-05.zim",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/content/zim/anonymousplanet.org_en_all_2026-05.json",
+  "bytes": null,
+  "size": "28 MB",
+  "sha256": null,
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "public-source",
+      "label": "Original public source",
+      "url": "https://download.kiwix.org/zim/zimit/anonymousplanet.org_en_all_2026-05.zim",
+      "status": "active"
+    },
+    {
+      "type": "internet-archive",
+      "label": "RoachNet Internet Archive mirror",
+      "url": "https://archive.org/download/roachnet-apps-catalog-v1_0_5/content__zim__anonymousplanet.org_en_all_2026-05.zim",
+      "status": "mirror-pending"
+    }
+  ],
+  "checksumUrl": null,
+  "status": "descriptor-ready-public-source-first",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. Large archives live on public source rails and Internet Archive mirrors, not this machine, Netlify, GitHub source, or R2."
+}

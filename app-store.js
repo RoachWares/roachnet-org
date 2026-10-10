@@ -324,6 +324,16 @@ const sectionDefinitions = [
     layout: 'grid',
   },
   {
+    key: 'Feature Packs',
+    navLabel: 'Packs',
+    eyebrow: 'Settings › Packs',
+    title: 'Feature packs for RoachNet 1.1.',
+    description:
+      'RoachNet 1.1 ships a 31 MB core and installs the rest on demand. These packs land through the Pack Manager: checksum-verified, installed transactionally, removable without losing your data.',
+    icon: 'PACK',
+    layout: 'grid',
+  },
+  {
     key: 'Voice Packs',
     navLabel: 'Voice',
     eyebrow: 'RoachSpeech packs',
@@ -369,6 +379,7 @@ const sectionGlyphs = {
   'Dictionaries & Primary Sources': '📚',
   Wikipedia: 'Ⓦ',
   'Model Packs': '⬡',
+  'Feature Packs': '⧉',
   'Voice Packs': '◉',
 }
 
@@ -390,6 +401,7 @@ const todayRows = [
       'Science & Simulations',
       'Software Development',
       'Agriculture & Food',
+      'Feature Packs',
       'Model Packs',
       'Voice Packs',
     ],
@@ -1226,6 +1238,17 @@ function renderStoreIcon(item, variant = 'card') {
   `
 }
 
+/** The install button, or an honest "not right now" when the source is down or the engine can't run it. */
+function renderInstallControl(item, extraClass = '') {
+  if (item.availability?.reason) {
+    const label = item.availability.state === 'unsupported' ? 'Not supported yet' : 'Temporarily unavailable'
+    return `<span class="apps-card__install apps-card__install--disabled${extraClass}" role="status" title="${escapeHtml(item.availability.reason)}">${label}</span><p class="apps-card__availability">${escapeHtml(item.availability.reason)}</p>`
+  }
+  if (!item.installUrl) return ''
+  const minimum = item.minimumRoachNet ? ` (RoachNet ${item.minimumRoachNet}+)` : ''
+  return `<a class="apps-card__install${extraClass}" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet${minimum}`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
+}
+
 function buildInstallUrl(item) {
   if (!item?.installIntent) return ''
 
@@ -1548,11 +1571,7 @@ function renderCard(item) {
         </div>
       </button>
       <div class="apps-card__actions">
-        ${
-          item.installUrl
-            ? `<a class="apps-card__install" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
-            : ''
-        }
+        ${renderInstallControl(item, '')}
         <button class="apps-card__more" type="button" data-preview-id="${item.id}" aria-label="${escapeHtml(`Open details for ${item.title}`)}">Open details</button>
       </div>
     </article>
@@ -1944,11 +1963,7 @@ function renderPreviewStage(item, options = {}) {
         ${secondary ? `<p class="apps-preview-stage__secondary">${escapeHtml(secondary)}</p>` : ''}
         ${renderBadgeRow(item)}
         <div class="apps-hero-panel__actions">
-          ${
-            item.installUrl
-              ? `<a class="apps-card__install apps-card__install--hero" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
-              : ''
-          }
+          ${renderInstallControl(item, ' apps-card__install--hero')}
           <button class="apps-card__more apps-card__more--hero" type="button" data-preview-id="${item.id}" aria-label="${escapeHtml(`Open details for ${item.title}`)}">Open details</button>
           ${
             detailUrl
@@ -2115,11 +2130,7 @@ function renderDetail(item) {
           <p class="apps-detail__subtitle">${escapeHtml(item.subtitle || item.source || item.section)}</p>
           ${renderBadgeRow(item)}
           <div class="apps-detail__actions">
-            ${
-              item.installUrl
-                ? `<a class="apps-card__install apps-card__install--hero" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
-                : ''
-            }
+            ${renderInstallControl(item, ' apps-card__install--hero')}
             ${
               detailUrl
                 ? `<a class="apps-card__secondary" href="${detailUrl}">${escapeHtml(item.detailLabel || 'Open manifest')}</a>`

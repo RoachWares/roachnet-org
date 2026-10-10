@@ -267,7 +267,12 @@ async function main() {
 
   const catalog = JSON.parse(await readFile(catalogPath, 'utf8'))
   const descriptors = []
+  // ROACHNET_STAGE_SKIP_MODEL_PACKS=1 regenerates only the content descriptors
+  // (ZIM, Wikipedia, maps) and leaves the published model-pack descriptors —
+  // whose digests and Internet Archive parts are already live — untouched.
+  const skipModelPacks = process.env.ROACHNET_STAGE_SKIP_MODEL_PACKS === '1'
   for (const item of catalog.items || []) {
+    if (skipModelPacks && descriptorKeyForItem(item).startsWith('model-packs/')) continue
     const descriptor = await descriptorForItem(item)
     if (!descriptor) continue
     descriptors.push(descriptor)
@@ -298,7 +303,9 @@ async function main() {
     descriptors,
   }
 
-  await writeFile(path.join(modelPackRoot, 'index.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+  if (!skipModelPacks) {
+    await writeFile(path.join(modelPackRoot, 'index.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+  }
   await writeFile(path.join(storageRoot, 'apps-download-descriptors.json'), `${JSON.stringify(manifest, null, 2)}\n`)
 
   console.log(`Indexed ${descriptors.length} Apps descriptors.`)
