@@ -1,13 +1,11 @@
 import { createHmac } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 
-const allowedOrigins = new Set([
+// Browsers on these origins may call the function. The localhost origins only
+// count under `netlify dev`, so a deployed function never answers them.
+const productionOrigins = new Set([
   'https://accounts.roachnet.org',
   'https://roachnet.org',
-  'http://localhost:8888',
-  'http://localhost:3000',
-  'http://127.0.0.1:8888',
-  'http://127.0.0.1:3000',
 ])
 
 const localOrigins = new Set([
@@ -16,6 +14,12 @@ const localOrigins = new Set([
   'http://127.0.0.1:8888',
   'http://127.0.0.1:3000',
 ])
+
+// Turnstile reports the hostname the widget was solved on.
+const turnstileHostnames = new Set(['accounts.roachnet.org', 'roachnet.org'])
+
+const maxBodyBytes = 16 * 1024
+const maxPasswordLength = 72
 
 const rateLimitRules = [
   { scope: 'ip', limit: 5, windowMs: 15 * 60 * 1000 },
@@ -26,14 +30,22 @@ function requestOrigin(request) {
   return request.headers.get('origin') || ''
 }
 
-function isAllowedRequestOrigin(request) {
-  return allowedOrigins.has(requestOrigin(request))
+function isDevelopment(env) {
+  return env.NETLIFY_DEV === 'true'
+}
+
+function isAllowedOrigin(origin, env) {
+  return productionOrigins.has(origin) || (isDevelopment(env) && localOrigins.has(origin))
+}
+
+function isAllowedRequestOrigin(request, env) {
+  return isAllowedOrigin(requestOrigin(request), env)
 }
 
 function isLocalBypassEnabled(origin, env) {
   return (
     localOrigins.has(origin) &&
-    env.NETLIFY_DEV === 'true' &&
+    isDevelopment(env) &&
     env.ROACHNET_ALLOW_LOCAL_REGISTRATION_BYPASS === '1'
   )
 }
@@ -140,9 +152,11 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
   }
 
   const result = await response.json()
+  const hostnameOk = !result.hostname || turnstileHostnames.has(String(result.hostname))
+  const success = result.success === true && hostnameOk
   return {
-    success: result.success === true,
-    message: result.success === true ? '' : 'Captcha verification failed.',
+    success,
+    message: success ? '' : 'Captcha verification failed.',
   }
 }
 
@@ -150,7 +164,7 @@ function confirmationRedirect(env) {
   const fallback = 'https://accounts.roachnet.org/'
   try {
     const configured = new URL(env.ROACHNET_AUTH_REDIRECT_URL || fallback)
-    return allowedOrigins.has(configured.origin) ? configured.href : fallback
+    return isAllowedOrigin(configured.origin, env) ? configured.href : fallback
   } catch {
     return fallback
   }
@@ -163,7 +177,7 @@ export function createRegistrationHandler({
   now = Date.now,
 } = {}) {
   return async (request) => {
-    if (!isAllowedRequestOrigin(request)) {
+    if (!isAllowedRequestOrigin(request, env)) {
       return json({ ok: false, message: 'Origin not allowed.' }, 403)
     }
 
@@ -193,7 +207,11 @@ export function createRegistrationHandler({
 
     let payload
     try {
-      payload = await request.json()
+      const raw = await request.text()
+      if (raw.length > maxBodyBytes) {
+        return withCors(request, json({ ok: false, message: 'That request is too large.' }, 413))
+      }
+      payload = JSON.parse(raw)
     } catch {
       return withCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
     }
@@ -217,6 +235,13 @@ export function createRegistrationHandler({
       return withCors(
         request,
         json({ ok: false, message: 'Use a password with at least 10 characters.' }, 400)
+      )
+    }
+
+    if (password.length > maxPasswordLength) {
+      return withCors(
+        request,
+        json({ ok: false, message: `Use a password of ${maxPasswordLength} characters or fewer.` }, 400)
       )
     }
 

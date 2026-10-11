@@ -28,6 +28,7 @@ This root is reconciled byte-for-byte from the current production source.
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="stylesheet" href="/nx.css" />
+    <script src="/nx-halloween.js"></script>
   </head>
   <body data-page="404">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
@@ -905,6 +906,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="stylesheet" href="/nx.css" />
+    <script src="/nx-halloween.js"></script>
     <link rel="stylesheet" href="/nx-account.css" />
   </head>
   <body data-page="account">
@@ -3290,7 +3292,12 @@ function resetFilters() {
 }
 
 function hydrateFromHash({ initial = false } = {}) {
-  const id = decodeURIComponent(window.location.hash.replace(/^#/, '').trim())
+  let id = ''
+  try {
+    id = decodeURIComponent(window.location.hash.replace(/^#/, '').trim())
+  } catch {
+    return
+  }
   if (!id) return
   const route = routeIndex.get(id)
   if (!route) {
@@ -3453,6 +3460,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="stylesheet" href="../nx.css" />
+    <script src="../nx-halloween.js"></script>
     <link rel="stylesheet" href="../nx-docs.css" />
   </head>
   <body data-page="api">
@@ -3734,6 +3742,7 @@ This root is reconciled byte-for-byte from the current production source.
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="preload" as="fetch" href="./app-store-catalog.json" crossorigin />
     <link rel="stylesheet" href="./nx.css" />
+    <script src="./nx-halloween.js"></script>
     <link rel="stylesheet" href="./nx-store.css" />
   </head>
   <body data-page="apps">
@@ -4608,9 +4617,21 @@ function formatCompactBytes(bytes) {
   return `${value.toFixed(precision)} ${units[unitIndex]}`
 }
 
+// Catalog links may be https anywhere or a path on this site. Parsing (rather
+// than prefix-matching) catches look-alikes such as "/\\evil.example", which
+// browsers read as an off-site "//evil.example".
 function safeHref(url) {
   const value = String(url || '')
-  if (/^https:\/\//i.test(value) || /^\.\//.test(value) || /^\/[^/]/.test(value)) return value
+  if (!value || /[\u0000-\u001f\u007f\\]/.test(value)) return ''
+  let parsed
+  try {
+    parsed = new URL(value, window.location.href)
+  } catch {
+    return ''
+  }
+  const relative = /^(\.\/|\/(?!\/))/.test(value)
+  if (relative && parsed.origin === window.location.origin) return value
+  if (!relative && parsed.protocol === 'https:' && /^https:\/\//i.test(value)) return value
   return ''
 }
 
@@ -5514,7 +5535,12 @@ async function copyItemLink(button) {
 function openFromHash() {
   const match = /^#app-(.+)$/.exec(window.location.hash)
   if (!match) return false
-  const id = decodeURIComponent(match[1])
+  let id = ''
+  try {
+    id = decodeURIComponent(match[1])
+  } catch {
+    return false
+  }
   if (!findItemById(id)) return false
   openDetail(id, null)
   return true
@@ -5816,6 +5842,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="stylesheet" href="../nx.css" />
+    <script src="../nx-halloween.js"></script>
   </head>
   <body data-page="brew">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
@@ -6111,6 +6138,7 @@ This root is reconciled byte-for-byte from the current production source.
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="preload" as="image" href="../assets/screens/roachnet-native-home.webp" />
     <link rel="stylesheet" href="../nx.css" />
+    <script src="../nx-halloween.js"></script>
   </head>
   <body data-page="home">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
@@ -6617,6 +6645,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="stylesheet" href="./nx.css" />
+    <script src="./nx-halloween.js"></script>
     <link rel="stylesheet" href="./nx-mission.css" />
   </head>
   <body class="rn-body" data-page="landing">
@@ -6958,6 +6987,7 @@ This root is reconciled byte-for-byte from the current production source.
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="preload" as="image" href="../assets/screens/roachnet-ios-020-home.webp" />
     <link rel="stylesheet" href="../nx.css" />
+    <script src="../nx-halloween.js"></script>
   </head>
   <body data-page="ios">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
@@ -10403,6 +10433,856 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot, { once: true })
 } else {
   boot()
+}
+```
+
+## nx-halloween.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-halloween-js" file="nx-halloween.js"}
+// Halloween mode for roachnet.org, apps.roachnet.org and accounts.roachnet.org.
+//
+// Loaded in <head> without defer, so the theme (nx-halloween.css) is set before the
+// first paint and pages never flash from the normal palette into the spooky one.
+// Everything else (the switches, the moon, bats, fog, webs, the spider) waits for
+// the DOM. Out of season the script returns at once and loads nothing.
+//
+// The switch is offered from 1 October to 2 November and starts on from
+// 24 October to 1 November. A visitor's choice is kept in one first-party cookie
+// shared by the roachnet.org hosts (rn_halloween=on|off, 45 days); nothing else is
+// stored or sent anywhere. ?halloween=on|off sets it from a link, and
+// ?halloween=on previews the theme out of season without saving anything.
+//
+// CSP: no inline script or style. Styles change through classes, attributes and
+// CSSOM only. Motion stands down under prefers-reduced-motion, while the tab is
+// hidden, and on coarse pointers where it would get in the way.
+;(function () {
+  'use strict'
+
+  var root = document.documentElement
+  var cookieName = 'rn_halloween'
+  var cookieDays = 45
+  var today = new Date()
+  var month = today.getMonth()
+  var day = today.getDate()
+  var inSeason = month === 9 || (month === 10 && day <= 2)
+  var startsOn = (month === 9 && day >= 24) || (month === 10 && day <= 1)
+
+  var asked = null
+  try {
+    asked = new URLSearchParams(window.location.search).get('halloween')
+  } catch (error) {
+    asked = null
+  }
+  if (asked !== 'on' && asked !== 'off') asked = null
+  if (!inSeason && asked !== 'on') return
+
+  // The stylesheet loads only while the switch is offered, next to this script.
+  // blocking="render" keeps Chromium from painting before it arrives; WebKit
+  // already waits for stylesheets added to <head> before the body.
+  var script = document.currentScript
+  try {
+    var sheet = document.createElement('link')
+    sheet.rel = 'stylesheet'
+    sheet.href = new URL('nx-halloween.css', script && script.src ? script.src : window.location.href).href
+    sheet.setAttribute('blocking', 'render')
+    if (script && script.parentNode) script.parentNode.insertBefore(sheet, script.nextSibling)
+    else document.head.appendChild(sheet)
+  } catch (error) {
+    // Without the stylesheet the switch still works; it just looks plain.
+  }
+
+  function readChoice() {
+    try {
+      var match = document.cookie.match(/(?:^|;\s*)rn_halloween=(on|off)(?:;|$)/)
+      return match ? match[1] : null
+    } catch (error) {
+      return null
+    }
+  }
+
+  function saveChoice(value) {
+    if (!inSeason) return
+    try {
+      var shared = /(^|\.)roachnet\.org$/.test(window.location.hostname) ? '; domain=roachnet.org' : ''
+      var secure = window.location.protocol === 'https:' ? '; secure' : ''
+      document.cookie =
+        cookieName + '=' + value + '; max-age=' + cookieDays * 86400 + '; path=/; samesite=lax' + shared + secure
+    } catch (error) {
+      // Cookies blocked: the switch still works for this page view.
+    }
+  }
+
+  if (asked) saveChoice(asked)
+  var choice = asked || readChoice()
+  var on = choice ? choice === 'on' : startsOn
+
+  var themeMeta = null
+  var normalThemeColor = ''
+  var switches = []
+  var layer = null
+  var moon = null
+  var spider = null
+  var spiderTimers = []
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+  var finePointer = window.matchMedia('(pointer: fine)')
+
+  function motionOK() {
+    return !reduced.matches
+  }
+
+  function apply(state) {
+    on = state
+    if (state) root.setAttribute('data-halloween', 'on')
+    else root.removeAttribute('data-halloween')
+    if (themeMeta) themeMeta.setAttribute('content', state ? '#070409' : normalThemeColor)
+    switches.forEach(function (control) {
+      control.setAttribute('aria-pressed', String(state))
+      var label = control.querySelector('[data-spook-label]')
+      if (label) label.textContent = state ? 'Halloween mode: on' : 'Halloween mode: off'
+      control.title = state ? 'Halloween mode is on' : 'Halloween mode is off'
+    })
+    if (state) buildLayer()
+    if (layer) layer.hidden = !state
+    if (moon) moon.hidden = !state
+    if (state) dropSpider()
+    else raiseSpider(true)
+  }
+
+  root.setAttribute('data-halloween-season', inSeason ? 'live' : 'preview')
+  if (on) root.setAttribute('data-halloween', 'on')
+
+  /* ------------------------------------------------------------------ SVG */
+
+  var svgNS = 'http://www.w3.org/2000/svg'
+
+  function svg(name, attributes, children) {
+    var element = document.createElementNS(svgNS, name)
+    Object.keys(attributes || {}).forEach(function (key) {
+      element.setAttribute(key, attributes[key])
+    })
+    ;(children || []).forEach(function (child) {
+      element.appendChild(child)
+    })
+    return element
+  }
+
+  function pumpkinIcon() {
+    return svg('svg', { class: 'nx-spook-pumpkin', viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' }, [
+      svg('path', { class: 'nx-spook-pumpkin__stem', d: 'M12 6.4c-.1-1.7.5-3 1.9-3.9' }),
+      svg('path', {
+        class: 'nx-spook-pumpkin__body',
+        d: 'M12 6.3c-1.3-.9-3.1-1.1-4.7-.4C4.6 7 3 9.7 3 13.1c0 3.4 1.9 6.2 4.6 7.1 1.5.5 3.1.4 4.4-.3 1.3.7 2.9.8 4.4.3 2.7-.9 4.6-3.7 4.6-7.1 0-3.4-1.6-6.1-4.3-7.2-1.6-.7-3.4-.5-4.7.4z',
+      }),
+      svg('path', { class: 'nx-spook-pumpkin__rib', d: 'M12 6.3c-1.6 1.9-2.1 4.4-2.1 6.8s.6 5 2.1 6.8c1.5-1.8 2.1-4.4 2.1-6.8s-.5-4.9-2.1-6.8' }),
+      svg('path', {
+        class: 'nx-spook-pumpkin__face',
+        d: 'M7.9 11.4l1.7-2 1.4 2zM13 11.4l1.4-2 1.7 2zM7.6 14.1c1 .1 1.4.9 2.1.9l.8-.8.9.9h1.2l.9-.9.8.8c.7 0 1.1-.8 2.1-.9-.4 2.1-2.3 3.5-4.4 3.5s-4-1.4-4.4-3.5z',
+      }),
+    ])
+  }
+
+  function batShape() {
+    return svg('svg', { viewBox: '0 0 64 30', focusable: 'false' }, [
+      svg('path', {
+        d: 'M32 9.6c.9-1.6 1.9-2.7 2.6-3.4.3 1.1.4 2.2.3 3.1 3.9-3.3 9.4-5.2 16.3-5.2-2.9 1.7-4.5 3.8-4.7 6.3 3.5-.5 7 .4 10.6 2.9-4.1-.2-7 .9-8.8 3.5-2.4-1.3-5.3-1.5-8.8-.6-2.2.6-3.9 2-4.9 4.3l-2.6 3.9-2.6-3.9c-1-2.3-2.7-3.7-4.9-4.3-3.5-.9-6.4-.7-8.8.6-1.8-2.6-4.7-3.7-8.8-3.5 3.6-2.5 7.1-3.4 10.6-2.9-.2-2.5-1.8-4.6-4.7-6.3 6.9 0 12.4 1.9 16.3 5.2-.1-.9 0-2 .3-3.1.7.7 1.7 1.8 2.6 3.4z',
+      }),
+    ])
+  }
+
+  // A corner web: spokes from the corner, sagging threads between them.
+  function cobweb() {
+    var spokes = [0, 14, 30, 47, 63, 78, 90]
+    var rings = [26, 50, 76, 104, 134, 166]
+    var point = function (radius, degrees) {
+      var radians = (degrees * Math.PI) / 180
+      return [radius * Math.cos(radians), radius * Math.sin(radians)]
+    }
+    var d = ''
+    spokes.forEach(function (angle) {
+      var end = point(196, angle)
+      d += 'M0 0L' + end[0].toFixed(1) + ' ' + end[1].toFixed(1)
+    })
+    rings.forEach(function (radius) {
+      spokes.forEach(function (angle, index) {
+        var start = point(radius, angle)
+        if (index === 0) {
+          d += 'M' + start[0].toFixed(1) + ' ' + start[1].toFixed(1)
+          return
+        }
+        var previous = spokes[index - 1]
+        var sag = point(radius * 0.86, (previous + angle) / 2)
+        d += 'Q' + sag[0].toFixed(1) + ' ' + sag[1].toFixed(1) + ' ' + start[0].toFixed(1) + ' ' + start[1].toFixed(1)
+      })
+    })
+    return svg('svg', { viewBox: '0 0 200 200', focusable: 'false' }, [svg('path', { d: d })])
+  }
+
+  function spiderShape() {
+    var legs = ''
+    ;[-1, 1].forEach(function (side) {
+      ;[
+        [3, -3, 9, -8, 12, -4],
+        [3, -1, 10, -3, 13, 1],
+        [3, 1, 10, 3, 12, 8],
+        [3, 3, 8, 8, 9, 12],
+      ].forEach(function (leg) {
+        legs +=
+          'M' + (16 + side * leg[0]) + ' ' + (15 + leg[1]) +
+          'Q' + (16 + side * leg[2]) + ' ' + (15 + leg[3]) + ' ' + (16 + side * leg[4]) + ' ' + (15 + leg[5])
+      })
+    })
+    return svg('svg', { viewBox: '0 0 32 32', focusable: 'false' }, [
+      svg('path', { class: 'nx-spook-spider__legs', d: legs }),
+      svg('ellipse', { class: 'nx-spook-spider__body', cx: '16', cy: '16.5', rx: '4.6', ry: '5.4' }),
+      svg('circle', { class: 'nx-spook-spider__body', cx: '16', cy: '10.4', r: '2.8' }),
+      svg('circle', { class: 'nx-spook-spider__eye', cx: '14.9', cy: '10.1', r: '0.75' }),
+      svg('circle', { class: 'nx-spook-spider__eye', cx: '17.1', cy: '10.1', r: '0.75' }),
+    ])
+  }
+
+  function ghostShape() {
+    return svg('svg', { viewBox: '0 0 40 48', focusable: 'false' }, [
+      svg('path', {
+        class: 'nx-spook-ghost__sheet',
+        d: 'M20 2C10.6 2 4 9.4 4 19v25l5.3-4.4 5.3 4.4 5.4-4.4 5.4 4.4 5.3-4.4L36 44V19C36 9.4 29.4 2 20 2z',
+      }),
+      svg('ellipse', { class: 'nx-spook-ghost__eye', cx: '14.5', cy: '19', rx: '2.4', ry: '3.2' }),
+      svg('ellipse', { class: 'nx-spook-ghost__eye', cx: '25.5', cy: '19', rx: '2.4', ry: '3.2' }),
+      svg('ellipse', { class: 'nx-spook-ghost__eye', cx: '20', cy: '28', rx: '2.6', ry: '2.2' }),
+    ])
+  }
+
+  function span(className, children) {
+    var element = document.createElement('span')
+    element.className = className
+    ;(children || []).forEach(function (child) {
+      element.appendChild(child)
+    })
+    return element
+  }
+
+  /* ---------------------------------------------------------------- Layer */
+
+  function buildLayer() {
+    if (layer || !document.body) return
+    layer = span('nx-spook')
+    layer.setAttribute('aria-hidden', 'true')
+    moon = span('nx-spook-moon', [span('nx-spook__cloud')])
+    moon.setAttribute('aria-hidden', 'true')
+    document.body.appendChild(moon)
+    layer.appendChild(span('nx-spook__web nx-spook__web--right', [cobweb()]))
+    layer.appendChild(span('nx-spook__web nx-spook__web--left', [cobweb()]))
+    if (motionOK()) {
+      for (var index = 1; index <= 4; index += 1) {
+        layer.appendChild(span('nx-spook__bat nx-spook__bat--' + index, [span('nx-spook__wings', [batShape()])]))
+      }
+    }
+    layer.appendChild(span('nx-spook__fog', [span('nx-spook__fog-a'), span('nx-spook__fog-b')]))
+    var atmosphere = document.querySelector('.nx-atmos')
+    if (atmosphere && atmosphere.parentNode) atmosphere.parentNode.insertBefore(layer, atmosphere.nextSibling)
+    else document.body.insertBefore(layer, document.body.firstChild)
+
+    var mark = document.querySelector('.nx-foot__mark')
+    if (mark && !mark.querySelector('.nx-spook-ghost')) {
+      var ghost = span('nx-spook-ghost', [ghostShape()])
+      ghost.setAttribute('aria-hidden', 'true')
+      mark.appendChild(ghost)
+    }
+  }
+
+  /* --------------------------------------------------------------- Spider */
+
+  // One spider drops in under the nav on marketing pages, hangs about, and climbs
+  // back out of the way. Touch it and it leaves early. Never on the working pages
+  // (RoachClaw, Account, Apps, API), where it could sit over a control.
+  var spiderPages = ['landing', 'home', 'brew', 'ios', 'sitemap', '404']
+
+  function clearSpiderTimers() {
+    spiderTimers.forEach(function (timer) {
+      window.clearTimeout(timer)
+    })
+    spiderTimers = []
+  }
+
+  function raiseSpider(remove) {
+    if (!spider) return
+    clearSpiderTimers()
+    spider.classList.remove('is-down')
+    spider.classList.add('is-up')
+    if (remove) {
+      var leaving = spider
+      spider = null
+      spiderTimers.push(window.setTimeout(function () {
+        leaving.remove()
+      }, 1400))
+    }
+  }
+
+  function dropSpider() {
+    if (spider || !motionOK() || document.hidden) return
+    var page = document.body && document.body.getAttribute('data-page')
+    if (spiderPages.indexOf(page) === -1) return
+    var nav = document.querySelector('.nx-nav')
+    var navBottom = nav ? nav.getBoundingClientRect().bottom : 64
+    spider = span('nx-spook-spider', [span('nx-spook-spider__thread'), span('nx-spook-spider__bob', [spiderShape()])])
+    spider.setAttribute('aria-hidden', 'true')
+    spider.style.setProperty('--nx-spider-drop', Math.round(Math.max(56, navBottom) + 54) + 'px')
+    var leave = function () {
+      raiseSpider(true)
+    }
+    spider.addEventListener('pointerenter', function (event) {
+      if (event.pointerType === 'mouse' && finePointer.matches) leave()
+    })
+    spider.addEventListener('pointerdown', leave)
+    document.body.appendChild(spider)
+    spiderTimers.push(window.setTimeout(function () {
+      if (spider) spider.classList.add('is-down')
+    }, 1200))
+    spiderTimers.push(window.setTimeout(leave, 11000))
+  }
+
+  /* ------------------------------------------------------------- Switches */
+
+  var liveRegion = null
+  var toast = null
+  var toastTimer = 0
+
+  function announce(message) {
+    if (!liveRegion) return
+    liveRegion.textContent = ''
+    window.setTimeout(function () {
+      liveRegion.textContent = message
+    }, 40)
+    if (!toast) return
+    toast.querySelector('[data-spook-toast-text]').textContent = message
+    toast.classList.add('is-on')
+    window.clearTimeout(toastTimer)
+    toastTimer = window.setTimeout(function () {
+      toast.classList.remove('is-on')
+    }, 2400)
+  }
+
+  function flicker(next) {
+    if (!motionOK()) {
+      next()
+      return
+    }
+    var flash = span('nx-spook-flash')
+    flash.setAttribute('aria-hidden', 'true')
+    document.body.appendChild(flash)
+    window.setTimeout(next, 260)
+    window.setTimeout(function () {
+      flash.remove()
+    }, 760)
+  }
+
+  function toggle() {
+    var next = !on
+    saveChoice(next ? 'on' : 'off')
+    flicker(function () {
+      apply(next)
+      announce(next ? 'Halloween mode is on. Lights out.' : 'Halloween mode is off. Lights back on.')
+    })
+  }
+
+  function makeSwitch(kind) {
+    var control = document.createElement('button')
+    control.type = 'button'
+    control.className = 'nx-spook-switch nx-spook-switch--' + kind
+    control.setAttribute('aria-pressed', String(on))
+    control.appendChild(pumpkinIcon())
+    var label = document.createElement('span')
+    label.setAttribute('data-spook-label', '')
+    label.className = kind === 'nav' ? 'nx-spook-switch__label nx-spook-sr' : 'nx-spook-switch__label'
+    control.appendChild(label)
+    control.addEventListener('click', toggle)
+    switches.push(control)
+    return control
+  }
+
+  function mount() {
+    themeMeta = document.querySelector('meta[name="theme-color"]')
+    normalThemeColor = themeMeta ? themeMeta.getAttribute('content') || '#05060a' : '#05060a'
+
+    var actions = document.querySelector('.nx-nav__actions')
+    if (actions) actions.insertBefore(makeSwitch('nav'), actions.firstChild)
+    var meta = document.querySelector('.nx-foot__meta-group')
+    if (meta) meta.appendChild(makeSwitch('foot'))
+
+    liveRegion = span('nx-spook-sr')
+    liveRegion.setAttribute('role', 'status')
+    document.body.appendChild(liveRegion)
+
+    toast = span('nx-spook-toast', [pumpkinIcon(), span('nx-spook-toast__text')])
+    toast.lastChild.setAttribute('data-spook-toast-text', '')
+    toast.setAttribute('aria-hidden', 'true')
+    document.body.appendChild(toast)
+
+    apply(on)
+
+    document.addEventListener('visibilitychange', function () {
+      root.classList.toggle('nx-spook-paused', document.hidden)
+    })
+    var onMotionChange = function () {
+      if (!motionOK()) raiseSpider(true)
+    }
+    if (reduced.addEventListener) reduced.addEventListener('change', onMotionChange)
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true })
+  else mount()
+})()
+```
+
+## nx-halloween.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-halloween-css" file="nx-halloween.css"}
+/* ==========================================================================
+   Halloween mode for the nx sites. nx-halloween.js adds this stylesheet only
+   while the switch is offered (October to 2 November, or a ?halloween=on
+   preview), so the rest of the year costs nothing. Nothing here applies until
+   the script sets <html data-halloween="on">.
+   Pumpkin orange takes the signal role, slime green the cyan, witch purple stays.
+   ========================================================================== */
+
+html[data-halloween="on"] {
+  --nx-bg: #070409;
+  --nx-bg-raised: #0c060f;
+  --nx-panel: #0f0913;
+  --nx-panel-raised: #170d1c;
+  --nx-panel-soft: #211327;
+  --nx-border: rgba(255, 200, 160, 0.09);
+  --nx-border-strong: rgba(255, 170, 110, 0.18);
+  --nx-signal: #ff8a1f;
+  --nx-signal-deep: #2a1104;
+  --nx-on-signal: #1a0800;
+  --nx-purple: #8f3bdc;
+  --nx-purple-ink: #c592ff;
+  --nx-cyan: #b9ff5a;
+  --nx-amber: #ffb547;
+  --nx-glow-signal: 0 0 26px rgba(255, 138, 31, 0.16), inset 0 0 0 1px rgba(255, 138, 31, 0.3);
+  --nx-shadow-primary: 0 12px 32px rgba(255, 110, 20, 0.3);
+  --nx-gradient-signal: linear-gradient(90deg, #8f3bdc 0%, #ff8a1f 55%, #b9ff5a 100%);
+}
+
+html[data-halloween="on"] .nx-atmos__blob--purple { background: radial-gradient(circle, rgba(143, 59, 220, 0.46), transparent 62%); }
+html[data-halloween="on"] .nx-atmos__blob--blue { background: radial-gradient(circle, rgba(255, 112, 16, 0.22), transparent 62%); }
+html[data-halloween="on"] .nx-atmos__blob--signal { background: radial-gradient(circle, rgba(160, 255, 70, 0.1), transparent 60%); }
+html[data-halloween="on"] .nx-atmos__scan { opacity: 0.3; }
+
+html[data-halloween="on"] .nx-nav__bar { background: rgba(12, 6, 14, 0.76); }
+html[data-halloween="on"] .nx-nav__dot {
+  background: #ff8a1f;
+  box-shadow: 0 0 10px #ff8a1f, 0 0 2px #ffd27a;
+  animation: nx-spook-candle-dot 5s steps(1, end) infinite;
+}
+html[data-halloween="on"] .nx-nav__dot::after { border-color: rgba(255, 138, 31, 0.6); }
+html[data-halloween="on"] .nx-nav__ind,
+html[data-halloween="on"] .nx-nav__links:not(.has-ind) .nx-nav__link.is-current {
+  background: rgba(255, 138, 31, 0.14);
+}
+html[data-halloween="on"] .nx-nav__ghost.is-current {
+  border-color: rgba(255, 138, 31, 0.34);
+  background: rgba(255, 138, 31, 0.1);
+}
+html[data-halloween="on"] .nx-nav__cta {
+  color: #1a0800;
+  background: #ff7a12;
+  box-shadow: 0 8px 22px rgba(255, 110, 20, 0.32);
+}
+html[data-halloween="on"] .nx-nav__cta:hover { background: #ff9238; }
+
+@media (max-width: 860px) {
+  html[data-halloween="on"] .nx-nav__links .nx-nav__link.is-current { background: rgba(255, 138, 31, 0.14); }
+}
+
+html[data-halloween="on"] .nx-btn--primary {
+  color: #1a0800;
+  background: linear-gradient(180deg, #ffab55 0%, #ff7a12 100%);
+  border-color: rgba(255, 220, 170, 0.32);
+}
+html[data-halloween="on"] .nx-btn--primary:hover {
+  background: linear-gradient(180deg, #ffbb70 0%, #ff8a26 100%);
+  box-shadow: 0 16px 40px rgba(255, 110, 20, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+html[data-halloween="on"] .nx-btn--signal { box-shadow: 0 12px 32px rgba(255, 138, 31, 0.25); }
+
+html[data-halloween="on"] .nx-display { text-shadow: 0 0 28px rgba(255, 128, 24, 0.26), 0 0 2px rgba(255, 210, 122, 0.2); }
+html[data-halloween="on"] .nx-accent {
+  background-image: linear-gradient(92deg, #c592ff 0%, #ff8a1f 48%, #ffc36b 74%, #b9ff5a 100%);
+  text-shadow: none;
+  filter: drop-shadow(0 0 14px rgba(255, 138, 31, 0.28));
+}
+
+html[data-halloween="on"] .nx-foot__word {
+  background: linear-gradient(180deg, #ffd9a0 0%, #ff8a1f 52%, #3b1405 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+html[data-halloween="on"] .nx-toast { border-color: rgba(255, 138, 31, 0.4); }
+html[data-halloween="on"] .nx-cursor { border-color: rgba(255, 138, 31, 0.7); }
+html[data-halloween="on"] ::selection { background: rgba(255, 138, 31, 0.36); color: #fff; }
+
+/* The switches: a pumpkin in the nav, a labelled pill in the footer. */
+
+.nx-spook-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--nx-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nx-muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 200ms ease, border-color 200ms ease, background 200ms ease, transform 260ms var(--nx-spring);
+}
+
+.nx-spook-switch--nav { width: 32px; height: 32px; padding: 0; }
+.nx-spook-switch--foot { min-height: 28px; padding: 0 12px 0 8px; color: var(--nx-soft); }
+.nx-nav.is-open .nx-spook-switch--nav { width: 40px; height: 40px; }
+
+.nx-spook-switch:hover { color: var(--nx-text); border-color: var(--nx-border-strong); background: rgba(255, 255, 255, 0.05); }
+.nx-spook-switch:active { transform: scale(0.94); }
+.nx-spook-switch:focus-visible { outline: 2px solid var(--nx-signal); outline-offset: 2px; }
+
+.nx-spook-switch[aria-pressed="true"] {
+  color: var(--nx-text);
+  border-color: rgba(255, 138, 31, 0.45);
+  background: rgba(255, 138, 31, 0.1);
+  box-shadow: 0 0 18px rgba(255, 138, 31, 0.16);
+}
+
+.nx-spook-pumpkin { display: block; flex: none; width: 18px; height: 18px; overflow: visible; }
+.nx-spook-pumpkin__body,
+.nx-spook-pumpkin__rib { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
+.nx-spook-pumpkin__stem { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.nx-spook-pumpkin__face { fill: currentColor; opacity: 0.5; }
+
+.nx-spook-switch[aria-pressed="true"] .nx-spook-pumpkin,
+.nx-spook-toast .nx-spook-pumpkin { filter: drop-shadow(0 0 4px rgba(255, 150, 40, 0.55)); }
+.nx-spook-switch[aria-pressed="true"] .nx-spook-pumpkin__body,
+.nx-spook-toast .nx-spook-pumpkin__body { fill: #ff7a12; stroke: #ffb066; }
+.nx-spook-switch[aria-pressed="true"] .nx-spook-pumpkin__rib,
+.nx-spook-toast .nx-spook-pumpkin__rib { stroke: rgba(90, 28, 0, 0.55); }
+.nx-spook-switch[aria-pressed="true"] .nx-spook-pumpkin__stem,
+.nx-spook-toast .nx-spook-pumpkin__stem { stroke: #8fd14f; }
+.nx-spook-switch[aria-pressed="true"] .nx-spook-pumpkin__face,
+.nx-spook-toast .nx-spook-pumpkin__face {
+  fill: #ffe08a;
+  opacity: 1;
+  animation: nx-spook-glow 4.2s steps(1, end) infinite;
+}
+
+.nx-spook-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.nx-spook-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 150;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 18px 10px 12px;
+  border-radius: 999px;
+  background: rgba(14, 7, 16, 0.94);
+  border: 1px solid rgba(255, 138, 31, 0.45);
+  box-shadow: var(--nx-shadow-capsule), 0 0 30px rgba(255, 138, 31, 0.18);
+  color: var(--nx-text);
+  font: 600 13.5px/1.3 var(--nx-font-sans);
+  transform: translate(-50%, 24px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 320ms var(--nx-spring), opacity 220ms ease;
+}
+.nx-spook-toast.is-on { transform: translate(-50%, 0); opacity: 1; }
+.nx-spook-toast .nx-spook-pumpkin { width: 22px; height: 22px; }
+
+/* The night sits under everything, content included: webs, bats and fog in a fixed
+   layer, and a moon rising behind the nav glass that scrolls away with the page,
+   so it never ends up behind text. The page background moves from <body> to
+   <html> so a negative layer can show at all. */
+
+html.nx[data-halloween="on"] { background: var(--nx-bg); }
+html.nx.nx-mission[data-halloween="on"] { background: #050207; }
+html.nx[data-halloween="on"] body { background: transparent; }
+
+.nx-spook {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nx-spook[hidden],
+.nx-spook-moon[hidden] { display: none; }
+
+.nx-spook-moon {
+  position: absolute;
+  top: -18px;
+  right: clamp(84px, 25vw, 400px);
+  z-index: -2;
+  width: clamp(72px, 9vw, 136px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(150, 112, 50, 0.32) 0 9%, transparent 10%),
+    radial-gradient(circle at 63% 57%, rgba(150, 112, 50, 0.28) 0 13%, transparent 14%),
+    radial-gradient(circle at 42% 72%, rgba(150, 112, 50, 0.22) 0 6%, transparent 7%),
+    radial-gradient(circle at 38% 36%, #fff8e1 0%, #f5dc9b 46%, #d9ad55 100%);
+  box-shadow: 0 0 40px rgba(255, 214, 140, 0.32), 0 0 140px rgba(255, 160, 70, 0.16);
+  opacity: 0.88;
+}
+
+.nx-spook__cloud {
+  position: absolute;
+  top: 54%;
+  left: -70%;
+  width: 240%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(24, 14, 30, 0.62), rgba(24, 14, 30, 0));
+  animation: nx-spook-cloud 30s linear infinite;
+}
+
+.nx-spook__web { position: absolute; width: clamp(120px, 15vw, 220px); aspect-ratio: 1; opacity: 0.6; }
+.nx-spook__web svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.nx-spook__web path { fill: none; stroke: rgba(236, 226, 255, 0.3); stroke-width: 0.9; vector-effect: non-scaling-stroke; }
+.nx-spook__web--right { top: 0; right: 0; transform: scaleX(-1); }
+.nx-spook__web--left { bottom: 0; left: 0; transform: scaleY(-1); }
+
+.nx-spook__bat {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 58px;
+  color: #3d2350;
+  opacity: 0;
+  will-change: transform;
+}
+.nx-spook__bat svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: currentColor;
+  filter: drop-shadow(0 0 1.5px rgba(255, 166, 80, 0.8)) drop-shadow(0 0 9px rgba(255, 120, 30, 0.28));
+}
+.nx-spook__wings { display: block; transform-origin: 50% 40%; animation: nx-spook-flap 240ms ease-in-out infinite alternate; }
+.nx-spook__bat--1 { animation: nx-spook-fly-1 24s linear 2s infinite; }
+.nx-spook__bat--2 { width: 44px; animation: nx-spook-fly-2 31s linear 9s infinite; }
+.nx-spook__bat--3 { width: 36px; animation: nx-spook-fly-3 27s linear 15s infinite; }
+.nx-spook__bat--4 { width: 50px; animation: nx-spook-fly-1 37s linear 21s infinite reverse; }
+.nx-spook__bat--2 .nx-spook__wings { animation-duration: 200ms; }
+.nx-spook__bat--3 .nx-spook__wings { animation-duration: 180ms; }
+
+.nx-spook__fog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44vh;
+  opacity: 0.6;
+  -webkit-mask: linear-gradient(to top, #000 30%, transparent);
+  mask: linear-gradient(to top, #000 30%, transparent);
+}
+.nx-spook__fog-a,
+.nx-spook__fog-b {
+  position: absolute;
+  inset: 0 -40%;
+  background:
+    radial-gradient(38% 60% at 22% 82%, rgba(176, 156, 210, 0.15), transparent 70%),
+    radial-gradient(34% 50% at 68% 92%, rgba(160, 140, 196, 0.13), transparent 70%),
+    radial-gradient(30% 44% at 46% 100%, rgba(255, 150, 70, 0.05), transparent 70%);
+  animation: nx-spook-drift 52s ease-in-out infinite alternate;
+}
+.nx-spook__fog-b { animation-duration: 71s; animation-direction: alternate-reverse; opacity: 0.8; }
+
+.nx-spook-ghost { display: none; }
+html[data-halloween="on"] .nx-spook-ghost {
+  display: block;
+  position: absolute;
+  top: clamp(8px, 2.6vw, 34px);
+  right: clamp(6%, 15vw, 22%);
+  width: clamp(32px, 5vw, 60px);
+  opacity: 0.9;
+  pointer-events: none;
+  animation: nx-spook-float 5.6s ease-in-out infinite;
+}
+.nx-spook-ghost svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 12px rgba(220, 210, 255, 0.35)); }
+.nx-spook-ghost__sheet { fill: rgba(242, 238, 255, 0.93); }
+.nx-spook-ghost__eye { fill: #140a1c; }
+
+/* One spider on a thread: drops in under the nav, bobs, climbs back out. */
+.nx-spook-spider {
+  position: fixed;
+  top: 0;
+  right: clamp(22px, 8vw, 132px);
+  z-index: 99;
+  width: 30px;
+  height: 0;
+  pointer-events: none;
+  transform: translate3d(0, -60px, 0);
+  transition: transform 1.4s cubic-bezier(0.34, 1.32, 0.64, 1);
+}
+.nx-spook-spider.is-down { transform: translate3d(0, var(--nx-spider-drop, 120px), 0); }
+.nx-spook-spider.is-up { transform: translate3d(0, -90px, 0); transition: transform 1.1s cubic-bezier(0.55, 0, 0.75, 0); }
+.nx-spook-spider__thread {
+  position: absolute;
+  left: 15px;
+  bottom: 0;
+  width: 1px;
+  height: calc(var(--nx-spider-drop, 120px) + 120px);
+  background: linear-gradient(180deg, rgba(236, 226, 255, 0), rgba(236, 226, 255, 0.45));
+}
+.nx-spook-spider__bob {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 30px;
+  pointer-events: auto;
+  transform-origin: 50% 0;
+  animation: nx-spook-bob 2.8s ease-in-out infinite alternate;
+}
+.nx-spook-spider__bob svg { display: block; width: 100%; height: auto; overflow: visible; }
+.nx-spook-spider__legs { fill: none; stroke: #1b0d22; stroke-width: 1.5; stroke-linecap: round; }
+.nx-spook-spider__body { fill: #1b0d22; stroke: rgba(255, 150, 60, 0.5); stroke-width: 0.6; }
+.nx-spook-spider__eye { fill: #ff8a1f; }
+
+/* Lights out: a short flicker while the theme changes (two dips, well under the
+   three-flashes-a-second limit, and skipped under reduced motion). */
+.nx-spook-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  animation: nx-spook-flash 760ms linear forwards;
+}
+
+html.nx-spook-paused .nx-spook *,
+html.nx-spook-paused .nx-spook-moon *,
+html.nx-spook-paused .nx-spook-ghost,
+html.nx-spook-paused .nx-spook-spider__bob,
+html.nx-spook-paused .nx-spook-pumpkin__face { animation-play-state: paused; }
+
+@keyframes nx-spook-flap { from { transform: scaleY(1); } to { transform: scaleY(0.5); } }
+@keyframes nx-spook-fly-1 {
+  0% { transform: translate3d(-12vw, 24vh, 0) scale(0.9); opacity: 0; }
+  2% { opacity: 0.95; }
+  14% { transform: translate3d(26vw, 13vh, 0) scale(1); }
+  26% { transform: translate3d(58vw, 22vh, 0) scale(0.85); }
+  38% { transform: translate3d(108vw, 9vh, 0) scale(0.78); opacity: 0.95; }
+  39%, 100% { transform: translate3d(108vw, 9vh, 0) scale(0.78); opacity: 0; }
+}
+@keyframes nx-spook-fly-2 {
+  0% { transform: translate3d(106vw, 34vh, 0); opacity: 0; }
+  2% { opacity: 0.85; }
+  16% { transform: translate3d(70vw, 18vh, 0); }
+  28% { transform: translate3d(36vw, 30vh, 0); }
+  40% { transform: translate3d(-10vw, 16vh, 0); opacity: 0.85; }
+  41%, 100% { transform: translate3d(-10vw, 16vh, 0); opacity: 0; }
+}
+@keyframes nx-spook-fly-3 {
+  0% { transform: translate3d(-8vw, 16vh, 0); opacity: 0; }
+  2% { opacity: 0.9; }
+  12% { transform: translate3d(22vw, 22vh, 0); }
+  24% { transform: translate3d(50vw, 9vh, 0); }
+  30% { transform: translate3d(68vw, 3vh, 0); }
+  38% { transform: translate3d(106vw, 12vh, 0); opacity: 0.9; }
+  39%, 100% { transform: translate3d(106vw, 12vh, 0); opacity: 0; }
+}
+@keyframes nx-spook-cloud { from { transform: translate3d(-30%, 0, 0); } to { transform: translate3d(40%, 0, 0); } }
+@keyframes nx-spook-drift { from { transform: translate3d(-10%, 0, 0); } to { transform: translate3d(10%, 0, 0); } }
+@keyframes nx-spook-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-4deg); }
+  50% { transform: translate3d(0, -12px, 0) rotate(4deg); }
+}
+@keyframes nx-spook-bob {
+  from { transform: translate3d(0, 0, 0) rotate(-6deg); }
+  to { transform: translate3d(0, 7px, 0) rotate(6deg); }
+}
+@keyframes nx-spook-glow {
+  0%, 100% { opacity: 1; }
+  46% { opacity: 0.55; }
+  48% { opacity: 1; }
+  51% { opacity: 0.72; }
+  53% { opacity: 1; }
+}
+@keyframes nx-spook-candle-dot {
+  0%, 100% { opacity: 1; }
+  61% { opacity: 0.6; }
+  63% { opacity: 1; }
+  66% { opacity: 0.8; }
+}
+@keyframes nx-spook-flash {
+  0% { opacity: 0; }
+  12% { opacity: 0.9; }
+  22% { opacity: 0.4; }
+  32% { opacity: 0.95; }
+  62% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .nx-spook__web--left { display: none; }
+  .nx-spook__web { width: 110px; }
+  .nx-spook-moon { top: -10px; right: 70px; width: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-spook__bat,
+  .nx-spook-spider,
+  .nx-spook-flash { display: none !important; }
+
+  .nx-spook__cloud,
+  .nx-spook__fog-a,
+  .nx-spook__fog-b,
+  .nx-spook__wings,
+  html[data-halloween="on"] .nx-spook-ghost,
+  html[data-halloween="on"] .nx-nav__dot,
+  .nx-spook-switch[aria-pressed="true"] .nx-spook-pumpkin__face,
+  .nx-spook-toast .nx-spook-pumpkin__face { animation: none !important; }
+
+  .nx-spook-switch,
+  .nx-spook-toast { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .nx-spook-moon,
+  .nx-spook,
+  .nx-spook-spider,
+  .nx-spook-ghost,
+  .nx-spook-flash { display: none !important; }
+}
+
+@media print {
+  .nx-spook-moon,
+  .nx-spook,
+  .nx-spook-spider,
+  .nx-spook-ghost,
+  .nx-spook-flash,
+  .nx-spook-toast,
+  .nx-spook-switch { display: none !important; }
 }
 ```
 
@@ -16785,8 +17665,8 @@ This root is reconciled byte-for-byte from the current production source.
     "stage:apps-model-packs": "node scripts/stage-apps-model-packs.mjs",
     "publish:apps-model-packs:ia": "node scripts/upload-apps-model-packs-ia.mjs",
     "build:accounts": "node scripts/build-accounts-site.mjs",
-    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs",
-    "test": "node test/site-outcomes.mjs && node --test test/register-account.test.mjs",
+    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs && node --check nx-halloween.js",
+    "test": "node test/site-outcomes.mjs && node --test test/register-account.test.mjs test/roachclaw-chat.test.mjs",
     "verify": "npm run lint && npm run test && npm run tangle:verify",
     "validate:html": "node scripts/validate-html.mjs",
     "test:browser": "node scripts/site-browser-outcomes.mjs",
@@ -19030,6 +19910,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="stylesheet" href="../nx.css" />
+    <script src="../nx-halloween.js"></script>
     <link rel="stylesheet" href="../roachclaw-web.css" />
   </head>
   <body data-page="roachclaw">
@@ -19605,6 +20486,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="stylesheet" href="../nx.css" />
+    <script src="../nx-halloween.js"></script>
   </head>
   <body data-page="sitemap">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
@@ -19800,6 +20682,8 @@ async function main() {
     'nx.css',
     'nx-account.css',
     'nx.js',
+    'nx-halloween.js',
+    'nx-halloween.css',
     'fonts',
     'vendor/supabase-js',
     'favicon.ico',
@@ -19850,7 +20734,7 @@ async function main() {
     path.join(outputRoot, '_headers'),
     [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://roachnet.org https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
       '  X-Frame-Options: DENY',
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',
@@ -19983,6 +20867,8 @@ async function main() {
     'nx.css',
     'nx-store.css',
     'nx.js',
+    'nx-halloween.js',
+    'nx-halloween.css',
     'fonts',
     'collections',
     'downloads',
@@ -20172,6 +21058,8 @@ const copyList = [
   "landing-dither.js",
   "nx.css",
   "nx.js",
+  "nx-halloween.js",
+  "nx-halloween.css",
   "nx-mission.css",
   "nx-docs.css",
   "vendor/supabase-js",
@@ -20267,7 +21155,7 @@ This root is reconciled byte-for-byte from the current production source.
 
 import assert from 'node:assert/strict'
 import { createReadStream } from 'node:fs'
-import { access, readdir, stat } from 'node:fs/promises'
+import { access, readFile, readdir, stat } from 'node:fs/promises'
 import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -20319,11 +21207,26 @@ async function localFile(directory, urlPath) {
   }
 }
 
-async function startServer(directory) {
+// Serve each site with the Content-Security-Policy it ships with (netlify.toml for
+// the main site, _headers for Apps and Accounts), so a CSP violation shows up as a
+// console error and fails the page. upgrade-insecure-requests is dropped because
+// the test server is plain http on loopback.
+async function sitePolicy(site) {
+  const source = site.name === 'main'
+    ? await readFile(path.join(root, 'netlify.toml'), 'utf8')
+    : await readFile(path.join(root, site.directory, '_headers'), 'utf8')
+  const match = /Content-Security-Policy(?: = "|: )([^"\n]+)/.exec(source)
+  assert.ok(match, `${site.name} ships a Content-Security-Policy`)
+  return match[1].replace(/;\s*upgrade-insecure-requests/, '').trim()
+}
+
+async function startServer(directory, policy) {
   const server = http.createServer(async (request, response) => {
     const file = await localFile(directory, new URL(request.url, 'http://localhost').pathname)
     const target = file || path.join(directory, '404.html')
-    response.writeHead(file ? 200 : 404, { 'content-type': mime.get(path.extname(target)) || 'application/octet-stream', 'cache-control': 'no-store' })
+    const headers = { 'content-type': mime.get(path.extname(target)) || 'application/octet-stream', 'cache-control': 'no-store' }
+    if (policy && target.endsWith('.html')) headers['content-security-policy'] = policy
+    response.writeHead(file ? 200 : 404, headers)
     createReadStream(target).pipe(response)
   })
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
@@ -20411,6 +21314,163 @@ async function checkPage(browser, baseUrl, pathname, viewport, label) {
     assert.deepEqual(failures, [], `${label} browser failures`)
   } finally {
     await page.close()
+  }
+}
+
+// Halloween mode: pin the date, then check the switch, the cookie, the decorations
+// and that the moon never sits behind the first heading.
+async function halloweenPage(browser, baseUrl, pathname, { iso, viewport = { width: 1440, height: 900 }, reducedMotion = false } = {}) {
+  // A fresh context per scenario, so one scenario's cookie never leaks into the next.
+  const context = await browser.createBrowserContext()
+  const page = await context.newPage()
+  const closePage = page.close.bind(page)
+  page.close = async () => {
+    await closePage()
+    await context.close()
+  }
+  const failures = []
+  page.on('console', (message) => {
+    if (message.type() === 'error') failures.push(`console: ${message.text()}`)
+  })
+  page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`))
+  await page.setViewport(viewport)
+  await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: reducedMotion ? 'reduce' : 'no-preference' }])
+  await page.evaluateOnNewDocument((fixedIso) => {
+    const fixed = new Date(fixedIso).getTime()
+    const RealDate = Date
+    class PinnedDate extends RealDate {
+      constructor(...args) {
+        super(...(args.length ? args : [fixed]))
+      }
+
+      static now() {
+        return fixed
+      }
+    }
+    globalThis.Date = PinnedDate
+  }, iso)
+  await page.setRequestInterception(true)
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.origin === baseUrl) return request.continue()
+    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : 'export {}' })
+  })
+  const go = async (suffix = '') => {
+    const response = await page.goto(`${baseUrl}${pathname}${suffix}`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
+    assert.equal(response?.status(), 200)
+    await page.waitForFunction(() => document.readyState !== 'loading')
+  }
+  const state = () => page.evaluate(() => {
+    const moon = document.querySelector('.nx-spook-moon')
+    const heading = [...document.querySelectorAll('h1')].find((h1) => h1.getBoundingClientRect().height > 0)
+    return {
+      on: document.documentElement.getAttribute('data-halloween') === 'on',
+      switches: [...document.querySelectorAll('.nx-spook-switch')].map((control) => control.getAttribute('aria-pressed')),
+      cookie: (/(?:^|;\s*)rn_halloween=(on|off)/.exec(document.cookie) || [])[1] || null,
+      moonVisible: Boolean(moon && !moon.hidden && getComputedStyle(moon).display !== 'none'),
+      moonClear: (() => {
+        if (!moon || !heading) return true
+        const a = moon.getBoundingClientRect()
+        const b = heading.getBoundingClientRect()
+        return a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top
+      })(),
+      bats: document.querySelectorAll('.nx-spook__bat').length,
+      sheet: [...document.styleSheets].some((sheet) => /nx-halloween\.css$/.test(sheet.href || '') && sheet.cssRules.length > 0),
+      spider: Boolean(document.querySelector('.nx-spook-spider')),
+      overflow: document.documentElement.scrollWidth > window.innerWidth,
+    }
+  })
+  return { page, failures, go, state }
+}
+
+async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = false } = {}) {
+  // Mid-October: offered, off until the visitor turns it on, then remembered.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-10-11T12:00:00' })
+    try {
+      await go()
+      let now = await state()
+      assert.equal(now.on, false, `${label}: off by default before 24 October`)
+      assert.deepEqual(now.switches, ['false', 'false'], `${label}: nav and footer switches`)
+      await page.click('.nx-spook-switch--nav')
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-halloween') === 'on', { timeout: 5_000 })
+      await page.waitForFunction(() => document.querySelector('.nx-spook-toast.is-on'), { timeout: 5_000 })
+      now = await state()
+      assert.deepEqual(now.switches, ['true', 'true'], `${label}: both switches follow`)
+      assert.equal(now.cookie, 'on', `${label}: the choice is kept`)
+      assert.equal(now.moonVisible, true, `${label}: the moon is up`)
+      assert.equal(now.sheet, true, `${label}: the Halloween stylesheet is loaded`)
+      assert.equal(now.moonClear, true, `${label}: the moon never sits behind the first heading`)
+      assert.equal(now.bats, 4, `${label}: bats fly when motion is allowed`)
+      assert.equal(now.overflow, false, `${label}: no horizontal overflow in Halloween mode`)
+      if (spiderPage) {
+        await page.waitForSelector('.nx-spook-spider.is-down', { timeout: 5_000 })
+        await page.evaluate(() => document.querySelector('.nx-spook-spider__bob')?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })))
+        await page.waitForFunction(() => !document.querySelector('.nx-spook-spider'), { timeout: 5_000 })
+      } else {
+        assert.equal(now.spider, false, `${label}: no spider on working pages`)
+      }
+      await go()
+      assert.equal((await state()).on, true, `${label}: on before first paint after a reload`)
+      await page.click('.nx-spook-switch--foot')
+      await page.waitForFunction(() => !document.documentElement.hasAttribute('data-halloween'), { timeout: 5_000 })
+      assert.equal((await state()).cookie, 'off', `${label}: turning it off is kept too`)
+      assert.deepEqual(failures, [], `${label}: Halloween browser failures`)
+    } finally {
+      await page.close()
+    }
+  }
+  // Halloween week starts on; ?halloween=off still wins.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-10-29T20:00:00', viewport: { width: 390, height: 844, isMobile: true } })
+    try {
+      await go()
+      let now = await state()
+      assert.equal(now.on, true, `${label}: on by default in Halloween week`)
+      assert.equal(now.overflow, false, `${label}: no phone overflow in Halloween mode`)
+      assert.equal(now.moonClear, true, `${label}: the moon clears the heading on phones`)
+      await go('?halloween=off')
+      now = await state()
+      assert.equal(now.on, false, `${label}: ?halloween=off turns it off`)
+      assert.equal(now.cookie, 'off')
+      assert.deepEqual(failures, [], `${label}: Halloween week browser failures`)
+    } finally {
+      await page.close()
+    }
+  }
+  // Reduced motion: the theme without bats, spider or flicker.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-10-30T20:00:00', reducedMotion: true })
+    try {
+      await go()
+      const now = await state()
+      assert.equal(now.on, true)
+      assert.equal(now.bats, 0, `${label}: no bats under reduced motion`)
+      assert.equal(now.spider, false, `${label}: no spider under reduced motion`)
+      await page.click('.nx-spook-switch--nav')
+      assert.equal(await page.evaluate(() => document.documentElement.hasAttribute('data-halloween') || Boolean(document.querySelector('.nx-spook-flash'))), false, `${label}: switches at once, no flicker`)
+      assert.deepEqual(failures, [], `${label}: reduced-motion Halloween browser failures`)
+    } finally {
+      await page.close()
+    }
+  }
+  // Out of season: nothing, unless previewed; a preview saves nothing.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-12-01T12:00:00' })
+    try {
+      await go()
+      let now = await state()
+      assert.equal(now.on, false, `${label}: off out of season`)
+      assert.deepEqual(now.switches, [], `${label}: no switch out of season`)
+      assert.equal(now.sheet, false, `${label}: no Halloween stylesheet out of season`)
+      await go('?halloween=on')
+      now = await state()
+      assert.equal(now.on, true, `${label}: ?halloween=on previews out of season`)
+      assert.equal(now.cookie, null, `${label}: a preview stores nothing`)
+      assert.deepEqual(failures, [], `${label}: preview browser failures`)
+    } finally {
+      await page.close()
+    }
   }
 }
 
@@ -20564,7 +21624,7 @@ async function checkAppDetailKeyboardFlow(browser, baseUrl) {
 const browser = await puppeteer.launch({ executablePath: await findChromium(), headless: true, timeout: 60_000, args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'] })
 try {
   for (const site of sites) {
-    const server = await startServer(path.join(root, site.directory))
+    const server = await startServer(path.join(root, site.directory), await sitePolicy(site))
     const baseUrl = `http://127.0.0.1:${server.address().port}`
     try {
       for (const [pathname, expectedMime] of [['/robots.txt', 'text/plain'], ['/sitemap.xml', 'application/xml']]) {
@@ -20581,6 +21641,13 @@ try {
         if (site.name === 'apps') {
           await checkPage(browser, baseUrl, pathname, { width: 320, height: 720, isMobile: true }, `${site.name} ${name} compact`)
         }
+      }
+      if (site.name === 'main') {
+        await checkHalloween(browser, baseUrl, '/', 'main mission', { spiderPage: true })
+        await checkHalloween(browser, baseUrl, '/home/', 'main home', { spiderPage: true })
+        await checkHalloween(browser, baseUrl, '/roachclaw/', 'main roachclaw')
+      } else {
+        await checkHalloween(browser, baseUrl, '/', `${site.name} Halloween`)
       }
       if (site.name === 'main') {
         await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)
@@ -20851,10 +21918,10 @@ function expand(name, chunks, stack = []) {
 
 const sourceFiles = [
   '404.html', 'account.js', 'account/index.html', 'api.js', 'api/index.html', 'app-store.html', 'app-store.js', 'brew/index.html', 'home/index.html', 'html-validate.json', 'index.html', 'ios/index.html', 'landing-script.js', 'landing-dither.js', 'netlify.toml',
-  'nx.css', 'nx.js', 'nx-account.css', 'nx-docs.css', 'nx-mission.css', 'nx-store.css', 'package-lock.json', 'package.json', 'roachclaw-web.css', 'roachclaw.js', 'roachclaw/index.html', 'robots-accounts.txt', 'robots-apps.txt', 'site-account.js', 'sitemap/index.html',
+  'nx.css', 'nx.js', 'nx-halloween.js', 'nx-halloween.css', 'nx-account.css', 'nx-docs.css', 'nx-mission.css', 'nx-store.css', 'package-lock.json', 'package.json', 'roachclaw-web.css', 'roachclaw.js', 'roachclaw/index.html', 'robots-accounts.txt', 'robots-apps.txt', 'site-account.js', 'sitemap/index.html',
   'scripts/build-accounts-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-main-site.mjs', 'scripts/check-links.mjs',
   'scripts/site-browser-outcomes.mjs', 'scripts/snapshot-live-sites.mjs', 'scripts/tangle.mjs', 'scripts/validate-html.mjs',
-  'sitemap-accounts.xml', 'sitemap-apps.xml', 'test/register-account.test.mjs', 'test/site-outcomes.mjs', 'netlify/functions/register-account.mjs', 'netlify/functions/roachclaw-chat.mjs',
+  'sitemap-accounts.xml', 'sitemap-apps.xml', 'test/register-account.test.mjs', 'test/roachclaw-chat.test.mjs', 'test/site-outcomes.mjs', 'netlify/functions/register-account.mjs', 'netlify/functions/roachclaw-chat.mjs',
 ]
 
 if (reconcile) {
@@ -21104,8 +22171,48 @@ test('local Turnstile bypass requires an exact local Origin and explicit Netlify
   const deployedResponse = await deployed.handler(
     registrationRequest({ origin: 'http://localhost:8888', ip: null, captchaToken: '' })
   )
-  assert.equal(deployedResponse.status, 503)
-  assert.equal((await body(deployedResponse)).code, 'captcha_unavailable')
+  assert.equal(deployedResponse.status, 403)
+  assert.equal((await body(deployedResponse)).message, 'Origin not allowed.')
+  assert.equal(deployed.calls.length, 0)
+})
+
+test('a deployed function does not answer localhost origins', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(registrationRequest({ origin: 'http://localhost:8888' }))
+  assert.equal(response.status, 403)
+  assert.equal(calls.length, 0)
+})
+
+test('registration refuses oversized bodies and over-long passwords before external work', async () => {
+  const { calls, handler } = createHarness()
+  const huge = new Request('https://roachnet.org/.netlify/functions/register-account', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', origin: 'https://accounts.roachnet.org', 'x-nf-client-connection-ip': '203.0.113.9' },
+    body: JSON.stringify({ email: 'person@example.com', password: 'x'.repeat(20000) }),
+  })
+  assert.equal((await handler(huge)).status, 413)
+
+  const long = new Request('https://roachnet.org/.netlify/functions/register-account', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', origin: 'https://accounts.roachnet.org', 'x-nf-client-connection-ip': '203.0.113.9' },
+    body: JSON.stringify({ email: 'person@example.com', password: 'x'.repeat(73), captchaToken: 'captcha-token' }),
+  })
+  const longResponse = await handler(long)
+  assert.equal(longResponse.status, 400)
+  assert.match((await body(longResponse)).message, /72 characters/)
+  assert.equal(calls.length, 0)
+})
+
+test('a Turnstile pass from another hostname does not count', async () => {
+  const { handler } = createHarness({
+    fetchImpl: async (url) =>
+      String(url).includes('challenges.cloudflare.com')
+        ? Response.json({ success: true, hostname: 'evil.example' })
+        : Response.json({ id: 'user-1' }),
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 403)
+  assert.equal((await body(response)).code, 'captcha_failed')
 })
 
 test('registration fails closed without a trusted production client IP', async () => {
@@ -21168,6 +22275,152 @@ test('registration uses public Supabase signup and returns confirmation semantic
     data: { display_name: 'Person' },
   })
   assert.equal(calls.some(({ url }) => url.includes('/auth/v1/admin/users')), false)
+})
+```
+
+## test/roachclaw-chat.test.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="test-roachclaw-chat-test-mjs" file="test/roachclaw-chat.test.mjs"}
+import assert from 'node:assert/strict'
+import { test } from 'node:test'
+
+import { createChatHandler } from '../netlify/functions/roachclaw-chat.mjs'
+
+class MemoryRateLimitStore {
+  constructor() {
+    this.entries = new Map()
+    this.version = 0
+  }
+
+  async getWithMetadata(key) {
+    const entry = this.entries.get(key)
+    return entry ? structuredClone(entry) : null
+  }
+
+  async setJSON(key, data, options = {}) {
+    const existing = this.entries.get(key)
+    const canWrite = options.onlyIfNew ? !existing : options.onlyIfMatch ? existing?.etag === options.onlyIfMatch : true
+    if (!canWrite) return { modified: false }
+    const etag = `etag-${++this.version}`
+    this.entries.set(key, { data: structuredClone(data), etag, metadata: {} })
+    return { modified: true, etag }
+  }
+}
+
+const armedEnv = {
+  ROACHNET_SUPABASE_URL: 'https://project.supabase.co',
+  ROACHNET_SUPABASE_ANON_KEY: 'public-anon-key',
+  ROACHNET_WEB_CHAT_ENABLED: '1',
+}
+
+const threadId = '6f1c2a4e-3b5d-4c7e-9f10-2a3b4c5d6e7f'
+
+function chatRequest({ origin = 'https://roachnet.org', token = 'user-token', body = { message: 'hello' } } = {}) {
+  const headers = { 'content-type': 'application/json' }
+  if (origin) headers.origin = origin
+  if (token) headers.authorization = `Bearer ${token}`
+  return new Request('https://roachnet.org/.netlify/functions/roachclaw-chat', {
+    method: 'POST',
+    headers,
+    body: typeof body === 'string' ? body : JSON.stringify(body),
+  })
+}
+
+function createHarness({ env = armedEnv, store = new MemoryRateLimitStore(), database } = {}) {
+  const calls = []
+  const fetchImpl = async (url, options = {}) => {
+    const href = String(url)
+    calls.push({ url: href, method: options.method || 'GET' })
+    if (href.endsWith('/auth/v1/user')) return Response.json({ id: 'user-1', email: 'person@example.com' })
+    if (database) return database(href, options)
+    if (href.includes('/rest/v1/chat_threads') && options.method === 'POST') return Response.json([{ id: threadId, title: 'hello', metadata: {} }])
+    if (href.includes('/rest/v1/chat_threads') && options.method === 'PATCH') return Response.json([{ id: threadId, title: 'hello', metadata: {} }])
+    if (href.includes('/rest/v1/chat_messages') && options.method === 'POST') return Response.json([{ id: `m-${calls.length}` }])
+    if (href.includes('/rest/v1/chat_messages')) return Response.json([{ role: 'user', content: 'hello' }])
+    return new Response('not found', { status: 404 })
+  }
+  const handler = createChatHandler({
+    env,
+    fetchImpl,
+    getRateLimitStore: () => store,
+    generateReply: async () => ({ text: 'Hi there.', provider: 'RoachBrain Cloud', model: 'test', remoteSessionId: null, remoteSessionTitle: '' }),
+    now: () => Date.parse('2026-10-11T12:00:00.000Z'),
+  })
+  return { calls, handler, store }
+}
+
+const restCalls = (calls) => calls.filter(({ url }) => url.includes('/rest/v1/'))
+
+test('chat answers a signed-in message end to end', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(chatRequest())
+  assert.equal(response.status, 200)
+  const result = await response.json()
+  assert.equal(result.ok, true)
+  assert.equal(result.provider, 'RoachBrain Cloud')
+  assert.equal(restCalls(calls).length, 5)
+})
+
+test('a deployed chat function does not answer localhost origins', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(chatRequest({ origin: 'http://localhost:8888' }))
+  assert.equal(response.status, 403)
+  assert.equal(calls.length, 0)
+})
+
+test('chat needs a bearer token', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(chatRequest({ token: '' }))
+  assert.equal(response.status, 401)
+  assert.equal(calls.length, 0)
+})
+
+test('chat refuses malformed thread ids and oversized bodies before touching the database', async () => {
+  const { calls, handler } = createHarness()
+  const badThread = await handler(chatRequest({ body: { message: 'hello', threadId: 'eq.x&user_id=neq.0' } }))
+  assert.equal(badThread.status, 400)
+  const huge = await handler(chatRequest({ body: { message: 'x'.repeat(70 * 1024) } }))
+  assert.equal(huge.status, 413)
+  assert.equal(restCalls(calls).length, 0)
+})
+
+test('each account gets a message budget', async () => {
+  const { calls, handler } = createHarness()
+  for (let index = 0; index < 20; index += 1) {
+    assert.equal((await handler(chatRequest())).status, 200)
+  }
+  const before = restCalls(calls).length
+  const blocked = await handler(chatRequest())
+  assert.equal(blocked.status, 429)
+  assert.ok(Number(blocked.headers.get('retry-after')) > 0)
+  assert.equal((await blocked.json()).code, 'rate_limited')
+  assert.equal(restCalls(calls).length, before, 'a blocked message writes nothing')
+})
+
+test('chat fails closed when the limiter is unavailable', async () => {
+  const { calls, handler } = createHarness({
+    store: {
+      async getWithMetadata() {
+        throw new Error('blobs offline')
+      },
+    },
+  })
+  const response = await handler(chatRequest())
+  assert.equal(response.status, 503)
+  assert.equal(restCalls(calls).length, 0)
+})
+
+test('database error details stay on the server', async () => {
+  const { handler } = createHarness({
+    database: async () => Response.json({ message: 'column chat_threads.secret_column does not exist' }, { status: 400 }),
+  })
+  const response = await handler(chatRequest())
+  assert.equal(response.status, 500)
+  const result = await response.json()
+  assert.equal(result.message, 'RoachClaw could not finish the request.')
+  assert.doesNotMatch(JSON.stringify(result), /secret_column/)
 })
 ```
 
@@ -21313,6 +22566,38 @@ for (const page of publicPages) {
   }
 }
 assert.match(await source('app-store.html'), /<h1[ >]/)
+
+// Halloween mode: every page loads the switch in <head> (so the theme lands before
+// first paint), the script stays CSP-clean, and the decorations stand down for
+// reduced motion, forced colours and print.
+for (const page of [...publicPages, '404.html']) {
+  const headHtml = (await source(page)).split('</head>')[0]
+  assert.match(headHtml, /<script src="[^"]*nx-halloween\.js"><\/script>/, `${page} loads nx-halloween.js in <head>`)
+}
+const halloween = await source('nx-halloween.js')
+assert.doesNotMatch(halloween, /innerHTML|insertAdjacentHTML|setAttribute\(\s*['"]style|cssText|eval\(|new Function/, 'Halloween mode builds nodes, never HTML strings or inline styles')
+assert.match(halloween, /prefers-reduced-motion: reduce/)
+assert.match(halloween, /samesite=lax/)
+assert.doesNotMatch(halloween, /localStorage|fetch\(|XMLHttpRequest|sendBeacon/, 'Halloween mode keeps one cookie and talks to nobody')
+const halloweenCss = await source('nx-halloween.css')
+assert.doesNotMatch(await source('nx.css'), /data-halloween/, 'the Halloween theme stays out of nx.css, so it costs nothing out of season')
+assert.match(halloween, /blocking', 'render'/, 'the Halloween stylesheet blocks render, so there is no flash of the normal theme')
+for (const query of ['prefers-reduced-motion: reduce', 'forced-colors: active', 'print']) {
+  assert.match(halloweenCss, new RegExp(`@media \\(?${query.replace(/[()]/g, '')}`), `Halloween CSS handles ${query}`)
+}
+for (const build of ['scripts/build-main-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-accounts-site.mjs']) {
+  assert.match(await source(build), /nx-halloween\.js/, `${build} ships nx-halloween.js`)
+  assert.match(await source(build), /nx-halloween\.css/, `${build} ships nx-halloween.css`)
+}
+
+// The landing download is a plain navigation handed to Home, not a hidden iframe
+// (the CSP's frame-src admits only Turnstile, so an iframe download never starts).
+const appScript = await source('app.js')
+assert.doesNotMatch(appScript, /createElement\('iframe'\)/)
+assert.match(appScript, /function startHandedOffDownload/)
+assert.match(appScript, /hostname === 'github\.com'/)
+// Accounts posts sign-ups to the roachnet.org function, so its CSP must allow it.
+assert.match(accountsBuild, /connect-src 'self' https:\/\/roachnet\.org /)
 for (const page of ['index.html', 'home/index.html', 'brew/index.html', 'app-store.html']) {
   const html = await source(page)
   assert.match(html, /not Apple-notarized/i, `${page} needs release-notarization disclosure`)
@@ -21381,13 +22666,11 @@ This root is reconciled byte-for-byte from the current production source.
 import { createHmac } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 
-const allowedOrigins = new Set([
+// Browsers on these origins may call the function. The localhost origins only
+// count under `netlify dev`, so a deployed function never answers them.
+const productionOrigins = new Set([
   'https://accounts.roachnet.org',
   'https://roachnet.org',
-  'http://localhost:8888',
-  'http://localhost:3000',
-  'http://127.0.0.1:8888',
-  'http://127.0.0.1:3000',
 ])
 
 const localOrigins = new Set([
@@ -21396,6 +22679,12 @@ const localOrigins = new Set([
   'http://127.0.0.1:8888',
   'http://127.0.0.1:3000',
 ])
+
+// Turnstile reports the hostname the widget was solved on.
+const turnstileHostnames = new Set(['accounts.roachnet.org', 'roachnet.org'])
+
+const maxBodyBytes = 16 * 1024
+const maxPasswordLength = 72
 
 const rateLimitRules = [
   { scope: 'ip', limit: 5, windowMs: 15 * 60 * 1000 },
@@ -21406,14 +22695,22 @@ function requestOrigin(request) {
   return request.headers.get('origin') || ''
 }
 
-function isAllowedRequestOrigin(request) {
-  return allowedOrigins.has(requestOrigin(request))
+function isDevelopment(env) {
+  return env.NETLIFY_DEV === 'true'
+}
+
+function isAllowedOrigin(origin, env) {
+  return productionOrigins.has(origin) || (isDevelopment(env) && localOrigins.has(origin))
+}
+
+function isAllowedRequestOrigin(request, env) {
+  return isAllowedOrigin(requestOrigin(request), env)
 }
 
 function isLocalBypassEnabled(origin, env) {
   return (
     localOrigins.has(origin) &&
-    env.NETLIFY_DEV === 'true' &&
+    isDevelopment(env) &&
     env.ROACHNET_ALLOW_LOCAL_REGISTRATION_BYPASS === '1'
   )
 }
@@ -21520,9 +22817,11 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
   }
 
   const result = await response.json()
+  const hostnameOk = !result.hostname || turnstileHostnames.has(String(result.hostname))
+  const success = result.success === true && hostnameOk
   return {
-    success: result.success === true,
-    message: result.success === true ? '' : 'Captcha verification failed.',
+    success,
+    message: success ? '' : 'Captcha verification failed.',
   }
 }
 
@@ -21530,7 +22829,7 @@ function confirmationRedirect(env) {
   const fallback = 'https://accounts.roachnet.org/'
   try {
     const configured = new URL(env.ROACHNET_AUTH_REDIRECT_URL || fallback)
-    return allowedOrigins.has(configured.origin) ? configured.href : fallback
+    return isAllowedOrigin(configured.origin, env) ? configured.href : fallback
   } catch {
     return fallback
   }
@@ -21543,7 +22842,7 @@ export function createRegistrationHandler({
   now = Date.now,
 } = {}) {
   return async (request) => {
-    if (!isAllowedRequestOrigin(request)) {
+    if (!isAllowedRequestOrigin(request, env)) {
       return json({ ok: false, message: 'Origin not allowed.' }, 403)
     }
 
@@ -21573,7 +22872,11 @@ export function createRegistrationHandler({
 
     let payload
     try {
-      payload = await request.json()
+      const raw = await request.text()
+      if (raw.length > maxBodyBytes) {
+        return withCors(request, json({ ok: false, message: 'That request is too large.' }, 413))
+      }
+      payload = JSON.parse(raw)
     } catch {
       return withCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
     }
@@ -21597,6 +22900,13 @@ export function createRegistrationHandler({
       return withCors(
         request,
         json({ ok: false, message: 'Use a password with at least 10 characters.' }, 400)
+      )
+    }
+
+    if (password.length > maxPasswordLength) {
+      return withCors(
+        request,
+        json({ ok: false, message: `Use a password of ${maxPasswordLength} characters or fewer.` }, 400)
       )
     }
 
@@ -21803,19 +23113,39 @@ This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="netlify-functions-roachclaw-chat-mjs" file="netlify/functions/roachclaw-chat.mjs"}
 import { mkdir } from 'node:fs/promises'
+import { getStore } from '@netlify/blobs'
 
-const allowedOrigins = new Set([
-  'https://roachnet.org',
-  'https://accounts.roachnet.org',
+const productionOrigins = new Set(['https://roachnet.org', 'https://accounts.roachnet.org'])
+
+// Only `netlify dev` answers these.
+const localOrigins = new Set([
   'http://localhost:8888',
   'http://localhost:3000',
   'http://127.0.0.1:8888',
   'http://127.0.0.1:3000',
 ])
 
-function isAllowedRequestOrigin(request) {
+const maxBodyBytes = 64 * 1024
+const threadIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Each reply costs a model run and four database writes, so every signed-in
+// account gets a budget.
+const chatRateLimitRules = [
+  { scope: 'burst', limit: 20, windowMs: 10 * 60 * 1000 },
+  { scope: 'day', limit: 200, windowMs: 24 * 60 * 60 * 1000 },
+]
+
+// Messages written here are safe to show the person; anything else is logged
+// and replaced with a generic line so database details never reach a browser.
+class PublicError extends Error {}
+
+function isAllowedOrigin(origin, env) {
+  return productionOrigins.has(origin) || (env.NETLIFY_DEV === 'true' && localOrigins.has(origin))
+}
+
+function isAllowedRequestOrigin(request, env) {
   const origin = request.headers.get('origin') || ''
-  return !origin || allowedOrigins.has(origin)
+  return !origin || isAllowedOrigin(origin, env)
 }
 
 const defaultSystemPrompt =
@@ -21844,18 +23174,18 @@ function json(body, status = 200) {
   })
 }
 
-function normalizeOrigin(request) {
+function normalizeOrigin(request, env) {
   const origin = request.headers.get('origin') || ''
-  if (allowedOrigins.has(origin)) {
+  if (isAllowedOrigin(origin, env)) {
     return origin
   }
 
   return 'https://roachnet.org'
 }
 
-function withCors(request, response) {
+function withCors(request, response, env) {
   const headers = new Headers(response.headers)
-  headers.set('access-control-allow-origin', normalizeOrigin(request))
+  headers.set('access-control-allow-origin', normalizeOrigin(request, env))
   headers.set('access-control-allow-methods', 'POST, OPTIONS')
   headers.set('access-control-allow-headers', 'content-type, authorization')
   headers.set('vary', 'origin')
@@ -21930,8 +23260,8 @@ function summarizeReply(reply) {
   return flattened.length > 180 ? `${flattened.slice(0, 177)}...` : flattened
 }
 
-async function verifyUserSession({ supabaseUrl, publishableKey, token }) {
-  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+async function verifyUserSession({ fetchImpl, supabaseUrl, publishableKey, token }) {
+  const response = await fetchImpl(`${supabaseUrl}/auth/v1/user`, {
     headers: {
       apikey: publishableKey,
       authorization: `Bearer ${token}`,
@@ -21950,14 +23280,14 @@ async function verifyUserSession({ supabaseUrl, publishableKey, token }) {
   return { user, error: '' }
 }
 
-function createDatabaseClient({ supabaseUrl, apiKey, authToken }) {
+function createDatabaseClient({ fetchImpl, supabaseUrl, apiKey, authToken }) {
   function restUrl(table, query = '') {
     const suffix = query ? `?${query}` : ''
     return `${supabaseUrl}/rest/v1/${table}${suffix}`
   }
 
   async function request(table, { method = 'GET', query = '', body, prefer = 'return=representation' } = {}) {
-    const response = await fetch(restUrl(table, query), {
+    const response = await fetchImpl(restUrl(table, query), {
       method,
       headers: {
         'content-type': 'application/json',
@@ -21982,6 +23312,7 @@ function createDatabaseClient({ supabaseUrl, apiKey, authToken }) {
 }
 
 async function sendRoachClawRelay({
+  fetchImpl,
   bridgeUrl,
   bridgeToken,
   model,
@@ -21990,7 +23321,7 @@ async function sendRoachClawRelay({
   messages,
 }) {
   const requestUrl = `${bridgeUrl}/api/companion/chat/send`
-  const response = await fetch(requestUrl, {
+  const response = await fetchImpl(requestUrl, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -22008,13 +23339,13 @@ async function sendRoachClawRelay({
 
   const payload = await response.json().catch(() => ({}))
   if (!response.ok) {
-    const message = payload?.error || payload?.message || 'RoachClaw could not get a clean reply from your device.'
-    throw new Error(message)
+    const message = sanitizeLabel(payload?.error || payload?.message || '') || 'RoachClaw could not get a clean reply from your device.'
+    throw new PublicError(message)
   }
 
   const text = String(payload?.assistantMessage?.content || '').trim()
   if (!text) {
-    throw new Error('RoachClaw returned an empty reply from the paired device.')
+    throw new PublicError('RoachClaw returned an empty reply from the paired device.')
   }
 
   return {
@@ -22120,267 +23451,349 @@ async function generateRoachBrainReply({ history, prompt }) {
   }
 }
 
-export default async (request) => {
-  if (!isAllowedRequestOrigin(request)) {
-    return json({ ok: false, message: 'Origin not allowed.' }, 403)
+async function consumeRateLimit({ store, key, limit, windowMs, now }) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const entry = await store.getWithMetadata(key, { consistency: 'strong', type: 'json' })
+    if (!entry) {
+      const result = await store.setJSON(key, { count: 1, resetAt: now + windowMs }, { onlyIfNew: true })
+      if (result.modified) return { allowed: true, retryAfterSeconds: 0 }
+      continue
+    }
+
+    const count = Number(entry.data?.count)
+    const resetAt = Number(entry.data?.resetAt)
+    if (!Number.isSafeInteger(count) || count < 0 || !Number.isFinite(resetAt)) {
+      throw new Error('Invalid chat rate-limit state.')
+    }
+    if (now < resetAt && count >= limit) {
+      return { allowed: false, retryAfterSeconds: Math.max(1, Math.ceil((resetAt - now) / 1000)) }
+    }
+
+    const nextState = now >= resetAt ? { count: 1, resetAt: now + windowMs } : { count: count + 1, resetAt }
+    const result = await store.setJSON(key, nextState, { onlyIfMatch: entry.etag })
+    if (result.modified) return { allowed: true, retryAfterSeconds: 0 }
   }
 
-  if (request.method === 'OPTIONS') {
-    return withCors(request, json({ ok: true }))
-  }
+  throw new Error('Chat rate-limit contention did not settle.')
+}
 
-  if (request.method !== 'POST') {
-    return withCors(request, json({ ok: false, message: 'Use POST for RoachClaw chat.' }, 405))
-  }
+export function createChatHandler({
+  env = process.env,
+  fetchImpl = globalThis.fetch,
+  getRateLimitStore = () => getStore('roachclaw-chat-rate-limits'),
+  generateReply = generateRoachBrainReply,
+  now = Date.now,
+} = {}) {
+  return async (request) => {
+    const withEnvCors = (req, response) => withCors(req, response, env)
 
-  const supabaseUrl = process.env.ROACHNET_SUPABASE_URL || ''
-  const publishableKey = process.env.ROACHNET_SUPABASE_ANON_KEY || ''
-  const serviceRoleKey = process.env.ROACHNET_SUPABASE_SERVICE_ROLE_KEY || ''
-  const chatEnabled = process.env.ROACHNET_WEB_CHAT_ENABLED === '1'
-  const model = process.env.ROACHNET_WEB_CHAT_MODEL || 'RoachClaw relay'
-  const allowedBridgeOrigins = new Set(
-    (process.env.ROACHNET_ALLOWED_BRIDGE_ORIGINS || '')
-      .split(',')
-      .map(normalizeBridgeUrl)
-      .filter(Boolean)
-  )
+    if (!isAllowedRequestOrigin(request, env)) {
+      return json({ ok: false, message: 'Origin not allowed.' }, 403)
+    }
 
-  if (!supabaseUrl || !publishableKey) {
-    return withCors(
-      request,
-      json({ ok: false, message: 'The hosted lane is missing its account backend configuration.' }, 503)
+    if (request.method === 'OPTIONS') {
+      return withEnvCors(request, json({ ok: true }))
+    }
+
+    if (request.method !== 'POST') {
+      return withEnvCors(request, json({ ok: false, message: 'Use POST for RoachClaw chat.' }, 405))
+    }
+
+    const supabaseUrl = env.ROACHNET_SUPABASE_URL || ''
+    const publishableKey = env.ROACHNET_SUPABASE_ANON_KEY || ''
+    const serviceRoleKey = env.ROACHNET_SUPABASE_SERVICE_ROLE_KEY || ''
+    const chatEnabled = env.ROACHNET_WEB_CHAT_ENABLED === '1'
+    const model = env.ROACHNET_WEB_CHAT_MODEL || 'RoachClaw relay'
+    const allowedBridgeOrigins = new Set(
+      (env.ROACHNET_ALLOWED_BRIDGE_ORIGINS || '')
+        .split(',')
+        .map(normalizeBridgeUrl)
+        .filter(Boolean)
     )
-  }
 
-  if (!chatEnabled || !model) {
-    return withCors(
-      request,
-      json(
-        {
-          ok: false,
-          code: 'lane_not_armed',
-          message: 'RoachClaw web is not armed on this deploy yet.',
-        },
-        503
+    if (!supabaseUrl || !publishableKey) {
+      return withEnvCors(
+        request,
+        json({ ok: false, message: 'The hosted lane is missing its account backend configuration.' }, 503)
       )
-    )
-  }
+    }
 
-  const token = bearerToken(request)
-  if (!token) {
-    return withCors(request, json({ ok: false, message: 'Sign in first.' }, 401))
-  }
+    if (!chatEnabled || !model) {
+      return withEnvCors(
+        request,
+        json(
+          {
+            ok: false,
+            code: 'lane_not_armed',
+            message: 'RoachClaw web is not armed on this deploy yet.',
+          },
+          503
+        )
+      )
+    }
 
-  const { user, error: sessionError } = await verifyUserSession({
-    supabaseUrl,
-    publishableKey,
-    token,
-  })
+    const token = bearerToken(request)
+    if (!token) {
+      return withEnvCors(request, json({ ok: false, message: 'Sign in first.' }, 401))
+    }
 
-  if (!user) {
-    return withCors(request, json({ ok: false, message: sessionError }, 401))
-  }
+    const { user, error: sessionError } = await verifyUserSession({
+      fetchImpl,
+      supabaseUrl,
+      publishableKey,
+      token,
+    })
 
-  let payload
-  try {
-    payload = await request.json()
-  } catch {
-    return withCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
-  }
+    if (!user) {
+      return withEnvCors(request, json({ ok: false, message: sessionError }, 401))
+    }
 
-  const prompt = sanitizeMessageContent(payload?.message)
-  const threadId = String(payload?.threadId || '').trim()
-  const requestedBridgeUrl = normalizeBridgeUrl(payload?.bridgeUrl)
-  const bridgeToken = String(payload?.bridgeToken || '').trim()
-  const bridgeLabel = sanitizeLabel(payload?.bridgeLabel || '')
-
-  if (!prompt) {
-    return withCors(request, json({ ok: false, message: 'Enter a message first.' }, 400))
-  }
-
-  if (requestedBridgeUrl && !isAllowedBridgeUrl(requestedBridgeUrl, allowedBridgeOrigins)) {
-    return withCors(request, json({ ok: false, message: 'That paired-device address is not allowed.' }, 400))
-  }
-
-  const databaseClient = createDatabaseClient({
-    supabaseUrl,
-    apiKey: serviceRoleKey || publishableKey,
-    authToken: serviceRoleKey || token,
-  })
-
-  try {
-    let thread = null
-
-    if (threadId) {
-      const query = new URLSearchParams({
-        select: '*',
-        id: `eq.${threadId}`,
-        user_id: `eq.${user.id}`,
-        limit: '1',
-      })
-      const rows = await databaseClient.request('chat_threads', { query: query.toString() })
-      thread = rows?.[0] || null
-      if (!thread) {
-        return withCors(request, json({ ok: false, message: 'That chat is not yours anymore.' }, 404))
+    let payload
+    try {
+      const raw = await request.text()
+      if (raw.length > maxBodyBytes) {
+        return withEnvCors(request, json({ ok: false, message: 'That message is too large.' }, 413))
       }
-    } else {
-      const inserted = await databaseClient.request('chat_threads', {
+      payload = JSON.parse(raw)
+    } catch {
+      return withEnvCors(request, json({ ok: false, message: 'Send valid JSON.' }, 400))
+    }
+
+    const prompt = sanitizeMessageContent(payload?.message)
+    const threadId = String(payload?.threadId || '').trim()
+    const requestedBridgeUrl = normalizeBridgeUrl(payload?.bridgeUrl)
+    const bridgeToken = String(payload?.bridgeToken || '').trim()
+    const bridgeLabel = sanitizeLabel(payload?.bridgeLabel || '')
+
+    if (!prompt) {
+      return withEnvCors(request, json({ ok: false, message: 'Enter a message first.' }, 400))
+    }
+
+    if (threadId && !threadIdPattern.test(threadId)) {
+      return withEnvCors(request, json({ ok: false, message: 'That chat id is not valid.' }, 400))
+    }
+
+    if (requestedBridgeUrl && !isAllowedBridgeUrl(requestedBridgeUrl, allowedBridgeOrigins)) {
+      return withEnvCors(request, json({ ok: false, message: 'That paired-device address is not allowed.' }, 400))
+    }
+
+    try {
+      const store = getRateLimitStore()
+      for (const rule of chatRateLimitRules) {
+        const result = await consumeRateLimit({
+          store,
+          key: `${rule.scope}:${user.id}`,
+          limit: rule.limit,
+          windowMs: rule.windowMs,
+          now: now(),
+        })
+        if (!result.allowed) {
+          return withEnvCors(
+            request,
+            new Response(
+              JSON.stringify({ ok: false, code: 'rate_limited', message: 'That is a lot of messages. Give RoachClaw a minute and try again.' }),
+              {
+                status: 429,
+                headers: {
+                  'content-type': 'application/json; charset=utf-8',
+                  'cache-control': 'no-store',
+                  'retry-after': String(result.retryAfterSeconds),
+                },
+              }
+            )
+          )
+        }
+      }
+    } catch (error) {
+      console.error('RoachClaw chat rate limiter unavailable.', error)
+      return withEnvCors(request, json({ ok: false, code: 'rate_limit_unavailable', message: 'RoachClaw web is busy. Try again shortly.' }, 503))
+    }
+
+    const databaseClient = createDatabaseClient({
+      fetchImpl,
+      supabaseUrl,
+      apiKey: serviceRoleKey || publishableKey,
+      authToken: serviceRoleKey || token,
+    })
+
+    try {
+      let thread = null
+
+      if (threadId) {
+        const query = new URLSearchParams({
+          select: '*',
+          id: `eq.${threadId}`,
+          user_id: `eq.${user.id}`,
+          limit: '1',
+        })
+        const rows = await databaseClient.request('chat_threads', { query: query.toString() })
+        thread = rows?.[0] || null
+        if (!thread) {
+          return withEnvCors(request, json({ ok: false, message: 'That chat is not yours anymore.' }, 404))
+        }
+      } else {
+        const inserted = await databaseClient.request('chat_threads', {
+          method: 'POST',
+          body: {
+            user_id: user.id,
+            title: summarizePrompt(prompt),
+            summary: null,
+            lane: 'roachclaw-web',
+            source: 'roachnet.org/roachclaw',
+            metadata: {
+              createdBy: 'web',
+            },
+          },
+        })
+        thread = inserted?.[0] || null
+      }
+
+      const existingRelay = thread?.metadata?.relay && typeof thread.metadata.relay === 'object' ? thread.metadata.relay : {}
+      const bridgeUrl = requestedBridgeUrl || normalizeBridgeUrl(existingRelay?.bridgeUrl)
+      if (bridgeUrl && !isAllowedBridgeUrl(bridgeUrl, allowedBridgeOrigins)) {
+        return withEnvCors(request, json({ ok: false, message: 'That paired-device address is no longer allowed.' }, 400))
+      }
+      const useBridgeRelay = Boolean(bridgeUrl && bridgeToken)
+
+      const userInsert = await databaseClient.request('chat_messages', {
         method: 'POST',
         body: {
+          thread_id: thread.id,
           user_id: user.id,
-          title: summarizePrompt(prompt),
-          summary: null,
-          lane: 'roachclaw-web',
-          source: 'roachnet.org/roachclaw',
+          role: 'user',
+          content: prompt,
           metadata: {
-            createdBy: 'web',
+            source: 'roachnet.org/roachclaw',
           },
         },
       })
-      thread = inserted?.[0] || null
-    }
 
-    const existingRelay = thread?.metadata?.relay && typeof thread.metadata.relay === 'object' ? thread.metadata.relay : {}
-    const bridgeUrl = requestedBridgeUrl || normalizeBridgeUrl(existingRelay?.bridgeUrl)
-    if (bridgeUrl && !isAllowedBridgeUrl(bridgeUrl, allowedBridgeOrigins)) {
-      return withCors(request, json({ ok: false, message: 'That paired-device address is no longer allowed.' }, 400))
-    }
-    const useBridgeRelay = Boolean(bridgeUrl && bridgeToken)
-
-    const userInsert = await databaseClient.request('chat_messages', {
-      method: 'POST',
-      body: {
-        thread_id: thread.id,
-        user_id: user.id,
-        role: 'user',
-        content: prompt,
-        metadata: {
-          source: 'roachnet.org/roachclaw',
-        },
-      },
-    })
-
-    const messageQuery = new URLSearchParams({
-      select: 'role,content,created_at',
-      thread_id: `eq.${thread.id}`,
-      user_id: `eq.${user.id}`,
-      order: 'created_at.asc',
-      limit: '24',
-    })
-    const history = await databaseClient.request('chat_messages', { query: messageQuery.toString() })
-
-    const relayMessages = history
-      .map((item) => ({
-        role: item.role,
-        content: sanitizeMessageContent(item.content),
-      }))
-      .filter((item) => item.content.length > 0)
-
-    const reply = useBridgeRelay
-      ? await sendRoachClawRelay({
-          bridgeUrl,
-          bridgeToken,
-          model,
-          content: prompt,
-          remoteSessionId: String(existingRelay?.remoteSessionId || '').trim(),
-          messages: relayMessages,
-        })
-      : await generateRoachBrainReply({
-          history: relayMessages,
-          prompt,
-        })
-
-    const assistantInsert = await databaseClient.request('chat_messages', {
-      method: 'POST',
-      body: {
-        thread_id: thread.id,
-        user_id: user.id,
-        role: 'assistant',
-        content: reply.text,
-        provider: reply.provider,
-        model: reply.model,
-        metadata: {
-          source: 'roachnet.org/roachclaw',
-          relay: useBridgeRelay
-            ? {
-                kind: 'local-device',
-                bridgeUrl,
-                label: bridgeLabel || sanitizeLabel(existingRelay?.label || ''),
-              }
-            : {
-                kind: 'roachbrain-cloud',
-                label: 'RoachBrain Cloud',
-              },
-        },
-      },
-    })
-
-    const relayMetadata = useBridgeRelay
-      ? {
-          kind: 'local-device',
-          bridgeUrl,
-          label: bridgeLabel || sanitizeLabel(existingRelay?.label || ''),
-          remoteSessionId: reply.remoteSessionId || String(existingRelay?.remoteSessionId || '').trim() || null,
-          lastUsedAt: new Date().toISOString(),
-        }
-      : {
-          kind: 'roachbrain-cloud',
-          label: 'RoachBrain Cloud',
-          lastUsedAt: new Date().toISOString(),
-        }
-
-    const shouldRefreshTitle =
-      !thread.summary ||
-      thread.title === 'New chat' ||
-      thread.title === summarizePrompt(prompt)
-
-    const updatedThreadRows = await databaseClient.request('chat_threads', {
-      method: 'PATCH',
-      query: new URLSearchParams({
-        select: '*',
-        id: `eq.${thread.id}`,
+      const messageQuery = new URLSearchParams({
+        select: 'role,content,created_at',
+        thread_id: `eq.${thread.id}`,
         user_id: `eq.${user.id}`,
-      }).toString(),
-      body: shouldRefreshTitle
+        order: 'created_at.asc',
+        limit: '24',
+      })
+      const history = await databaseClient.request('chat_messages', { query: messageQuery.toString() })
+
+      const relayMessages = history
+        .map((item) => ({
+          role: item.role,
+          content: sanitizeMessageContent(item.content),
+        }))
+        .filter((item) => item.content.length > 0)
+
+      const reply = useBridgeRelay
+        ? await sendRoachClawRelay({
+            fetchImpl,
+            bridgeUrl,
+            bridgeToken,
+            model,
+            content: prompt,
+            remoteSessionId: String(existingRelay?.remoteSessionId || '').trim(),
+            messages: relayMessages,
+          })
+        : await generateReply({
+            history: relayMessages,
+            prompt,
+          })
+
+      const assistantInsert = await databaseClient.request('chat_messages', {
+        method: 'POST',
+        body: {
+          thread_id: thread.id,
+          user_id: user.id,
+          role: 'assistant',
+          content: reply.text,
+          provider: reply.provider,
+          model: reply.model,
+          metadata: {
+            source: 'roachnet.org/roachclaw',
+            relay: useBridgeRelay
+              ? {
+                  kind: 'local-device',
+                  bridgeUrl,
+                  label: bridgeLabel || sanitizeLabel(existingRelay?.label || ''),
+                }
+              : {
+                  kind: 'roachbrain-cloud',
+                  label: 'RoachBrain Cloud',
+                },
+          },
+        },
+      })
+
+      const relayMetadata = useBridgeRelay
         ? {
-            title: sanitizeLabel(reply.remoteSessionTitle) || summarizePrompt(prompt),
-            summary: summarizeReply(reply.text),
-            metadata: {
-              ...(thread.metadata && typeof thread.metadata === 'object' ? thread.metadata : {}),
-              relay: relayMetadata,
-            },
+            kind: 'local-device',
+            bridgeUrl,
+            label: bridgeLabel || sanitizeLabel(existingRelay?.label || ''),
+            remoteSessionId: reply.remoteSessionId || String(existingRelay?.remoteSessionId || '').trim() || null,
+            lastUsedAt: new Date().toISOString(),
           }
         : {
-            summary: thread.summary || summarizeReply(reply.text),
-            metadata: {
-              ...(thread.metadata && typeof thread.metadata === 'object' ? thread.metadata : {}),
-              relay: relayMetadata,
-            },
-          },
-    })
+            kind: 'roachbrain-cloud',
+            label: 'RoachBrain Cloud',
+            lastUsedAt: new Date().toISOString(),
+          }
 
-    return withCors(
-      request,
-      json({
-        ok: true,
-        thread: updatedThreadRows?.[0] || thread,
-        userMessage: userInsert?.[0] || null,
-        assistantMessage: assistantInsert?.[0] || null,
-        provider: reply.provider,
-        model: reply.model,
+      const shouldRefreshTitle =
+        !thread.summary ||
+        thread.title === 'New chat' ||
+        thread.title === summarizePrompt(prompt)
+
+      const updatedThreadRows = await databaseClient.request('chat_threads', {
+        method: 'PATCH',
+        query: new URLSearchParams({
+          select: '*',
+          id: `eq.${thread.id}`,
+          user_id: `eq.${user.id}`,
+        }).toString(),
+        body: shouldRefreshTitle
+          ? {
+              title: sanitizeLabel(reply.remoteSessionTitle) || summarizePrompt(prompt),
+              summary: summarizeReply(reply.text),
+              metadata: {
+                ...(thread.metadata && typeof thread.metadata === 'object' ? thread.metadata : {}),
+                relay: relayMetadata,
+              },
+            }
+          : {
+              summary: thread.summary || summarizeReply(reply.text),
+              metadata: {
+                ...(thread.metadata && typeof thread.metadata === 'object' ? thread.metadata : {}),
+                relay: relayMetadata,
+              },
+            },
       })
-    )
-  } catch (error) {
-    return withCors(
-      request,
-      json(
-        {
-          ok: false,
-          message: error instanceof Error ? error.message : 'RoachClaw could not finish the request.',
-        },
-        500
+
+      return withEnvCors(
+        request,
+        json({
+          ok: true,
+          thread: updatedThreadRows?.[0] || thread,
+          userMessage: userInsert?.[0] || null,
+          assistantMessage: assistantInsert?.[0] || null,
+          provider: reply.provider,
+          model: reply.model,
+        })
       )
-    )
+    } catch (error) {
+      if (!(error instanceof PublicError)) console.error('RoachClaw chat request failed.', error)
+      return withEnvCors(
+        request,
+        json(
+          {
+            ok: false,
+            message: error instanceof PublicError ? error.message : 'RoachClaw could not finish the request.',
+          },
+          500
+        )
+      )
+    }
   }
 }
+
+export default async (request) => createChatHandler()(request)
 ```

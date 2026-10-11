@@ -98,7 +98,7 @@ function setLandingShortcutKeys(activeKeys = []) {
 
 function getDownloadUrlForPlatform(platformKey) {
   const asset = findAssetForPlatform(platformKey)
-  if (asset?.browser_download_url) {
+  if (isGitHubDownload(asset?.browser_download_url)) {
     return asset.browser_download_url
   }
 
@@ -109,7 +109,20 @@ function getDownloadUrlForPlatform(platformKey) {
   return latestReleasePage
 }
 
-function triggerBackgroundDownload(url) {
+// Release assets come from the GitHub API; only github.com download links are followed.
+function isGitHubDownload(url) {
+  try {
+    const parsed = new URL(String(url || ''))
+    return parsed.protocol === 'https:' && parsed.hostname === 'github.com'
+  } catch {
+    return false
+  }
+}
+
+// The DMG is served as an attachment, so navigating to it starts the download and
+// leaves the page where it is. (A hidden iframe can't do this: the CSP's frame-src
+// only admits the Turnstile widget.)
+function startDownload(url) {
   if (!url) {
     return
   }
@@ -119,26 +132,46 @@ function triggerBackgroundDownload(url) {
     return
   }
 
-  const frame = document.createElement('iframe')
-  frame.hidden = true
-  frame.src = url
-  frame.setAttribute('aria-hidden', 'true')
-  document.body.appendChild(frame)
-  window.setTimeout(() => frame.remove(), 20000)
+  window.location.assign(url)
+}
+
+// The landing hands the download to Home: navigating to Home first and starting the
+// download there means no second navigation can cancel it mid-redirect.
+const homeDownloadParam = 'download'
+
+function startHandedOffDownload() {
+  if (!/^\/home\/?$/.test(window.location.pathname)) {
+    return
+  }
+  const params = new URLSearchParams(window.location.search)
+  if (params.get(homeDownloadParam) !== 'mac') {
+    return
+  }
+  params.delete(homeDownloadParam)
+  const query = params.toString()
+  window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`)
+  startDownload(getDownloadUrlForPlatform('mac'))
+
+  const toast = document.createElement('div')
+  toast.className = 'nx-toast'
+  toast.setAttribute('role', 'status')
+  toast.textContent = 'RoachNet Setup for macOS is downloading.'
+  document.body.appendChild(toast)
+  window.requestAnimationFrame(() => toast.classList.add('is-on'))
+  window.setTimeout(() => toast.classList.remove('is-on'), 4200)
+  window.setTimeout(() => toast.remove(), 4800)
 }
 
 function triggerLandingDownloadAndRedirect() {
-  const downloadUrl = getDownloadUrlForPlatform('mac')
   setLandingShortcutKeys(['shift', 'meta', 'r'])
-  setLandingShortcutStatus('Download started. Opening Home…')
-  triggerBackgroundDownload(downloadUrl)
+  setLandingShortcutStatus('Opening Home. Your download starts there.')
 
   if (landingRedirectTimer) {
     window.clearTimeout(landingRedirectTimer)
   }
 
   landingRedirectTimer = window.setTimeout(() => {
-    window.location.href = homePageUrl
+    window.location.href = `${homePageUrl}?${homeDownloadParam}=mac`
   }, 900)
 }
 
@@ -1587,6 +1620,7 @@ homebrewCopyButtons.forEach((button) => {
 })
 
 landingDownloadButton?.addEventListener('click', triggerLandingDownloadAndRedirect)
+startHandedOffDownload()
 
 document.addEventListener(
   'keydown',

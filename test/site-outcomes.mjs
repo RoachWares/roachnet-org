@@ -135,6 +135,38 @@ for (const page of publicPages) {
   }
 }
 assert.match(await source('app-store.html'), /<h1[ >]/)
+
+// Halloween mode: every page loads the switch in <head> (so the theme lands before
+// first paint), the script stays CSP-clean, and the decorations stand down for
+// reduced motion, forced colours and print.
+for (const page of [...publicPages, '404.html']) {
+  const headHtml = (await source(page)).split('</head>')[0]
+  assert.match(headHtml, /<script src="[^"]*nx-halloween\.js"><\/script>/, `${page} loads nx-halloween.js in <head>`)
+}
+const halloween = await source('nx-halloween.js')
+assert.doesNotMatch(halloween, /innerHTML|insertAdjacentHTML|setAttribute\(\s*['"]style|cssText|eval\(|new Function/, 'Halloween mode builds nodes, never HTML strings or inline styles')
+assert.match(halloween, /prefers-reduced-motion: reduce/)
+assert.match(halloween, /samesite=lax/)
+assert.doesNotMatch(halloween, /localStorage|fetch\(|XMLHttpRequest|sendBeacon/, 'Halloween mode keeps one cookie and talks to nobody')
+const halloweenCss = await source('nx-halloween.css')
+assert.doesNotMatch(await source('nx.css'), /data-halloween/, 'the Halloween theme stays out of nx.css, so it costs nothing out of season')
+assert.match(halloween, /blocking', 'render'/, 'the Halloween stylesheet blocks render, so there is no flash of the normal theme')
+for (const query of ['prefers-reduced-motion: reduce', 'forced-colors: active', 'print']) {
+  assert.match(halloweenCss, new RegExp(`@media \\(?${query.replace(/[()]/g, '')}`), `Halloween CSS handles ${query}`)
+}
+for (const build of ['scripts/build-main-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-accounts-site.mjs']) {
+  assert.match(await source(build), /nx-halloween\.js/, `${build} ships nx-halloween.js`)
+  assert.match(await source(build), /nx-halloween\.css/, `${build} ships nx-halloween.css`)
+}
+
+// The landing download is a plain navigation handed to Home, not a hidden iframe
+// (the CSP's frame-src admits only Turnstile, so an iframe download never starts).
+const appScript = await source('app.js')
+assert.doesNotMatch(appScript, /createElement\('iframe'\)/)
+assert.match(appScript, /function startHandedOffDownload/)
+assert.match(appScript, /hostname === 'github\.com'/)
+// Accounts posts sign-ups to the roachnet.org function, so its CSP must allow it.
+assert.match(accountsBuild, /connect-src 'self' https:\/\/roachnet\.org /)
 for (const page of ['index.html', 'home/index.html', 'brew/index.html', 'app-store.html']) {
   const html = await source(page)
   assert.match(html, /not Apple-notarized/i, `${page} needs release-notarization disclosure`)

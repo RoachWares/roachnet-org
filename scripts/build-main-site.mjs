@@ -116,6 +116,8 @@ const copyList = [
   "landing-dither.js",
   "nx.css",
   "nx.js",
+  "nx-halloween.js",
+  "nx-halloween.css",
   "nx-mission.css",
   "nx-docs.css",
   "vendor/supabase-js",

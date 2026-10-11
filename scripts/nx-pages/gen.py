@@ -36,6 +36,7 @@ def head(title, description, canonical, image, rel, extra=""):
     <meta name="twitter:image" content="{image}" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
 {extra}    <link rel="stylesheet" href="{rel}nx.css" />
+    <script src="{rel}nx-halloween.js"></script>
   </head>
 '''
 

@@ -107,6 +107,8 @@ async function main() {
     'nx.css',
     'nx-store.css',
     'nx.js',
+    'nx-halloween.js',
+    'nx-halloween.css',
     'fonts',
     'collections',
     'downloads',

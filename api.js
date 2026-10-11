@@ -2090,7 +2090,12 @@ function resetFilters() {
 }
 
 function hydrateFromHash({ initial = false } = {}) {
-  const id = decodeURIComponent(window.location.hash.replace(/^#/, '').trim())
+  let id = ''
+  try {
+    id = decodeURIComponent(window.location.hash.replace(/^#/, '').trim())
+  } catch {
+    return
+  }
   if (!id) return
   const route = routeIndex.get(id)
   if (!route) {

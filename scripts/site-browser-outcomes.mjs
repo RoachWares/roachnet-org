@@ -2,7 +2,7 @@
 
 import assert from 'node:assert/strict'
 import { createReadStream } from 'node:fs'
-import { access, readdir, stat } from 'node:fs/promises'
+import { access, readFile, readdir, stat } from 'node:fs/promises'
 import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -54,11 +54,26 @@ async function localFile(directory, urlPath) {
   }
 }
 
-async function startServer(directory) {
+// Serve each site with the Content-Security-Policy it ships with (netlify.toml for
+// the main site, _headers for Apps and Accounts), so a CSP violation shows up as a
+// console error and fails the page. upgrade-insecure-requests is dropped because
+// the test server is plain http on loopback.
+async function sitePolicy(site) {
+  const source = site.name === 'main'
+    ? await readFile(path.join(root, 'netlify.toml'), 'utf8')
+    : await readFile(path.join(root, site.directory, '_headers'), 'utf8')
+  const match = /Content-Security-Policy(?: = "|: )([^"\n]+)/.exec(source)
+  assert.ok(match, `${site.name} ships a Content-Security-Policy`)
+  return match[1].replace(/;\s*upgrade-insecure-requests/, '').trim()
+}
+
+async function startServer(directory, policy) {
   const server = http.createServer(async (request, response) => {
     const file = await localFile(directory, new URL(request.url, 'http://localhost').pathname)
     const target = file || path.join(directory, '404.html')
-    response.writeHead(file ? 200 : 404, { 'content-type': mime.get(path.extname(target)) || 'application/octet-stream', 'cache-control': 'no-store' })
+    const headers = { 'content-type': mime.get(path.extname(target)) || 'application/octet-stream', 'cache-control': 'no-store' }
+    if (policy && target.endsWith('.html')) headers['content-security-policy'] = policy
+    response.writeHead(file ? 200 : 404, headers)
     createReadStream(target).pipe(response)
   })
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
@@ -146,6 +161,163 @@ async function checkPage(browser, baseUrl, pathname, viewport, label) {
     assert.deepEqual(failures, [], `${label} browser failures`)
   } finally {
     await page.close()
+  }
+}
+
+// Halloween mode: pin the date, then check the switch, the cookie, the decorations
+// and that the moon never sits behind the first heading.
+async function halloweenPage(browser, baseUrl, pathname, { iso, viewport = { width: 1440, height: 900 }, reducedMotion = false } = {}) {
+  // A fresh context per scenario, so one scenario's cookie never leaks into the next.
+  const context = await browser.createBrowserContext()
+  const page = await context.newPage()
+  const closePage = page.close.bind(page)
+  page.close = async () => {
+    await closePage()
+    await context.close()
+  }
+  const failures = []
+  page.on('console', (message) => {
+    if (message.type() === 'error') failures.push(`console: ${message.text()}`)
+  })
+  page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`))
+  await page.setViewport(viewport)
+  await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: reducedMotion ? 'reduce' : 'no-preference' }])
+  await page.evaluateOnNewDocument((fixedIso) => {
+    const fixed = new Date(fixedIso).getTime()
+    const RealDate = Date
+    class PinnedDate extends RealDate {
+      constructor(...args) {
+        super(...(args.length ? args : [fixed]))
+      }
+
+      static now() {
+        return fixed
+      }
+    }
+    globalThis.Date = PinnedDate
+  }, iso)
+  await page.setRequestInterception(true)
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.origin === baseUrl) return request.continue()
+    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : 'export {}' })
+  })
+  const go = async (suffix = '') => {
+    const response = await page.goto(`${baseUrl}${pathname}${suffix}`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
+    assert.equal(response?.status(), 200)
+    await page.waitForFunction(() => document.readyState !== 'loading')
+  }
+  const state = () => page.evaluate(() => {
+    const moon = document.querySelector('.nx-spook-moon')
+    const heading = [...document.querySelectorAll('h1')].find((h1) => h1.getBoundingClientRect().height > 0)
+    return {
+      on: document.documentElement.getAttribute('data-halloween') === 'on',
+      switches: [...document.querySelectorAll('.nx-spook-switch')].map((control) => control.getAttribute('aria-pressed')),
+      cookie: (/(?:^|;\s*)rn_halloween=(on|off)/.exec(document.cookie) || [])[1] || null,
+      moonVisible: Boolean(moon && !moon.hidden && getComputedStyle(moon).display !== 'none'),
+      moonClear: (() => {
+        if (!moon || !heading) return true
+        const a = moon.getBoundingClientRect()
+        const b = heading.getBoundingClientRect()
+        return a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top
+      })(),
+      bats: document.querySelectorAll('.nx-spook__bat').length,
+      sheet: [...document.styleSheets].some((sheet) => /nx-halloween\.css$/.test(sheet.href || '') && sheet.cssRules.length > 0),
+      spider: Boolean(document.querySelector('.nx-spook-spider')),
+      overflow: document.documentElement.scrollWidth > window.innerWidth,
+    }
+  })
+  return { page, failures, go, state }
+}
+
+async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = false } = {}) {
+  // Mid-October: offered, off until the visitor turns it on, then remembered.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-10-11T12:00:00' })
+    try {
+      await go()
+      let now = await state()
+      assert.equal(now.on, false, `${label}: off by default before 24 October`)
+      assert.deepEqual(now.switches, ['false', 'false'], `${label}: nav and footer switches`)
+      await page.click('.nx-spook-switch--nav')
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-halloween') === 'on', { timeout: 5_000 })
+      await page.waitForFunction(() => document.querySelector('.nx-spook-toast.is-on'), { timeout: 5_000 })
+      now = await state()
+      assert.deepEqual(now.switches, ['true', 'true'], `${label}: both switches follow`)
+      assert.equal(now.cookie, 'on', `${label}: the choice is kept`)
+      assert.equal(now.moonVisible, true, `${label}: the moon is up`)
+      assert.equal(now.sheet, true, `${label}: the Halloween stylesheet is loaded`)
+      assert.equal(now.moonClear, true, `${label}: the moon never sits behind the first heading`)
+      assert.equal(now.bats, 4, `${label}: bats fly when motion is allowed`)
+      assert.equal(now.overflow, false, `${label}: no horizontal overflow in Halloween mode`)
+      if (spiderPage) {
+        await page.waitForSelector('.nx-spook-spider.is-down', { timeout: 5_000 })
+        await page.evaluate(() => document.querySelector('.nx-spook-spider__bob')?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })))
+        await page.waitForFunction(() => !document.querySelector('.nx-spook-spider'), { timeout: 5_000 })
+      } else {
+        assert.equal(now.spider, false, `${label}: no spider on working pages`)
+      }
+      await go()
+      assert.equal((await state()).on, true, `${label}: on before first paint after a reload`)
+      await page.click('.nx-spook-switch--foot')
+      await page.waitForFunction(() => !document.documentElement.hasAttribute('data-halloween'), { timeout: 5_000 })
+      assert.equal((await state()).cookie, 'off', `${label}: turning it off is kept too`)
+      assert.deepEqual(failures, [], `${label}: Halloween browser failures`)
+    } finally {
+      await page.close()
+    }
+  }
+  // Halloween week starts on; ?halloween=off still wins.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-10-29T20:00:00', viewport: { width: 390, height: 844, isMobile: true } })
+    try {
+      await go()
+      let now = await state()
+      assert.equal(now.on, true, `${label}: on by default in Halloween week`)
+      assert.equal(now.overflow, false, `${label}: no phone overflow in Halloween mode`)
+      assert.equal(now.moonClear, true, `${label}: the moon clears the heading on phones`)
+      await go('?halloween=off')
+      now = await state()
+      assert.equal(now.on, false, `${label}: ?halloween=off turns it off`)
+      assert.equal(now.cookie, 'off')
+      assert.deepEqual(failures, [], `${label}: Halloween week browser failures`)
+    } finally {
+      await page.close()
+    }
+  }
+  // Reduced motion: the theme without bats, spider or flicker.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-10-30T20:00:00', reducedMotion: true })
+    try {
+      await go()
+      const now = await state()
+      assert.equal(now.on, true)
+      assert.equal(now.bats, 0, `${label}: no bats under reduced motion`)
+      assert.equal(now.spider, false, `${label}: no spider under reduced motion`)
+      await page.click('.nx-spook-switch--nav')
+      assert.equal(await page.evaluate(() => document.documentElement.hasAttribute('data-halloween') || Boolean(document.querySelector('.nx-spook-flash'))), false, `${label}: switches at once, no flicker`)
+      assert.deepEqual(failures, [], `${label}: reduced-motion Halloween browser failures`)
+    } finally {
+      await page.close()
+    }
+  }
+  // Out of season: nothing, unless previewed; a preview saves nothing.
+  {
+    const { page, failures, go, state } = await halloweenPage(browser, baseUrl, pathname, { iso: '2026-12-01T12:00:00' })
+    try {
+      await go()
+      let now = await state()
+      assert.equal(now.on, false, `${label}: off out of season`)
+      assert.deepEqual(now.switches, [], `${label}: no switch out of season`)
+      assert.equal(now.sheet, false, `${label}: no Halloween stylesheet out of season`)
+      await go('?halloween=on')
+      now = await state()
+      assert.equal(now.on, true, `${label}: ?halloween=on previews out of season`)
+      assert.equal(now.cookie, null, `${label}: a preview stores nothing`)
+      assert.deepEqual(failures, [], `${label}: preview browser failures`)
+    } finally {
+      await page.close()
+    }
   }
 }
 
@@ -299,7 +471,7 @@ async function checkAppDetailKeyboardFlow(browser, baseUrl) {
 const browser = await puppeteer.launch({ executablePath: await findChromium(), headless: true, timeout: 60_000, args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'] })
 try {
   for (const site of sites) {
-    const server = await startServer(path.join(root, site.directory))
+    const server = await startServer(path.join(root, site.directory), await sitePolicy(site))
     const baseUrl = `http://127.0.0.1:${server.address().port}`
     try {
       for (const [pathname, expectedMime] of [['/robots.txt', 'text/plain'], ['/sitemap.xml', 'application/xml']]) {
@@ -316,6 +488,13 @@ try {
         if (site.name === 'apps') {
           await checkPage(browser, baseUrl, pathname, { width: 320, height: 720, isMobile: true }, `${site.name} ${name} compact`)
         }
+      }
+      if (site.name === 'main') {
+        await checkHalloween(browser, baseUrl, '/', 'main mission', { spiderPage: true })
+        await checkHalloween(browser, baseUrl, '/home/', 'main home', { spiderPage: true })
+        await checkHalloween(browser, baseUrl, '/roachclaw/', 'main roachclaw')
+      } else {
+        await checkHalloween(browser, baseUrl, '/', `${site.name} Halloween`)
       }
       if (site.name === 'main') {
         await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)

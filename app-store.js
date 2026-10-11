@@ -671,9 +671,21 @@ function formatCompactBytes(bytes) {
   return `${value.toFixed(precision)} ${units[unitIndex]}`
 }
 
+// Catalog links may be https anywhere or a path on this site. Parsing (rather
+// than prefix-matching) catches look-alikes such as "/\\evil.example", which
+// browsers read as an off-site "//evil.example".
 function safeHref(url) {
   const value = String(url || '')
-  if (/^https:\/\//i.test(value) || /^\.\//.test(value) || /^\/[^/]/.test(value)) return value
+  if (!value || /[\u0000-\u001f\u007f\\]/.test(value)) return ''
+  let parsed
+  try {
+    parsed = new URL(value, window.location.href)
+  } catch {
+    return ''
+  }
+  const relative = /^(\.\/|\/(?!\/))/.test(value)
+  if (relative && parsed.origin === window.location.origin) return value
+  if (!relative && parsed.protocol === 'https:' && /^https:\/\//i.test(value)) return value
   return ''
 }
 
@@ -1577,7 +1589,12 @@ async function copyItemLink(button) {
 function openFromHash() {
   const match = /^#app-(.+)$/.exec(window.location.hash)
   if (!match) return false
-  const id = decodeURIComponent(match[1])
+  let id = ''
+  try {
+    id = decodeURIComponent(match[1])
+  } catch {
+    return false
+  }
   if (!findItemById(id)) return false
   openDetail(id, null)
   return true

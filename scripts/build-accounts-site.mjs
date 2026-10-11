@@ -21,6 +21,8 @@ async function main() {
     'nx.css',
     'nx-account.css',
     'nx.js',
+    'nx-halloween.js',
+    'nx-halloween.css',
     'fonts',
     'vendor/supabase-js',
     'favicon.ico',
@@ -71,7 +73,7 @@ async function main() {
     path.join(outputRoot, '_headers'),
     [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://roachnet.org https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
       '  X-Frame-Options: DENY',
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',

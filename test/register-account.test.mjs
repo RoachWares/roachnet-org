@@ -142,8 +142,48 @@ test('local Turnstile bypass requires an exact local Origin and explicit Netlify
   const deployedResponse = await deployed.handler(
     registrationRequest({ origin: 'http://localhost:8888', ip: null, captchaToken: '' })
   )
-  assert.equal(deployedResponse.status, 503)
-  assert.equal((await body(deployedResponse)).code, 'captcha_unavailable')
+  assert.equal(deployedResponse.status, 403)
+  assert.equal((await body(deployedResponse)).message, 'Origin not allowed.')
+  assert.equal(deployed.calls.length, 0)
+})
+
+test('a deployed function does not answer localhost origins', async () => {
+  const { calls, handler } = createHarness()
+  const response = await handler(registrationRequest({ origin: 'http://localhost:8888' }))
+  assert.equal(response.status, 403)
+  assert.equal(calls.length, 0)
+})
+
+test('registration refuses oversized bodies and over-long passwords before external work', async () => {
+  const { calls, handler } = createHarness()
+  const huge = new Request('https://roachnet.org/.netlify/functions/register-account', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', origin: 'https://accounts.roachnet.org', 'x-nf-client-connection-ip': '203.0.113.9' },
+    body: JSON.stringify({ email: 'person@example.com', password: 'x'.repeat(20000) }),
+  })
+  assert.equal((await handler(huge)).status, 413)
+
+  const long = new Request('https://roachnet.org/.netlify/functions/register-account', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', origin: 'https://accounts.roachnet.org', 'x-nf-client-connection-ip': '203.0.113.9' },
+    body: JSON.stringify({ email: 'person@example.com', password: 'x'.repeat(73), captchaToken: 'captcha-token' }),
+  })
+  const longResponse = await handler(long)
+  assert.equal(longResponse.status, 400)
+  assert.match((await body(longResponse)).message, /72 characters/)
+  assert.equal(calls.length, 0)
+})
+
+test('a Turnstile pass from another hostname does not count', async () => {
+  const { handler } = createHarness({
+    fetchImpl: async (url) =>
+      String(url).includes('challenges.cloudflare.com')
+        ? Response.json({ success: true, hostname: 'evil.example' })
+        : Response.json({ id: 'user-1' }),
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 403)
+  assert.equal((await body(response)).code, 'captcha_failed')
 })
 
 test('registration fails closed without a trusted production client IP', async () => {
