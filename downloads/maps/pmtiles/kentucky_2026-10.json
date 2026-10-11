@@ -1,0 +1,42 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-kentucky",
+  "title": "Kentucky",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "kentucky_2026-10.pmtiles",
+  "key": "maps/pmtiles/kentucky_2026-10.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/kentucky_2026-10.json",
+  "bytes": 231716680,
+  "size": "232 MB",
+  "sha256": "6408cd2b06fa7a44936d99b7879379f5f50d123e4fbc65fea0ffdc9c4804b39c",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/kentucky_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/kentucky_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -89.591663,
+    36.476963,
+    -81.942375,
+    39.16733
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

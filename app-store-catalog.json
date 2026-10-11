@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-10T08:06:56.258Z",
+  "updatedAt": "2026-10-11T08:52:26.746Z",
   "featuredId": "base-atlas",
   "artifactOrigin": {
     "provider": "Apps.RoachNet.org",
@@ -12,144 +12,92 @@
   "items": [
     {
       "id": "base-atlas",
-      "title": "Base Atlas",
-      "subtitle": "Core renderer and shared basemap",
-      "category": "Maps",
+      "title": "World Atlas",
+      "subtitle": "The whole planet, zoom 0–7",
       "section": "Map Regions",
-      "size": "320 MB",
-      "status": "Required first install",
-      "source": "RoachNet mirror",
-      "summary": "Install the shared vector atlas and base map assets first so every regional collection opens cleanly inside the native Maps lane.",
+      "status": "Install this first",
       "featured": true,
       "accent": "blue",
-      "machineFit": "Best first install on every supported machine",
+      "machineFit": "Best first map on every machine: small, and it fills in around every state pack",
+      "summary": "Coastlines, countries, major roads and cities for the entire world in one small file. Start here.",
       "includes": [
-        "Shared vector atlas and renderer assets",
-        "Required before regional map collections",
-        "Installs directly into the native Maps lane"
+        "Every country, zoom 0–7",
+        "Fills in around the state and territory packs",
+        "Works on RoachNet 1.0.6"
       ],
-      "installLabel": "Install to RoachNet",
-      "detailLabel": "View manifest",
-      "detailUrl": "./collections/maps.json",
-      "installIntent": {
-        "action": "base-map-assets"
-      },
-      "artifact": {
-        "provider": "Apps.RoachNet.org",
-        "engine": "Static descriptors + open distribution sources",
-        "key": "maps/base-atlas/manifest.json",
-        "url": "https://apps.roachnet.org/downloads/maps/base-atlas/manifest.json",
-        "status": "manifest-backed",
-        "sourceUrl": null,
-        "checksumUrl": null,
-        "mirrorPolicy": "canonical-source-first",
-        "note": "Base map assets are resolved by the native installer from the Apps catalog and downloads bucket."
-      },
-      "iconBand": "RoachNet",
-      "iconMonogram": "MAP",
-      "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/base-atlas.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
-    },
-    {
-      "id": "map-global-mini",
-      "title": "Global Mini Atlas",
-      "subtitle": "Fast world fallback basemap",
-      "url": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles",
-      "sizeBytes": 184137576,
-      "status": "Travel-ready fallback",
-      "accent": "cyan",
-      "machineFit": "Best when you want one compact world map on every machine",
-      "summary": "A compact world basemap for quick travel checks, rough routing, and backup context when you do not need the heavier regional shelves yet.",
-      "includes": [
-        "Single-file global PMTiles atlas",
-        "Fastest way to keep worldwide map context handy",
-        "Pairs well with Base Atlas and one regional shelf"
-      ],
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      },
       "category": "Maps",
-      "section": "Map Picks",
-      "size": "176 MB",
-      "source": "RoachNet map mirror",
+      "size": "180 MB",
+      "sizeBytes": 189035641,
+      "source": "RoachNet Maps on GitHub",
       "installLabel": "Install to RoachNet",
-      "detailLabel": "Open collection manifest",
-      "detailUrl": "./collections/maps.json",
+      "detailLabel": "Open the release",
+      "detailUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/global-min_2025-12.json",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles",
-        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/global-min_2025-12.json",
-        "artifactKey": "maps/pmtiles/global-min_2025-12.pmtiles",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/global-min_2026-10.json",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/global-min_2026-10.pmtiles",
+        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/global-min_2026-10.json",
+        "artifactKey": "maps/pmtiles/global-min_2026-10.pmtiles",
         "artifactProvider": "Apps.RoachNet.org",
         "filetype": "map"
       },
       "artifact": {
         "provider": "Apps.RoachNet.org",
         "engine": "Static descriptors + open distribution sources",
-        "key": "maps/pmtiles/global-min_2025-12.json",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/global-min_2025-12.json",
-        "status": "source-with-managed-mirror",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles",
+        "key": "maps/pmtiles/global-min_2026-10.json",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/global-min_2026-10.json",
+        "status": "published",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/global-min_2026-10.pmtiles",
         "checksumUrl": null,
         "mirrorPolicy": "canonical-source-first",
-        "note": "Direct map picks keep their original source and expose an Apps descriptor URL for the native installer when staged."
+        "note": "Release asset with a published SHA-256 (2c62483674e5…). RoachNet verifies it after the download."
       },
       "iconBand": "Maps",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-global-mini.svg",
-      "iconMonogram": "GMA"
+      "iconAsset": "./assets/app-icons/base-atlas.svg",
+      "iconMonogram": "WA"
     },
     {
       "id": "map-california-solo",
+      "slug": "california",
       "title": "California Solo",
-      "subtitle": "One-state West Coast map shelf",
-      "url": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
-      "sizeBytes": 1185114056,
+      "subtitle": "One state, coast to Sierra",
       "status": "High-detail state pack",
       "accent": "blue",
-      "machineFit": "Best when you want deep California coverage without the whole Pacific shelf",
-      "summary": "A single-state California shelf for city grids, coast runs, mountain passes, and all the weird stretches in between.",
+      "machineFit": "When California is the whole trip and the Pacific shelf is more than you need",
+      "summary": "Every street in California, from the Bay to the desert, in one file.",
       "includes": [
-        "Focused California PMTiles install",
-        "Good when one state matters more than the whole region",
-        "Still lands directly in the native Maps lane"
+        "Zoom 0–15, street level",
+        "Clipped to the state line, not a box",
+        "Same file the Pacific shelf installs"
       ],
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      },
       "category": "Maps",
       "section": "Map Picks",
-      "size": "1.1 GB",
-      "source": "RoachNet map mirror",
+      "size": "1.2 GB",
+      "sizeBytes": 1250394328,
+      "source": "RoachNet Maps on GitHub",
       "installLabel": "Install to RoachNet",
-      "detailLabel": "Open collection manifest",
-      "detailUrl": "./collections/maps.json",
+      "detailLabel": "Open the release",
+      "detailUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/california_2025-12.json",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
-        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/california_2025-12.json",
-        "artifactKey": "maps/pmtiles/california_2025-12.pmtiles",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/california_2026-10.json",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/california_2026-10.pmtiles",
+        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/california_2026-10.json",
+        "artifactKey": "maps/pmtiles/california_2026-10.pmtiles",
         "artifactProvider": "Apps.RoachNet.org",
         "filetype": "map"
       },
       "artifact": {
         "provider": "Apps.RoachNet.org",
         "engine": "Static descriptors + open distribution sources",
-        "key": "maps/pmtiles/california_2025-12.json",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/california_2025-12.json",
-        "status": "source-with-managed-mirror",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
+        "key": "maps/pmtiles/california_2026-10.json",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/california_2026-10.json",
+        "status": "published",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/california_2026-10.pmtiles",
         "checksumUrl": null,
         "mirrorPolicy": "canonical-source-first",
-        "note": "Direct map picks keep their original source and expose an Apps descriptor URL for the native installer when staged."
+        "note": "Release asset with a published SHA-256 (2bbc2646487e…). RoachNet verifies it after the download."
       },
       "iconBand": "Maps",
       "iconFamily": "maps",
@@ -158,49 +106,45 @@
     },
     {
       "id": "map-texas-solo",
+      "slug": "texas",
       "title": "Texas Solo",
-      "subtitle": "One-state South Central map shelf",
-      "url": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
-      "sizeBytes": 903490126,
+      "subtitle": "One state, a lot of highway",
       "status": "High-detail state pack",
       "accent": "bronze",
-      "machineFit": "Best when you need Texas coverage without carrying the whole regional pack",
-      "summary": "A focused Texas shelf for metro sprawl, long highway cuts, border corridors, and the empty miles between them.",
+      "machineFit": "When you need Texas without the rest of the South Central shelf",
+      "summary": "Metro sprawl, border towns and the long empty miles between them, all on your disk.",
       "includes": [
-        "Focused Texas PMTiles install",
-        "Useful when one big state is the whole trip",
-        "Lets the regional shelves stay optional"
+        "Zoom 0–15, street level",
+        "Clipped to the state line, not a box",
+        "Same file the South Central shelf installs"
       ],
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      },
       "category": "Maps",
       "section": "Map Picks",
-      "size": "862 MB",
-      "source": "RoachNet map mirror",
+      "size": "944 MB",
+      "sizeBytes": 989553674,
+      "source": "RoachNet Maps on GitHub",
       "installLabel": "Install to RoachNet",
-      "detailLabel": "Open collection manifest",
-      "detailUrl": "./collections/maps.json",
+      "detailLabel": "Open the release",
+      "detailUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2025-12.json",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
-        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2025-12.json",
-        "artifactKey": "maps/pmtiles/texas_2025-12.pmtiles",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2026-10.json",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/texas_2026-10.pmtiles",
+        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2026-10.json",
+        "artifactKey": "maps/pmtiles/texas_2026-10.pmtiles",
         "artifactProvider": "Apps.RoachNet.org",
         "filetype": "map"
       },
       "artifact": {
         "provider": "Apps.RoachNet.org",
         "engine": "Static descriptors + open distribution sources",
-        "key": "maps/pmtiles/texas_2025-12.json",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2025-12.json",
-        "status": "source-with-managed-mirror",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
+        "key": "maps/pmtiles/texas_2026-10.json",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2026-10.json",
+        "status": "published",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/texas_2026-10.pmtiles",
         "checksumUrl": null,
         "mirrorPolicy": "canonical-source-first",
-        "note": "Direct map picks keep their original source and expose an Apps descriptor URL for the native installer when staged."
+        "note": "Release asset with a published SHA-256 (254344a3c468…). RoachNet verifies it after the download."
       },
       "iconBand": "Maps",
       "iconFamily": "maps",
@@ -209,49 +153,45 @@
     },
     {
       "id": "map-florida-solo",
+      "slug": "florida",
       "title": "Florida Solo",
-      "subtitle": "One-state coastal route shelf",
-      "url": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles",
-      "sizeBytes": 1072848714,
+      "subtitle": "One state, mostly coastline",
       "status": "High-detail state pack",
       "accent": "green",
-      "machineFit": "Best when you want hurricane corridor and coastal sprawl coverage without the full South Atlantic lane",
-      "summary": "A focused Florida shelf for coastal sprawl, inland connectors, hurricane corridors, and the long flat drives in between.",
+      "machineFit": "For hurricane season, road trips and anyone who has watched a cell tower go dark",
+      "summary": "Coast roads, evacuation routes and inland connectors that still load when the network does not.",
       "includes": [
-        "Focused Florida PMTiles install",
-        "Good state-first travel shelf for the Southeast",
-        "Queues into the same native Maps lane as the regional packs"
+        "Zoom 0–15, street level",
+        "Keys and barrier islands included",
+        "Same file the South Atlantic shelf installs"
       ],
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      },
       "category": "Maps",
       "section": "Map Picks",
-      "size": "1023 MB",
-      "source": "RoachNet map mirror",
+      "size": "1.0 GB",
+      "sizeBytes": 1104455477,
+      "source": "RoachNet Maps on GitHub",
       "installLabel": "Install to RoachNet",
-      "detailLabel": "Open collection manifest",
-      "detailUrl": "./collections/maps.json",
+      "detailLabel": "Open the release",
+      "detailUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/florida_2025-12.json",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles",
-        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/florida_2025-12.json",
-        "artifactKey": "maps/pmtiles/florida_2025-12.pmtiles",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/florida_2026-10.json",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/florida_2026-10.pmtiles",
+        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/florida_2026-10.json",
+        "artifactKey": "maps/pmtiles/florida_2026-10.pmtiles",
         "artifactProvider": "Apps.RoachNet.org",
         "filetype": "map"
       },
       "artifact": {
         "provider": "Apps.RoachNet.org",
         "engine": "Static descriptors + open distribution sources",
-        "key": "maps/pmtiles/florida_2025-12.json",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/florida_2025-12.json",
-        "status": "source-with-managed-mirror",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles",
+        "key": "maps/pmtiles/florida_2026-10.json",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/florida_2026-10.json",
+        "status": "published",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/florida_2026-10.pmtiles",
         "checksumUrl": null,
         "mirrorPolicy": "canonical-source-first",
-        "note": "Direct map picks keep their original source and expose an Apps descriptor URL for the native installer when staged."
+        "note": "Release asset with a published SHA-256 (680c1396dc7b…). RoachNet verifies it after the download."
       },
       "iconBand": "Maps",
       "iconFamily": "maps",
@@ -260,49 +200,45 @@
     },
     {
       "id": "map-new-york-solo",
+      "slug": "new_york",
       "title": "New York Solo",
-      "subtitle": "One-state Northeast route shelf",
-      "url": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles",
-      "sizeBytes": 541225235,
+      "subtitle": "One state, city to Adirondacks",
       "status": "Dense corridor pack",
       "accent": "violet",
-      "machineFit": "Best when you want dense Northeast coverage without the whole Mid-Atlantic shelf",
-      "summary": "A focused New York shelf for city density, upstate routes, lake corridors, and everything between subway tunnels and back roads.",
+      "machineFit": "When you want New York without the whole Mid-Atlantic shelf",
+      "summary": "The five boroughs, the Thruway and the back roads upstate, readable with the Wi-Fi off.",
       "includes": [
-        "Focused New York PMTiles install",
-        "Good for dense-route travel without the full region",
-        "Still works with the same contained Maps runtime"
+        "Zoom 0–15, street level",
+        "Clipped to the state line, not a box",
+        "Same file the Mid-Atlantic shelf installs"
       ],
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      },
       "category": "Maps",
       "section": "Map Picks",
-      "size": "516 MB",
-      "source": "RoachNet map mirror",
+      "size": "554 MB",
+      "sizeBytes": 581413536,
+      "source": "RoachNet Maps on GitHub",
       "installLabel": "Install to RoachNet",
-      "detailLabel": "Open collection manifest",
-      "detailUrl": "./collections/maps.json",
+      "detailLabel": "Open the release",
+      "detailUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10",
       "installIntent": {
         "action": "direct-download",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/new_york_2025-12.json",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles",
-        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/new_york_2025-12.json",
-        "artifactKey": "maps/pmtiles/new_york_2025-12.pmtiles",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/new_york_2026-10.json",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/new_york_2026-10.pmtiles",
+        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/new_york_2026-10.json",
+        "artifactKey": "maps/pmtiles/new_york_2026-10.pmtiles",
         "artifactProvider": "Apps.RoachNet.org",
         "filetype": "map"
       },
       "artifact": {
         "provider": "Apps.RoachNet.org",
         "engine": "Static descriptors + open distribution sources",
-        "key": "maps/pmtiles/new_york_2025-12.json",
-        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/new_york_2025-12.json",
-        "status": "source-with-managed-mirror",
-        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles",
+        "key": "maps/pmtiles/new_york_2026-10.json",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/new_york_2026-10.json",
+        "status": "published",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/new_york_2026-10.pmtiles",
         "checksumUrl": null,
         "mirrorPolicy": "canonical-source-first",
-        "note": "Direct map picks keep their original source and expose an Apps descriptor URL for the native installer when staged."
+        "note": "Release asset with a published SHA-256 (14d3cf24210e…). RoachNet verifies it after the download."
       },
       "iconBand": "Maps",
       "iconFamily": "maps",
@@ -310,17 +246,111 @@
       "iconMonogram": "NYS"
     },
     {
+      "id": "map-dc-solo",
+      "slug": "district_of_columbia",
+      "title": "Washington, DC",
+      "subtitle": "The District, block by block",
+      "status": "New in 2026-10",
+      "accent": "cyan",
+      "machineFit": "Small enough to keep on every machine you own",
+      "summary": "All of DC at street level in a file smaller than most podcasts. The old map shelf skipped DC; this one does not.",
+      "includes": [
+        "Zoom 0–15, street level",
+        "Buffered a couple of km past the line",
+        "Works on RoachNet 1.0.6"
+      ],
+      "category": "Maps",
+      "section": "Map Picks",
+      "size": "23 MB",
+      "sizeBytes": 24598911,
+      "source": "RoachNet Maps on GitHub",
+      "installLabel": "Install to RoachNet",
+      "detailLabel": "Open the release",
+      "detailUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10",
+      "installIntent": {
+        "action": "direct-download",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/district_of_columbia_2026-10.json",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/district_of_columbia_2026-10.pmtiles",
+        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/district_of_columbia_2026-10.json",
+        "artifactKey": "maps/pmtiles/district_of_columbia_2026-10.pmtiles",
+        "artifactProvider": "Apps.RoachNet.org",
+        "filetype": "map"
+      },
+      "artifact": {
+        "provider": "Apps.RoachNet.org",
+        "engine": "Static descriptors + open distribution sources",
+        "key": "maps/pmtiles/district_of_columbia_2026-10.json",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/district_of_columbia_2026-10.json",
+        "status": "published",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/district_of_columbia_2026-10.pmtiles",
+        "checksumUrl": null,
+        "mirrorPolicy": "canonical-source-first",
+        "note": "Release asset with a published SHA-256 (f84fd665b4ca…). RoachNet verifies it after the download."
+      },
+      "iconBand": "Maps",
+      "iconFamily": "maps",
+      "iconAsset": "./assets/app-icons/map-dc-solo.svg",
+      "iconMonogram": "WD"
+    },
+    {
+      "id": "map-puerto-rico-solo",
+      "slug": "puerto_rico",
+      "title": "Puerto Rico",
+      "subtitle": "The island, Vieques and Culebra",
+      "status": "New in 2026-10",
+      "accent": "gold",
+      "machineFit": "For trips and storm seasons where the network is the first thing to go",
+      "summary": "Puerto Rico and its outer islands at street level, in one small file.",
+      "includes": [
+        "Zoom 0–15, street level",
+        "Vieques and Culebra included",
+        "Works on RoachNet 1.0.6"
+      ],
+      "category": "Maps",
+      "section": "Map Picks",
+      "size": "67 MB",
+      "sizeBytes": 70188891,
+      "source": "RoachNet Maps on GitHub",
+      "installLabel": "Install to RoachNet",
+      "detailLabel": "Open the release",
+      "detailUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10",
+      "installIntent": {
+        "action": "direct-download",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/puerto_rico_2026-10.json",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/puerto_rico_2026-10.pmtiles",
+        "mirrorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/puerto_rico_2026-10.json",
+        "artifactKey": "maps/pmtiles/puerto_rico_2026-10.pmtiles",
+        "artifactProvider": "Apps.RoachNet.org",
+        "filetype": "map"
+      },
+      "artifact": {
+        "provider": "Apps.RoachNet.org",
+        "engine": "Static descriptors + open distribution sources",
+        "key": "maps/pmtiles/puerto_rico_2026-10.json",
+        "url": "https://apps.roachnet.org/downloads/maps/pmtiles/puerto_rico_2026-10.json",
+        "status": "published",
+        "sourceUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/puerto_rico_2026-10.pmtiles",
+        "checksumUrl": null,
+        "mirrorPolicy": "canonical-source-first",
+        "note": "Release asset with a published SHA-256 (7637bfd46135…). RoachNet verifies it after the download."
+      },
+      "iconBand": "Maps",
+      "iconFamily": "maps",
+      "iconAsset": "./assets/app-icons/map-puerto-rico-solo.svg",
+      "iconMonogram": "PR"
+    },
+    {
       "id": "map-pacific",
       "title": "Pacific Region",
       "subtitle": "Alaska, California, Hawaii, Oregon, Washington",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "2.6 GB",
+      "size": "2.9 GB",
       "status": "Recommended first region",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the Pacific region, including Alaska, California, Hawaii, Oregon, and Washington.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Alaska, California, Hawaii, Oregon and Washington.",
       "accent": "blue",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "5 regional map resources",
         "Alaska",
@@ -347,11 +377,7 @@
       "iconBand": "Maps",
       "iconMonogram": "PR",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-pacific.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-pacific.svg"
     },
     {
       "id": "map-mountain",
@@ -359,12 +385,12 @@
       "subtitle": "Arizona, Colorado, Idaho, Montana, Nevada",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "2.2 GB",
+      "size": "2.5 GB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the Mountain region, including Arizona, Colorado, Idaho, Montana, Nevada, New Mexico, Utah, and Wyoming.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Arizona, Colorado, Idaho, Montana, Nevada, New Mexico, Utah and Wyoming.",
       "accent": "cyan",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "8 regional map resources",
         "Arizona",
@@ -391,11 +417,7 @@
       "iconBand": "Maps",
       "iconMonogram": "MR",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-mountain.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-mountain.svg"
     },
     {
       "id": "map-west-south-central",
@@ -405,10 +427,10 @@
       "section": "Map Regions",
       "size": "1.6 GB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the West South Central region, including Arkansas, Louisiana, Oklahoma, and Texas.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Arkansas, Oklahoma, Louisiana and Texas.",
       "accent": "green",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "4 regional map resources",
         "Arkansas",
@@ -435,11 +457,7 @@
       "iconBand": "Maps",
       "iconMonogram": "WSC",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-west-south-central.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-west-south-central.svg"
     },
     {
       "id": "map-east-south-central",
@@ -447,12 +465,12 @@
       "subtitle": "Alabama, Kentucky, Mississippi, Tennessee",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "1.6 GB",
+      "size": "935 MB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the East South Central region, including Alabama, Kentucky, Mississippi, and Tennessee.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Alabama, Kentucky, Mississippi and Tennessee.",
       "accent": "violet",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "4 regional map resources",
         "Alabama",
@@ -479,28 +497,24 @@
       "iconBand": "Maps",
       "iconMonogram": "ESC",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-east-south-central.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-east-south-central.svg"
     },
     {
       "id": "map-south-atlantic",
       "title": "South Atlantic",
-      "subtitle": "Delaware, Florida, Georgia, Maryland, North Carolina",
+      "subtitle": "Delaware, District Of Columbia, Florida, Georgia, Maryland",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "3.1 GB",
+      "size": "3.3 GB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the South Atlantic region, including Delaware, Florida, Georgia, Maryland, North Carolina, South Carolina, Virginia, and West Virginia.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Delaware, District of Columbia, Florida, Georgia, Maryland, North Carolina, South Carolina, Virginia and West Virginia.",
       "accent": "gold",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
-        "8 regional map resources",
+        "9 regional map resources",
         "Delaware",
-        "Florida"
+        "District of Columbia"
       ],
       "installLabel": "Install to RoachNet",
       "detailLabel": "Open collection manifest",
@@ -523,11 +537,7 @@
       "iconBand": "Maps",
       "iconMonogram": "SA",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-south-atlantic.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-south-atlantic.svg"
     },
     {
       "id": "map-west-north-central",
@@ -535,12 +545,12 @@
       "subtitle": "Iowa, Kansas, Minnesota, Missouri, Nebraska",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "2.7 GB",
+      "size": "1.8 GB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the West North Central region, including Iowa, Kansas, Minnesota, Missouri, Nebraska, North Dakota, and South Dakota.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Iowa, Kansas, Minnesota, Missouri, Nebraska, North Dakota and South Dakota.",
       "accent": "bronze",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "7 regional map resources",
         "Iowa",
@@ -567,11 +577,7 @@
       "iconBand": "Maps",
       "iconMonogram": "WNC",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-west-north-central.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-west-north-central.svg"
     },
     {
       "id": "map-east-north-central",
@@ -579,12 +585,12 @@
       "subtitle": "Illinois, Indiana, Michigan, Ohio, Wisconsin",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "2.0 GB",
+      "size": "2.1 GB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the East North Central region, including Illinois, Indiana, Michigan, Ohio, and Wisconsin.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Illinois, Indiana, Michigan, Ohio and Wisconsin.",
       "accent": "blue",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "5 regional map resources",
         "Illinois",
@@ -611,11 +617,7 @@
       "iconBand": "Maps",
       "iconMonogram": "ENC",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-east-north-central.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-east-north-central.svg"
     },
     {
       "id": "map-mid-atlantic",
@@ -623,16 +625,16 @@
       "subtitle": "New Jersey, New York, Pennsylvania",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "1.2 GB",
+      "size": "1.3 GB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the Mid-Atlantic region, including New Jersey, New York, and Pennsylvania.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of New Jersey, New York and Pennsylvania.",
       "accent": "cyan",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "3 regional map resources",
-        "New_Jersey",
-        "New_York"
+        "New Jersey",
+        "New York"
       ],
       "installLabel": "Install to RoachNet",
       "detailLabel": "Open collection manifest",
@@ -655,11 +657,7 @@
       "iconBand": "Maps",
       "iconMonogram": "MA",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-mid-atlantic.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-mid-atlantic.svg"
     },
     {
       "id": "map-new-england",
@@ -667,12 +665,12 @@
       "subtitle": "Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island",
       "category": "Maps",
       "section": "Map Regions",
-      "size": "2.3 GB",
+      "size": "930 MB",
       "status": "Ready",
-      "source": "RoachNet map mirror",
-      "summary": "Map assets for the New England region, including Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, and Vermont.",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island and Vermont.",
       "accent": "green",
-      "machineFit": "Good first regional lane once Base Atlas is installed",
+      "machineFit": "A good first region once the World Atlas is in",
       "includes": [
         "6 regional map resources",
         "Connecticut",
@@ -699,11 +697,48 @@
       "iconBand": "Maps",
       "iconMonogram": "NE",
       "iconFamily": "maps",
-      "iconAsset": "./assets/app-icons/map-new-england.svg",
-      "availability": {
-        "state": "unavailable",
-        "reason": "Map files are being re-hosted. Installs come back as soon as the new mirror is live."
-      }
+      "iconAsset": "./assets/app-icons/map-new-england.svg"
+    },
+    {
+      "id": "map-us-territories",
+      "title": "US Territories",
+      "subtitle": "American Samoa, Commonwealth Of The Northern Mariana Islands, Guam, Puerto Rico, United States Virgin Islands",
+      "category": "Maps",
+      "section": "Map Regions",
+      "size": "81 MB",
+      "status": "Needs RoachNet 1.1",
+      "source": "RoachNet Maps on GitHub",
+      "summary": "Street-level offline maps of American Samoa, Commonwealth of the Northern Mariana Islands, Guam, Puerto Rico and United States Virgin Islands.",
+      "accent": "violet",
+      "machineFit": "A good first region once the World Atlas is in",
+      "includes": [
+        "5 regional map resources",
+        "American Samoa",
+        "Commonwealth of the Northern Mariana Islands"
+      ],
+      "installLabel": "Install to RoachNet",
+      "detailLabel": "Open collection manifest",
+      "detailUrl": "./collections/maps.json",
+      "installIntent": {
+        "action": "map-collection",
+        "slug": "us-territories"
+      },
+      "minimumRoachNet": "1.1.0",
+      "artifact": {
+        "provider": "Apps.RoachNet.org",
+        "engine": "Static descriptors + open distribution sources",
+        "key": "maps/collections/us-territories/manifest.json",
+        "url": "https://apps.roachnet.org/downloads/maps/collections/us-territories/manifest.json",
+        "status": "manifest-backed",
+        "sourceUrl": null,
+        "checksumUrl": null,
+        "mirrorPolicy": "canonical-source-first",
+        "note": "Regional map collections resolve through the Apps catalog and same-origin descriptors when managed assets are available."
+      },
+      "iconBand": "Maps",
+      "iconMonogram": "UT",
+      "iconFamily": "maps",
+      "iconAsset": "./assets/app-icons/map-us-territories.svg"
     },
     {
       "id": "stack-dev-studio-essentials",

@@ -1,0 +1,42 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-texas",
+  "title": "Texas",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "texas_2026-10.pmtiles",
+  "key": "maps/pmtiles/texas_2026-10.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2026-10.json",
+  "bytes": 989553674,
+  "size": "990 MB",
+  "sha256": "254344a3c46848c9f030eab3cd7c3193b70542067d1d73706a81f938de406941",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/texas_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/texas_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -106.665881,
+    25.817919,
+    -93.487477,
+    36.52046
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

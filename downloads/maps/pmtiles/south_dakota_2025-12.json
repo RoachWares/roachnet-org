@@ -1,0 +1,44 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-south-dakota-legacy",
+  "title": "South Dakota",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "south_dakota_2025-12.pmtiles",
+  "key": "maps/pmtiles/south_dakota_2025-12.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/south_dakota_2025-12.json",
+  "bytes": 139630680,
+  "size": "140 MB",
+  "sha256": "18461f2e1ebddab25db82aa001d8dbbdf8779782db6a602ba592a11da73b8cdf",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/south_dakota_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/south_dakota_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -104.078259,
+    42.45958,
+    -96.389178,
+    45.965314
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "aliasOf": "south_dakota_2026-10.pmtiles",
+  "note": "RoachNet 1.0.6 asks for south_dakota_2025-12.pmtiles. This serves the maps-2026-10 pack (south_dakota_2026-10.pmtiles) under that name so 1.0.6 can install it and see it as installed.",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

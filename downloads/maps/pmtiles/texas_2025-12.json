@@ -1,36 +1,44 @@
 {
   "schema": "org.roachnet.apps.download-descriptor.v1",
-  "id": "map-texas-solo",
-  "title": "Texas Solo",
+  "id": "map-texas-legacy",
+  "title": "Texas",
   "category": "Maps",
-  "section": "Map Picks",
+  "section": "Map Packs",
   "action": "direct-download",
-  "kind": null,
+  "kind": "pmtiles",
   "tier": null,
   "filename": "texas_2025-12.pmtiles",
   "key": "maps/pmtiles/texas_2025-12.pmtiles",
-  "internetArchiveKey": "maps__pmtiles__texas_2025-12.pmtiles",
   "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/texas_2025-12.json",
-  "bytes": null,
-  "size": "862 MB",
-  "sha256": null,
+  "bytes": 989553674,
+  "size": "990 MB",
+  "sha256": "254344a3c46848c9f030eab3cd7c3193b70542067d1d73706a81f938de406941",
   "chunkSizeBytes": null,
   "parts": [],
   "sources": [
     {
-      "type": "public-source",
-      "label": "Original public source",
-      "url": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles",
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/texas_2026-10.pmtiles",
       "status": "active"
-    },
-    {
-      "type": "internet-archive",
-      "label": "RoachNet Internet Archive mirror",
-      "url": "https://archive.org/download/roachnet-apps-catalog-v1_0_5/maps__pmtiles__texas_2025-12.pmtiles",
-      "status": "mirror-pending"
     }
   ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/texas_2026-10.pmtiles",
   "checksumUrl": null,
-  "status": "descriptor-ready-public-source-first",
-  "policy": "Apps.RoachNet.org hosts descriptors and checksums. Large archives live on public source rails and Internet Archive mirrors, not this machine, Netlify, GitHub source, or R2."
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -106.665881,
+    25.817919,
+    -93.487477,
+    36.52046
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "aliasOf": "texas_2026-10.pmtiles",
+  "note": "RoachNet 1.0.6 asks for texas_2025-12.pmtiles. This serves the maps-2026-10 pack (texas_2026-10.pmtiles) under that name so 1.0.6 can install it and see it as installed.",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
 }

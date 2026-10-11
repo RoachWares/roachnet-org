@@ -1,0 +1,44 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-new-jersey-legacy",
+  "title": "New Jersey",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "new_jersey_2025-12.pmtiles",
+  "key": "maps/pmtiles/new_jersey_2025-12.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/new_jersey_2025-12.json",
+  "bytes": 222274869,
+  "size": "222 MB",
+  "sha256": "151e72443663ebdf70ec76bc835ebd4aeb6126d00b531b8c0ed3079247388dde",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/new_jersey_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/new_jersey_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -75.582513,
+    38.908207,
+    -73.870125,
+    41.379624
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "aliasOf": "new_jersey_2026-10.pmtiles",
+  "note": "RoachNet 1.0.6 asks for new_jersey_2025-12.pmtiles. This serves the maps-2026-10 pack (new_jersey_2026-10.pmtiles) under that name so 1.0.6 can install it and see it as installed.",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

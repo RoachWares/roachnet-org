@@ -1,0 +1,44 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-illinois-legacy",
+  "title": "Illinois",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "illinois_2025-12.pmtiles",
+  "key": "maps/pmtiles/illinois_2025-12.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/illinois_2025-12.json",
+  "bytes": 479088600,
+  "size": "479 MB",
+  "sha256": "440045fc17ad184d603d7889d9f715c20aed91f0c6c6e43ff263f24563061fdd",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/illinois_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/illinois_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -91.532873,
+    36.950059,
+    -87.474236,
+    42.528632
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "aliasOf": "illinois_2026-10.pmtiles",
+  "note": "RoachNet 1.0.6 asks for illinois_2025-12.pmtiles. This serves the maps-2026-10 pack (illinois_2026-10.pmtiles) under that name so 1.0.6 can install it and see it as installed.",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

@@ -3973,8 +3973,8 @@ const sectionDefinitions = [
     eyebrow: 'Offline atlas',
     title: 'Maps by region.',
     description:
-      'City streets, highways, coastlines and the long empty bits in between, grouped into regional packs that open in RoachNet Maps without a signal.',
-    short: 'Regional packs for RoachNet Maps. They come back once the new mirror is live.',
+      'City streets, highways, coastlines and the long empty bits in between, as PMTiles files that land in ~/RoachNet/storage/maps. The RoachNet 1.1 map draws them; until it ships, any PMTiles viewer opens them.',
+    short: 'Every state, DC and the territories, street level and clipped to the real border.',
     icon: 'MAP',
     group: 'Maps',
   },
@@ -3983,7 +3983,8 @@ const sectionDefinitions = [
     navLabel: 'Map Picks',
     eyebrow: 'Single-file maps',
     title: 'One place, one file.',
-    description: 'Single-region PMTiles maps for when you need one state, not the whole continent.',
+    description: 'One state or territory per file, for when you need California, not the whole Pacific shelf.',
+    short: 'One state or territory, one file.',
     icon: 'PIN',
     group: 'Maps',
   },
@@ -4369,10 +4370,10 @@ const itemCopy = {
   },
   'base-atlas': {
     blurb:
-      'Shared basemap and renderer assets that every regional map install stacks on top of.',
+      'The whole world at zoom 0–7 in one small file. Install it first and every state pack has something around it.',
     detail: [
-      'Base Atlas is the first thing to install if you want Maps to behave like a real offline atlas instead of a partial shelf.',
-      'It provides the shared renderer and baseline assets so every regional pack opens cleanly inside RoachNet Maps.',
+      'World Atlas covers every country: coastlines, borders, major roads and cities. It fills in around whatever state or territory packs you add.',
+      'Packs are boundary-clipped PMTiles from the Protomaps 2026-10 build. RoachNet checks each file against its published SHA-256 before it counts as installed.',
     ],
   },
   'map-pacific': {
@@ -4773,10 +4774,10 @@ function landingFor(item, section) {
   switch (action) {
     case 'base-map-assets':
     case 'map-collection':
-      return { place: 'Maps', note: 'Goes straight into RoachNet Maps and opens without a connection.' }
+      return { place: 'Maps', note: 'One file per state in ~/RoachNet/storage/maps, checked against its SHA-256.' }
     case 'direct-download':
       return item.installIntent?.filetype === 'map'
-        ? { place: 'Maps', note: 'One map file, filed into RoachNet Maps.' }
+        ? { place: 'Maps', note: 'One map file in ~/RoachNet/storage/maps, checked against its SHA-256.' }
         : { place: 'Downloads lane', note: 'Fetched by RoachNet from the descriptor and filed with your other installs.' }
     case 'education-tier':
       return { place: 'A shelf per pack', note: 'One install queues every shelf in the stack. Each one keeps its own name.' }

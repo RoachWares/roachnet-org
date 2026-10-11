@@ -1,0 +1,42 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-south-carolina",
+  "title": "South Carolina",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "south_carolina_2026-10.pmtiles",
+  "key": "maps/pmtiles/south_carolina_2026-10.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/south_carolina_2026-10.json",
+  "bytes": 244976743,
+  "size": "245 MB",
+  "sha256": "bed853a180c58d46daf06cb2b601e446a0a4638909b3c2a6bb25381c19a7dcbf",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/south_carolina_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/south_carolina_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -83.377248,
+    32.015678,
+    -78.512989,
+    35.235422
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

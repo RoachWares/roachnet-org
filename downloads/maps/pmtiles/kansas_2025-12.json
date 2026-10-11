@@ -1,0 +1,44 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-kansas-legacy",
+  "title": "Kansas",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "kansas_2025-12.pmtiles",
+  "key": "maps/pmtiles/kansas_2025-12.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/kansas_2025-12.json",
+  "bytes": 251738435,
+  "size": "252 MB",
+  "sha256": "ce13195c962e3599181cb4d795cd7a08109faabc9e193f941559c50522f7dd2d",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/kansas_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/kansas_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -102.071767,
+    36.972858,
+    -94.567811,
+    40.023069
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "aliasOf": "kansas_2026-10.pmtiles",
+  "note": "RoachNet 1.0.6 asks for kansas_2025-12.pmtiles. This serves the maps-2026-10 pack (kansas_2026-10.pmtiles) under that name so 1.0.6 can install it and see it as installed.",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

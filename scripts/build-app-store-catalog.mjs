@@ -24,12 +24,9 @@ const nativeUnsupportedModels = {
   'qwen3-coder:30b': 'Qwen3-Coder MoE is not supported by the native RoachInference engine yet.',
 }
 
-// The map files' public source (github.com/RoachWares/RoachNet-Maps) is gone
-// and no mirror holds them; installs stay off until they are re-hosted.
-const mapsAvailability = {
-  state: 'unavailable',
-  reason: 'Map files are being re-hosted. Installs come back as soon as the new mirror is live.',
-}
+// Map packs are release assets on github.com/RoachWares/RoachNet-Maps (maps-2026-10);
+// scripts/build-map-packs.mjs writes their descriptors and collections/maps.json.
+const mapPacksPath = path.join(repoRoot, 'collections/map-packs-2026-10.json')
 
 function resourceIsAvailable(resource) {
   return !resource?.unavailable
@@ -653,91 +650,73 @@ const roachVoicePacks = [
   },
 ]
 
-const curatedMapPacks = [
-  {
-    id: 'map-global-mini',
-    title: 'Global Mini Atlas',
-    subtitle: 'Fast world fallback basemap',
-    url: 'https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/global-min_2025-12.pmtiles',
-    sizeBytes: 184137576,
-    status: 'Travel-ready fallback',
-    accent: 'cyan',
-    machineFit: 'Best when you want one compact world map on every machine',
-    summary:
-      'A compact world basemap for quick travel checks, rough routing, and backup context when you do not need the heavier regional shelves yet.',
-    includes: [
-      'Single-file global PMTiles atlas',
-      'Fastest way to keep worldwide map context handy',
-      'Pairs well with Base Atlas and one regional shelf',
-    ],
-  },
+// Single-file picks. Every one is a direct download, so RoachNet 1.0.6 installs them too.
+const curatedMapPickSpecs = [
   {
     id: 'map-california-solo',
+    slug: 'california',
     title: 'California Solo',
-    subtitle: 'One-state West Coast map shelf',
-    url: 'https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles',
-    sizeBytes: 1185114056,
+    subtitle: 'One state, coast to Sierra',
     status: 'High-detail state pack',
     accent: 'blue',
-    machineFit: 'Best when you want deep California coverage without the whole Pacific shelf',
-    summary:
-      'A single-state California shelf for city grids, coast runs, mountain passes, and all the weird stretches in between.',
-    includes: [
-      'Focused California PMTiles install',
-      'Good when one state matters more than the whole region',
-      'Still lands directly in the native Maps lane',
-    ],
+    machineFit: 'When California is the whole trip and the Pacific shelf is more than you need',
+    summary: 'Every street in California, from the Bay to the desert, in one file.',
+    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the Pacific shelf installs'],
   },
   {
     id: 'map-texas-solo',
+    slug: 'texas',
     title: 'Texas Solo',
-    subtitle: 'One-state South Central map shelf',
-    url: 'https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/texas_2025-12.pmtiles',
-    sizeBytes: 903490126,
+    subtitle: 'One state, a lot of highway',
     status: 'High-detail state pack',
     accent: 'bronze',
-    machineFit: 'Best when you need Texas coverage without carrying the whole regional pack',
-    summary:
-      'A focused Texas shelf for metro sprawl, long highway cuts, border corridors, and the empty miles between them.',
-    includes: [
-      'Focused Texas PMTiles install',
-      'Useful when one big state is the whole trip',
-      'Lets the regional shelves stay optional',
-    ],
+    machineFit: 'When you need Texas without the rest of the South Central shelf',
+    summary: 'Metro sprawl, border towns and the long empty miles between them, all on your disk.',
+    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the South Central shelf installs'],
   },
   {
     id: 'map-florida-solo',
+    slug: 'florida',
     title: 'Florida Solo',
-    subtitle: 'One-state coastal route shelf',
-    url: 'https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/florida_2025-12.pmtiles',
-    sizeBytes: 1072848714,
+    subtitle: 'One state, mostly coastline',
     status: 'High-detail state pack',
     accent: 'green',
-    machineFit: 'Best when you want hurricane corridor and coastal sprawl coverage without the full South Atlantic lane',
-    summary:
-      'A focused Florida shelf for coastal sprawl, inland connectors, hurricane corridors, and the long flat drives in between.',
-    includes: [
-      'Focused Florida PMTiles install',
-      'Good state-first travel shelf for the Southeast',
-      'Queues into the same native Maps lane as the regional packs',
-    ],
+    machineFit: 'For hurricane season, road trips and anyone who has watched a cell tower go dark',
+    summary: 'Coast roads, evacuation routes and inland connectors that still load when the network does not.',
+    includes: ['Zoom 0–15, street level', 'Keys and barrier islands included', 'Same file the South Atlantic shelf installs'],
   },
   {
     id: 'map-new-york-solo',
+    slug: 'new_york',
     title: 'New York Solo',
-    subtitle: 'One-state Northeast route shelf',
-    url: 'https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/new_york_2025-12.pmtiles',
-    sizeBytes: 541225235,
+    subtitle: 'One state, city to Adirondacks',
     status: 'Dense corridor pack',
     accent: 'violet',
-    machineFit: 'Best when you want dense Northeast coverage without the whole Mid-Atlantic shelf',
-    summary:
-      'A focused New York shelf for city density, upstate routes, lake corridors, and everything between subway tunnels and back roads.',
-    includes: [
-      'Focused New York PMTiles install',
-      'Good for dense-route travel without the full region',
-      'Still works with the same contained Maps runtime',
-    ],
+    machineFit: 'When you want New York without the whole Mid-Atlantic shelf',
+    summary: 'The five boroughs, the Thruway and the back roads upstate, readable with the Wi-Fi off.',
+    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the Mid-Atlantic shelf installs'],
+  },
+  {
+    id: 'map-dc-solo',
+    slug: 'district_of_columbia',
+    title: 'Washington, DC',
+    subtitle: 'The District, block by block',
+    status: 'New in 2026-10',
+    accent: 'cyan',
+    machineFit: 'Small enough to keep on every machine you own',
+    summary: 'All of DC at street level in a file smaller than most podcasts. The old map shelf skipped DC; this one does not.',
+    includes: ['Zoom 0–15, street level', 'Buffered a couple of km past the line', 'Works on RoachNet 1.0.6'],
+  },
+  {
+    id: 'map-puerto-rico-solo',
+    slug: 'puerto_rico',
+    title: 'Puerto Rico',
+    subtitle: 'The island, Vieques and Culebra',
+    status: 'New in 2026-10',
+    accent: 'gold',
+    machineFit: 'For trips and storm seasons where the network is the first thing to go',
+    summary: 'Puerto Rico and its outer islands at street level, in one small file.',
+    includes: ['Zoom 0–15, street level', 'Vieques and Culebra included', 'Works on RoachNet 1.0.6'],
   },
 ]
 
@@ -1424,41 +1403,56 @@ function toCatalog() {
     readFile(paths.kiwix, 'utf8').then(JSON.parse),
     readFile(paths.wikipedia, 'utf8').then(JSON.parse),
     readFile(paths.packs, 'utf8').then(JSON.parse),
-  ]).then(([mapsData, kiwixData, wikipediaData, packsData]) => {
-    const baseAtlas = {
+    readFile(mapPacksPath, 'utf8').then(JSON.parse),
+  ]).then(([mapsData, kiwixData, wikipediaData, packsData, mapPacks]) => {
+    const packBySlug = new Map(mapPacks.packs.map((pack) => [pack.slug, pack]))
+    const mapPickItem = (pack, spec) => {
+      if (!pack) throw new Error(`map pick ${spec.id} has no pack in ${mapPacks.release}`)
+      const descriptorKey = `maps/pmtiles/${pack.file.replace(/\.pmtiles$/, '.json')}`
+      const sourceUrl = `${mapPacks.assetBaseUrl}/${pack.file}`
+      return {
+        ...spec,
+        category: 'Maps',
+        section: spec.section || 'Map Picks',
+        size: formatSizeFromBytes(pack.bytes),
+        sizeBytes: pack.bytes,
+        source: 'RoachNet Maps on GitHub',
+        installLabel: modelPackInstallLabel(),
+        detailLabel: 'Open the release',
+        detailUrl: `https://github.com/${mapPacks.repo}/releases/tag/${mapPacks.release}`,
+        installIntent: {
+          action: 'direct-download',
+          url: artifactUrl(descriptorKey),
+          sourceUrl,
+          mirrorUrl: artifactUrl(descriptorKey),
+          artifactKey: `maps/pmtiles/${pack.file}`,
+          artifactProvider: artifactOrigin.provider,
+          filetype: 'map',
+        },
+        artifact: sourceMirrorArtifact(`maps/pmtiles/${pack.file}`, sourceUrl, {
+          status: 'published',
+          note: `Release asset with a published SHA-256 (${pack.sha256.slice(0, 12)}…). RoachNet verifies it after the download.`,
+        }),
+        iconBand: 'Maps',
+        iconFamily: 'maps',
+        iconAsset: iconAssetForItem(spec.id),
+        iconMonogram: shortMonogram(spec.title),
+      }
+    }
+    const worldPack = mapPacks.packs.find((pack) => pack.slug === 'global-min')
+    const baseAtlas = mapPickItem(worldPack, {
       id: 'base-atlas',
-      title: 'Base Atlas',
-      subtitle: 'Core renderer and shared basemap',
-      category: 'Maps',
+      title: 'World Atlas',
+      subtitle: 'The whole planet, zoom 0–7',
       section: 'Map Regions',
-      size: '320 MB',
-      status: 'Required first install',
-      source: 'RoachNet mirror',
-      summary:
-        'Install the shared vector atlas and base map assets first so every regional collection opens cleanly inside the native Maps lane.',
+      status: 'Install this first',
       featured: true,
       accent: 'blue',
-      machineFit: 'Best first install on every supported machine',
-      includes: [
-        'Shared vector atlas and renderer assets',
-        'Required before regional map collections',
-        'Installs directly into the native Maps lane',
-      ],
-      installLabel: modelPackInstallLabel(),
-      detailLabel: 'View manifest',
-      detailUrl: './collections/maps.json',
-      installIntent: {
-        action: 'base-map-assets',
-      },
-      artifact: mirrorArtifact('maps/base-atlas/manifest.json', {
-        status: 'manifest-backed',
-        note: 'Base map assets are resolved by the native installer from the Apps catalog and downloads bucket.',
-      }),
-      iconBand: 'RoachNet',
-      iconMonogram: 'MAP',
-      iconFamily: 'maps',
-      iconAsset: iconAssetForItem('base-atlas'),
-    }
+      machineFit: 'Best first map on every machine: small, and it fills in around every state pack',
+      summary:
+        'Coastlines, countries, major roads and cities for the entire world in one small file. Start here.',
+      includes: ['Every country, zoom 0–7', 'Fills in around the state and territory packs', 'Works on RoachNet 1.0.6'],
+    })
 
     const mapItems = mapsData.collections.map((collection, index) => {
       const totalSizeMB = collection.resources.reduce((sum, resource) => sum + (resource.size_mb || 0), 0)
@@ -1474,14 +1468,14 @@ function toCatalog() {
         category: 'Maps',
         section: 'Map Regions',
         size: formatSizeFromMB(totalSizeMB),
-        status: index === 0 ? 'Recommended first region' : 'Ready',
-        source: 'RoachNet map mirror',
+        status: collection.minimumRoachNet ? `Needs RoachNet ${collection.minimumRoachNet.replace(/\.0$/, '')}` : index === 0 ? 'Recommended first region' : 'Ready',
+        source: 'RoachNet Maps on GitHub',
         summary: collection.description,
         accent: mapAccentCycle[index % mapAccentCycle.length],
         machineFit:
           totalSizeMB <= 4096
-            ? 'Good first regional lane once Base Atlas is installed'
-            : 'Best staged after the runtime and map lane are already healthy',
+            ? 'A good first region once the World Atlas is in'
+            : 'Big shelf: start it when the Mac can sit on Wi-Fi for a while',
         includes: [
           `${collection.resources.length} regional map resources`,
           ...resourceHighlights(collection.resources, 2),
@@ -1493,6 +1487,7 @@ function toCatalog() {
           action: 'map-collection',
           slug: collection.slug,
         },
+        ...(collection.minimumRoachNet ? { minimumRoachNet: collection.minimumRoachNet } : {}),
         artifact: mirrorArtifact(`maps/collections/${collection.slug}/manifest.json`, {
           status: 'manifest-backed',
           note: 'Regional map collections resolve through the Apps catalog and same-origin descriptors when managed assets are available.',
@@ -1678,36 +1673,9 @@ function toCatalog() {
     })
 
     const items = [
-      { ...baseAtlas, availability: mapsAvailability },
-      ...curatedMapPacks.map((item) => ({
-        ...item,
-        availability: mapsAvailability,
-        category: 'Maps',
-        section: 'Map Picks',
-        size: formatSizeFromBytes(item.sizeBytes),
-        source: 'RoachNet map mirror',
-        installLabel: modelPackInstallLabel(),
-        detailLabel: 'Open collection manifest',
-        detailUrl: './collections/maps.json',
-        installIntent: {
-          action: 'direct-download',
-          url: artifactUrl(descriptorKeyForArchiveKey(`maps/pmtiles/${basenameFromUrl(item.url)}`)),
-          sourceUrl: item.url,
-          mirrorUrl: artifactUrl(descriptorKeyForArchiveKey(`maps/pmtiles/${basenameFromUrl(item.url)}`)),
-          artifactKey: `maps/pmtiles/${basenameFromUrl(item.url)}`,
-          artifactProvider: artifactOrigin.provider,
-          filetype: 'map',
-        },
-        artifact: sourceMirrorArtifact(`maps/pmtiles/${basenameFromUrl(item.url)}`, item.url, {
-          status: 'source-with-managed-mirror',
-          note: 'Direct map picks keep their original source and expose an Apps descriptor URL for the native installer when staged.',
-        }),
-        iconBand: 'Maps',
-        iconFamily: 'maps',
-        iconAsset: iconAssetForItem(item.id),
-        iconMonogram: shortMonogram(item.title),
-      })),
-      ...mapItems.map((item) => ({ ...item, availability: mapsAvailability })),
+      baseAtlas,
+      ...curatedMapPickSpecs.map((spec) => mapPickItem(packBySlug.get(spec.slug), spec)),
+      ...mapItems,
       ...stackItems,
       ...educationItems,
       ...wikipediaItems,

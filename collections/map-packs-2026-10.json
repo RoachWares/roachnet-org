@@ -1,0 +1,922 @@
+{
+  "release": "maps-2026-10",
+  "repo": "RoachWares/RoachNet-Maps",
+  "assetBaseUrl": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10",
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "boundaries": "US Census cb_2024_us_state_500k, buffered ~2 km",
+  "attribution": "\u00a9 OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "packs": [
+    {
+      "slug": "alabama",
+      "name": "Alabama",
+      "code": "AL",
+      "file": "alabama_2026-10.pmtiles",
+      "bytes": 281882336,
+      "sha256": "65dc19a2f05bc95095499fb425b69e75dae9b913c6cca83209f5902c6c604377",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -88.493264,
+        30.204372,
+        -84.868576,
+        35.028327
+      ]
+    },
+    {
+      "slug": "alaska",
+      "name": "Alaska",
+      "code": "AK",
+      "file": "alaska_2026-10.pmtiles",
+      "bytes": 725534951,
+      "sha256": "6fc574a68b9dd6bd82d4bdd6b54aafd196c35cd87be5646fa795188d37b94ea6",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -179.167625,
+        51.195131,
+        179.80037,
+        71.407934
+      ]
+    },
+    {
+      "slug": "american_samoa",
+      "name": "American Samoa",
+      "code": "AS",
+      "file": "american_samoa_2026-10.pmtiles",
+      "bytes": 1753084,
+      "sha256": "eb94b009a3126df2ed904fc90c9c670edcbc81ae7d0586d1893485a21156bde4",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -171.109953,
+        -14.569586,
+        -168.12435,
+        -11.026781
+      ]
+    },
+    {
+      "slug": "arizona",
+      "name": "Arizona",
+      "code": "AZ",
+      "file": "arizona_2026-10.pmtiles",
+      "bytes": 460221670,
+      "sha256": "85c592afd51131b6d9fb67be0157ff732997e2f9b5a3898d54ba891f6132105c",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -114.840926,
+        31.312242,
+        -109.025209,
+        37.024266
+      ]
+    },
+    {
+      "slug": "arkansas",
+      "name": "Arkansas",
+      "code": "AR",
+      "file": "arkansas_2026-10.pmtiles",
+      "bytes": 189474355,
+      "sha256": "b7c6b83dca74410b24add1f31f940a893b261a5f12190904d1f9e2292420ac4f",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -94.641854,
+        32.984126,
+        -89.620835,
+        36.51938
+      ]
+    },
+    {
+      "slug": "california",
+      "name": "California",
+      "code": "CA",
+      "file": "california_2026-10.pmtiles",
+      "bytes": 1250394328,
+      "sha256": "2bbc2646487e71ecdf41a4e679ee1770cc83f6afcc4a3282c4c65ad56298eba4",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -124.430975,
+        32.512816,
+        -114.110574,
+        42.029489
+      ]
+    },
+    {
+      "slug": "colorado",
+      "name": "Colorado",
+      "code": "CO",
+      "file": "colorado_2026-10.pmtiles",
+      "bytes": 516492328,
+      "sha256": "7a46112d87c51b3bdf870c3248b9c687e7247abac345ecddeccd77f70ee70aac",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -109.080253,
+        36.972423,
+        -102.022176,
+        41.023444
+      ]
+    },
+    {
+      "slug": "commonwealth_of_the_northern_mariana_islands",
+      "name": "Commonwealth of the Northern Mariana Islands",
+      "code": "MP",
+      "file": "commonwealth_of_the_northern_mariana_islands_2026-10.pmtiles",
+      "bytes": 2212616,
+      "sha256": "89f58d7d70ccdc84c36f9856e843bf8024a1aeeda96935a43116959a3294efdb",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        144.865631,
+        14.090686,
+        146.086818,
+        20.574257
+      ]
+    },
+    {
+      "slug": "connecticut",
+      "name": "Connecticut",
+      "code": "CT",
+      "file": "connecticut_2026-10.pmtiles",
+      "bytes": 185161173,
+      "sha256": "56640843422308c59b6bc2381bac0afabbfd090939cf7e1e3c1a605a50223bef",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -73.758341,
+        40.955475,
+        -71.766978,
+        42.069308
+      ]
+    },
+    {
+      "slug": "delaware",
+      "name": "Delaware",
+      "code": "DE",
+      "file": "delaware_2026-10.pmtiles",
+      "bytes": 34631533,
+      "sha256": "f490b01ec318c4abb52b4b2f95654378c55095ae471da6a7cbcf2974f59a1281",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -75.80878,
+        38.431297,
+        -75.028474,
+        39.85902
+      ]
+    },
+    {
+      "slug": "district_of_columbia",
+      "name": "District of Columbia",
+      "code": "DC",
+      "file": "district_of_columbia_2026-10.pmtiles",
+      "bytes": 24598911,
+      "sha256": "f84fd665b4ca3448c320726de358f1eb1ac246934c7a68cf0fb263d1b135c385",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -77.149453,
+        38.749829,
+        -76.877173,
+        39.01996
+      ]
+    },
+    {
+      "slug": "florida",
+      "name": "Florida",
+      "code": "FL",
+      "file": "florida_2026-10.pmtiles",
+      "bytes": 1104455477,
+      "sha256": "680c1396dc7b14354464a722fa345a1142950975bdd387933f47e08d7b41da18",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -87.65901,
+        24.501215,
+        -80.011291,
+        31.020649
+      ]
+    },
+    {
+      "slug": "georgia",
+      "name": "Georgia",
+      "code": "GA",
+      "file": "georgia_2026-10.pmtiles",
+      "bytes": 437749551,
+      "sha256": "f12e91ca9e573c0ab0e0786bf26632ef5b21a4882bb2f8b290345981ac3488ad",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -85.629035,
+        30.337567,
+        -80.819384,
+        35.021247
+      ]
+    },
+    {
+      "slug": "global-min",
+      "name": "World overview",
+      "code": null,
+      "file": "global-min_2026-10.pmtiles",
+      "bytes": 189035641,
+      "sha256": "2c62483674e5aaa1bce320afe5f29bca6266261a6fd26fb5b8c3dcecfff81a59",
+      "minzoom": 0,
+      "maxzoom": 7,
+      "bounds": [
+        -180.0,
+        -85.051129,
+        180.0,
+        85.051129
+      ]
+    },
+    {
+      "slug": "guam",
+      "name": "Guam",
+      "code": "GU",
+      "file": "guam_2026-10.pmtiles",
+      "bytes": 3344830,
+      "sha256": "43f1e0e5d8d9ec23c2550c2eded721fee249e486d9d467f018486243cc27f77c",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        144.597072,
+        13.212806,
+        144.976923,
+        13.674668
+      ]
+    },
+    {
+      "slug": "hawaii",
+      "name": "Hawaii",
+      "code": "HI",
+      "file": "hawaii_2026-10.pmtiles",
+      "bytes": 32391429,
+      "sha256": "2df252081eacbd1fc101e1782d3c8fe0924bf4ee511761a505f79ddaf2bf4fba",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -178.36128,
+        18.887996,
+        -154.786284,
+        28.451316
+      ]
+    },
+    {
+      "slug": "idaho",
+      "name": "Idaho",
+      "code": "ID",
+      "file": "idaho_2026-10.pmtiles",
+      "bytes": 253496697,
+      "sha256": "de42416de024bca0f3de1c7de4b7ea40adbde2c798b8c591821c4b08ad41909c",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -117.263306,
+        41.968208,
+        -111.023563,
+        49.020913
+      ]
+    },
+    {
+      "slug": "illinois",
+      "name": "Illinois",
+      "code": "IL",
+      "file": "illinois_2026-10.pmtiles",
+      "bytes": 479088600,
+      "sha256": "440045fc17ad184d603d7889d9f715c20aed91f0c6c6e43ff263f24563061fdd",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -91.532873,
+        36.950059,
+        -87.474236,
+        42.528632
+      ]
+    },
+    {
+      "slug": "indiana",
+      "name": "Indiana",
+      "code": "IN",
+      "file": "indiana_2026-10.pmtiles",
+      "bytes": 298580106,
+      "sha256": "cedc7eebbd837ac9a1fbcd51daa1b828d0d66a532710d28a40802ee0835705df",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -88.118084,
+        37.751444,
+        -84.764313,
+        41.780463
+      ]
+    },
+    {
+      "slug": "iowa",
+      "name": "Iowa",
+      "code": "IA",
+      "file": "iowa_2026-10.pmtiles",
+      "bytes": 242883733,
+      "sha256": "1049a6afefbf820b053adbbf6891a8af3567f89eaa96e041db48fd25afdc0118",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -96.664168,
+        40.351655,
+        -90.121081,
+        43.520581
+      ]
+    },
+    {
+      "slug": "kansas",
+      "name": "Kansas",
+      "code": "KS",
+      "file": "kansas_2026-10.pmtiles",
+      "bytes": 251738435,
+      "sha256": "ce13195c962e3599181cb4d795cd7a08109faabc9e193f941559c50522f7dd2d",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -102.071767,
+        36.972858,
+        -94.567811,
+        40.023069
+      ]
+    },
+    {
+      "slug": "kentucky",
+      "name": "Kentucky",
+      "code": "KY",
+      "file": "kentucky_2026-10.pmtiles",
+      "bytes": 231716680,
+      "sha256": "6408cd2b06fa7a44936d99b7879379f5f50d123e4fbc65fea0ffdc9c4804b39c",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -89.591663,
+        36.476963,
+        -81.942375,
+        39.16733
+      ]
+    },
+    {
+      "slug": "louisiana",
+      "name": "Louisiana",
+      "code": "LA",
+      "file": "louisiana_2026-10.pmtiles",
+      "bytes": 221724795,
+      "sha256": "90117e2c1e19d8ecc20b99ecc299a0eedaf2cb1a3e9c55d044a6ee539356f549",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -94.062924,
+        28.907345,
+        -88.796968,
+        33.03963
+      ]
+    },
+    {
+      "slug": "maine",
+      "name": "Maine",
+      "code": "ME",
+      "file": "maine_2026-10.pmtiles",
+      "bytes": 192255200,
+      "sha256": "039e658a4d6ad5fa94c9c9b28ba9ddd8ad4c0223ef4bdd352468de3aba29e75b",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -71.105621,
+        42.954316,
+        -66.928145,
+        47.48453
+      ]
+    },
+    {
+      "slug": "maryland",
+      "name": "Maryland",
+      "code": "MD",
+      "file": "maryland_2026-10.pmtiles",
+      "bytes": 256463033,
+      "sha256": "deb0b92b9c71462026aeea6abd88da4e4c98696cf0e77248010bf4ca178484b2",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -79.507151,
+        37.889508,
+        -75.025591,
+        39.74278
+      ]
+    },
+    {
+      "slug": "massachusetts",
+      "name": "Massachusetts",
+      "code": "MA",
+      "file": "massachusetts_2026-10.pmtiles",
+      "bytes": 295203753,
+      "sha256": "81f766db51c45b7103190a2a89acc2bb23a582eb2771cc2095478727dc6a85e7",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -73.529241,
+        41.220262,
+        -69.908383,
+        42.906523
+      ]
+    },
+    {
+      "slug": "michigan",
+      "name": "Michigan",
+      "code": "MI",
+      "file": "michigan_2026-10.pmtiles",
+      "bytes": 477177717,
+      "sha256": "653416e18e9ee0f2b4d95bc15d27458950a9304c865e350283cdea1f8d6d310b",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -90.465377,
+        41.676118,
+        -82.389953,
+        48.259355
+      ]
+    },
+    {
+      "slug": "minnesota",
+      "name": "Minnesota",
+      "code": "MN",
+      "file": "minnesota_2026-10.pmtiles",
+      "bytes": 487084412,
+      "sha256": "7eb796fd9012c6fca8fb8e3554c8c17dd11e3f24f415649e7a1055bac12734fc",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -97.259697,
+        43.480417,
+        -89.460645,
+        49.41498
+      ]
+    },
+    {
+      "slug": "mississippi",
+      "name": "Mississippi",
+      "code": "MS",
+      "file": "mississippi_2026-10.pmtiles",
+      "bytes": 150189991,
+      "sha256": "8c597d5ca53ab875f167e5fde399ec78334e1da227367c86e19ac7a9c6203b1d",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -91.717712,
+        30.154847,
+        -88.076791,
+        35.015779
+      ]
+    },
+    {
+      "slug": "missouri",
+      "name": "Missouri",
+      "code": "MO",
+      "file": "missouri_2026-10.pmtiles",
+      "bytes": 358056984,
+      "sha256": "e3b6a1113c10bc0ed33b78091ce2059fdaa8a0effe8865993ea2f743d21d5f4f",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -95.795658,
+        35.975112,
+        -89.080641,
+        40.634023
+      ]
+    },
+    {
+      "slug": "montana",
+      "name": "Montana",
+      "code": "MT",
+      "file": "montana_2026-10.pmtiles",
+      "bytes": 293870358,
+      "sha256": "6e210a2f57371d222cf3b20637880be13836df13c47429deb6d6407a2aab4f40",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -116.069086,
+        44.336394,
+        -104.019506,
+        49.021136
+      ]
+    },
+    {
+      "slug": "nebraska",
+      "name": "Nebraska",
+      "code": "NE",
+      "file": "nebraska_2026-10.pmtiles",
+      "bytes": 195926916,
+      "sha256": "1ff561426f32cff47ac2560bc79990e8bf047f84cebd857ad00a2e437a374938",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -104.073368,
+        39.979997,
+        -95.286593,
+        43.020234
+      ]
+    },
+    {
+      "slug": "nevada",
+      "name": "Nevada",
+      "code": "NV",
+      "file": "nevada_2026-10.pmtiles",
+      "bytes": 223241783,
+      "sha256": "cb30718931a4782a599002074b3c904716a15333fb611bb56a39c8f4fe85bf56",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -120.026453,
+        34.932442,
+        -114.021812,
+        42.02221
+      ]
+    },
+    {
+      "slug": "new_hampshire",
+      "name": "New Hampshire",
+      "code": "NH",
+      "file": "new_hampshire_2026-10.pmtiles",
+      "bytes": 109572642,
+      "sha256": "32434039c081680c6a9dd3668f51a1fad3ac406c5ddc1d6b62e15d6add4401ba",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -72.579684,
+        42.676946,
+        -70.584534,
+        45.327782
+      ]
+    },
+    {
+      "slug": "new_jersey",
+      "name": "New Jersey",
+      "code": "NJ",
+      "file": "new_jersey_2026-10.pmtiles",
+      "bytes": 222274869,
+      "sha256": "151e72443663ebdf70ec76bc835ebd4aeb6126d00b531b8c0ed3079247388dde",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -75.582513,
+        38.908207,
+        -73.870125,
+        41.379624
+      ]
+    },
+    {
+      "slug": "new_mexico",
+      "name": "New Mexico",
+      "code": "NM",
+      "file": "new_mexico_2026-10.pmtiles",
+      "bytes": 260064127,
+      "sha256": "5a8b996149cebbbab6f80b221b67fcb649b5b10a0cbe5dea678f25312e26957a",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -109.070026,
+        31.312522,
+        -102.982188,
+        37.020141
+      ]
+    },
+    {
+      "slug": "new_york",
+      "name": "New York",
+      "code": "NY",
+      "file": "new_york_2026-10.pmtiles",
+      "bytes": 581413536,
+      "sha256": "14d3cf24210e4baafd272c99be5918b126b4741a14dcdc3e8b3c4fe0fd497a22",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -79.78194,
+        40.475458,
+        -71.833539,
+        45.036462
+      ]
+    },
+    {
+      "slug": "north_carolina",
+      "name": "North Carolina",
+      "code": "NC",
+      "file": "north_carolina_2026-10.pmtiles",
+      "bytes": 514388356,
+      "sha256": "a2d0e9d0bcdb0c0ac3afd98f3f665df00015e6d471cb1baf1f1096fdce2f9ce6",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -84.344645,
+        33.820344,
+        -75.440567,
+        36.608236
+      ]
+    },
+    {
+      "slug": "north_dakota",
+      "name": "North Dakota",
+      "code": "ND",
+      "file": "north_dakota_2026-10.pmtiles",
+      "bytes": 209088558,
+      "sha256": "74ef962c56ce43901c12d4f961eca9f142950a0178ab2ce16f056b8fb6c4bc72",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -104.069143,
+        45.915222,
+        -96.51464,
+        49.020586
+      ]
+    },
+    {
+      "slug": "ohio",
+      "name": "Ohio",
+      "code": "OH",
+      "file": "ohio_2026-10.pmtiles",
+      "bytes": 485711320,
+      "sha256": "825fbc292e6689148b10381efe9cf51c6f41787ec54cb484bac4daa65193bd49",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -84.840186,
+        38.383734,
+        -80.498986,
+        42.003021
+      ]
+    },
+    {
+      "slug": "oklahoma",
+      "name": "Oklahoma",
+      "code": "OK",
+      "file": "oklahoma_2026-10.pmtiles",
+      "bytes": 236425391,
+      "sha256": "f1332ce9170d22b1b9fc56386c716fb1f03f859d530e07757455b505dcc0f56f",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -103.022334,
+        33.59551,
+        -94.409383,
+        37.022286
+      ]
+    },
+    {
+      "slug": "oregon",
+      "name": "Oregon",
+      "code": "OR",
+      "file": "oregon_2026-10.pmtiles",
+      "bytes": 421383609,
+      "sha256": "d17e7e80ef3ab6a5b9ed7f9f15135fbbb216669eb97c864637c79ea0a2224041",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -124.588877,
+        41.971791,
+        -116.443436,
+        46.3118
+      ]
+    },
+    {
+      "slug": "pennsylvania",
+      "name": "Pennsylvania",
+      "code": "PA",
+      "file": "pennsylvania_2026-10.pmtiles",
+      "bytes": 486641060,
+      "sha256": "987fd8ac01b333550fdda5c2f6170c6c31a678bab28c6cdb087f7e20a74fff1e",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -80.539461,
+        39.701447,
+        -74.600308,
+        42.304003
+      ]
+    },
+    {
+      "slug": "puerto_rico",
+      "name": "Puerto Rico",
+      "code": "PR",
+      "file": "puerto_rico_2026-10.pmtiles",
+      "bytes": 70188891,
+      "sha256": "7637bfd46135509f9b0f8ebe9205e3d0a1381909053d283417013ef9d11f97a3",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -67.967956,
+        17.859659,
+        -65.194583,
+        18.536217
+      ]
+    },
+    {
+      "slug": "rhode_island",
+      "name": "Rhode Island",
+      "code": "RI",
+      "file": "rhode_island_2026-10.pmtiles",
+      "bytes": 64864323,
+      "sha256": "232341d981f805669b5d4e6f429b658f6da96fd49e807e5ec08d11eb761cbd81",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -71.884556,
+        41.124857,
+        -71.099233,
+        42.03907
+      ]
+    },
+    {
+      "slug": "south_carolina",
+      "name": "South Carolina",
+      "code": "SC",
+      "file": "south_carolina_2026-10.pmtiles",
+      "bytes": 244976743,
+      "sha256": "bed853a180c58d46daf06cb2b601e446a0a4638909b3c2a6bb25381c19a7dcbf",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -83.377248,
+        32.015678,
+        -78.512989,
+        35.235422
+      ]
+    },
+    {
+      "slug": "south_dakota",
+      "name": "South Dakota",
+      "code": "SD",
+      "file": "south_dakota_2026-10.pmtiles",
+      "bytes": 139630680,
+      "sha256": "18461f2e1ebddab25db82aa001d8dbbdf8779782db6a602ba592a11da73b8cdf",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -104.078259,
+        42.45958,
+        -96.389178,
+        45.965314
+      ]
+    },
+    {
+      "slug": "tennessee",
+      "name": "Tennessee",
+      "code": "TN",
+      "file": "tennessee_2026-10.pmtiles",
+      "bytes": 270775818,
+      "sha256": "5203281e4fcc7fee2c71a5084c529a93f5df0e7aac8a151b37a03c5d8c9ed2f9",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -90.330963,
+        34.962972,
+        -81.58894,
+        36.698237
+      ]
+    },
+    {
+      "slug": "texas",
+      "name": "Texas",
+      "code": "TX",
+      "file": "texas_2026-10.pmtiles",
+      "bytes": 989553674,
+      "sha256": "254344a3c46848c9f030eab3cd7c3193b70542067d1d73706a81f938de406941",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -106.665881,
+        25.817919,
+        -93.487477,
+        36.52046
+      ]
+    },
+    {
+      "slug": "united_states_virgin_islands",
+      "name": "United States Virgin Islands",
+      "code": "VI",
+      "file": "united_states_virgin_islands_2026-10.pmtiles",
+      "bytes": 4055490,
+      "sha256": "f90ee7f2be7557593be3ce61329dd7475ee1196795aa0a81c6ada18dc61bafca",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -65.105367,
+        17.651728,
+        -64.543792,
+        18.436264
+      ]
+    },
+    {
+      "slug": "utah",
+      "name": "Utah",
+      "code": "UT",
+      "file": "utah_2026-10.pmtiles",
+      "bytes": 278709231,
+      "sha256": "dfb8d2bf1ed8fe883b2f829be45200b5c94a156c3268e2a6a34325eaf6a07ee1",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -114.072963,
+        36.977993,
+        -109.021752,
+        42.021742
+      ]
+    },
+    {
+      "slug": "vermont",
+      "name": "Vermont",
+      "code": "VT",
+      "file": "vermont_2026-10.pmtiles",
+      "bytes": 82886001,
+      "sha256": "482929aed6aa3688fdba3e3094b3724e5eab32ee70c785a7d7c1e9da60e0427c",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -73.458815,
+        42.706298,
+        -71.42201,
+        45.036661
+      ]
+    },
+    {
+      "slug": "virginia",
+      "name": "Virginia",
+      "code": "VA",
+      "file": "virginia_2026-10.pmtiles",
+      "bytes": 498092409,
+      "sha256": "cf9a097658797e11caa0e11af3284d76cb6dedd179af9308b935b18f485c0d88",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -83.70328,
+        36.520981,
+        -75.196188,
+        39.493617
+      ]
+    },
+    {
+      "slug": "washington",
+      "name": "Washington",
+      "code": "WA",
+      "file": "washington_2026-10.pmtiles",
+      "bytes": 530970080,
+      "sha256": "6a1d7ddafda7e470c197b0964501f7af6e79a5c4009b323cfaca3ef550d15b31",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -124.787951,
+        45.523853,
+        -116.865016,
+        49.022375
+      ]
+    },
+    {
+      "slug": "west_virginia",
+      "name": "West Virginia",
+      "code": "WV",
+      "file": "west_virginia_2026-10.pmtiles",
+      "bytes": 237493014,
+      "sha256": "f70cb7dce94a2457ebfef78dff4a3ffe762e03ffd2a302b0e94bdbcad473544e",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -82.667369,
+        37.180877,
+        -77.693866,
+        40.674727
+      ]
+    },
+    {
+      "slug": "wisconsin",
+      "name": "Wisconsin",
+      "code": "WI",
+      "file": "wisconsin_2026-10.pmtiles",
+      "bytes": 456984750,
+      "sha256": "a2aaa8ab735d1f04f08dd5e7a419c124a6ae8bd638f99fb97b94a02999c5e2a6",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -92.908172,
+        42.471982,
+        -86.784323,
+        47.102155
+      ]
+    },
+    {
+      "slug": "wyoming",
+      "name": "Wyoming",
+      "code": "WY",
+      "file": "wyoming_2026-10.pmtiles",
+      "bytes": 237544491,
+      "sha256": "b3a5c1869073898e2ee49c6ee296b29e3ba63ddef2e3037dd5599a8b69d3c1bb",
+      "minzoom": 0,
+      "maxzoom": 15,
+      "bounds": [
+        -111.074567,
+        40.974745,
+        -104.033368,
+        45.025819
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-virginia-legacy",
+  "title": "Virginia",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "virginia_2025-12.pmtiles",
+  "key": "maps/pmtiles/virginia_2025-12.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/virginia_2025-12.json",
+  "bytes": 498092409,
+  "size": "498 MB",
+  "sha256": "cf9a097658797e11caa0e11af3284d76cb6dedd179af9308b935b18f485c0d88",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/virginia_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/virginia_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -83.70328,
+    36.520981,
+    -75.196188,
+    39.493617
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "aliasOf": "virginia_2026-10.pmtiles",
+  "note": "RoachNet 1.0.6 asks for virginia_2025-12.pmtiles. This serves the maps-2026-10 pack (virginia_2026-10.pmtiles) under that name so 1.0.6 can install it and see it as installed.",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

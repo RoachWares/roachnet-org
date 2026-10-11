@@ -1,0 +1,42 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-alaska",
+  "title": "Alaska",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "alaska_2026-10.pmtiles",
+  "key": "maps/pmtiles/alaska_2026-10.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/alaska_2026-10.json",
+  "bytes": 725534951,
+  "size": "726 MB",
+  "sha256": "6fc574a68b9dd6bd82d4bdd6b54aafd196c35cd87be5646fa795188d37b94ea6",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/alaska_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/alaska_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -179.167625,
+    51.195131,
+    179.80037,
+    71.407934
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "org.roachnet.apps.download-descriptor.v1",
+  "id": "map-hawaii",
+  "title": "Hawaii",
+  "category": "Maps",
+  "section": "Map Packs",
+  "action": "direct-download",
+  "kind": "pmtiles",
+  "tier": null,
+  "filename": "hawaii_2026-10.pmtiles",
+  "key": "maps/pmtiles/hawaii_2026-10.pmtiles",
+  "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/hawaii_2026-10.json",
+  "bytes": 32391429,
+  "size": "32 MB",
+  "sha256": "2df252081eacbd1fc101e1782d3c8fe0924bf4ee511761a505f79ddaf2bf4fba",
+  "chunkSizeBytes": null,
+  "parts": [],
+  "sources": [
+    {
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/hawaii_2026-10.pmtiles",
+      "status": "active"
+    }
+  ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/hawaii_2026-10.pmtiles",
+  "checksumUrl": null,
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -178.36128,
+    18.887996,
+    -154.786284,
+    28.451316
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
+}

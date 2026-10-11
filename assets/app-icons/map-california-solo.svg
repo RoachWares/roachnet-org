@@ -82,7 +82,7 @@
     <g>
       <rect x="82" y="346" width="236" height="54" rx="27" fill="#020406" fill-opacity="0.76" stroke="#CDE6FF" stroke-opacity="0.14" stroke-width="2"/>
       <text x="104" y="381" fill="#F5FAFF" font-family="JetBrains Mono, SF Mono, monospace" font-size="24" font-weight="900" letter-spacing="0.1em">CS</text>
-      <text x="182" y="381" fill="#86D0FF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="0.12em">OSWCMS</text>
+      <text x="182" y="381" fill="#86D0FF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="0.12em">OSCTS</text>
       <rect x="326" y="346" width="104" height="54" rx="27" fill="#020406" fill-opacity="0.58" stroke="#CDE6FF" stroke-opacity="0.12" stroke-width="2"/>
       <text x="378" y="378" text-anchor="middle" fill="#86D0FF" font-family="JetBrains Mono, SF Mono, monospace" font-size="12" font-weight="800" letter-spacing="0.12em">MAP CACHE</text>
     </g>

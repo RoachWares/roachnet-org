@@ -1,4 +1,4 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Global Mini Atlas icon">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Washington, DC icon">
   <defs>
     <clipPath id="tileClip">
       <rect x="0" y="0" width="512" height="512" rx="118"/>
@@ -56,12 +56,12 @@
     <path d="M52 100C140 48 252 46 360 82C432 106 484 150 508 192" stroke="#D0FFFC" stroke-width="32" stroke-linecap="round" opacity="0.06"/>
     <path d="M60 426C152 364 232 346 316 370C378 388 426 380 486 342" stroke="#7CF9F3" stroke-width="16" stroke-linecap="round" opacity="0.11"/>
     <g opacity="0.94">
-      <path d="M-34 106C72 50 174 80 288 40C382 6 462 40 550 0V-30H-34V106Z" fill="#7CF9F3" fill-opacity="0.13"/>
-      <path d="M-28 461C86 397 186 395 300 423C398 447 462 395 540 351V552H-28V461Z" fill="#000000" fill-opacity="0.27"/>
-      <path d="M38 136C128 94 220 120 318 72C382 40 430 62 482 84" fill="none" stroke="#D0FFFC" stroke-opacity="0.13" stroke-width="24" stroke-linecap="round"/>
-      <path d="M40 425C134 379 222 385 304 411C380 435 428 403 478 371" fill="none" stroke="#7CF9F3" stroke-opacity="0.16" stroke-width="15" stroke-linecap="round"/>
-      <circle cx="211" cy="147" r="116" fill="#7CF9F3" fill-opacity="0.08" filter="url(#softBlur)"/>
-      <circle cx="329" cy="219" r="88" fill="#7CF9F3" fill-opacity="0.08" filter="url(#softBlur)"/>
+      <path d="M-34 173C72 117 174 147 288 107C382 73 462 107 550 67V-30H-34V173Z" fill="#7CF9F3" fill-opacity="0.13"/>
+      <path d="M-28 405C86 341 186 339 300 367C398 391 462 339 540 295V552H-28V405Z" fill="#000000" fill-opacity="0.27"/>
+      <path d="M38 203C128 161 220 187 318 139C382 107 430 129 482 151" fill="none" stroke="#D0FFFC" stroke-opacity="0.13" stroke-width="24" stroke-linecap="round"/>
+      <path d="M40 369C134 323 222 329 304 355C380 379 428 347 478 315" fill="none" stroke="#7CF9F3" stroke-opacity="0.16" stroke-width="15" stroke-linecap="round"/>
+      <circle cx="217" cy="205" r="116" fill="#7CF9F3" fill-opacity="0.08" filter="url(#softBlur)"/>
+      <circle cx="335" cy="277" r="88" fill="#7CF9F3" fill-opacity="0.08" filter="url(#softBlur)"/>
       <path d="M84 114C168 88 244 116 316 88C366 68 410 76 458 110" fill="none" stroke="#FFFFFF" stroke-opacity="0.07" stroke-width="18" stroke-linecap="round"/>
     </g>
 
@@ -74,15 +74,15 @@
       </g>
 
     <g filter="url(#titleLift)">
-      <text x="92" y="184" fill="#F5FFFF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="50" font-weight="900" letter-spacing="-0.06em">Global Mini</text>
-      <text x="92" y="226" fill="#F5FFFF" fill-opacity="0.92" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="42" font-weight="900" letter-spacing="-0.055em">Atlas</text>
-      <path d="M94 250H319" stroke="#7CF9F3" stroke-width="4" stroke-linecap="round" opacity="0.78"/>
-      <path d="M94 265H239" stroke="#D0FFFC" stroke-width="2" stroke-linecap="round" opacity="0.28"/>
+      <text x="92" y="184" fill="#F5FFFF" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="50" font-weight="900" letter-spacing="-0.06em">WD</text>
+      <text x="92" y="226" fill="#F5FFFF" fill-opacity="0.92" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="42" font-weight="900" letter-spacing="-0.055em">PACK</text>
+      <path d="M94 250H351" stroke="#7CF9F3" stroke-width="4" stroke-linecap="round" opacity="0.78"/>
+      <path d="M94 265H227" stroke="#D0FFFC" stroke-width="2" stroke-linecap="round" opacity="0.28"/>
     </g>
     <g>
       <rect x="82" y="346" width="236" height="54" rx="27" fill="#020406" fill-opacity="0.76" stroke="#D0FFFC" stroke-opacity="0.14" stroke-width="2"/>
-      <text x="104" y="381" fill="#F5FFFF" font-family="JetBrains Mono, SF Mono, monospace" font-size="24" font-weight="900" letter-spacing="0.1em">GMA</text>
-      <text x="182" y="381" fill="#7CF9F3" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="0.12em">FWFB</text>
+      <text x="104" y="381" fill="#F5FFFF" font-family="JetBrains Mono, SF Mono, monospace" font-size="24" font-weight="900" letter-spacing="0.1em">WD</text>
+      <text x="182" y="381" fill="#7CF9F3" font-family="Inter, SF Pro Display, Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="0.12em">TDBBB</text>
       <rect x="326" y="346" width="104" height="54" rx="27" fill="#020406" fill-opacity="0.58" stroke="#D0FFFC" stroke-opacity="0.12" stroke-width="2"/>
       <text x="378" y="378" text-anchor="middle" fill="#7CF9F3" font-family="JetBrains Mono, SF Mono, monospace" font-size="12" font-weight="800" letter-spacing="0.12em">MAP CACHE</text>
     </g>

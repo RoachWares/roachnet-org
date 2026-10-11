@@ -1,36 +1,44 @@
 {
   "schema": "org.roachnet.apps.download-descriptor.v1",
-  "id": "map-california-solo",
-  "title": "California Solo",
+  "id": "map-california-legacy",
+  "title": "California",
   "category": "Maps",
-  "section": "Map Picks",
+  "section": "Map Packs",
   "action": "direct-download",
-  "kind": null,
+  "kind": "pmtiles",
   "tier": null,
   "filename": "california_2025-12.pmtiles",
   "key": "maps/pmtiles/california_2025-12.pmtiles",
-  "internetArchiveKey": "maps__pmtiles__california_2025-12.pmtiles",
   "descriptorUrl": "https://apps.roachnet.org/downloads/maps/pmtiles/california_2025-12.json",
-  "bytes": null,
-  "size": "1.1 GB",
-  "sha256": null,
+  "bytes": 1250394328,
+  "size": "1.3 GB",
+  "sha256": "2bbc2646487e71ecdf41a4e679ee1770cc83f6afcc4a3282c4c65ad56298eba4",
   "chunkSizeBytes": null,
   "parts": [],
   "sources": [
     {
-      "type": "public-source",
-      "label": "Original public source",
-      "url": "https://github.com/RoachWares/RoachNet-Maps/raw/refs/heads/master/pmtiles/california_2025-12.pmtiles",
+      "type": "github-release",
+      "label": "RoachNet Maps maps-2026-10 release",
+      "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/california_2026-10.pmtiles",
       "status": "active"
-    },
-    {
-      "type": "internet-archive",
-      "label": "RoachNet Internet Archive mirror",
-      "url": "https://archive.org/download/roachnet-apps-catalog-v1_0_5/maps__pmtiles__california_2025-12.pmtiles",
-      "status": "mirror-pending"
     }
   ],
+  "url": "https://github.com/RoachWares/RoachNet-Maps/releases/download/maps-2026-10/california_2026-10.pmtiles",
   "checksumUrl": null,
-  "status": "descriptor-ready-public-source-first",
-  "policy": "Apps.RoachNet.org hosts descriptors and checksums. Large archives live on public source rails and Internet Archive mirrors, not this machine, Netlify, GitHub source, or R2."
+  "build": "Protomaps 20261009, basemap 4.15.2",
+  "zoom": {
+    "min": 0,
+    "max": 15
+  },
+  "bounds": [
+    -124.430975,
+    32.512816,
+    -114.110574,
+    42.029489
+  ],
+  "attribution": "© OpenStreetMap contributors (ODbL), tiles by Protomaps",
+  "aliasOf": "california_2026-10.pmtiles",
+  "note": "RoachNet 1.0.6 asks for california_2025-12.pmtiles. This serves the maps-2026-10 pack (california_2026-10.pmtiles) under that name so 1.0.6 can install it and see it as installed.",
+  "status": "published",
+  "policy": "Apps.RoachNet.org hosts descriptors and checksums. The map files are release assets on github.com/RoachWares/RoachNet-Maps; RoachNet checks the SHA-256 below after every download."
 }
