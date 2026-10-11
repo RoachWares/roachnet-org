@@ -33,8 +33,5 @@
   "devDependencies": {
     "html-validate": "10.9.0",
     "puppeteer-core": "25.8.0"
-  },
-  "optionalDependencies": {
-    "@img/sharp-linux-x64": "^0.34.5"
   }
 }

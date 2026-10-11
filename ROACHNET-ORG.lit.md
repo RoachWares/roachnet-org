@@ -15904,9 +15904,6 @@ This root is reconciled byte-for-byte from the current production source.
       "devDependencies": {
         "html-validate": "10.9.0",
         "puppeteer-core": "25.8.0"
-      },
-      "optionalDependencies": {
-        "@img/sharp-linux-x64": "^0.34.5"
       }
     },
     "node_modules/@envelop/instrumentation": {
@@ -15960,50 +15957,6 @@ This root is reconciled byte-for-byte from the current production source.
         "onnxruntime-node": "1.21.0",
         "onnxruntime-web": "1.22.0-dev.20250409-89f8206ba4",
         "sharp": "^0.34.1"
-      }
-    },
-    "node_modules/@img/sharp-libvips-linux-x64": {
-      "version": "1.2.4",
-      "resolved": "https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.2.4.tgz",
-      "integrity": "sha512-tJxiiLsmHc9Ax1bz3oaOYBURTXGIRDODBqhveVHonrHJ9/+k89qbLl0bcJns+e4t4rvaNBxaEZsFtSfAdquPrw==",
-      "cpu": [
-        "x64"
-      ],
-      "libc": [
-        "glibc"
-      ],
-      "license": "LGPL-3.0-or-later",
-      "optional": true,
-      "os": [
-        "linux"
-      ],
-      "funding": {
-        "url": "https://opencollective.com/libvips"
-      }
-    },
-    "node_modules/@img/sharp-linux-x64": {
-      "version": "0.34.5",
-      "resolved": "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz",
-      "integrity": "sha512-MEzd8HPKxVxVenwAa+JRPwEC7QFjoPWuS5NZnBt6B3pu7EG2Ge0id1oLHZpPJdn3OQK+BQDiw9zStiHBTJQQQQ==",
-      "cpu": [
-        "x64"
-      ],
-      "libc": [
-        "glibc"
-      ],
-      "license": "Apache-2.0",
-      "optional": true,
-      "os": [
-        "linux"
-      ],
-      "engines": {
-        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
-      },
-      "funding": {
-        "url": "https://opencollective.com/libvips"
-      },
-      "optionalDependencies": {
-        "@img/sharp-libvips-linux-x64": "1.2.4"
       }
     },
     "node_modules/@isaacs/fs-minipass": {
@@ -17680,9 +17633,6 @@ This root is reconciled byte-for-byte from the current production source.
   "devDependencies": {
     "html-validate": "10.9.0",
     "puppeteer-core": "25.8.0"
-  },
-  "optionalDependencies": {
-    "@img/sharp-linux-x64": "^0.34.5"
   }
 }
 ```
