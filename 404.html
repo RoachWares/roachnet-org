@@ -1,43 +1,72 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page not found · RoachNet</title>
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#05060a" />
-    <title>Page not found | RoachNet</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="stylesheet" href="/app.css" />
-    <link rel="stylesheet" href="/app-polish.css" />
-    <style>
-      .rn-404 { min-height: 100svh; display: grid; place-items: center; padding: 48px 16px; }
-      .rn-404__card { width: min(640px, 100%); }
-      .rn-404__term {
-        margin: 28px 0 32px; padding: 18px 20px; border-radius: 14px;
-        border: 1px solid rgba(54, 255, 132, 0.22); background: rgba(5, 10, 8, 0.82);
-        font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 14px; line-height: 1.8; color: #9affc0;
-      }
-      .rn-404__term span { color: rgba(240, 240, 240, 0.56); }
-      .rn-404__links { display: flex; flex-wrap: wrap; gap: 12px; }
-    </style>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/nx.css" />
   </head>
   <body data-page="404">
-    <main class="rn-404" id="top">
-      <div class="rn-404__card">
-        <span class="eyebrow">404 · route not found</span>
-        <h1>That page isn't on this machine.</h1>
-        <p class="hero-body">The link may be old, mistyped or gone. Nothing on your end broke, and everything else is still here.</p>
-        <div class="rn-404__term" aria-hidden="true">
-          $ open ./this-page<br />
-          <span>No such file or directory</span><br />
-          $ open https://roachnet.org/home/
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">404</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://roachnet.org/sitemap/">Sitemap</a>
         </div>
-        <div class="rn-404__links">
-          <a class="cta cta--primary" href="https://roachnet.org/home/">Go to RoachNet Home</a>
-          <a class="cta cta--ghost" href="https://roachnet.org/sitemap/">See every page</a>
-          <a class="cta cta--ghost" href="https://roachnet.org/">Read the mission</a>
+      </div>
+    </header>
+    <main id="top" class="nx-main nx-404" tabindex="-1">
+      <div>
+        <span class="nx-404__code" aria-hidden="true">404</span>
+        <p class="nx-overline nx-overline--amber">Not on this machine</p>
+        <h1 class="nx-h2 nx-mt-16">That page isn't here.</h1>
+        <p class="nx-lede nx-mt-16 nx-content">It may have moved, or it never existed. Everything that does exist is one page away.</p>
+        <div class="nx-actions nx-actions--center nx-mt-32">
+          <a class="nx-btn nx-btn--primary" href="https://roachnet.org/home/">Go Home</a>
+          <a class="nx-btn" href="https://roachnet.org/sitemap/">Open the sitemap</a>
+          <a class="nx-btn" href="https://apps.roachnet.org/">Browse Apps</a>
         </div>
       </div>
     </main>
+    <footer class="nx-foot">
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <span>© 2026 RoachWares LLC</span>
+          <a class="nx-link" href="https://roachnet.org/sitemap/">Sitemap</a>
+          <a class="nx-link" href="https://www.roachwares.org/">RoachWares</a>
+        </div>
+        <span>Offline on purpose.</span>
+      </div>
+    </footer>
+    <script src="/nx.js" type="module"></script>
   </body>
 </html>

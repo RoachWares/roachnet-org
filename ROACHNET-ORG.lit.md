@@ -17,46 +17,75 @@ This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="404-html" file="404.html"}
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page not found · RoachNet</title>
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#05060a" />
-    <title>Page not found | RoachNet</title>
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="stylesheet" href="/app.css" />
-    <link rel="stylesheet" href="/app-polish.css" />
-    <style>
-      .rn-404 { min-height: 100svh; display: grid; place-items: center; padding: 48px 16px; }
-      .rn-404__card { width: min(640px, 100%); }
-      .rn-404__term {
-        margin: 28px 0 32px; padding: 18px 20px; border-radius: 14px;
-        border: 1px solid rgba(54, 255, 132, 0.22); background: rgba(5, 10, 8, 0.82);
-        font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 14px; line-height: 1.8; color: #9affc0;
-      }
-      .rn-404__term span { color: rgba(240, 240, 240, 0.56); }
-      .rn-404__links { display: flex; flex-wrap: wrap; gap: 12px; }
-    </style>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/nx.css" />
   </head>
   <body data-page="404">
-    <main class="rn-404" id="top">
-      <div class="rn-404__card">
-        <span class="eyebrow">404 · route not found</span>
-        <h1>That page isn't on this machine.</h1>
-        <p class="hero-body">The link may be old, mistyped or gone. Nothing on your end broke, and everything else is still here.</p>
-        <div class="rn-404__term" aria-hidden="true">
-          $ open ./this-page<br />
-          <span>No such file or directory</span><br />
-          $ open https://roachnet.org/home/
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">404</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://roachnet.org/sitemap/">Sitemap</a>
         </div>
-        <div class="rn-404__links">
-          <a class="cta cta--primary" href="https://roachnet.org/home/">Go to RoachNet Home</a>
-          <a class="cta cta--ghost" href="https://roachnet.org/sitemap/">See every page</a>
-          <a class="cta cta--ghost" href="https://roachnet.org/">Read the mission</a>
+      </div>
+    </header>
+    <main id="top" class="nx-main nx-404" tabindex="-1">
+      <div>
+        <span class="nx-404__code" aria-hidden="true">404</span>
+        <p class="nx-overline nx-overline--amber">Not on this machine</p>
+        <h1 class="nx-h2 nx-mt-16">That page isn't here.</h1>
+        <p class="nx-lede nx-mt-16 nx-content">It may have moved, or it never existed. Everything that does exist is one page away.</p>
+        <div class="nx-actions nx-actions--center nx-mt-32">
+          <a class="nx-btn nx-btn--primary" href="https://roachnet.org/home/">Go Home</a>
+          <a class="nx-btn" href="https://roachnet.org/sitemap/">Open the sitemap</a>
+          <a class="nx-btn" href="https://apps.roachnet.org/">Browse Apps</a>
         </div>
       </div>
     </main>
+    <footer class="nx-foot">
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <span>© 2026 RoachWares LLC</span>
+          <a class="nx-link" href="https://roachnet.org/sitemap/">Sitemap</a>
+          <a class="nx-link" href="https://www.roachwares.org/">RoachWares</a>
+        </div>
+        <span>Offline on purpose.</span>
+      </div>
+    </footer>
+    <script src="/nx.js" type="module"></script>
   </body>
 </html>
 ```
@@ -75,7 +104,10 @@ import {
 
 const browserDeviceStorageKey = 'RoachNetAccountBrowserDeviceID'
 const turnstileScriptId = 'roachnet-turnstile-script'
+const minimumPasswordLength = 10
 
+const authCard = document.querySelector('#account-auth')
+const dashboard = document.querySelector('#account-dashboard')
 const statusTitle = document.querySelector('#account-status-title')
 const statusBody = document.querySelector('#account-status-body')
 const statusBadge = document.querySelector('#account-status-badge')
@@ -83,6 +115,7 @@ const feedback = document.querySelector('#account-feedback')
 const refreshButton = document.querySelector('#account-refresh')
 const signOutButton = document.querySelector('#account-signout')
 const submitButton = document.querySelector('#account-submit')
+const submitLabel = submitButton?.querySelector('.ac-submit__label') || submitButton
 const form = document.querySelector('#account-form')
 const formNote = document.querySelector('#account-form-note')
 const emailInput = document.querySelector('#account-email')
@@ -91,12 +124,19 @@ const displayNameInput = document.querySelector('#account-display-name')
 const displayNameField = document.querySelector('#account-name-field')
 const startedAtInput = document.querySelector('#account-started-at')
 const honeypotInput = document.querySelector('#account-company')
+const tablist = document.querySelector('.ac-tabs')
 const tabs = [...document.querySelectorAll('[data-account-mode]')]
+const emailHint = document.querySelector('[data-hint="email"]')
+const passwordHint = document.querySelector('[data-hint="password"]')
 const snapshotTitle = document.querySelector('#account-snapshot-title')
 const snapshotBody = document.querySelector('#account-snapshot-body')
 const deviceCount = document.querySelector('#account-device-count')
 const appCount = document.querySelector('#account-app-count')
+const threadCount = document.querySelector('#account-thread-count')
 const settingsState = document.querySelector('#account-settings-state')
+const accountMini = document.querySelector('#account-mini')
+const deviceList = document.querySelector('#account-device-list')
+const appList = document.querySelector('#account-app-list')
 const turnstileShell = document.querySelector('#account-turnstile-shell')
 const turnstileMount = document.querySelector('#account-turnstile')
 const turnstileNote = document.querySelector('#account-turnstile-note')
@@ -107,6 +147,22 @@ let authSubscription = null
 let activeRequest = null
 let turnstileWidgetId = null
 let captchaToken = ''
+let snapshotRun = null
+
+function friendlyAuthError(error, fallback) {
+  const message = String(error?.message || '')
+  if (/failed to fetch|networkerror|load failed|network request failed/i.test(message)) {
+    return 'Could not reach the sign-in service. Check your connection and try again.'
+  }
+  if (/invalid login credentials/i.test(message)) return "That email and password don't match an account."
+  if (/email not confirmed/i.test(message)) return 'Confirm your email first. The link is in your inbox.'
+  return message || fallback
+}
+
+function setAuthView(state) {
+  if (authCard) authCard.dataset.authState = state
+  if (dashboard) dashboard.dataset.authState = state
+}
 
 function setFeedback(message, tone = 'muted') {
   if (!feedback) return
@@ -114,26 +170,120 @@ function setFeedback(message, tone = 'muted') {
   feedback.dataset.tone = tone
 }
 
+let toastElement = null
+function toast(message) {
+  if (!toastElement) {
+    toastElement = document.createElement('div')
+    toastElement.className = 'nx-toast'
+    toastElement.setAttribute('role', 'status')
+    toastElement.setAttribute('aria-live', 'polite')
+    document.body.append(toastElement)
+  }
+  toastElement.textContent = message
+  toastElement.classList.add('is-on')
+  window.clearTimeout(toastElement.timer)
+  toastElement.timer = window.setTimeout(() => toastElement.classList.remove('is-on'), 2600)
+}
+
+function formatRelativeTime(value) {
+  if (!value) return ''
+  const diff = new Date(value).getTime() - Date.now()
+  if (!Number.isFinite(diff)) return ''
+  const formatter = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+  const minutes = Math.round(diff / 60000)
+  if (Math.abs(minutes) < 1) return 'just now'
+  if (Math.abs(minutes) < 60) return formatter.format(minutes, 'minute')
+  const hours = Math.round(minutes / 60)
+  if (Math.abs(hours) < 48) return formatter.format(hours, 'hour')
+  return formatter.format(Math.round(hours / 24), 'day')
+}
+
+function platformLabel(platform) {
+  const value = String(platform || '').toLowerCase()
+  const base = value.replace(/-web$/, '')
+  const names = { macos: 'Mac', ios: 'iPhone', ipados: 'iPad', windows: 'Windows', linux: 'Linux', web: 'Browser' }
+  const name = names[base] || (base ? base.charAt(0).toUpperCase() + base.slice(1) : 'Device')
+  return value.endsWith('-web') && base !== 'web' ? `${name} browser` : name
+}
+
+function rowsEmpty(list, message) {
+  if (!list) return
+  const item = document.createElement('li')
+  item.className = 'ac-rows__empty'
+  item.textContent = message
+  list.replaceChildren(item)
+}
+
+function rowsLoading(list) {
+  if (!list) return
+  list.replaceChildren(
+    ...[0, 1].map(() => {
+      const item = document.createElement('li')
+      item.className = 'ac-rows__skeleton'
+      item.setAttribute('aria-hidden', 'true')
+      return item
+    })
+  )
+}
+
+function renderRow({ title, detail, meta, tag }) {
+  const item = document.createElement('li')
+  item.className = 'ac-row'
+  const copy = document.createElement('div')
+  copy.className = 'ac-row__copy'
+  const strong = document.createElement('strong')
+  strong.textContent = title
+  copy.append(strong)
+  if (detail) {
+    const span = document.createElement('span')
+    span.textContent = detail
+    copy.append(span)
+  }
+  item.append(copy)
+  const side = document.createElement('div')
+  side.className = 'ac-row__side'
+  if (tag) {
+    const pill = document.createElement('span')
+    pill.className = 'ac-row__tag'
+    pill.textContent = tag
+    side.append(pill)
+  }
+  if (meta) {
+    const time = document.createElement('span')
+    time.className = 'ac-row__meta'
+    time.textContent = meta
+    side.append(time)
+  }
+  item.append(side)
+  return item
+}
+
 function setSnapshot({
   title,
   body,
   devices = '—',
   apps = '—',
+  threads = '—',
   settings = '—',
 }) {
   if (snapshotTitle) snapshotTitle.textContent = title
   if (snapshotBody) snapshotBody.textContent = body
   if (deviceCount) deviceCount.textContent = devices
   if (appCount) appCount.textContent = apps
+  if (threadCount) threadCount.textContent = threads
   if (settingsState) settingsState.textContent = settings
 }
 
 function getBrowserDeviceID() {
-  const existing = window.localStorage.getItem(browserDeviceStorageKey)
-  if (existing) return existing
-  const next = `account-web-${window.crypto.randomUUID()}`
-  window.localStorage.setItem(browserDeviceStorageKey, next)
-  return next
+  try {
+    const existing = window.localStorage.getItem(browserDeviceStorageKey)
+    if (existing) return existing
+    const next = `account-web-${window.crypto.randomUUID()}`
+    window.localStorage.setItem(browserDeviceStorageKey, next)
+    return next
+  } catch {
+    return `account-web-${window.crypto.randomUUID()}`
+  }
 }
 
 function inferPlatform() {
@@ -152,15 +302,23 @@ function displayNameFor(profile, session) {
   }
 
   const email = session?.user?.email || ''
-  return email ? email.split('@')[0] : 'RoachNet account'
+  return email ? email.split('@')[0] : 'Your account'
 }
 
-function setFormBusy(isBusy) {
+function setFormBusy(isBusy, label) {
   activeRequest = isBusy
   const disabled = Boolean(isBusy)
 
-  for (const field of [emailInput, passwordInput, displayNameInput, submitButton, refreshButton, signOutButton]) {
+  for (const field of [emailInput, passwordInput, displayNameInput, submitButton, refreshButton, signOutButton, ...tabs]) {
     if (field) field.disabled = disabled
+  }
+
+  if (submitButton) {
+    submitButton.classList.toggle('is-loading', disabled && Boolean(label))
+    submitButton.setAttribute('aria-busy', disabled && label ? 'true' : 'false')
+  }
+  if (submitLabel) {
+    submitLabel.textContent = label || (accountMode === 'signup' ? 'Create account' : 'Sign in')
   }
 }
 
@@ -176,16 +334,68 @@ function setTurnstileState(message, tone = 'muted') {
   turnstileNote.dataset.tone = tone
 }
 
-function setMode(nextMode) {
+function validateEmail({ quiet = false } = {}) {
+  const value = String(emailInput?.value || '').trim()
+  const valid = Boolean(value) && emailInput?.checkValidity() !== false
+  if (!quiet || value) {
+    emailInput?.closest('.ac-field')?.classList.toggle('is-invalid', !valid)
+    emailInput?.setAttribute('aria-invalid', valid ? 'false' : 'true')
+    if (emailHint) {
+      emailHint.textContent = valid ? '' : value ? 'That email looks incomplete.' : 'Enter your email.'
+      emailHint.dataset.tone = valid ? 'muted' : 'error'
+    }
+  }
+  return valid
+}
+
+function validatePassword({ quiet = false } = {}) {
+  const value = String(passwordInput?.value || '')
+  const field = passwordInput?.closest('.ac-field')
+  if (accountMode !== 'signup') {
+    const valid = value.length > 0
+    if (!quiet) {
+      field?.classList.toggle('is-invalid', !valid)
+      passwordInput?.setAttribute('aria-invalid', valid ? 'false' : 'true')
+      if (passwordHint) {
+        passwordHint.textContent = valid ? '' : 'Enter your password.'
+        passwordHint.dataset.tone = 'error'
+      }
+    } else {
+      field?.classList.remove('is-invalid', 'is-valid')
+      if (passwordHint) passwordHint.textContent = ''
+    }
+    return valid
+  }
+
+  const remaining = minimumPasswordLength - value.length
+  const valid = remaining <= 0
+  field?.classList.toggle('is-valid', valid)
+  field?.classList.toggle('is-invalid', !valid && !quiet)
+  passwordInput?.setAttribute('aria-invalid', !valid && !quiet ? 'true' : 'false')
+  if (passwordHint) {
+    passwordHint.textContent = valid
+      ? 'Long enough.'
+      : value.length
+        ? `At least ${minimumPasswordLength} characters. ${remaining} to go.`
+        : `At least ${minimumPasswordLength} characters.`
+    passwordHint.dataset.tone = valid ? 'live' : quiet ? 'muted' : 'error'
+  }
+  return valid
+}
+
+function setMode(nextMode, { focus = false } = {}) {
   accountMode = nextMode === 'signup' ? 'signup' : 'signin'
 
+  if (tablist) tablist.dataset.mode = accountMode
   tabs.forEach((tab) => {
     const isActive = tab.dataset.accountMode === accountMode
     tab.classList.toggle('is-active', isActive)
     tab.setAttribute('role', 'tab')
     tab.setAttribute('aria-selected', isActive ? 'true' : 'false')
     tab.tabIndex = isActive ? 0 : -1
+    if (isActive && focus) tab.focus()
   })
+  form?.setAttribute('aria-labelledby', accountMode === 'signup' ? 'account-tab-signup' : 'account-tab-signin')
 
   if (displayNameField) {
     displayNameField.hidden = accountMode !== 'signup'
@@ -193,23 +403,27 @@ function setMode(nextMode) {
 
   if (passwordInput) {
     passwordInput.autocomplete = accountMode === 'signup' ? 'new-password' : 'current-password'
+    passwordInput.placeholder = accountMode === 'signup' ? `${minimumPasswordLength} characters or more` : 'Your password'
   }
 
-  if (submitButton) {
-    submitButton.textContent = accountMode === 'signup' ? 'Create account' : 'Sign in'
+  if (submitLabel && !activeRequest) {
+    submitLabel.textContent = accountMode === 'signup' ? 'Create account' : 'Sign in'
   }
 
   if (formNote) {
     formNote.textContent =
       accountMode === 'signup'
-        ? 'Create the account that holds web chat, app picks, and device links.'
-        : 'Sign in when you want the website tied to your RoachNet account.'
+        ? 'We send a confirmation link before the account works. Use an inbox you can open.'
+        : 'Signing in only links this website to your account. The vault stays out of it.'
   }
 
   if (turnstileShell) {
     turnstileShell.hidden = accountMode !== 'signup' || !authState?.config?.turnstile?.enabled
   }
 
+  emailInput?.closest('.ac-field')?.classList.remove('is-invalid')
+  if (emailHint) emailHint.textContent = ''
+  validatePassword({ quiet: true })
   setFeedback('')
 }
 
@@ -220,18 +434,21 @@ function renderStatus() {
   const session = authState.session
 
   if (!enabled) {
-    statusTitle.textContent = 'Auth is staged, not armed.'
+    setAuthView('disabled')
+    statusTitle.textContent = 'Sign-in is off on this deploy.'
     statusBody.textContent = authState.reason
-    statusBadge.textContent = 'Disabled'
+    statusBadge.textContent = 'Off'
     statusBadge.dataset.state = 'disabled'
     signOutButton.hidden = true
     form?.setAttribute('aria-disabled', 'true')
     setFormBusy(true)
     setSnapshot({
-      title: 'Auth is disabled on this deploy.',
-      body: 'The account system is staged, but this deploy is missing live auth keys.',
+      title: 'Nothing to show on this deploy.',
+      body: 'This copy of the site has no live account keys, so there is no account to read.',
     })
-    setFeedback('This deploy does not have live account auth configured yet.')
+    rowsEmpty(deviceList, 'Sign-in is off here.')
+    rowsEmpty(appList, 'Sign-in is off here.')
+    setFeedback('Sign-in is not switched on for this site yet.', 'error')
     return
   }
 
@@ -239,36 +456,51 @@ function renderStatus() {
   setFormBusy(false)
 
   if (session?.user) {
+    setAuthView('signed-in')
     statusTitle.textContent = 'Signed in.'
-    statusBody.textContent = `Website account is linked to ${sessionLabel(session)}.`
+    statusBody.textContent = `This browser is linked to ${sessionLabel(session)}.`
     statusBadge.textContent = 'Live'
     statusBadge.dataset.state = 'live'
     signOutButton.hidden = false
-    setFeedback('Account session is live.', 'live')
     return
   }
 
-  statusTitle.textContent = 'Ready for sign-in.'
-  statusBody.textContent = 'Use your account for web chat, saved app picks, and device metadata.'
+  setAuthView('signed-out')
+  statusTitle.textContent = 'Not signed in.'
+  statusBody.textContent = 'Sign in to see your devices and saved apps, or make an account in a minute.'
   statusBadge.textContent = 'Ready'
   statusBadge.dataset.state = 'ready'
   signOutButton.hidden = true
   setSnapshot({
-    title: 'Sign in to load account state.',
-    body: 'Linked devices, saved app picks, and settings metadata will show up here once you sign in.',
+    title: "Sign in to see what's here.",
+    body: 'Your devices, saved apps and RoachClaw threads show up here once you sign in.',
   })
+  rowsEmpty(deviceList, 'Nothing to show until you sign in.')
+  rowsEmpty(appList, 'Nothing to show until you sign in.')
 }
 
 async function syncSnapshot() {
   if (!authState?.client || !authState?.session?.user) {
     return
   }
+  if (snapshotRun) return snapshotRun
+  snapshotRun = loadSnapshot().finally(() => {
+    snapshotRun = null
+  })
+  return snapshotRun
+}
 
+async function loadSnapshot() {
   const client = authState.client
   const browserDeviceID = getBrowserDeviceID()
   const currentOrigin = window.location.origin
+  const userId = authState.session.user.id
 
-  const [touchResult, profileResult, settingsResult, devicesResult, appsResult] = await Promise.all([
+  dashboard?.classList.add('is-syncing')
+  rowsLoading(deviceList)
+  rowsLoading(appList)
+
+  const [touchResult, profileResult, settingsResult, devicesResult, appsResult, threadsResult] = await Promise.all([
     client.rpc('touch_device_link', {
       p_device_id: browserDeviceID,
       p_device_name: 'Accounts Web',
@@ -282,16 +514,28 @@ async function syncSnapshot() {
     client
       .from('profiles')
       .select('display_name, email, plan, account_state, last_seen_at')
-      .eq('id', authState.session.user.id)
+      .eq('id', userId)
       .maybeSingle(),
     client
       .from('user_settings')
       .select('updated_at, favorite_apps, settings')
-      .eq('user_id', authState.session.user.id)
+      .eq('user_id', userId)
       .maybeSingle(),
-    client.from('device_links').select('id', { count: 'exact', head: true }),
-    client.from('saved_apps').select('id', { count: 'exact', head: true }),
+    client
+      .from('device_links')
+      .select('id, device_id, device_name, platform, runtime_lane, roachtail_status, last_seen_at', { count: 'exact' })
+      .order('last_seen_at', { ascending: false })
+      .limit(8),
+    client
+      .from('saved_apps')
+      .select('id, app_id, title, category, updated_at', { count: 'exact' })
+      .order('updated_at', { ascending: false })
+      .limit(8),
+    // The thread count is a nice-to-have; a failure here never blocks the snapshot.
+    Promise.resolve(client.from('chat_threads').select('id', { count: 'exact', head: true })).catch((error) => ({ error })),
   ])
+
+  dashboard?.classList.remove('is-syncing')
 
   const errors = [
     touchResult.error,
@@ -302,32 +546,82 @@ async function syncSnapshot() {
   ].filter(Boolean)
 
   if (errors.length > 0) {
-    setFeedback(errors[0].message || 'Could not load the account snapshot.', 'error')
+    setFeedback(errors[0].message || 'Could not load your account details.', 'error')
     setSnapshot({
-      title: 'Account snapshot needs attention.',
-      body: 'The account session is live, but this browser session could not finish loading its synced state.',
+      title: 'Your account needs a second try.',
+      body: 'You are signed in, but this browser could not load your account details. Refresh to try again.',
       settings: 'Error',
     })
+    if (accountMini) accountMini.textContent = 'Your account details did not load. Try Refresh.'
+    rowsEmpty(deviceList, 'Could not load devices.')
+    rowsEmpty(appList, 'Could not load saved apps.')
     return
   }
 
   const profile = profileResult.data
   const settings = settingsResult.data
-  const devices = devicesResult.count ?? 0
-  const apps = appsResult.count ?? 0
+  const deviceRows = Array.isArray(devicesResult.data) ? devicesResult.data : []
+  const appRows = Array.isArray(appsResult.data) ? appsResult.data : []
+  const devices = devicesResult.count ?? deviceRows.length
+  const apps = appsResult.count ?? appRows.length
+  const threads = threadsResult?.error ? '—' : String(threadsResult?.count ?? 0)
   const settingsCount =
     (settings?.favorite_apps?.length || 0) + Object.keys(settings?.settings || {}).length
 
   setSnapshot({
-    title: `${displayNameFor(profile, authState.session)} is linked.`,
+    title: `Hello, ${displayNameFor(profile, authState.session)}.`,
     body:
-      devices > 0
-        ? 'RoachTail and RoachSync metadata can anchor themselves here without leaking local machine details.'
-        : 'This is a fresh account. Pair devices or save installs to start building synced state.',
+      devices > 1
+        ? 'Here is what your account holds right now. Nothing below came from your vault.'
+        : 'A fresh account. Sign in from another device or save an app and it shows up here.',
     devices: String(devices),
     apps: String(apps),
-    settings: settingsCount > 0 ? 'Remembered' : 'Fresh',
+    threads,
+    settings: settingsCount > 0 ? 'Saved' : 'Default',
   })
+
+  if (accountMini) {
+    const plural = (count, word) => `${count} ${word}${String(count) === '1' ? '' : 's'}`
+    accountMini.textContent = `${plural(devices, 'device')} · ${plural(apps, 'saved app')}${threads === '—' ? '' : ` · ${plural(threads, 'RoachClaw thread')}`}. `
+    const link = document.createElement('a')
+    link.className = 'nx-link nx-link--arrow'
+    link.href = '#account-dashboard'
+    link.textContent = 'See the details'
+    accountMini.append(link)
+  }
+
+  if (deviceList) {
+    if (!deviceRows.length) {
+      rowsEmpty(deviceList, 'No devices yet.')
+    } else {
+      deviceList.replaceChildren(
+        ...deviceRows.map((device) =>
+          renderRow({
+            title: device.device_name || 'Unnamed device',
+            detail: platformLabel(device.platform),
+            tag: device.device_id === browserDeviceID ? 'This browser' : device.roachtail_status === 'paired' ? 'Paired' : '',
+            meta: formatRelativeTime(device.last_seen_at),
+          })
+        )
+      )
+    }
+  }
+
+  if (appList) {
+    if (!appRows.length) {
+      rowsEmpty(appList, 'No saved apps yet. Browse apps.roachnet.org and mark the ones you want.')
+    } else {
+      appList.replaceChildren(
+        ...appRows.map((app) =>
+          renderRow({
+            title: app.title || app.app_id,
+            detail: app.category || '',
+            meta: formatRelativeTime(app.updated_at),
+          })
+        )
+      )
+    }
+  }
 }
 
 function loadTurnstileScript() {
@@ -364,7 +658,7 @@ async function ensureTurnstile() {
     return
   }
 
-  setTurnstileState('Loading verification…')
+  setTurnstileState('Loading the human check…')
 
   try {
     await loadTurnstileScript()
@@ -373,20 +667,20 @@ async function ensureTurnstile() {
       theme: 'dark',
       callback: (token) => {
         captchaToken = token
-        setTurnstileState('Verification ready.', 'live')
+        setTurnstileState('Human check done.', 'live')
       },
       'expired-callback': () => {
         captchaToken = ''
-        setTurnstileState('Verification expired. Run it again.', 'error')
+        setTurnstileState('The human check expired. Run it again.', 'error')
       },
       'error-callback': () => {
         captchaToken = ''
-        setTurnstileState('Verification failed to load.', 'error')
+        setTurnstileState('The human check did not load.', 'error')
       },
     })
     setTurnstileState('Finish the human check to create the account.')
   } catch {
-    setTurnstileState('Verification could not load right now.', 'error')
+    setTurnstileState('The human check could not load right now.', 'error')
   }
 }
 
@@ -410,11 +704,11 @@ async function registerAccount({ email, password, displayName }) {
 
   const result = await response.json().catch(() => ({
     ok: false,
-    message: 'The account service returned unreadable data.',
+    message: 'The account service sent back something unreadable. Try again in a minute.',
   }))
 
   if (!response.ok || result.ok !== true) {
-    throw new Error(result.message || 'Account creation failed.')
+    throw new Error(result.message || 'Account creation did not go through.')
   }
 
   return result
@@ -424,7 +718,11 @@ async function loadAuthState() {
   authSubscription?.unsubscribe?.()
   authSubscription = null
 
-  authState = await getSiteAuthState()
+  try {
+    authState = await getSiteAuthState()
+  } catch (error) {
+    authState = { enabled: false, client: null, session: null, reason: error?.message || 'The sign-in library did not load.' }
+  }
   renderStatus()
 
   if (authState?.client) {
@@ -436,7 +734,7 @@ async function loadAuthState() {
       renderStatus()
       void syncSnapshot()
     })
-    authSubscription = data.subscription
+    authSubscription = data?.subscription || null
   }
 
   await ensureTurnstile()
@@ -448,10 +746,25 @@ tabs.forEach((tab) => {
     if (activeRequest) return
     setMode(tab.dataset.accountMode)
   })
+  tab.addEventListener('keydown', (event) => {
+    if (activeRequest) return
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+      event.preventDefault()
+      const next = event.key === 'Home' ? 'signin' : event.key === 'End' ? 'signup' : accountMode === 'signin' ? 'signup' : 'signin'
+      setMode(next, { focus: true })
+    }
+  })
 })
 
+emailInput?.addEventListener('blur', () => validateEmail({ quiet: true }))
+emailInput?.addEventListener('input', () => {
+  if (emailInput.closest('.ac-field')?.classList.contains('is-invalid')) validateEmail({ quiet: true })
+})
+passwordInput?.addEventListener('input', () => validatePassword({ quiet: true }))
+
 refreshButton?.addEventListener('click', async () => {
-  setFeedback('Refreshing account state…')
+  setFeedback('')
+  refreshButton.classList.add('is-loading')
   const session = await refreshSiteSession()
   if (authState) {
     authState = {
@@ -461,23 +774,25 @@ refreshButton?.addEventListener('click', async () => {
   }
   renderStatus()
   await syncSnapshot()
+  refreshButton.classList.remove('is-loading')
+  if (session?.user) toast('Account refreshed')
 })
 
 signOutButton?.addEventListener('click', async () => {
   if (!authState?.client) return
   setFormBusy(true)
-  setFeedback('Signing out…')
   await authState.client.auth.signOut()
   clearCachedAuthState()
   authState = null
   await loadAuthState()
+  toast('Signed out')
 })
 
 form?.addEventListener('submit', async (event) => {
   event.preventDefault()
 
   if (!authState?.client) {
-    setFeedback('Account auth is not armed on this deploy yet.', 'error')
+    setFeedback('Sign-in is not switched on for this site yet.', 'error')
     return
   }
 
@@ -485,8 +800,16 @@ form?.addEventListener('submit', async (event) => {
   const password = passwordInput?.value || ''
   const displayName = displayNameInput?.value?.trim() || ''
 
-  if (!email || !password) {
-    setFeedback('Enter both email and password.', 'error')
+  const emailOK = validateEmail()
+  const passwordOK = validatePassword()
+  if (!email || !password || !emailOK || !passwordOK) {
+    setFeedback(
+      accountMode === 'signup' && password && !passwordOK
+        ? `Use a password with at least ${minimumPasswordLength} characters.`
+        : 'Enter both email and password.',
+      'error'
+    )
+    ;(!emailOK ? emailInput : passwordInput)?.focus()
     return
   }
 
@@ -495,8 +818,8 @@ form?.addEventListener('submit', async (event) => {
     return
   }
 
-  setFormBusy(true)
-  setFeedback(accountMode === 'signup' ? 'Creating account…' : 'Signing in…')
+  setFormBusy(true, accountMode === 'signup' ? 'Creating account…' : 'Signing in…')
+  setFeedback('')
 
   try {
     if (accountMode === 'signup') {
@@ -506,10 +829,12 @@ form?.addEventListener('submit', async (event) => {
       captchaToken = ''
       resetTurnstileIfPresent()
       setMode('signin')
+      if (emailInput) emailInput.value = email
       setFeedback(
         registration.message || 'Check your email to confirm your account, then sign in.',
-        'live'
+        'confirm'
       )
+      toast('Check your inbox')
       return
     }
 
@@ -523,11 +848,12 @@ form?.addEventListener('submit', async (event) => {
       session: result.data?.session || authState.session,
     }
 
+    form.reset()
     renderStatus()
+    toast(`Signed in as ${sessionLabel(authState.session)}`)
     await syncSnapshot()
-    setFeedback('Signed in.', 'live')
   } catch (error) {
-    setFeedback(error?.message || 'Account request failed.', 'error')
+    setFeedback(friendlyAuthError(error, 'That did not go through. Try again.'), 'error')
     captchaToken = ''
     resetTurnstileIfPresent()
   } finally {
@@ -536,7 +862,8 @@ form?.addEventListener('submit', async (event) => {
 })
 
 startedAtInput.value = String(Date.now())
-setMode(accountMode)
+const requestedMode = new URLSearchParams(window.location.search).get('mode')
+setMode(requestedMode === 'signup' || window.location.hash === '#create' ? 'signup' : accountMode)
 loadAuthState()
 ```
 
@@ -546,540 +873,3059 @@ This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="account-index-html" file="account/index.html"}
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx ac-page">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachNet Account: The small stuff that should travel</title>
+    <title>RoachNet Account</title>
     <meta
       name="description"
-      content="Your RoachNet account carries the small web stuff: RoachClaw threads, saved app picks, device links, and settings. The runtime, vault, models, and files stay local."
+      content="An optional RoachNet account for RoachClaw web conversations, saved app picks and a short list of your devices. Your models, vault and files stay on your Mac."
     />
-    <meta name="theme-color" content="#0a1016" />
+    <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://accounts.roachnet.org/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="RoachNet Account: The small stuff that should travel" />
+    <meta property="og:title" content="RoachNet Account" />
     <meta
       property="og:description"
-      content="Threads, app picks, device links, and settings can travel. The vault, runtime, models, and files stay on your machine."
+      content="The small stuff travels: RoachClaw web threads, saved app picks, a device list. The heavy stuff stays on your Mac."
     />
     <meta property="og:url" content="https://accounts.roachnet.org/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RoachNet Account: The small stuff that should travel" />
+    <meta name="twitter:title" content="RoachNet Account" />
     <meta
       name="twitter:description"
-      content="Threads, app picks, device links, and settings can travel. The vault, runtime, models, and files stay on your machine."
+      content="The small stuff travels: RoachClaw web threads, saved app picks, a device list. The heavy stuff stays on your Mac."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
-    <link rel="stylesheet" href="/app.css" />
-    <link rel="stylesheet" href="/app-polish.css?v=20260609-overflow" />
-    <link rel="stylesheet" href="/roachclaw-web.css?v=20260609-auth-gate" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="/nx.css" />
+    <link rel="stylesheet" href="/nx-account.css" />
   </head>
   <body data-page="account">
-    <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
-    <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
+    <a class="rn-skip-link" href="#account-main">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
 
-    <!-- ═══════════════════════════════════════════════════════ -->
-    <!-- ACCOUNT PAGE                                          -->
-    <!-- ═══════════════════════════════════════════════════════ -->
-    <div class="page-view page-view--account" id="view-account">
-      <a class="rn-skip-link" href="#account-main">Skip to main content</a>
-      <header class="site-header account-topbar">
-        <a class="brand-lockup" href="https://roachnet.org/" aria-label="Back to RoachNet">
-          <img class="brand-mark" src="/assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
-          <div class="brand-copy">
-            <strong>RoachNet Account</strong>
-            <span class="brand-kicker">sync the small stuff, keep the heavy stuff home</span>
-          </div>
-          <span class="site-header__status">Accounts</span>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Account</span>
         </a>
-
-        <div class="site-header__panel">
-          <nav class="site-nav site-nav--primary" aria-label="Primary">
-            <a href="https://roachnet.org/">Mission</a>
-            <a href="https://roachnet.org/home/">Home</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-            <a href="https://roachnet.org/roachclaw/">Claw</a>
-            <a href="https://roachnet.org/brew/">Brew</a>
-            <a href="https://roachnet.org/ios/">iOS</a>
-          </nav>
-
-          <div class="site-header__actions" aria-label="Utility links">
-            <a class="site-action-pill is-current" href="#view-account">Account</a>
-            <a class="site-action-pill site-action-pill--ghost" href="https://roachnet.org/api/">API</a>
-            <a class="site-action-pill site-action-pill--ghost" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
-          </div>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost is-current" href="#account-main" aria-current="page">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <main class="account-page" id="account-main" tabindex="-1">
-        <section class="account-hero" data-reveal-group>
-          <article class="account-poster">
-            <span class="eyebrow">Account</span>
-            <h1>Your machine stays yours. This account carries the small stuff.</h1>
-            <p>
-              Most of RoachNet belongs on your hardware. That is the point. This account holds what should travel: RoachClaw threads, app picks, device links, and settings.
-            </p>
+    <main class="nx-main ac-main" id="account-main" tabindex="-1">
+      <section class="ac-hero" aria-labelledby="account-title">
+        <div class="ac-hero__copy">
+          <p class="nx-overline">RoachNet Account · optional</p>
+          <h1 class="nx-display ac-title" id="account-title">The small stuff travels. <span class="nx-accent">The rest stays home.</span></h1>
+          <p class="nx-lede">
+            You don't need an account to use RoachNet. Make one and it keeps your RoachClaw web conversations, the apps you saved and a short list of the devices you signed in from. Your models, vault and files never leave your Mac.
+          </p>
+          <div class="nx-actions">
+            <a class="nx-btn nx-btn--primary" href="https://roachnet.org/roachclaw/">Open RoachClaw on the web</a>
+            <a class="nx-btn" href="https://roachnet.org/ios/">Get RoachNet for iOS</a>
+          </div>
+          <ul class="nx-links" aria-label="More">
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">Read the API</a></li>
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Download RoachNet for macOS</a></li>
+          </ul>
+        </div>
 
-            <div class="account-chip-row" aria-label="Account features">
-              <span class="account-chip">RoachClaw web chat</span>
-              <span class="account-chip">Saved installs</span>
-              <span class="account-chip">Device links</span>
-              <span class="account-chip">Settings sync</span>
+        <section class="ac-auth" id="account-auth" data-auth-state="loading" aria-labelledby="account-status-title">
+          <div class="ac-auth__status">
+            <div class="ac-auth__status-copy">
+              <p class="ac-label">This browser</p>
+              <h2 class="ac-auth__title" id="account-status-title">Checking for a session…</h2>
+              <p class="ac-auth__body" id="account-status-body">Looking for a signed-in account in this browser.</p>
+            </div>
+            <p class="ac-badge" id="account-status-badge" data-state="loading">Loading</p>
+          </div>
+
+          <div class="ac-auth__signed-in">
+            <p class="ac-auth__mini" id="account-mini">Loading what your account holds…</p>
+            <div class="nx-actions">
+              <a class="nx-btn nx-btn--primary nx-btn--sm" href="https://roachnet.org/roachclaw/">Open RoachClaw</a>
+              <button class="nx-btn nx-btn--sm" id="account-refresh" type="button">Refresh</button>
+              <button class="nx-btn nx-btn--sm" id="account-signout" type="button" hidden>Sign out</button>
+            </div>
+            <p class="ac-form__note">Signing out only ends this browser's session. Nothing on your Mac changes.</p>
+          </div>
+
+          <div class="ac-auth__signed-out">
+            <div class="ac-tabs" role="tablist" aria-label="Account mode" data-mode="signin">
+              <span class="ac-tabs__ind" aria-hidden="true"></span>
+              <button class="ac-tab is-active" id="account-tab-signin" data-account-mode="signin" type="button" role="tab" aria-selected="true" aria-controls="account-form">Sign in</button>
+              <button class="ac-tab" id="account-tab-signup" data-account-mode="signup" type="button" role="tab" aria-selected="false" aria-controls="account-form" tabindex="-1">Create account</button>
             </div>
 
-            <div class="poster-actions">
-              <a class="cta cta--primary" href="/roachclaw" data-route="roachclaw">Open RoachClaw</a>
-              <a class="cta cta--ghost" href="https://roachnet.org/ios/">Get RoachNetiOS</a>
-              <a class="cta cta--ghost" href="https://roachnet.org/api/">Read the API</a>
-            </div>
-
-            <div class="hero-signal-board hero-signal-board--compact">
-              <article class="hero-signal-card" data-reveal>
-                <span>Syncs</span>
-                <strong>App picks, device links, and web settings. The metadata with a reason to leave the house.</strong>
-              </article>
-              <article class="hero-signal-card" data-reveal>
-                <span>Stays home</span>
-                <strong>Runtime, models, vault, and files. Your hardware, your rules, no cloud custody.</strong>
-              </article>
-            </div>
-
-            <div class="account-poster__grid">
-              <article class="account-mini-card" data-reveal>
-                <span class="feature-card__eyebrow">What syncs</span>
-                <strong>Threads, app picks, device links, web settings.</strong>
-                <p>The useful metadata that keeps your devices in step. Nothing that belongs in the vault.</p>
-              </article>
-
-              <article class="account-mini-card" data-reveal>
-                <span class="feature-card__eyebrow">What stays local</span>
-                <strong>Runtime, models, vault, file paths.</strong>
-                <p>Desktop data stays on your box. The internet is a convenience, not custody.</p>
-              </article>
-
-              <article class="account-mini-card" data-reveal>
-                <span class="feature-card__eyebrow">What comes next</span>
-                <strong>Web chat, RoachTail handoff, cleaner multi-device state.</strong>
-                <p>The web side keeps account state in step. The heavy lifting still belongs on your hardware.</p>
-              </article>
-            </div>
-          </article>
-
-          <section class="account-auth-shell">
-            <div class="account-inline-status">
-              <div>
-                <span class="feature-card__eyebrow">Account</span>
-                <h2 id="account-status-title">Checking account…</h2>
-                <p id="account-status-body">Looking up the current session for this browser.</p>
+            <form class="ac-form" id="account-form" novalidate>
+              <div class="ac-field" id="account-name-field" hidden>
+                <label for="account-display-name">Name <span class="ac-field__opt">optional</span></label>
+                <input id="account-display-name" type="text" autocomplete="nickname" maxlength="60" placeholder="A name, a handle, whatever fits" />
               </div>
-              <div class="account-status-badge" id="account-status-badge">Loading</div>
-            </div>
 
-            <div class="account-actions-inline">
-              <button class="cta cta--ghost" id="account-refresh" type="button">Refresh</button>
-              <button class="cta cta--ghost" id="account-signout" type="button" hidden>Sign out</button>
-            </div>
+              <div class="ac-field">
+                <label for="account-email">Email</label>
+                <input id="account-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-describedby="account-email-hint" required />
+                <p class="ac-field__hint" id="account-email-hint" data-hint="email"></p>
+              </div>
 
-            <div class="account-auth-card__tabs" role="tablist" aria-label="Account mode">
-              <button class="account-tab is-active" data-account-mode="signin" type="button">Sign in</button>
-              <button class="account-tab" data-account-mode="signup" type="button">Create account</button>
-            </div>
-
-            <form class="account-form" id="account-form">
-              <label class="account-field account-name-field" id="account-name-field" hidden>
-                <span>Name</span>
-                <input id="account-display-name" type="text" autocomplete="nickname" maxlength="60" placeholder="Studio name, handle, or whatever fits" />
-              </label>
-
-              <label class="account-field">
-                <span>Email</span>
-                <input id="account-email" type="email" autocomplete="email" placeholder="you@example.com" required />
-              </label>
-
-              <label class="account-field">
-                <span>Password</span>
-                <input id="account-password" type="password" autocomplete="current-password" placeholder="Strong password" required />
-              </label>
+              <div class="ac-field">
+                <label for="account-password">Password</label>
+                <input id="account-password" type="password" autocomplete="current-password" placeholder="Your password" aria-describedby="account-password-hint" required />
+                <p class="ac-field__hint" id="account-password-hint" data-hint="password"></p>
+              </div>
 
               <input id="account-started-at" type="hidden" />
-              <label class="account-honeypot" aria-hidden="true">
-                <span>Leave this blank</span>
+              <div class="account-honeypot" aria-hidden="true">
+                <label for="account-company">Leave this blank</label>
                 <input id="account-company" type="text" tabindex="-1" autocomplete="off" />
-              </label>
+              </div>
 
               <div class="account-turnstile" id="account-turnstile-shell" hidden>
                 <div id="account-turnstile"></div>
-                <p class="account-form__note" id="account-turnstile-note">Verifying this request.</p>
+                <p class="ac-form__note" id="account-turnstile-note">Verifying this request.</p>
               </div>
 
-              <button class="cta cta--primary" id="account-submit" type="submit">Sign in</button>
-              <p class="account-form__note" id="account-form-note">Sign in when you want the website tied to your RoachNet account. The vault stays out of it.</p>
-              <p class="account-form__feedback" id="account-feedback" aria-live="polite"></p>
+              <button class="nx-btn nx-btn--primary ac-submit" id="account-submit" type="submit"><span class="ac-submit__label">Sign in</span></button>
+              <p class="ac-form__note" id="account-form-note">Signing in only links this website to your account. The vault stays out of it.</p>
+              <p class="ac-form__feedback" id="account-feedback" role="status" aria-live="polite"></p>
             </form>
-          </section>
+          </div>
         </section>
+      </section>
 
-        <section class="account-dashboard" data-reveal-group>
-          <article class="account-panel account-panel--snapshot" data-reveal>
-            <span class="feature-card__eyebrow">Synced state</span>
-            <h3 id="account-snapshot-title">Sign in to see what is in step.</h3>
-            <p id="account-snapshot-body">Device links, saved installs, and settings metadata appear here once the session is live.</p>
-
-            <div class="account-metrics">
-              <div class="account-metric">
-                <strong id="account-device-count">—</strong>
-                <span>Linked devices</span>
-              </div>
-
-              <div class="account-metric">
-                <strong id="account-app-count">—</strong>
-                <span>Saved apps</span>
-              </div>
-
-              <div class="account-metric">
-                <strong id="account-settings-state">—</strong>
-                <span>Settings</span>
-              </div>
-            </div>
+      <section class="nx-section ac-ledger" aria-labelledby="ledger-title">
+        <div class="nx-section__head">
+          <p class="nx-overline nx-overline--purple">What goes where</p>
+          <h2 class="nx-h2" id="ledger-title">A short list leaves the house. A long list doesn't.</h2>
+          <p class="nx-lede">Accounts run on Supabase. They hold the few things that are useful on more than one device, and nothing that belongs in your vault.</p>
+        </div>
+        <div class="ac-ledger__grid">
+          <article class="nx-card ac-ledger__card ac-ledger__card--syncs">
+            <p class="nx-card__eyebrow nx-card__eyebrow--cyan">Syncs with your account</p>
+            <ul class="ac-list">
+              <li><strong>RoachClaw web conversations</strong><span>The threads and replies you send from a browser.</span></li>
+              <li><strong>Saved app picks</strong><span>The apps you've marked so you can find them again.</span></li>
+              <li><strong>Your device list</strong><span>A name, a platform and a last-seen time for each device you sign in from.</span></li>
+              <li><strong>A few web settings</strong><span>Small preferences for the website.</span></li>
+            </ul>
           </article>
-
-          <article class="account-panel" data-reveal>
-            <span class="feature-card__eyebrow">Desktop &amp; phone</span>
-            <h3>The real work lives in the app.</h3>
-            <p>This account handles identity and sync metadata. Runtime, vault, and local services stay on your hardware, where they belong. Quiet helper, not fake cloud runtime.</p>
-            <div class="account-actions-inline">
-              <a class="cta cta--ghost" href="https://roachnet.org/ios/">RoachNetiOS</a>
-              <a class="cta cta--ghost" href="/roachclaw" data-route="roachclaw">RoachClaw web chat</a>
-            </div>
+          <article class="nx-card ac-ledger__card ac-ledger__card--home">
+            <p class="nx-card__eyebrow">Stays on your Mac</p>
+            <ul class="ac-list">
+              <li><strong>Your models</strong><span>RoachClaw in the Mac app runs on models on your own machine.</span></li>
+              <li><strong>Your vault and files</strong><span>Everything in <code>~/RoachNet</code>. This account never sees it.</span></li>
+              <li><strong>Paths and secrets</strong><span>Where things live on disk and the keys your runtime uses.</span></li>
+              <li><strong>The runtime</strong><span>The native Swift runtime that does the work on your Mac.</span></li>
+            </ul>
           </article>
+        </div>
+      </section>
 
-          <article class="account-panel" data-reveal>
-            <span class="feature-card__eyebrow">Privacy</span>
-            <h3>No local path dump. No fake cloud runtime.</h3>
-            <p>The server stores what a server should: identity and sync metadata. File paths, runtime secrets, and vault content stay on your machine.</p>
-            <div class="account-actions-inline">
-              <a class="cta cta--ghost" href="https://roachnet.org/api/">API docs</a>
-              <a class="cta cta--ghost" href="https://roachnet.org/">Back to RoachNet</a>
+      <section class="nx-section ac-dash" id="account-dashboard" aria-labelledby="account-snapshot-title" data-auth-state="loading">
+        <div class="ac-dash__head">
+          <div>
+            <p class="nx-overline">Your account</p>
+            <h2 class="nx-h2" id="account-snapshot-title">Sign in to see what's here.</h2>
+            <p class="nx-lede" id="account-snapshot-body">Your devices, saved apps and RoachClaw threads show up here once you sign in.</p>
+          </div>
+        </div>
+
+        <ul class="ac-metrics" aria-label="Account totals">
+          <li class="ac-metric"><strong id="account-device-count">—</strong><span>Devices</span></li>
+          <li class="ac-metric"><strong id="account-app-count">—</strong><span>Saved apps</span></li>
+          <li class="ac-metric"><strong id="account-thread-count">—</strong><span>RoachClaw threads</span></li>
+          <li class="ac-metric"><strong id="account-settings-state">—</strong><span>Web settings</span></li>
+        </ul>
+
+        <div class="ac-dash__grid">
+          <article class="nx-card ac-panel">
+            <div class="ac-panel__head">
+              <h3 class="nx-h3">Devices</h3>
+              <p class="ac-panel__meta">Most recent first</p>
             </div>
+            <ul class="ac-rows" id="account-device-list">
+              <li class="ac-rows__empty">Nothing to show until you sign in.</li>
+            </ul>
           </article>
-        </section>
-      </main>
+          <article class="nx-card ac-panel">
+            <div class="ac-panel__head">
+              <h3 class="nx-h3">Saved apps</h3>
+              <p class="ac-panel__meta">Your picks</p>
+            </div>
+            <ul class="ac-rows" id="account-app-list">
+              <li class="ac-rows__empty">Nothing to show until you sign in.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
 
-      <footer class="site-footer">
-        <div class="site-footer__copy">
+      <section class="nx-section ac-next" aria-labelledby="next-title">
+        <div class="nx-section__head">
+          <p class="nx-overline nx-overline--cyan">Next stops</p>
+          <h2 class="nx-h2" id="next-title">Where to go from here.</h2>
+        </div>
+        <div class="nx-grid nx-grid--3">
+          <a class="nx-card nx-card--clickable nx-card--icon" href="https://roachnet.org/roachclaw/">
+            <span class="nx-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7a2.5 2.5 0 0 1-2.5 2.5H11l-4 3.5V16h0A2 2 0 0 1 5 14V6.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </span>
+            <p class="nx-card__eyebrow">Uses this account</p>
+            <h3 class="nx-card__title">RoachClaw on the web</h3>
+            <p class="nx-card__body">Chat from any browser with a hosted model. Sign in there with the same email and your threads follow.</p>
+          </a>
+          <a class="nx-card nx-card--clickable nx-card--icon" href="https://roachnet.org/ios/">
+            <span class="nx-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="7" y="3" width="10" height="18" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M11 17.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </span>
+            <p class="nx-card__eyebrow nx-card__eyebrow--purple">Pairs with your Mac</p>
+            <h3 class="nx-card__title">RoachNet for iOS</h3>
+            <p class="nx-card__body">Version 0.2.0 for iPhone and iPad on iOS 17 or later. It pairs with your Mac over RoachTail, with a key for each device.</p>
+          </a>
+          <a class="nx-card nx-card--clickable nx-card--icon" href="https://roachnet.org/api/">
+            <span class="nx-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <p class="nx-card__eyebrow nx-card__eyebrow--cyan">For builders</p>
+            <h3 class="nx-card__title">The RoachNet API</h3>
+            <p class="nx-card__body">Every route your Mac answers, plus the two roachnet.org functions behind web chat and sign-up.</p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Your data, your machine</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
           <strong>RoachNet Account</strong>
-          <span>RoachClaw threads, saved installs, linked devices, and settings. The heavy lifting stays on your machine.</span>
+          <span>Optional. It carries RoachClaw web threads, saved app picks and your device list. The heavy lifting stays on your Mac.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
         </div>
-        <nav class="site-footer__nav" aria-label="Footer">
-          <a href="https://roachnet.org/">Home</a>
-          <a href="/roachclaw" data-route="roachclaw">RoachClaw</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-          <a href="https://roachnet.org/api/">API</a>
-          <a href="https://roachnet.org/sitemap/">Sitemap</a>
-          <a href="https://www.roachwares.org/">RoachWares</a>
-          <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
-        <div class="site-footer__meta">
-          <a
-            class="netlify-badge"
-            href="https://www.netlify.com"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Proudly powered by Netlify"
-          >
-            <span>Proudly powered by Netlify</span>
-            <img
-              src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-              alt="Netlify"
-              loading="lazy"
-            />
-          </a>
-        </div>
-      </footer>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════ -->
-    <!-- ROACHCLAW PAGE                                        -->
-    <!-- ═══════════════════════════════════════════════════════ -->
-    <div class="page-view page-view--roachclaw" id="view-roachclaw" hidden>
-      <a class="rn-skip-link" href="#account-roachclaw-main">Skip to main content</a>
-      <div class="rc-sidebar-overlay" aria-hidden="true"></div>
-      <div class="rc-layout">
-        <!-- Sidebar -->
-        <aside class="rc-sidebar">
-          <div class="rc-sidebar__head">
-            <a class="rc-sidebar__brand" href="https://roachnet.org/" aria-label="Back to RoachNet">
-              <img class="brand-mark" src="/assets/roachclaw-logo.webp" width="2400" height="2400" alt="RoachClaw logo" decoding="async" />
-              <div class="brand-copy">
-                <strong>RoachClaw</strong>
-                <span class="brand-kicker">one shortcut away</span>
-              </div>
-            </a>
-            <button class="rc-sidebar__new-btn" id="roachclaw-new-thread" type="button" aria-label="New chat">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-
-          <nav class="rc-sidebar__nav" aria-label="RoachClaw navigation">
-            <a href="/" data-route="account" class="rc-sidebar__link">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-4.5 5.5-4.5s5.5 1.5 5.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-              Account
-            </a>
-            <a href="https://roachnet.org/" class="rc-sidebar__link">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8l6-5.5L14 8M3.5 7v5.5a1 1 0 001 1h7a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              RoachNet
-            </a>
-            <a href="https://roachnet.org/api/" class="rc-sidebar__link">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7l2 2 2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              API
-            </a>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
           </nav>
-
-          <div class="rc-sidebar__divider"></div>
-
-          <div class="rc-sidebar__threads">
-            <span class="rc-sidebar__section-label">Threads</span>
-            <div class="rc-thread-list" id="roachclaw-thread-list">
-              <div class="rc-thread-empty">
-                <p>No threads yet. Sign in and give RoachClaw something to chew on.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="rc-sidebar__foot">
-            <div class="rc-lane-status">
-              <div class="rc-lane-dot rc-lane-dot--web" aria-label="Web lane active"></div>
-              <span>Web lane active</span>
-            </div>
-            <div class="rc-lane-status rc-lane-status--dim">
-              <div class="rc-lane-dot rc-lane-dot--local" aria-label="Local lane offline"></div>
-              <span>Local lane — pair to enable</span>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Main content -->
-        <section class="rc-main" id="account-roachclaw-main" tabindex="-1">
-          <header class="rc-main__topbar">
-            <div class="rc-main__topbar-left">
-              <button class="rc-sidebar-toggle" id="rc-sidebar-toggle" type="button" aria-label="Toggle sidebar">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </button>
-              <span class="rc-main__thread-title">New conversation</span>
-            </div>
-            <div class="rc-main__topbar-right">
-              <div class="rc-model-badge">
-                <div class="rc-lane-dot rc-lane-dot--web"></div>
-                <span>Hosted model</span>
-              </div>
-              <button class="rc-account-chip" id="roachclaw-account-chip" type="button">Sign in</button>
-            </div>
-          </header>
-
-          <div class="rc-chat-area">
-            <div class="rc-chat-scroll" id="roachclaw-log">
-              <div class="rc-empty-state">
-                <div class="rc-empty-state__icon" aria-hidden="true">
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="url(#rc-grad)" stroke-width="2" opacity="0.5"/><path d="M16 20c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="url(#rc-grad)" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="28" r="2" fill="var(--rn-cyan)"/><circle cx="24" cy="28" r="2" fill="var(--rn-blue)"/><circle cx="30" cy="28" r="2" fill="var(--rn-green)"/><defs><linearGradient id="rc-grad" x1="4" y1="4" x2="44" y2="44"><stop stop-color="var(--rn-blue)"/><stop offset="1" stop-color="var(--rn-cyan)"/></linearGradient></defs></svg>
-                </div>
-                <h1 class="rc-empty-state__heading">What are we fixing, building, or untangling today?</h1>
-                <p class="rc-empty-state__sub">Your threads stay with your account, not this browser tab. Use the web lane anywhere. Pair RoachNet when the prompt needs private files, vault context, or the stuff you do not want wandering off.</p>
-
-                <div class="rc-starter-grid">
-                  <button class="rc-starter-card" type="button" data-starter="explain">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 13v-3M10 7.5v0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                    </div>
-                    <strong>Explain something</strong>
-                    <span>Break down a tool, idea, or workflow without turning it into a lecture.</span>
-                  </button>
-                  <button class="rc-starter-card" type="button" data-starter="draft">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 14.5V16h1.5L14 7.5 12.5 6 4 14.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 5l3 3" stroke="currentColor" stroke-width="1.4"/></svg>
-                    </div>
-                    <strong>Draft a message</strong>
-                    <span>Write an email, commit message, or quick reply that sounds human on purpose.</span>
-                  </button>
-                  <button class="rc-starter-card" type="button" data-starter="debug">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3.5" y="5.5" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                    <strong>Debug a problem</strong>
-                    <span>Walk through an error, config issue, or surprise behavior without blaming the chair.</span>
-                  </button>
-                  <button class="rc-starter-card" type="button" data-starter="summarize">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5h12M4 8.5h9M4 12h10M4 15.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                    </div>
-                    <strong>Summarize content</strong>
-                    <span>Condense a doc, thread, or page into the parts worth keeping.</span>
-                  </button>
-                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="cookbook">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M7 2.5v3M13 2.5v3M7 14.5v3M13 14.5v3M2.5 7h3M14.5 7h3M2.5 13h3M14.5 13h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                    </div>
-                    <strong>RoachClaw Cookbook</strong>
-                    <span>Pick the model lane that fits your machine, including quantized and MoE packs that lie about their weight.</span>
-                  </button>
-                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="research">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 3.5h7l4 4v9h-11v-13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 3.5v4h4M7 11h6M7 14h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                    <strong>Deep research</strong>
-                    <span>Gather sources, read them, and turn the mess into a vault-ready brief.</span>
-                  </button>
-                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="compare">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4" width="6" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="4" width="6" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M9 10h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                    </div>
-                    <strong>Compare models</strong>
-                    <span>Blind-test two routes so the confident answer has to earn the crown.</span>
-                  </button>
-                  <button class="rc-starter-card rc-starter-card--accent" type="button" data-starter="memory">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 6.5a3 3 0 116 0v1h.5A2.5 2.5 0 0116 10v2.5A3.5 3.5 0 0112.5 16h-5A3.5 3.5 0 014 12.5V10a2.5 2.5 0 012.5-2.5H7v-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 11h4M10 9v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                    </div>
-                    <strong>RoachBrain audit</strong>
-                    <span>Find useful context, stale habits, and saved procedures worth keeping.</span>
-                  </button>
-                  <button class="rc-starter-card" type="button" data-starter="diagnostics">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 4.5h10M6.5 8h7M8 11.5h4M9.5 15h1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 3h12v14H4V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-                    </div>
-                    <strong>Diagnostics</strong>
-                    <span>Probe providers, scrub settings, and find the failure before it grows teeth.</span>
-                  </button>
-                  <button class="rc-starter-card" type="button" data-starter="integrations">
-                    <div class="rc-starter-card__icon">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="5" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.2 8.8l5.6-2.6M7.2 11.2l5.6 2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                    </div>
-                    <strong>Hooks and contacts</strong>
-                    <span>Check recipients, webhooks, provider routes, and handoffs that should stay scoped.</span>
-                  </button>
-                </div>
-
-                <div class="rc-info-strip">
-                  <div class="rc-info-strip__item">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                    <span>Account-scoped threads</span>
-                  </div>
-                  <div class="rc-info-strip__item">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                    <span>Web lane stays available when your machines are asleep</span>
-                  </div>
-                  <div class="rc-info-strip__item">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7a5 5 0 0110 0 5 5 0 01-10 0z" stroke="currentColor" stroke-width="1.2"/><path d="M7 5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                    <span>Private lane stays local when paired</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="rc-composer">
-              <div class="rc-composer__inner">
-                <textarea id="roachclaw-input" class="rc-composer__textarea" placeholder="Ask RoachClaw. Debugs, drafts, maps, mixes, loose bolts..." rows="1"></textarea>
-                <div class="rc-composer__controls">
-                  <span class="rc-composer__hint" id="roachclaw-hint">Web lane · hosted models</span>
-                  <button class="rc-composer__send" id="roachclaw-send" type="button" aria-label="Send message">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3.5 9h11M10 4.5L14.5 9 10 13.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  </button>
-                </div>
-              </div>
-              <p class="rc-composer__disclaimer">The web lane uses hosted models. Pair RoachNet when the prompt needs your vault, projects, or private files.</p>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div class="rc-auth-gate" id="roachclaw-auth-gate" hidden>
-        <div class="rc-auth-gate__backdrop" aria-hidden="true"></div>
-        <section class="rc-auth-gate__window" aria-labelledby="roachclaw-gate-title">
-          <span class="rc-auth-gate__eyebrow">RoachClaw web lane</span>
-          <h2 id="roachclaw-gate-title">Sign in and pick up the thread.</h2>
-          <p id="roachclaw-gate-copy">
-            Threads follow your account. Your machine state does not leave the Mac unless you deliberately pair RoachNet later.
-          </p>
-
-          <div class="account-auth-card__tabs" role="tablist" aria-label="RoachClaw account mode">
-            <button class="account-tab is-active" data-roachclaw-auth-mode="signin" type="button">Sign in</button>
-            <button class="account-tab" data-roachclaw-auth-mode="signup" type="button">Create account</button>
-          </div>
-
-          <form class="account-form" id="roachclaw-auth-form">
-            <label class="account-field" id="roachclaw-auth-name-field" hidden>
-              <span>Name</span>
-              <input id="roachclaw-auth-name" type="text" autocomplete="nickname" maxlength="60" placeholder="Studio name, handle, or whatever fits" />
-            </label>
-
-            <label class="account-field">
-              <span>Email</span>
-              <input id="roachclaw-auth-email" type="email" autocomplete="email" placeholder="you@example.com" required />
-            </label>
-
-            <label class="account-field">
-              <span>Password</span>
-              <input id="roachclaw-auth-password" type="password" autocomplete="current-password" placeholder="Use your account password" required />
-            </label>
-
-            <div class="rc-auth-gate__actions">
-              <button class="cta cta--primary" id="roachclaw-auth-submit" type="submit">Sign in</button>
-              <a class="cta cta--ghost" href="/" data-route="account">Account</a>
-            </div>
-            <p class="account-form__note" id="roachclaw-auth-note">Use the same account that owns your RoachClaw threads.</p>
-            <p class="account-form__feedback" id="roachclaw-auth-feedback" aria-live="polite"></p>
-          </form>
-
-          <div class="rc-auth-gate__meta" aria-hidden="true">
-            <span class="rc-auth-gate__chip">Hosted threads from anywhere</span>
-            <span class="rc-auth-gate__chip">Your runtime stays on your machine</span>
-          </div>
-        </section>
-      </div>
-
-      <footer class="site-footer rc-footer">
-        <div class="site-footer__copy">
-          <strong>RoachClaw</strong>
-          <span>AI chat for drafts, debugging, summaries, and RoachNet context. Web lane anywhere. Local lane when it matters.</span>
         </div>
-        <nav class="site-footer__nav" aria-label="Footer">
-          <a href="/" data-route="account">Account</a>
-          <a href="https://roachnet.org/">RoachNet</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-          <a href="https://roachnet.org/api/">API</a>
-          <a href="https://roachnet.org/sitemap/">Sitemap</a>
-          <a href="https://www.roachwares.org/">RoachWares</a>
-          <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
-        <div class="site-footer__meta">
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="#account-main">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
           <a
-            class="netlify-badge"
-            href="https://www.netlify.com"
+            class="nx-release"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Proudly powered by Netlify"
-          >
-            <span>Proudly powered by Netlify</span>
-            <img
-              src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-              alt="Netlify"
-              loading="lazy"
-            />
-          </a>
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
         </div>
-      </footer>
-    </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
 
     <script src="/site-config.js"></script>
     <script src="/router.js"></script>
     <script src="/account.js" type="module"></script>
-    <script src="/roachclaw.js" type="module"></script>
-    <script src="/site-polish.js" type="module"></script>
+    <script src="/nx.js" type="module"></script>
+  </body>
+</html>
+```
+
+## api.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="api-js" file="api.js"}
+// RoachNet API reference (roachnet.org/api/).
+// The route data below is reconciled against the RoachNet 1.0.6 Mac release
+// (tag v1.0.6): native/macos/Sources/RoachNetRuntime/Router.swift and friends.
+// `source` on each route points at the line that answers it.
+// Text fields support `code` spans written with backticks; everything else is
+// escaped before it reaches innerHTML.
+
+const surfaces = {
+  setup: {
+    label: 'Setup service',
+    base: '$SETUP',
+    where: '127.0.0.1, ephemeral port (set ROACHNET_SETUP_PORT to pin it)',
+    auth: 'No token. Loopback Host header only; JSON bodies must be sent as `application/json`.',
+  },
+  runtime: {
+    label: 'Loopback API',
+    base: '$ROACHNET',
+    where: '127.0.0.1, ephemeral port (read `baseUrl` from the runtime state file)',
+    auth: 'No token. Loopback Host header only; JSON bodies must be sent as `application/json`, or you get a 415.',
+  },
+  companion: {
+    label: 'Companion bridge',
+    base: '$BRIDGE',
+    where: '127.0.0.1:38111 by default, or your RoachTail relay host',
+    auth: '`authorization: Bearer <companion token>` or a paired device’s `rtp_` token. The same routes also answer on the loopback API without one.',
+  },
+  web: {
+    label: 'roachnet.org',
+    base: 'https://roachnet.org',
+    where: 'Netlify functions on roachnet.org',
+    auth: 'Origin must be roachnet.org or accounts.roachnet.org. Chat needs a Supabase session token.',
+  },
+}
+
+const apiGroups = [
+  {
+    id: 'setup',
+    label: 'Setup service',
+    scope: 'setup',
+    summary: 'The installer backend RoachNet Setup.app talks to before anything is installed.',
+    stack: 'RoachNet Setup.app → roachnet-runtime --setup → SetupEngine.handle',
+    callers: ['RoachNet Setup.app (RoachNetSetup/main.swift)'],
+    endpoints: [
+      {
+        id: 'setup-state',
+        method: 'GET',
+        path: '/api/state',
+        title: 'Installer state',
+        summary: 'Machine checks, saved choices and the current or last install task, in one read.',
+        handler: 'SetupEngine.state',
+        source: 'SetupEngine.swift:915',
+        request: [
+          'Query, all optional: `installPath`, `installedAppPath`, `storagePath`, `installProfile`, `roachClawDefaultModel`, `releaseChannel`, `updateBaseUrl` and the companion settings.',
+          'Boolean flags count as true only when the value is the string `true`: `installRoachClaw`, `companionEnabled`, `autoLaunch`, `autoCheckUpdates`, `launchAtLogin`, `dryRun`.',
+        ],
+        response: [
+          '`system`: chip, macOS version, memory, recommended starter model, `runtime: "native-swift"`.',
+          '`config`: saved choices merged with any query overrides.',
+          '`dependencies`: preflight checks for Apple Silicon, macOS 14 or later, free space, a writable install folder and memory.',
+          '`nativeApp`, `installLooksReady`, `activeTask`, `lastCompletedTask`, `sourceModes`.',
+          '`containerRuntime` is always unavailable. RoachNet does not use containers.',
+        ],
+        implementation:
+          'Query overrides are previewed, not saved. The install needs 2 GiB free, or 5 GiB with RoachClaw. The reply carries the saved config, companion token included, which is one reason the service only answers a loopback Host.',
+        usedBy: ['Setup overview and preflight cards', 'Install-path and storage choosers'],
+      },
+      {
+        id: 'setup-config',
+        method: 'POST',
+        path: '/api/config',
+        title: 'Save installer choices',
+        summary: 'Normalizes and saves setup choices without installing anything.',
+        handler: 'SetupEngine.defaultConfig + saveConfig',
+        source: 'SetupEngine.swift:917',
+        body: { installPath: '~/RoachNet', installRoachClaw: true, autoLaunch: true },
+        request: [
+          'JSON body: any subset of the installer config, for example `installPath`, `storagePath`, `installRoachClaw`, `roachClawDefaultModel`, `autoLaunch`, `releaseChannel` (`stable`, `beta` or `alpha`).',
+        ],
+        response: ['`{ ok: true, config }` with every default filled in.'],
+        implementation:
+          'Saved to `~/Library/Application Support/roachnet/roachnet-installer.json`. Two fields are pinned whatever you send: `sourceMode` is always `bundled` and `useDockerContainerization` is always false.',
+        usedBy: ['Install-path chooser', 'Storage-path chooser', 'RoachClaw toggle'],
+      },
+      {
+        id: 'setup-install',
+        method: 'POST',
+        path: '/api/install',
+        title: 'Start the install',
+        summary: 'Starts the staged install and returns at once. Poll /api/state for progress.',
+        handler: 'SetupEngine.startInstall → runInstall',
+        source: 'SetupEngine.swift:921 (workflow at :467)',
+        body: { installPath: '~/RoachNet', installRoachClaw: true, dryRun: true },
+        request: [
+          'JSON body: the installer config, same fields as /api/config.',
+          '`dryRun: true` returns a finished preview task and changes nothing.',
+        ],
+        response: [
+          '`{ ok: true }` once the task starts.',
+          '`{ ok: true, task }` in dry-run mode.',
+          '409 if an install is already running.',
+        ],
+        implementation:
+          'Phases, with the progress each starts at: inspect (5), validate (12), stage beside the target (24), contained Ollama (38, skipped without RoachClaw), manifest (52), copy RoachNet.app (64), boot the staged runtime until /api/health answers (76), swap the root and carry `storage/` across (88), point the `RoachNet` hostname at loopback (94), launch (98). A failure removes the staging folder and leaves the previous install alone.',
+        usedBy: ['Install button in RoachNet Setup.app', 'roachnet-runtime --install runs the same workflow without HTTP'],
+      },
+      {
+        id: 'setup-launch',
+        method: 'POST',
+        path: '/api/launch',
+        title: 'Open RoachNet',
+        summary: 'Opens the installed native app.',
+        handler: 'SetupEngine.launch',
+        source: 'SetupEngine.swift:923 (launch at :877)',
+        body: { installPath: '~/RoachNet' },
+        request: ['JSON body: `installPath`, optional `installedAppPath`.'],
+        response: [
+          '`{ ok: true, launched: "native-app", installedAppPath }`.',
+          '400 if the app is not at that path yet.',
+        ],
+        implementation:
+          'Records `lastOpenedMode: "app"` and `preferredShell: "native"`. There is no fallback launcher any more: no app, no launch.',
+        usedBy: ['Finish step in RoachNet Setup.app'],
+      },
+      {
+        id: 'setup-container-runtime-start',
+        method: 'POST',
+        path: '/api/container-runtime/start',
+        title: 'Container runtime (retired)',
+        summary: 'Still routed so a client that asks gets a clear no. Always a 400.',
+        handler: 'SetupEngine.handle',
+        source: 'SetupEngine.swift:925',
+        request: ['No body needed.'],
+        response: ['400 `{ ok: false, error: "RoachNet runs natively and does not use a container runtime." }`'],
+        implementation:
+          'Docker support left with the Node runtime. The route stays so older setup flows get an answer instead of a 404.',
+        usedBy: ['RoachNet Setup.app keeps the call for compatibility'],
+      },
+      {
+        id: 'setup-health',
+        method: 'GET',
+        path: '/api/health',
+        title: 'Setup health',
+        summary: 'Liveness for the setup service. `/health` answers too.',
+        handler: 'SetupEngine.handle',
+        source: 'SetupEngine.swift:927',
+        request: ['None.'],
+        response: ['`{ status: "ok", runtime: "native-swift", mode: "setup" }`'],
+        implementation: 'Same answer on `/health` and `/api/health`.',
+        usedBy: ['RoachNet Setup.app while it waits for its backend'],
+      },
+    ],
+  },
+  {
+    id: 'system',
+    label: 'System',
+    scope: 'runtime',
+    summary: 'Health, hardware, services and updates for the Mac you are on.',
+    stack: 'RoachNet.app → roachnet-runtime (loopback) → NativeRuntime.route',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
+    endpoints: [
+      {
+        id: 'health',
+        method: 'GET',
+        path: '/api/health',
+        title: 'Runtime health',
+        summary: 'The cheapest call on the Mac.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:100',
+        request: ['None.'],
+        response: ['`{ status: "ok" }`'],
+        implementation:
+          'The runtime writes this URL as `healthUrl` in its server-info file. Setup polls it to verify a fresh install; the app polls it before trusting the runtime.',
+        usedBy: ['RoachNet.app runtime supervisor', 'Setup verification phase'],
+      },
+      {
+        id: 'system-internet-status',
+        method: 'GET',
+        path: '/api/system/internet-status',
+        title: 'Internet check',
+        summary: 'A bare boolean: does github.com resolve.',
+        handler: 'DNS.resolves',
+        source: 'Router.swift:101',
+        request: ['None.'],
+        response: ['`true` or `false`, not wrapped in an object.'],
+        implementation: 'A DNS lookup with a three-second timeout. No request is sent to GitHub.',
+      },
+      {
+        id: 'system-info',
+        method: 'GET',
+        path: '/api/system/info',
+        title: 'Hardware profile',
+        summary: 'CPU, memory, OS and the model size this Mac can carry.',
+        handler: 'NativeRuntime.systemInfo',
+        source: 'Router.swift:102 (RoachClawStatus.swift:111)',
+        request: ['None.'],
+        response: [
+          '`cpu`: brand and core counts.',
+          '`mem`: total and available bytes.',
+          '`os`: hostname, arch, kernel.',
+          '`hardwareProfile`: `memoryTier` (`compact` under 16 GB, `balanced`, `creator` from 32 GB) and `recommendedModelClass` (`1.5b`, `7b`, `14b`).',
+        ],
+        implementation: 'Read from the OS on every call. Nothing is cached or sent anywhere.',
+      },
+      {
+        id: 'system-services',
+        method: 'GET',
+        path: '/api/system/services',
+        title: 'Service list',
+        summary: 'The six services the command grid shows, with install state.',
+        handler: 'NativeRuntime.systemServices',
+        source: 'Router.swift:103 (RoachClawStatus.swift:905)',
+        request: ['None.'],
+        response: [
+          'Array of services: Library (Kiwix), Academy (Kolibri), Chat (Ollama), RoachSync, Notes, Data Lab.',
+          'Each has `service_name`, `friendly_name`, `description`, `installed`, `installation_status`, `status`, `ui_location`.',
+        ],
+        implementation:
+          'Only Chat reflects a live probe (is Ollama answering). Notes and Data Lab are built in and always report `running`. The rest report `available`.',
+      },
+      {
+        id: 'system-services-install',
+        method: 'POST',
+        path: '/api/system/services/install',
+        title: 'Install a service',
+        summary: 'Starts Ollama for `roachnet_ollama`. Acknowledges everything else.',
+        handler: 'NativeRuntime.ensureOllama',
+        source: 'Router.swift:151',
+        body: { service_name: 'roachnet_ollama' },
+        request: ['JSON body: `service_name`.'],
+        response: ['`{ success: true, ok: true, message }`'],
+        implementation:
+          'Native services have nothing to install, so any name other than `roachnet_ollama` gets a polite reply and no action.',
+      },
+      {
+        id: 'system-services-affect',
+        method: 'POST',
+        path: '/api/system/services/affect',
+        title: 'Start or stop a service',
+        summary: 'Only `roachnet_ollama` with `start` does anything.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:158',
+        body: { service_name: 'roachnet_ollama', action: 'start' },
+        request: ['JSON body: `service_name`, `action`.'],
+        response: ['`{ success: true, ok: true, message: "<action> request recorded." }`'],
+        implementation:
+          'Starting Ollama launches the contained runner with `OLLAMA_MODELS` pointed at `storage/models/ollama` and none of RoachNet’s own credentials in its environment. Other combinations are answered and otherwise left alone.',
+      },
+      {
+        id: 'system-ai-providers',
+        method: 'GET',
+        path: '/api/system/ai/providers',
+        title: 'AI providers',
+        summary: 'Is the local model server up, and which cloud keys exist.',
+        handler: 'NativeRuntime.providerStatus',
+        source: 'Router.swift:104',
+        request: ['None.'],
+        response: [
+          '`providers.ollama` and `providers.openclaw`: `available`, `source`, `baseUrl`, `error`.',
+          '`cloudProviders`: OpenAI, Anthropic and OpenRouter key status. Never the keys.',
+        ],
+        implementation:
+          'Ollama is probed at `127.0.0.1:36434/api/version`, OpenClaw at `127.0.0.1:13001/health`. Probe results are cached for one second.',
+      },
+      {
+        id: 'system-latest-version',
+        method: 'GET',
+        path: '/api/system/latest-version',
+        title: 'Check for an update',
+        summary: 'Compares this build with the newest GitHub release.',
+        handler: 'NativeRuntime.latestVersionResponse',
+        source: 'Router.swift:112 (RoachClawStatus.swift:1187)',
+        query: 'force=1',
+        request: ['Query: `force=1` skips the ten-minute cache.'],
+        response: [
+          '`{ success, updateAvailable, currentVersion, latestVersion, message, releaseUrl, assetUrl }`',
+          'On failure: `success: false`, and `latestVersion` equals the current version.',
+        ],
+        implementation:
+          'Reads the RoachWares/RoachNet releases list, skips drafts, and on the stable channel skips pre-releases. This and the update download are the only calls here that reach the internet on their own.',
+      },
+      {
+        id: 'system-update',
+        method: 'POST',
+        path: '/api/system/update',
+        title: 'Download the update',
+        summary: 'Queues the verified installer DMG. Returns 202.',
+        handler: 'NativeRuntime.requestUpdateDownload',
+        source: 'Router.swift:114 (Downloads.swift:343)',
+        request: ['No body needed.'],
+        response: [
+          '202 with `{ success, message, note }`.',
+          '`success: false` when the release has no installer asset or no `.sha256` sidecar.',
+        ],
+        implementation:
+          'Fetches the release’s `.sha256` sidecar first; the download refuses to finish unless the bytes match. The DMG lands in `storage/updates` and is opened for you. It does not install itself: run Setup over the existing install.',
+      },
+      {
+        id: 'system-update-status',
+        method: 'GET',
+        path: '/api/system/update/status',
+        title: 'Update progress',
+        summary: 'Where the update download is.',
+        handler: 'NativeRuntime.systemUpdateStatus',
+        source: 'Router.swift:113',
+        request: ['None.'],
+        response: ['`{ stage, progress, message, timestamp }` where `stage` is `idle`, `checking`, `downloading`, `ready` or `error`.'],
+        implementation: 'Mirrors the download job every 750 ms. In memory only.',
+      },
+    ],
+  },
+  {
+    id: 'models',
+    label: 'Models and chat',
+    scope: 'runtime',
+    summary: 'Local model inventory, chat and pulls through the bundled Ollama.',
+    stack: 'RoachNet.app → roachnet-runtime → Ollama on 127.0.0.1:36434',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
+    endpoints: [
+      {
+        id: 'ollama-installed-models',
+        method: 'GET',
+        path: '/api/ollama/installed-models',
+        title: 'Installed models',
+        summary: 'What Ollama has on disk.',
+        handler: 'NativeRuntime.installedModels',
+        source: 'Router.swift:162 (RoachClawStatus.swift:55)',
+        request: ['None.'],
+        response: ['Array of `{ name, size }` from Ollama `/api/tags`. Empty when Ollama cannot answer.'],
+        implementation: 'Starts the contained Ollama first if it is not running. Cached for about a second.',
+      },
+      {
+        id: 'ollama-chat',
+        method: 'POST',
+        path: '/api/ollama/chat',
+        title: 'Chat with a local model',
+        summary: 'Passes your body to Ollama /api/chat and returns its answer.',
+        handler: 'NativeRuntime.handleChat',
+        source: 'Router.swift:163 (Downloads.swift:697)',
+        body: { model: 'qwen2.5-coder:1.5b', messages: [{ role: 'user', content: 'Say hello in five words.' }], stream: false },
+        request: ['JSON body, forwarded as is: `model`, `messages`, `stream`, and any other Ollama chat option.'],
+        response: [
+          'Ollama’s chat response.',
+          'If Ollama is unreachable: still a 200, with `message.content` starting “Local model route is not ready”.',
+        ],
+        implementation:
+          'Two-minute timeout. Streaming is not relayed, so send `stream: false` and get one JSON body back.',
+      },
+      {
+        id: 'roachclaw-apply',
+        method: 'POST',
+        path: '/api/roachclaw/apply',
+        title: 'Pull a model',
+        summary: 'Queues an Ollama pull and returns before it finishes.',
+        handler: 'NativeRuntime.pullModel',
+        source: 'Router.swift:147 (Downloads.swift:706)',
+        body: { model: 'qwen2.5-coder:7b' },
+        request: ['JSON body: `model`. Defaults to `qwen2.5-coder:1.5b`.'],
+        response: ['`{ success: true, ok: true, message: "Local model pull queued." }`'],
+        implementation:
+          'The pull runs in the background against Ollama `/api/pull` with a ten-minute timeout. The reply does not wait for it; a failed pull only shows up in the runtime log.',
+      },
+      {
+        id: 'openclaw-skills-installed',
+        method: 'GET',
+        path: '/api/openclaw/skills/installed',
+        title: 'OpenClaw skills',
+        summary: 'Always an empty list in 1.0.6.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:164',
+        request: ['None.'],
+        response: ['`{ workspacePath, skills: [] }`'],
+        implementation:
+          'OpenClaw is a migration reference in 1.0.6, not a bundled runtime (RoachClawAgent.swift:110). The workspace path defaults to `storage/RoachClaw`.',
+      },
+    ],
+  },
+  {
+    id: 'roachclaw',
+    label: 'RoachClaw agent',
+    scope: 'runtime',
+    summary: 'Status, readiness, the plan-only agent and the guardrails around it.',
+    stack: 'Loopback API → NativeRuntime (RoachClawStatus, RoachClawAgent, RoachClawStores)',
+    callers: ['RoachNet.app reads status; the rest is open to local tools on this Mac'],
+    endpoints: [
+      {
+        id: 'roachclaw-status',
+        method: 'GET',
+        path: '/api/roachclaw/status',
+        title: 'RoachClaw status',
+        summary: 'Everything RoachClaw knows about itself, in one heavy read.',
+        handler: 'NativeRuntime.roachClawStatus',
+        source: 'Router.swift:115 (RoachClawStatus.swift:151)',
+        request: ['None.'],
+        response: [
+          '`ready` (true when Ollama answers), `defaultModel`, `resolvedDefaultModel`, `installedModels`, `modelRecords`.',
+          '`ollama`, `openclaw`, `agent`, `operations`, `playbook`, `workspacePath`.',
+        ],
+        implementation:
+          'Probes Ollama, OpenClaw and the model list in parallel, then summarizes every store. Good for a status screen, heavy for a loop.',
+        usedBy: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
+      },
+      {
+        id: 'roachclaw-readiness',
+        method: 'GET',
+        path: '/api/roachclaw/readiness',
+        title: 'Readiness',
+        summary: 'Can RoachClaw write where it needs to.',
+        handler: 'NativeRuntime.roachClawReadinessState',
+        source: 'Router.swift:142',
+        request: ['None.'],
+        response: ['`{ ready, localFirst, version, checks, timestamp }`'],
+        implementation:
+          'Writes and deletes a probe file in the storage root, the runtime state root and `storage/Vault`. `localFirst` is false only if storage is a URL or a relative path.',
+      },
+      {
+        id: 'roachclaw-agent-status',
+        method: 'GET',
+        path: '/api/roachclaw/agent/status',
+        title: 'Agent status',
+        summary: 'The agent block: skills, policy, budgets, memory location.',
+        handler: 'RoachClawAgent.status',
+        source: 'Router.swift:143',
+        request: ['None.'],
+        response: [
+          '`runtime: "roachclaw-native-agent"`, `skills`, `policy.defaultExecutionMode: "plan-only"`, `budgets`, `memory`.',
+        ],
+        implementation:
+          'Its `ready` flag is always false in 1.0.6, because the status is built without model state (RoachClawStatus.swift:171). Read `ready` from /api/roachclaw/status instead.',
+      },
+      {
+        id: 'roachclaw-agent-run',
+        method: 'POST',
+        path: '/api/roachclaw/agent/run',
+        title: 'Plan an agent run',
+        summary: 'Builds the permissioned prompt packet and a plan. Runs nothing.',
+        handler: 'RoachClawAgent.createRun',
+        source: 'Router.swift:144 (RoachClawAgent.swift:163)',
+        body: { prompt: 'List what changed in my vault this week', enabledScopes: ['vault'], context: { vault: 'notes/2026-10-08.md was edited' } },
+        request: [
+          '`prompt` (required).',
+          '`enabledScopes`: any of `roachnet`, `dev`, `vault`, `archives`, `arcade`, `maps`, `media`, `settings`, `runtime`. Defaults to `roachnet`.',
+          '`context`: an object keyed by scope. Only enabled scopes are read.',
+          '`contextBudget`: 1,000 to 64,000 characters, default 12,000. Also `model`, `activeSurface`, `execute`.',
+        ],
+        response: [
+          '`executed: false`, always.',
+          '`executionMode`: `plan-only`, or `approval-required` when you send `execute: true`.',
+          '`prompt`: the system and user messages it would send. Also `plan`, `toolPolicy`, `budgets`.',
+          '500 when `prompt` is empty.',
+        ],
+        implementation:
+          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so instead of pretending.',
+      },
+      {
+        id: 'roachclaw-operations',
+        method: 'GET',
+        path: '/api/roachclaw/operations',
+        title: 'Operations snapshot',
+        summary: 'Every store and lane summarized. Add a section name for one part.',
+        handler: 'NativeRuntime.roachClawOperationsState',
+        source: 'Router.swift:278',
+        request: [
+          'Optional last segment selects one section: `/api/roachclaw/operations/jobs`. An unknown section returns the whole object.',
+        ],
+        response: [
+          'Sections include `diagnostics`, `serviceHealth`, `jobs`, `contacts`, `calendar`, `mail`, `apiTokens`, `cloudProviders`, `readiness`, `toolPolicy`, `backups` and `models`.',
+        ],
+        implementation: 'Computed on every call, same cost as /api/roachclaw/status.',
+      },
+      {
+        id: 'roachclaw-diagnostics-services',
+        method: 'GET',
+        path: '/api/roachclaw/diagnostics/services',
+        title: 'Service health report',
+        summary: 'Per-lane health for models, agent, memory, embeddings and limits.',
+        handler: 'NativeRuntime.roachClawServiceHealthState',
+        source: 'Router.swift:116',
+        request: ['None.'],
+        response: ['The `operations.serviceHealth.report` block from /api/roachclaw/status.'],
+        implementation: 'A slice of the status call, so it costs the same.',
+      },
+      {
+        id: 'roachclaw-scoped-tools',
+        method: 'GET',
+        path: '/api/roachclaw/scoped-tools/capabilities',
+        title: 'Scoped tool bridge',
+        summary: 'The scopes and endpoints a scoped tool is meant to use.',
+        handler: 'NativeRuntime.roachClawScopedToolBridgeState',
+        source: 'Router.swift:123 (RoachClawStores.swift:1000)',
+        request: ['None.'],
+        response: ['`localOnly: true`, `approvalRequired: true`, the scope list (`todos:write`, `email:send` and so on) and six endpoints.'],
+        implementation: 'A declaration, not a gate: the loopback API checks no scopes in 1.0.6.',
+      },
+      {
+        id: 'roachclaw-workspace-browse',
+        method: 'GET',
+        path: '/api/roachclaw/workspace/browse',
+        title: 'Browse folders',
+        summary: 'Lists the subfolders of a folder on this Mac.',
+        handler: 'NativeRuntime.browseRoachClawWorkspace',
+        source: 'Router.swift:117 (RoachClawStores.swift:830)',
+        query: 'path=$HOME/Projects',
+        request: ['Query: `path`. Missing or not a folder means your home folder (or `ROACHNET_WORKSPACE_BROWSE_ROOT`).'],
+        response: ['`{ path, parent, dirs: [{ name, path, modifiedAt }], count }`'],
+        implementation: 'Folders only, no files. Hidden folders and symlinks are skipped.',
+      },
+      {
+        id: 'roachclaw-tool-policy',
+        method: 'GET',
+        path: '/api/roachclaw/tool-policy',
+        title: 'Tool policy',
+        summary: 'Which tools are disabled, and whether this turn is guide-only.',
+        handler: 'NativeRuntime.roachClawToolPolicyState',
+        source: 'Router.swift:134',
+        request: ['None.'],
+        response: ['`mode` (`normal` or `guide_only`), `disabledTools`, `hiddenTools`, `reasons`, `knownToolCount`, `enforcement`.'],
+        implementation: 'Known tools are the built-in list plus anything in the tool index.',
+      },
+      {
+        id: 'roachclaw-tool-policy-save',
+        method: 'POST',
+        path: '/api/roachclaw/tool-policy',
+        title: 'Save disabled tools',
+        summary: 'Replaces the saved list of disabled tools.',
+        handler: 'NativeRuntime.upsertRoachClawToolPolicy',
+        source: 'Router.swift:135',
+        body: { disabledTools: ['bash', 'send_email'] },
+        request: ['JSON body: `disabledTools` (up to 200 names). `lastUserMessage` is evaluated too, but not saved.'],
+        response: ['The evaluated policy.'],
+        implementation: 'The list is replaced, not merged. Send the full list every time.',
+      },
+      {
+        id: 'roachclaw-tool-policy-evaluate',
+        method: 'POST',
+        path: '/api/roachclaw/tool-policy/evaluate',
+        title: 'Evaluate a turn',
+        summary: 'Applies the policy to one message without saving anything.',
+        handler: 'NativeRuntime.roachClawToolPolicyState',
+        source: 'Router.swift:136',
+        body: { lastUserMessage: 'Do not use any tools, just explain it.' },
+        request: ['JSON body: `lastUserMessage` (or `message`), optional extra `disabledTools`.'],
+        response: ['The policy for that turn: `blockAllToolCalls`, `guideOnlyReason`, `hiddenTools`.'],
+        implementation:
+          'If the message asks for no tools (“guide-only mode”, “do not use tools”, “ask before using tools”), every known tool is disabled and hidden and `blockAllToolCalls` is true.',
+      },
+      {
+        id: 'roachclaw-context-budget',
+        method: 'GET',
+        path: '/api/roachclaw/context-budget',
+        title: 'Context budget',
+        summary: 'How much context RoachClaw may spend per prompt.',
+        handler: 'NativeRuntime.roachClawContextBudgetState',
+        source: 'Router.swift:137',
+        request: ['None.'],
+        response: ['`configuredBudget` (default 6,000), `modelContextLength`, `headroom` (default 0.85), `hardMax` (default 200,000), `effectiveBudget`.'],
+        implementation: 'Without a saved profile you get the defaults.',
+      },
+      {
+        id: 'roachclaw-context-budget-save',
+        method: 'POST',
+        path: '/api/roachclaw/context-budget',
+        title: 'Set the context budget',
+        summary: 'Saves one budget profile and returns the result.',
+        handler: 'NativeRuntime.upsertRoachClawContextBudget',
+        source: 'Router.swift:138',
+        body: { modelContextLength: 32768, headroom: 0.85 },
+        request: ['JSON body: `configuredBudget`, `modelContextLength`, `explicit`, `headroom` (0.1 to 0.95), `hardMax` (1,024 to 1,000,000).'],
+        response: ['The computed budget.'],
+        implementation:
+          'With a model context length, the effective budget is length × headroom, capped at `hardMax`. With `explicit: true` your configured number wins, capped at the model length.',
+      },
+      {
+        id: 'roachclaw-url-safety',
+        method: 'POST',
+        path: '/api/roachclaw/url-safety/check',
+        title: 'Check an outbound URL',
+        summary: 'Would RoachNet fetch this URL? Resolves it and says why not.',
+        handler: 'NativeRuntime.checkRoachClawOutboundUrl',
+        source: 'Router.swift:139 (RoachClawStores.swift:1563)',
+        body: { url: 'https://example.com/file.zim', blockPrivate: true },
+        request: ['JSON body: `url`, optional `blockPrivate`.'],
+        response: ['`{ ok, reason }`'],
+        implementation:
+          'Rejects non-HTTP schemes, hosts that do not resolve, link-local addresses (169.254/16 and fe80::, where cloud metadata lives), multicast and unspecified addresses. `blockPrivate` also rejects loopback and private ranges. Paired phones get this check automatically on /api/companion/install.',
+      },
+      {
+        id: 'roachclaw-user-time',
+        method: 'GET',
+        path: '/api/roachclaw/user-time',
+        title: 'User time',
+        summary: 'Your time zone, plus a sentence ready to drop into a prompt.',
+        handler: 'NativeRuntime.roachClawUserTimeState',
+        source: 'Router.swift:118',
+        request: ['None.'],
+        response: ['`timeZoneName`, `utcOffset`, `localDateTime`, `promptContext`, `configured`.'],
+        implementation: 'Defaults to the Mac’s own time zone until you save one.',
+      },
+      {
+        id: 'roachclaw-user-time-save',
+        method: 'POST',
+        path: '/api/roachclaw/user-time',
+        title: 'Set user time',
+        summary: 'Saves the time zone RoachClaw should assume.',
+        handler: 'NativeRuntime.upsertRoachClawUserTime',
+        source: 'Router.swift:119',
+        body: { timeZoneName: 'America/Chicago' },
+        request: ['JSON body: `timeZoneName` (or `timezone`), optional `utcOffsetMinutes`.'],
+        response: ['The new user-time state.'],
+        implementation: 'Offsets are clamped to ±14 hours.',
+      },
+    ],
+  },
+  {
+    id: 'roachclaw-settings',
+    label: 'RoachClaw keys and lanes',
+    scope: 'runtime',
+    summary: 'Provider keys, API tokens, memory, OAuth, embeddings, TLS and upload limits.',
+    stack: 'Loopback API → NativeRuntime (RoachClawStores) → storage/.runtime/roachclaw',
+    callers: ['Local tools on this Mac (RoachNet.app shows the summaries from /api/roachclaw/status)'],
+    endpoints: [
+      {
+        id: 'roachclaw-cloud-providers',
+        method: 'GET',
+        path: '/api/roachclaw/cloud-providers',
+        title: 'Cloud provider keys',
+        summary: 'Which optional cloud lanes have a key. Never the key.',
+        handler: 'NativeRuntime.roachClawPublicCloudProviderKeysState',
+        source: 'Router.swift:218',
+        request: ['None.'],
+        response: [
+          'OpenAI, Anthropic and OpenRouter, each with `configured`, `configuredVia` (`environment`, `local-secret-file` or `none`), `isActive`, `baseUrl`, `envVar`.',
+        ],
+        implementation: 'Cloud lanes are opt-in. A key in `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` or `OPENROUTER_API_KEY` counts as configured.',
+      },
+      {
+        id: 'roachclaw-cloud-providers-save',
+        method: 'POST',
+        path: '/api/roachclaw/cloud-providers',
+        title: 'Save a provider key',
+        summary: 'Stores one cloud key on this Mac, readable only by you.',
+        handler: 'NativeRuntime.upsertRoachClawCloudProviderKey',
+        source: 'Router.swift:219',
+        body: { provider: 'openrouter', key: 'sk-or-REPLACE-ME' },
+        request: ['JSON body: `provider` (`openai`, `anthropic`, `openrouter`), `key`, optional `baseUrl`, `scopes`, `isActive`.'],
+        response: ['`{ success, ok, provider, state }` with the key left out.'],
+        implementation:
+          'The key goes into a 0600 file under the runtime state folder; the index keeps only its SHA-256. Keys over 8 KB are refused, and a custom `baseUrl` must be a public host. Missing key: 500.',
+      },
+      {
+        id: 'roachclaw-cloud-providers-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/cloud-providers/:provider',
+        examplePath: '/api/roachclaw/cloud-providers/openrouter',
+        title: 'Remove a provider key',
+        summary: 'Deletes the index entry and the key file.',
+        handler: 'NativeRuntime.deleteRoachClawCloudProviderKey',
+        source: 'Router.swift:297',
+        request: ['Path: the provider id.'],
+        response: ['`{ success, ok, deleted, provider, state }`'],
+        implementation: 'Only the runtime’s own copy is deleted. A legacy copy under `storage/vault` is left where it is.',
+      },
+      {
+        id: 'roachclaw-tokens',
+        method: 'GET',
+        path: '/api/roachclaw/tokens',
+        title: 'API tokens',
+        summary: 'Tokens you have issued, without their hashes.',
+        handler: 'NativeRuntime.roachClawPublicApiTokensState',
+        source: 'Router.swift:216',
+        request: ['None.'],
+        response: ['`tokens`: `id`, `name`, `owner`, `scopes`, `isActive`, `lastUsedAt`.'],
+        implementation: 'Hashes are stripped before they leave the runtime.',
+      },
+      {
+        id: 'roachclaw-tokens-create',
+        method: 'POST',
+        path: '/api/roachclaw/tokens',
+        title: 'Issue an API token',
+        summary: 'Mints an `rn_` token and shows it once.',
+        handler: 'NativeRuntime.createRoachClawApiToken',
+        source: 'Router.swift:217',
+        body: { name: 'Shortcuts', scopes: ['chat'] },
+        request: ['JSON body: `name`, `owner`, `scopes` (default `["chat"]`), `isActive`.'],
+        response: ['`token`: the raw value. Copy it now; it is never returned again. Also `record` and `state`.'],
+        implementation:
+          'Only the SHA-256 is kept. In 1.0.6 tokens are stored for integrations to check; the loopback API itself does not ask for one.',
+      },
+      {
+        id: 'roachclaw-tokens-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/tokens/:id',
+        examplePath: '/api/roachclaw/tokens/token_0123456789ab',
+        title: 'Revoke an API token',
+        summary: 'Deletes one token record.',
+        handler: 'NativeRuntime.deleteRoachClawApiToken',
+        source: 'Router.swift:296',
+        request: ['Path: the token `id` (not the token).'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: '`deleted: false` means nothing had that id.',
+      },
+      {
+        id: 'roachclaw-memory-provider',
+        method: 'GET',
+        path: '/api/roachclaw/memory-provider',
+        title: 'Memory providers',
+        summary: 'RoachBrain native memory, plus any external providers you added.',
+        handler: 'NativeRuntime.roachClawMemoryProviderState',
+        source: 'Router.swift:128',
+        request: ['None.'],
+        response: ['`providers`: `roachbrain-native` first (always enabled, local), then yours.'],
+        implementation: 'The native provider keeps its records in `memories.json` in the RoachClaw state folder.',
+      },
+      {
+        id: 'roachclaw-memory-provider-save',
+        method: 'POST',
+        path: '/api/roachclaw/memory-provider',
+        title: 'Add a memory provider',
+        summary: 'Records an external provider. Off unless you say otherwise.',
+        handler: 'NativeRuntime.upsertRoachClawMemoryProvider',
+        source: 'Router.swift:129',
+        body: { id: 'notes-index', displayName: 'Notes index', enabled: false },
+        request: ['JSON body: `id`, `providerId`, `displayName`, `enabled`, `localFirst`, `tools`.'],
+        response: ['The updated provider list.'],
+        implementation: 'External providers default to `enabled: false`. The native provider cannot be replaced.',
+      },
+      {
+        id: 'roachclaw-provider-oauth',
+        method: 'GET',
+        path: '/api/roachclaw/provider-oauth',
+        title: 'Provider OAuth flows',
+        summary: 'Pending and active OAuth flows for remote tools, minus the tokens.',
+        handler: 'NativeRuntime.roachClawProviderOAuthState',
+        source: 'Router.swift:130',
+        request: ['None.'],
+        response: ['`redirectBase: "roachnet://provider-oauth/callback"`, `authWaitSeconds: 300`, `flows`.'],
+        implementation: 'Token fields are stripped from every flow before it is returned.',
+      },
+      {
+        id: 'roachclaw-provider-oauth-save',
+        method: 'POST',
+        path: '/api/roachclaw/provider-oauth',
+        title: 'Record an OAuth flow',
+        summary: 'Adds or updates one flow record.',
+        handler: 'NativeRuntime.upsertRoachClawProviderOAuthFlow',
+        source: 'Router.swift:131',
+        body: { provider: 'mcp-server', serverUrl: 'https://mcp.example.com', scopes: ['read'] },
+        request: ['JSON body: `id`, `provider`, `serverUrl` (public hosts only), `scopes`, `status`, `isActive`.'],
+        response: ['The updated flow list.'],
+        implementation: 'An `authUrl` is stored as `[redacted-user-auth-url]`. This records a flow; it does not open a browser.',
+      },
+      {
+        id: 'roachclaw-embedding-lanes',
+        method: 'GET',
+        path: '/api/roachclaw/embedding-lanes',
+        title: 'Embedding lanes',
+        summary: 'The local RoachBrain lane and the optional custom one.',
+        handler: 'NativeRuntime.roachClawEmbeddingLanesState',
+        source: 'Router.swift:132',
+        request: ['None.'],
+        response: ['Lanes with endpoint, model, dimension (384 by default locally), indexed counts, fingerprints and health.'],
+        implementation: 'The local lane is `local://roachbrain`. An incomplete custom lane is reported and never promoted.',
+      },
+      {
+        id: 'roachclaw-embedding-lanes-save',
+        method: 'POST',
+        path: '/api/roachclaw/embedding-lanes',
+        title: 'Configure the custom lane',
+        summary: 'Points the custom embedding lane at an endpoint and model.',
+        handler: 'NativeRuntime.upsertRoachClawEmbeddingLane',
+        source: 'Router.swift:133',
+        body: { id: 'custom', endpointUrl: 'http://127.0.0.1:8081/embed', model: 'nomic-embed-text', dimension: 768 },
+        request: ['JSON body: `endpointUrl`, `model`, `dimension`, `enabled`, optional `reset: true`.'],
+        response: ['The updated lanes.'],
+        implementation: 'Only the `custom` lane can be set here; any other id is a 400. `reset: true` records a reset time.',
+      },
+      {
+        id: 'roachclaw-tls-overrides',
+        method: 'GET',
+        path: '/api/roachclaw/security/tls-overrides',
+        title: 'TLS CA bundle',
+        summary: 'Whether a custom CA bundle is set for model provider probes.',
+        handler: 'NativeRuntime.roachClawTlsOverridesState',
+        source: 'Router.swift:124',
+        request: ['None.'],
+        response: ['`configured`, `valid`, `bundleLabel`. The path itself comes back as `[local-path-redacted]`.'],
+        implementation: '`insecureDisableAllowed` is false. There is no switch to turn verification off.',
+      },
+      {
+        id: 'roachclaw-tls-overrides-save',
+        method: 'POST',
+        path: '/api/roachclaw/security/tls-overrides',
+        title: 'Set a CA bundle',
+        summary: 'Adds a PEM bundle on top of system trust, for provider probes only.',
+        handler: 'NativeRuntime.upsertRoachClawTlsOverride',
+        source: 'Router.swift:125',
+        body: { bundlePath: '~/certs/office-ca.pem' },
+        request: ['JSON body: `bundlePath`. Empty clears it.'],
+        response: ['The new TLS state.', '400 if the path is not a local file.'],
+        implementation: 'System trust stays in place; the bundle is added to it.',
+      },
+      {
+        id: 'roachclaw-upload-limits',
+        method: 'GET',
+        path: '/api/roachclaw/security/upload-limits',
+        title: 'Upload limits',
+        summary: 'Every hard cap, with the env var that tunes it.',
+        handler: 'NativeRuntime.roachClawUploadLimitsState',
+        source: 'Router.swift:126',
+        request: ['None.'],
+        response: ['`limits`: chat uploads 10 MB, gallery 100 MB, gallery transforms 25 MB, vault imports 25 MB, memory imports 10 MB, JSON bodies 1 MB, and the rest.'],
+        implementation: 'Defaults shown; each is overridable with its `ROACHNET_*` variable.',
+      },
+      {
+        id: 'roachclaw-migration-document-tools',
+        method: 'GET',
+        path: '/api/roachclaw/migration-document-tools',
+        title: 'Migration and document tools',
+        summary: 'Formats and sources RoachClaw can import from.',
+        handler: 'NativeRuntime.roachClawMigrationDocumentToolsState',
+        source: 'Router.swift:127',
+        request: ['None.'],
+        response: ['Office formats (`docx`, `pptx`, `xlsx`…), document languages, migration sources (ChatGPT exports, Claude projects, Codex sessions, memory JSON, Markdown trees) and validators.'],
+        implementation: 'A capability description. The import itself happens in the app.',
+      },
+    ],
+  },
+  {
+    id: 'roachclaw-stores',
+    label: 'RoachClaw stores',
+    scope: 'runtime',
+    summary: 'Contacts, tasks, calendar, mail and the rest: local JSON stores with list, upsert and delete.',
+    stack: 'Loopback API → NativeRuntime (RoachClawStores) → JSON files in storage/.runtime/roachclaw',
+    callers: ['Local tools on this Mac (RoachNet.app shows the summaries from /api/roachclaw/status)'],
+    endpoints: [
+      {
+        id: 'roachclaw-store-list',
+        method: 'GET',
+        path: '/api/roachclaw/:collection',
+        examplePath: '/api/roachclaw/tasks',
+        title: 'List a store',
+        summary: 'Reads one of sixteen local stores.',
+        handler: 'NativeRuntime.roachClaw…State',
+        source: 'Router.swift:305 (table at :80)',
+        request: [
+          '`:collection` is one of `contacts`, `tasks`, `calendar`, `reports`, `memories`, `skills`, `editor-drafts`, `search-cache`, `gallery`, `webhooks`, `agent-runs`, `context-compactions`, `tool-index`, `events`, `presets`, `signatures`.',
+        ],
+        response: [
+          '`{ schema, updatedAt, <key>: [...] }`.',
+          'The array key usually matches the path. Exceptions: `events` (calendar), `drafts` (editor-drafts), `entries` (search-cache), `assets` (gallery), `runs` (agent-runs), `compactions`, `tools` (tool-index), `templates` (presets).',
+        ],
+        implementation:
+          'Each store is a JSON file under `storage/.runtime/roachclaw/`. The older `storage/vault/roachclaw/` copy is read as a fallback, never written.',
+      },
+      {
+        id: 'roachclaw-store-upsert',
+        method: 'POST',
+        path: '/api/roachclaw/:collection',
+        examplePath: '/api/roachclaw/tasks',
+        title: 'Create or update an item',
+        summary: 'Send an `id` to update, leave it out to create.',
+        handler: 'NativeRuntime.roachClawUpsertCollectionItem',
+        source: 'Router.swift:307 (RoachClawStores.swift:38)',
+        body: { title: 'Renew passport', status: 'open' },
+        request: ['JSON body: the item. Same sixteen collections as the list route.'],
+        response: ['The whole store, with the new item first.'],
+        implementation:
+          'New ids look like `task_<hex>`. Fields merge into the existing item and are trimmed per store (a contact name stops at 120 characters, for example). Webhook records get a `/api/roachclaw/hooks/:id` path, but 1.0.6 has no route behind it yet.',
+      },
+      {
+        id: 'roachclaw-store-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/:collection/:id',
+        examplePath: '/api/roachclaw/tasks/task_0123456789abcdef',
+        title: 'Delete an item',
+        summary: 'Removes one item from a store.',
+        handler: 'NativeRuntime.deleteRoachClawCollectionItem',
+        source: 'Router.swift:291',
+        request: ['Path: the collection and the item `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`. `deleted` is false if nothing matched.'],
+        implementation: 'No soft delete. Gone is gone; take a backup first if you care.',
+      },
+      {
+        id: 'roachclaw-mail',
+        method: 'GET',
+        path: '/api/roachclaw/mail',
+        title: 'Mail store',
+        summary: 'Local mail records: accounts, messages and drafts.',
+        handler: 'NativeRuntime.roachClawMailState',
+        source: 'Router.swift:213',
+        request: ['None.'],
+        response: ['`{ schema, updatedAt, accounts, messages, drafts }`'],
+        implementation: 'Records only. Nothing here sends or fetches mail.',
+      },
+      {
+        id: 'roachclaw-mail-message',
+        method: 'POST',
+        path: '/api/roachclaw/mail/messages',
+        title: 'Save a message',
+        summary: 'Adds or updates one message record.',
+        handler: 'NativeRuntime.upsertRoachClawMailMessage',
+        source: 'Router.swift:214',
+        body: { from: 'field@example.com', subject: 'Supply list', preview: 'Water, batteries, the good tape.' },
+        request: ['JSON body: `id`, `account`, `folder`, `from`, `to`, `subject`, `preview` (or `body`), `tags`, `read`, `receivedAt`.'],
+        response: ['The whole mail store.'],
+        implementation: 'Defaults: account `local`, folder `Inbox`. Previews stop at 1,200 characters.',
+      },
+      {
+        id: 'roachclaw-mail-draft',
+        method: 'POST',
+        path: '/api/roachclaw/mail/drafts',
+        title: 'Save a draft',
+        summary: 'Adds or updates one draft.',
+        handler: 'NativeRuntime.upsertRoachClawMailDraft',
+        source: 'Router.swift:215',
+        body: { to: ['field@example.com'], subject: 'Re: Supply list', body: 'Adding matches.' },
+        request: ['JSON body: `id`, `account`, `to`, `cc`, `subject`, `body`, `status`, `tags`.'],
+        response: ['The whole mail store.'],
+        implementation: 'Bodies stop at 8,000 characters. Saving a draft does not send it.',
+      },
+      {
+        id: 'roachclaw-mail-message-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/mail/messages/:id',
+        examplePath: '/api/roachclaw/mail/messages/message_0123456789abcdef',
+        title: 'Delete a message',
+        summary: 'Removes one message record.',
+        handler: 'NativeRuntime.deleteRoachClawMailItem',
+        source: 'Router.swift:294',
+        request: ['Path: the message `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Local record only.',
+      },
+      {
+        id: 'roachclaw-mail-draft-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/mail/drafts/:id',
+        examplePath: '/api/roachclaw/mail/drafts/draft_0123456789abcdef',
+        title: 'Delete a draft',
+        summary: 'Removes one draft.',
+        handler: 'NativeRuntime.deleteRoachClawMailItem',
+        source: 'Router.swift:295',
+        request: ['Path: the draft `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Local record only.',
+      },
+      {
+        id: 'roachclaw-cookbook-schedules',
+        method: 'GET',
+        path: '/api/roachclaw/cookbook/schedules',
+        title: 'Model serve schedules',
+        summary: 'Saved windows for serving a model, with what is active now.',
+        handler: 'NativeRuntime.roachClawCookbookServeState',
+        source: 'Router.swift:120',
+        request: ['None.'],
+        response: ['`schedules` (each with `active` and `expired` worked out), plus `active`, `pending` and `expired` counts.'],
+        implementation: 'Scheduler state only; the runtime does not start or stop a model from it.',
+      },
+      {
+        id: 'roachclaw-cookbook-schedules-save',
+        method: 'POST',
+        path: '/api/roachclaw/cookbook/schedules',
+        title: 'Save a serve schedule',
+        summary: 'Adds or updates one schedule.',
+        handler: 'NativeRuntime.upsertRoachClawCookbookServeSchedule',
+        source: 'Router.swift:121',
+        body: { model: 'qwen2.5-coder:7b', durationMinutes: 90 },
+        request: ['JSON body: `id`, `model`, `repoId`, `days`, `startTime`, `endTime`, `durationMinutes` (1 to 1,440, default 60), `mirrorToCalendar`.'],
+        response: ['The schedule list.'],
+        implementation: 'Without `scheduledStopAtMs`, the stop time is now plus the duration.',
+      },
+      {
+        id: 'roachclaw-cookbook-schedules-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/cookbook/schedules/:id',
+        examplePath: '/api/roachclaw/cookbook/schedules/serve_0123456789ab',
+        title: 'Delete a serve schedule',
+        summary: 'Removes one schedule.',
+        handler: 'NativeRuntime.deleteRoachClawCollectionItem',
+        source: 'Router.swift:288',
+        request: ['Path: the schedule `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Nothing is running because of it, so nothing stops.',
+      },
+      {
+        id: 'roachclaw-cookbook-progress',
+        method: 'POST',
+        path: '/api/roachclaw/cookbook/progress-signal',
+        title: 'Progress signal',
+        summary: 'Turns download output into a comparable signal string.',
+        handler: 'NativeRuntime.computeRoachClawCookbookProgressSignal',
+        source: 'Router.swift:122',
+        body: { lastPercent: 42, snapshot: 'pulling manifest… 42%' },
+        request: ['JSON body: `bytes`, or `downloadAggregate` / `lastPercent` plus `snapshot`.'],
+        response: ['`{ schema, signal, mode }`: `bytes:<n>` when bytes are given, otherwise the percent and the last 300 characters of the snapshot.'],
+        implementation: 'Pure function. Stores nothing. Callers compare signals to tell a stalled download from a slow one.',
+      },
+      {
+        id: 'roachclaw-backups',
+        method: 'GET',
+        path: '/api/roachclaw/backups',
+        title: 'Backup snapshots',
+        summary: 'The list of snapshots you have taken.',
+        handler: 'NativeRuntime.roachClawBackupsState',
+        source: 'Router.swift:220',
+        request: ['None.'],
+        response: ['`snapshots`: `id`, `title`, `summary`, `sections`, `createdAt`.'],
+        implementation: 'Metadata only. See the next route for where the data goes.',
+      },
+      {
+        id: 'roachclaw-backups-create',
+        method: 'POST',
+        path: '/api/roachclaw/backups',
+        title: 'Take a backup',
+        summary: 'Builds a full export, records a snapshot, and hands you the export.',
+        handler: 'NativeRuntime.createRoachClawBackup',
+        source: 'Router.swift:221',
+        body: { title: 'Before cleanup' },
+        request: ['JSON body: optional `title`.'],
+        response: ['`{ success, ok, export, snapshots }`'],
+        implementation:
+          'The export is in the response and nowhere else: the runtime records the snapshot entry but does not write the export to disk. Save the reply if you want the backup.',
+      },
+      {
+        id: 'roachclaw-backups-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/backups/:id',
+        examplePath: '/api/roachclaw/backups/snapshot_0123456789abcdef',
+        title: 'Delete a snapshot record',
+        summary: 'Removes one snapshot entry.',
+        handler: 'NativeRuntime.deleteRoachClawCollectionItem',
+        source: 'Router.swift:298',
+        request: ['Path: the snapshot `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Only the record goes. Any export you saved yourself is yours to keep.',
+      },
+      {
+        id: 'roachclaw-export',
+        method: 'GET',
+        path: '/api/roachclaw/export',
+        title: 'Export everything',
+        summary: 'Every RoachClaw store and setting in one JSON document.',
+        handler: 'NativeRuntime.roachClawExportPayload',
+        source: 'Router.swift:222 (RoachClawStores.swift:1598)',
+        request: ['None.'],
+        response: ['`org.roachnet.roachclaw.export.v1`: contacts, tasks, calendar, mail, memories, skills, presets, tokens, providers, policies and the rest.'],
+        implementation:
+          'Secrets stay out: token hashes are stripped, provider keys never appear, and signature images are replaced with a placeholder.',
+      },
+    ],
+  },
+  {
+    id: 'content',
+    label: 'Maps, library and speech',
+    scope: 'runtime',
+    summary: 'Catalogs and downloads for offline maps, ZIM libraries, Wikipedia, saved sites and RoachSpeech packs.',
+    stack: 'RoachNet.app → loopback API → download queue → storage/maps, storage/zim, storage/RoachSpeech',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
+    endpoints: [
+      {
+        id: 'maps-curated-collections',
+        method: 'GET',
+        path: '/api/maps/curated-collections',
+        title: 'Map collections',
+        summary: 'The offline map catalog, with what is already installed.',
+        handler: 'NativeRuntime.mapCollections',
+        source: 'Router.swift:168 (RoachClawStatus.swift:1053)',
+        request: ['None.'],
+        response: ['Array of `{ slug, name, description, installed_count, total_count, resources }`. Each resource has a `url` and a `descriptorUrl` on apps.roachnet.org.'],
+        implementation: 'Read from the bundled `collections/maps.json`. Installed counts come from `storage/maps/pmtiles`.',
+      },
+      {
+        id: 'maps-download-base-assets',
+        method: 'POST',
+        path: '/api/maps/download-base-assets',
+        title: 'Prepare map folders',
+        summary: 'Creates the map folders. Despite the name, nothing downloads.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:169',
+        request: ['No body needed.'],
+        response: ['`{ success: true, ok: true, message: "Base atlas folders are ready." }`'],
+        implementation: 'Creates `storage/maps/pmtiles` and `storage/maps/basemaps-assets`.',
+      },
+      {
+        id: 'maps-download-collection',
+        method: 'POST',
+        path: '/api/maps/download-collection',
+        title: 'Download a map collection',
+        summary: 'Queues every map in one collection.',
+        handler: 'NativeRuntime.queueResources',
+        source: 'Router.swift:173',
+        body: { slug: 'REPLACE-WITH-A-SLUG' },
+        request: ['JSON body: `slug` from /api/maps/curated-collections.'],
+        response: ['`{ success, ok, message: "<n> map downloads queued." }`'],
+        implementation: 'An unknown slug queues zero downloads and says so, politely, with a 200.',
+      },
+      {
+        id: 'maps-download-remote',
+        method: 'POST',
+        path: '/api/maps/download-remote',
+        title: 'Download a map by URL',
+        summary: 'Queues one PMTiles file, or resolves a download descriptor first.',
+        handler: 'NativeRuntime.queueResolvedDownload',
+        source: 'Router.swift:177 (Downloads.swift:120)',
+        body: { url: 'https://example.com/region.pmtiles' },
+        request: ['JSON body: `url` (HTTP or HTTPS).'],
+        response: ['`{ success, ok, message }`. `success: false` without a usable URL.'],
+        implementation:
+          'A URL ending in `.json` is read as a download descriptor: the runtime picks a usable source and checks the SHA-256 the descriptor names.',
+      },
+      {
+        id: 'zim-curated-categories',
+        method: 'GET',
+        path: '/api/zim/curated-categories',
+        title: 'Library categories',
+        summary: 'The offline library catalog by category and tier.',
+        handler: 'NativeRuntime.educationCategories',
+        source: 'Router.swift:181 (RoachClawStatus.swift:1083)',
+        request: ['None.'],
+        response: ['Categories with `tiers`, each tier with `resources`, plus `installedTierSlug`.'],
+        implementation: 'Read from the bundled `collections/kiwix-categories.json`; installed state comes from `storage/zim`.',
+      },
+      {
+        id: 'zim-download-category-tier',
+        method: 'POST',
+        path: '/api/zim/download-category-tier',
+        title: 'Download a library tier',
+        summary: 'Queues every ZIM file in one tier of one category.',
+        handler: 'NativeRuntime.queueResources',
+        source: 'Router.swift:183',
+        body: { categorySlug: 'REPLACE-ME', tierSlug: 'REPLACE-ME' },
+        request: ['JSON body: `categorySlug`, `tierSlug`.'],
+        response: ['`{ success, ok, message: "<n> knowledge downloads queued." }`'],
+        implementation: 'Files land in `storage/zim`.',
+      },
+      {
+        id: 'zim-download-category-resource',
+        method: 'POST',
+        path: '/api/zim/download-category-resource',
+        title: 'Download one library item',
+        summary: 'Queues a single resource from a category.',
+        handler: 'NativeRuntime.queueResources',
+        source: 'Router.swift:187',
+        body: { categorySlug: 'REPLACE-ME', resourceId: 'REPLACE-ME' },
+        request: ['JSON body: `categorySlug`, `resourceId`.'],
+        response: ['`{ success, ok, message }`'],
+        implementation: 'Searches every tier in the category for that resource id.',
+      },
+      {
+        id: 'zim-download-remote',
+        method: 'POST',
+        path: '/api/zim/download-remote',
+        title: 'Download a ZIM by URL',
+        summary: 'Queues one ZIM file, or resolves a descriptor first.',
+        handler: 'NativeRuntime.queueResolvedDownload',
+        source: 'Router.swift:191',
+        body: { url: 'https://example.com/library.zim' },
+        request: ['JSON body: `url`.'],
+        response: ['`{ success, ok, message }`'],
+        implementation: 'Same descriptor and checksum rules as maps.',
+      },
+      {
+        id: 'zim-wikipedia',
+        method: 'GET',
+        path: '/api/zim/wikipedia',
+        title: 'Wikipedia options',
+        summary: 'Which Wikipedia builds you can install, and which you picked.',
+        handler: 'NativeRuntime.wikipediaState',
+        source: 'Router.swift:182 (RoachClawStatus.swift:1131)',
+        request: ['None.'],
+        response: ['`{ options, currentSelection }`'],
+        implementation: 'The selection lives in `storage/zim/wikipedia-selection.json`.',
+      },
+      {
+        id: 'zim-wikipedia-select',
+        method: 'POST',
+        path: '/api/zim/wikipedia/select',
+        title: 'Pick a Wikipedia build',
+        summary: 'Records your choice and queues the download.',
+        handler: 'NativeRuntime.selectWikipediaOption',
+        source: 'Router.swift:195 (Downloads.swift:671)',
+        body: { optionId: 'none' },
+        request: ['JSON body: `optionId` from /api/zim/wikipedia.'],
+        response: ['`{ success, ok, message }`'],
+        implementation: '`none`, or an id that is not in the list, records a skip and downloads nothing.',
+      },
+      {
+        id: 'site-archives-list',
+        method: 'GET',
+        path: '/api/site-archives',
+        title: 'Saved sites',
+        summary: 'Lists the sites you have archived.',
+        handler: 'NativeRuntime.siteArchives',
+        source: 'Router.swift:223 (RoachClawStatus.swift:1148)',
+        request: ['None.'],
+        response: ['`{ archives: [{ slug, title, url, createdAt }] }`'],
+        implementation: 'Reads `storage/site-archives/index.json`. Read-only: 1.0.6 has no create or delete route here.',
+      },
+      {
+        id: 'rag-files',
+        method: 'GET',
+        path: '/api/rag/files',
+        title: 'Vault files',
+        summary: 'Up to 80 file paths from your vault.',
+        handler: 'NativeRuntime.listVaultKnowledgeFiles',
+        source: 'Router.swift:167 (RoachClawStatus.swift:1000)',
+        request: ['None.'],
+        response: ['`{ files: [...] }`: relative paths under `storage/Vault`.'],
+        implementation: 'A listing, not a search index. The `roachtail` and `roachclaw` folders are skipped.',
+      },
+      {
+        id: 'roachspeech-model-packs-list',
+        method: 'GET',
+        path: '/api/roachspeech/model-packs',
+        title: 'RoachSpeech packs',
+        summary: 'Installed voice and speech packs, and any in flight.',
+        handler: 'NativeRuntime.roachSpeechModelPacksState',
+        source: 'Router.swift:212 (Downloads.swift:543)',
+        request: ['None.'],
+        response: ['`modelPacksRoot`, `packs` (with each manifest), `registry` of queued, installed and failed packs.'],
+        implementation: 'Packs live in `storage/RoachSpeech/ModelPacks/<packID>`.',
+      },
+      {
+        id: 'roachspeech-model-packs-download',
+        method: 'POST',
+        path: '/api/roachspeech/model-packs/download',
+        title: 'Install a RoachSpeech pack',
+        summary: 'Downloads, checks and unpacks one pack.',
+        handler: 'NativeRuntime.queueRoachSpeechPackDownload',
+        source: 'Router.swift:200 (Downloads.swift:476)',
+        body: { packID: 'REPLACE-ME', kind: 'roachVoice', url: 'https://example.com/pack.zip' },
+        request: ['JSON body: `packID`, `kind` (default `roachVoice`), `url`.'],
+        response: ['`{ success, ok, message, packID, kind, jobId }`'],
+        implementation:
+          'When the archive lands it is unpacked with `ditto`. Its `RoachSpeechPack.json` must name the same pack and kind and declare a Core ML pack with no packaged binary; only then is it swapped into place. A failed install puts the previous pack back.',
+      },
+    ],
+  },
+  {
+    id: 'downloads',
+    label: 'Downloads and jobs',
+    scope: 'runtime',
+    summary: 'The download queue every install shares, plus the benchmark stub.',
+    stack: 'Loopback API → NativeRuntime download queue (in memory)',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
+    endpoints: [
+      {
+        id: 'downloads-jobs',
+        method: 'GET',
+        path: '/api/downloads/jobs',
+        title: 'Download jobs',
+        summary: 'Everything queued, running, finished or failed.',
+        handler: 'NativeRuntime.downloadJobsSnapshot',
+        source: 'Router.swift:255',
+        request: ['None.'],
+        response: ['Array of jobs: `jobId`, `url`, `filetype`, `status` (`queued`, `downloading`, `completed`, `failed`, `cancelled`), `progress`, `bytesReceived`, `totalBytes`, `filepath`, `failedReason`.'],
+        implementation: 'In memory, newest 200. The list empties when the runtime restarts; the files do not.',
+      },
+      {
+        id: 'downloads-remove-job',
+        method: 'DELETE',
+        path: '/api/downloads/jobs/:jobId',
+        examplePath: '/api/downloads/jobs/JOB_ID',
+        title: 'Cancel or clear a job',
+        summary: 'Stops an active download, or drops a finished one from the list.',
+        handler: 'NativeRuntime.cancelDownloadJob',
+        source: 'Router.swift:299 (Downloads.swift:326)',
+        request: ['Path: the `jobId`.'],
+        response: ['`{ success: true, ok: true, cancelled }`. `cancelled` is false for an unknown id.'],
+        implementation: 'An active transfer is stopped and its `.part` file deleted. A finished file stays on disk.',
+      },
+      {
+        id: 'benchmark-status',
+        method: 'GET',
+        path: '/api/benchmark/status',
+        title: 'Benchmark status',
+        summary: '`idle`, almost always.',
+        handler: 'NativeRuntime.benchmarkStatus',
+        source: 'Router.swift:256',
+        request: ['None.'],
+        response: ['`{ status, benchmarkId }`'],
+        implementation: 'See the next route.',
+      },
+      {
+        id: 'benchmark-run',
+        method: 'POST',
+        path: '/api/benchmark/run',
+        title: 'Run a benchmark',
+        summary: 'Returns a benchmark id. No benchmark runs in 1.0.6.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:257',
+        body: { benchmark_type: 'system' },
+        request: ['JSON body: optional `benchmark_type`.'],
+        response: ['201 with `{ success, job_id, benchmark_id, message }`'],
+        implementation: 'Status flips to `starting` and back to `idle` two seconds later. That is the whole benchmark.',
+      },
+    ],
+  },
+  {
+    id: 'companion',
+    label: 'Companion bridge',
+    scope: 'companion',
+    summary: 'What your phone sees: a token-gated proxy for /api/companion/* and nothing else.',
+    stack: 'RoachNet iOS → RoachTail bridge (in-process, loopback) → token or peer check → NativeRuntime.route',
+    callers: ['RoachNet iOS 0.2.0 over RoachTail', 'RoachNet.app RoachTail, RoachSync and account settings'],
+    endpoints: [
+      {
+        id: 'companion-health',
+        method: 'GET',
+        path: '/health',
+        title: 'Bridge health',
+        summary: 'The one bridge path that needs no token.',
+        handler: 'CompanionProxy.handle',
+        source: 'RuntimeServer.swift:329',
+        noAuth: true,
+        request: ['None.'],
+        response: ['`{ status: "ok", targetOrigin, tokenConfigured, inProcess: true }`'],
+        implementation:
+          'Bridge port only. Anything outside `/api/companion/` gets a 404 from the bridge, so a phone token cannot reach the rest of the API.',
+      },
+      {
+        id: 'companion-bootstrap',
+        method: 'GET',
+        path: '/api/companion/bootstrap',
+        title: 'Phone bootstrap',
+        summary: 'Everything the phone’s first screen needs, in one call.',
+        handler: 'NativeRuntime.companionBootstrapState',
+        source: 'Router.swift:224 (RoachClawStatus.swift:931)',
+        request: ['None.'],
+        response: ['`appName`, `machineName`, `appsCatalogUrl`, `account`, `runtime`, `vault`.'],
+        implementation: 'It embeds the full runtime snapshot, so it costs what /api/companion/runtime costs.',
+      },
+      {
+        id: 'companion-runtime',
+        method: 'GET',
+        path: '/api/companion/runtime',
+        title: 'Runtime snapshot',
+        summary: 'The phone’s Runtime tab: system, models, services, downloads.',
+        handler: 'NativeRuntime.companionRuntimeState',
+        source: 'Router.swift:225 (RoachClawStatus.swift:943)',
+        request: ['None.'],
+        response: ['`system`, `providers`, `roachClaw`, `account`, `roachTail` (join code hidden), `roachSync`, `services`, `downloads`, `installedModels`, `issues`, `benchmark`.'],
+        implementation: '`issues` explains, in words, why chat might not answer yet.',
+      },
+      {
+        id: 'companion-vault',
+        method: 'GET',
+        path: '/api/companion/vault',
+        title: 'Vault summary',
+        summary: 'Where the vault is and what is in it.',
+        handler: 'NativeRuntime.companionVaultState',
+        source: 'Router.swift:226 (RoachClawStatus.swift:987)',
+        request: ['None.'],
+        response: ['`{ vaultPath, knowledgeFiles, roachBrain: [] }`'],
+        implementation: 'File names only, up to 80. The phone does not get file contents from this route.',
+      },
+      {
+        id: 'companion-account',
+        method: 'GET',
+        path: '/api/companion/account',
+        title: 'Account link',
+        summary: 'The account metadata this Mac holds.',
+        handler: 'NativeRuntime.accountState',
+        source: 'Router.swift:227 (RoachClawStatus.swift:861)',
+        request: ['None.'],
+        response: ['`linked`, `status` (`local-only` until linked), `email`, `displayName`, `settingsSyncEnabled`, `savedAppsSyncEnabled`, `hostedChatEnabled`.'],
+        implementation: 'Metadata on the Mac. Signing in happens at accounts.roachnet.org, not here.',
+        usedBy: ['RoachNet.app account settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-account-affect',
+        method: 'POST',
+        path: '/api/companion/account/affect',
+        title: 'Link or unlink the account',
+        summary: 'Updates the account metadata on this Mac.',
+        handler: 'NativeRuntime.affectCompanionAccount',
+        source: 'Router.swift:253 (CompanionLanes.swift:161)',
+        body: { action: 'link', email: 'you@example.com', displayName: 'You' },
+        request: ['JSON body: `action` (`link`, `unlink`, `refresh`). For `link`: `email`, `displayName` and the three sync booleans.'],
+        response: ['`{ success, message, state }`', '400 for any other action.'],
+        implementation: '`unlink` resets to `local-only`. Nothing is sent to roachnet.org by this call.',
+        usedBy: ['RoachNet.app account settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-roachtail',
+        method: 'GET',
+        path: '/api/companion/roachtail',
+        title: 'RoachTail state',
+        summary: 'Pairing, peers and routes for the private device lane.',
+        handler: 'NativeRuntime.roachTailState',
+        source: 'Router.swift:228 (RoachTail.swift:338)',
+        request: ['None.'],
+        response: ['`enabled`, `status` (`local-only`, `armed`, `relay-ready`, `connected`), `transportMode`, `peers`, `routes`, `joinCode`, `pairingPayload`, `controlPlane`.'],
+        implementation:
+          'Called with a peer token, `joinCode` and `pairingPayload` are null. A join code lasts ten minutes and a fresh one is minted when it expires.',
+        usedBy: ['RoachNet.app RoachTail settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-roachtail-pair',
+        method: 'POST',
+        path: '/api/companion/roachtail/pair',
+        title: 'Pair a device',
+        summary: 'Trades a join code for a device token. No token needed, which is the point.',
+        handler: 'NativeRuntime.pairRoachTailPeer',
+        source: 'Router.swift:231 (RoachTail.swift:489)',
+        noAuth: true,
+        body: { joinCode: 'ABCD-EF12-3456', peerName: 'iPhone', platform: 'iOS' },
+        request: ['JSON body: `joinCode` (required), `peerName`, `platform`, optional `endpoint`, `tags`, `capabilities`.'],
+        response: [
+          '`token` and `peerId` (the contract shipped phones read), `peerToken`, `bridgeUrl`, `runtimeTunnelUrl`, `state`.',
+          '409 if RoachTail is off. 401 for a wrong, expired or used code.',
+        ],
+        implementation:
+          'Each device gets its own `rtp_` token and the Mac keeps only its hash. One pairing per code, and five wrong guesses retire the code.',
+      },
+      {
+        id: 'companion-roachtail-affect',
+        method: 'POST',
+        path: '/api/companion/roachtail/affect',
+        title: 'Change RoachTail',
+        summary: 'Turn the lane on or off, refresh the code, manage peers.',
+        handler: 'NativeRuntime.mutateRoachTailState',
+        source: 'Router.swift:232 (RoachTail.swift:392)',
+        body: { action: 'refresh-join-code' },
+        request: ['JSON body: `action`: `enable`, `disable`, `refresh-join-code`, `clear-peers`, `set-relay-host` (with `relayHost`), `register-peer`, `remove-peer` (with `peerId`).'],
+        response: ['`{ success, ok, message, state }`. `register-peer` also returns a one-time `token`.'],
+        implementation:
+          'A paired device may only call `remove-peer`, and only on itself; anything else is a 403. It can do that even while RoachTail is off.',
+        usedBy: ['RoachNet.app RoachTail settings', 'RoachNet iOS (remove this device)'],
+      },
+      {
+        id: 'companion-roachsync',
+        method: 'GET',
+        path: '/api/companion/roachsync',
+        title: 'RoachSync state',
+        summary: 'Sync settings for this Mac.',
+        handler: 'NativeRuntime.roachSyncState',
+        source: 'Router.swift:235 (RoachClawStatus.swift:884)',
+        request: ['None.'],
+        response: ['`enabled`, `status`, `folderPath` (defaults to storage), `peers`, `transportMode: "native-local"`.'],
+        implementation: 'Off until you arm it.',
+        usedBy: ['RoachNet.app RoachSync settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-roachsync-affect',
+        method: 'POST',
+        path: '/api/companion/roachsync/affect',
+        title: 'Change RoachSync',
+        summary: 'Enable, disable, refresh, set the folder or clear peers.',
+        handler: 'NativeRuntime.affectCompanionRoachSync',
+        source: 'Router.swift:254 (CompanionLanes.swift:197)',
+        body: { action: 'enable' },
+        request: ['JSON body: `action`: `enable`, `disable`, `refresh`, `set-folder-path` (with an existing absolute `folderPath`), `clear-peers`.'],
+        response: ['`{ success, message, state }`', '400 for a folder that does not exist on this Mac.'],
+        implementation: '`~` in `folderPath` is expanded before the check.',
+        usedBy: ['RoachNet.app RoachSync settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-install',
+        method: 'POST',
+        path: '/api/companion/install',
+        title: 'Queue an install',
+        summary: 'The App Store install lane, for the phone and the Mac.',
+        handler: 'NativeRuntime.handleCompanionInstall',
+        source: 'Router.swift:236 (Downloads.swift:598)',
+        body: { action: 'roachclaw-model', model: 'qwen2.5-coder:1.5b' },
+        request: [
+          'JSON body: `action` (or `type`): `base-map-assets`, `map-collection` (`slug`), `education-tier` (`categorySlug`, `tierSlug`), `education-resource` (`categorySlug`, `resourceId`), `direct-download` (`url`, `filetype`), `wikipedia-option` (`optionId`), `roachclaw-model` (`model`), `roachspeech-pack` (`packID`, `kind`, `url`).',
+        ],
+        response: [
+          '`{ success, ok, action, message, jobId, jobIds, queued }`',
+          '400 for a missing or unknown action. 403 when a paired device names a private or loopback host.',
+        ],
+        implementation:
+          'From a paired phone, `url`, `mirrorUrl` and `sourceUrl` go through the URL-safety check with private ranges blocked, so a phone cannot turn your Mac into a fetcher for your own network.',
+      },
+      {
+        id: 'companion-sessions-index',
+        method: 'GET',
+        path: '/api/companion/chat/sessions',
+        title: 'Chat sessions',
+        summary: 'Your RoachClaw chats from the phone, newest first.',
+        handler: 'NativeRuntime.companionChatSessions',
+        source: 'Router.swift:249',
+        request: ['None.'],
+        response: ['Array of `{ id, title, model, timestamp }`.'],
+        implementation: 'Stored in `companion-chat.json` in the RoachClaw state folder. The newest 200 sessions are kept.',
+      },
+      {
+        id: 'companion-sessions-store',
+        method: 'POST',
+        path: '/api/companion/chat/sessions',
+        title: 'New chat session',
+        summary: 'Creates an empty session.',
+        handler: 'NativeRuntime.createCompanionChatSession',
+        source: 'Router.swift:250 (CompanionLanes.swift:76)',
+        body: { title: 'Trip notes', model: 'qwen2.5-coder:1.5b' },
+        request: ['JSON body: optional `title` (default “New Chat”) and `model`.'],
+        response: ['201 with the new session, `messages: []`.'],
+        implementation: 'You rarely need it: /api/companion/chat/send makes a session when it does not find one.',
+      },
+      {
+        id: 'companion-sessions-show',
+        method: 'GET',
+        path: '/api/companion/chat/sessions/:id',
+        examplePath: '/api/companion/chat/sessions/SESSION_ID',
+        title: 'One chat session',
+        summary: 'A session with its messages.',
+        handler: 'NativeRuntime.companionChatSession',
+        source: 'Router.swift:274 (CompanionLanes.swift:41)',
+        request: ['Path: the session `id`.'],
+        response: ['The session, `messages` included.', '404 `Session not found`.'],
+        implementation: 'Full history; the 40-message window only applies to what is sent to the model.',
+      },
+      {
+        id: 'companion-chat-send',
+        method: 'POST',
+        path: '/api/companion/chat/send',
+        title: 'Send a chat message',
+        summary: 'Records your message, asks the local model, records the reply.',
+        handler: 'NativeRuntime.sendCompanionChatMessage',
+        source: 'Router.swift:251 (CompanionLanes.swift:84)',
+        body: { content: 'What is on my calendar tomorrow?', model: 'qwen2.5-coder:1.5b' },
+        request: ['JSON body: `content` (required), `sessionId` (a new session if missing or unknown), `model`, up to four `images`, `visionSummary`.'],
+        response: [
+          '`{ session, userMessage, assistantMessage }`',
+          '400 without content. 503 when no local model answers.',
+        ],
+        implementation:
+          'Sends the last 40 messages to the local model and titles a new chat from its first line. The roachnet.org web chat relays through this route when you give it a paired device.',
+        usedBy: ['RoachNet iOS RoachClaw tab', 'roachnet.org web chat relay'],
+      },
+      {
+        id: 'companion-services-affect',
+        method: 'POST',
+        path: '/api/companion/services/affect',
+        title: 'Control a service',
+        summary: 'Start, stop or restart a service from the phone.',
+        handler: 'NativeRuntime.affectCompanionService',
+        source: 'Router.swift:252 (CompanionLanes.swift:140)',
+        body: { serviceName: 'roachnet_ollama', action: 'restart' },
+        request: ['JSON body: `serviceName` (or `service_name`) from /api/system/services, `action`: `start`, `stop` or `restart`.'],
+        response: ['`{ ok, serviceName, action, result }`', '400 for a bad action, 404 for an unknown service.'],
+        implementation: 'Only Ollama start and restart actually do something. The rest are validated and acknowledged.',
+      },
+      {
+        id: 'companion-catch-all',
+        method: 'POST',
+        path: '/api/companion/*',
+        examplePath: '/api/companion/anything-else',
+        title: 'Any other companion action',
+        summary: 'Every other POST under /api/companion/ gets the same polite reply.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:310',
+        request: ['Any path under `/api/companion/` not listed above.'],
+        response: ['`{ success: true, ok: true, message: "Native companion action recorded." }`'],
+        implementation: 'Despite the wording, nothing is recorded. It keeps older phones from hitting a 404.',
+      },
+    ],
+  },
+  {
+    id: 'web',
+    label: 'roachnet.org functions',
+    scope: 'web',
+    summary: 'The two server functions behind accounts.roachnet.org and RoachClaw on the web.',
+    stack: 'Browser → Netlify function → Supabase Auth and tables (row-level security) → your paired Mac or RoachBrain Cloud',
+    callers: ['accounts.roachnet.org', 'roachnet.org/roachclaw'],
+    endpoints: [
+      {
+        id: 'account-register',
+        method: 'POST',
+        path: '/.netlify/functions/register-account',
+        title: 'Create a website account',
+        summary: 'Signs you up for the optional roachnet.org account.',
+        handler: 'netlify/functions/register-account.mjs',
+        source: 'register-account.mjs (roachnet-org repo)',
+        curl: [
+          "curl -s -X POST https://roachnet.org/.netlify/functions/register-account \\",
+          "  -H 'origin: https://accounts.roachnet.org' \\",
+          "  -H 'content-type: application/json' \\",
+          `  -d '{"email":"you@example.com","password":"at-least-ten-characters","captchaToken":"TURNSTILE_TOKEN"}'`,
+        ].join('\n'),
+        request: [
+          'Origin must be roachnet.org or accounts.roachnet.org, or you get a 403.',
+          'JSON body: `email`, `password` (10 characters or more), `displayName` (up to 60), `captchaToken` when Turnstile is on.',
+          '`company` is a honeypot. Fill it in and you are turned away.',
+        ],
+        response: [
+          '`{ ok: true, requiresConfirmation, message, userId }`',
+          '409 `user_exists`. 429 if the form was submitted inhumanly fast. 503 when the backend or rate limiter is down.',
+        ],
+        implementation:
+          'Signs up through Supabase `/auth/v1/signup` with the public key and sends a confirmation link back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
+      },
+      {
+        id: 'roachclaw-web-chat',
+        method: 'POST',
+        path: '/.netlify/functions/roachclaw-chat',
+        title: 'Web RoachClaw message',
+        summary: 'One prompt from roachnet.org/roachclaw, answered by your Mac or by RoachBrain Cloud.',
+        handler: 'netlify/functions/roachclaw-chat.mjs',
+        source: 'roachclaw-chat.mjs (roachnet-org repo)',
+        curl: [
+          "curl -s -X POST https://roachnet.org/.netlify/functions/roachclaw-chat \\",
+          '  -H "authorization: Bearer $SUPABASE_ACCESS_TOKEN" \\',
+          "  -H 'content-type: application/json' \\",
+          `  -d '{"message":"Hello from the web"}'`,
+        ].join('\n'),
+        request: [
+          '`authorization: Bearer <Supabase access token>`.',
+          'JSON body: `message` (required), `threadId`, `bridgeUrl`, `bridgeToken`, `bridgeLabel`.',
+          '`bridgeUrl` must be on the deploy’s allow-list.',
+        ],
+        response: [
+          '`{ ok, thread, userMessage, assistantMessage, provider, model }`',
+          '401 without a valid session. 404 for a thread that is not yours. 503 when web chat is not armed. 500 if the reply fails.',
+        ],
+        implementation:
+          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: a small open model running inside the function.',
+      },
+    ],
+  },
+]
+
+/* --------------------------------------------------------------------------
+   Renderer
+   -------------------------------------------------------------------------- */
+
+const methodOrder = ['ALL', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+const groupNav = document.querySelector('#api-group-nav')
+const statsMount = document.querySelector('#api-stats')
+const groupSummary = document.querySelector('#api-group-summary')
+const routeList = document.querySelector('#api-route-list')
+const detailPane = document.querySelector('#api-detail-pane')
+const detailBody = document.querySelector('#api-detail-body')
+const detailClose = document.querySelector('#api-detail-close')
+const detailScrim = document.querySelector('#api-detail-scrim')
+const searchInput = document.querySelector('#api-search')
+const methodFilter = document.querySelector('#api-method-filter')
+const routeCount = document.querySelector('#api-route-count')
+const viewTitle = document.querySelector('#api-view-title')
+const notice = document.querySelector('#api-notice')
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+const sheetQuery = window.matchMedia('(max-width: 960px)')
+
+const flattenedRoutes = apiGroups.flatMap((group) =>
+  group.endpoints.map((endpoint) => ({
+    ...endpoint,
+    scope: group.scope,
+    groupId: group.id,
+    groupLabel: group.label,
+    groupSummary: group.summary,
+    groupStack: group.stack,
+    groupCallers: group.callers,
+    fullPath: endpoint.path,
+  }))
+)
+const routeIndex = new Map(flattenedRoutes.map((route) => [route.id, route]))
+const presentMethods = methodOrder.filter((method) => method === 'ALL' || flattenedRoutes.some((route) => route.method === method))
+
+let activeGroup = 'all'
+let activeMethod = 'ALL'
+let activeRouteId = flattenedRoutes[0]?.id || null
+let searchQuery = ''
+let sheetOpen = false
+let sheetReturnFocus = null
+
+function escapeHTML(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+// Escapes, then turns `code` spans into <code>.
+function rich(value) {
+  return escapeHTML(value).replace(/`([^`]+)`/g, '<code>$1</code>')
+}
+
+// Let long paths wrap after a slash instead of mid-word on phones.
+function pathBreaks(html) {
+  return html.replace(/(?<!<)\//g, '/<wbr>')
+}
+
+function highlight(value) {
+  const safe = escapeHTML(value)
+  if (!searchQuery) return safe
+  const needle = escapeHTML(searchQuery)
+  const lower = safe.toLowerCase()
+  let output = ''
+  let cursor = 0
+  let index = lower.indexOf(needle)
+  while (index !== -1 && needle) {
+    output += `${safe.slice(cursor, index)}<mark>${safe.slice(index, index + needle.length)}</mark>`
+    cursor = index + needle.length
+    index = lower.indexOf(needle, cursor)
+  }
+  return output + safe.slice(cursor)
+}
+
+function shellQuote(text) {
+  return `'${String(text).replaceAll("'", `'\\''`)}'`
+}
+
+function curlFor(route) {
+  if (route.curl) return route.curl
+  const surface = surfaces[route.scope]
+  const path = route.examplePath || route.fullPath
+  const url = `"${surface.base}${path}${route.query ? `?${route.query}` : ''}"`
+  const lines = [route.method === 'GET' ? `curl -s ${url}` : `curl -s -X ${route.method} ${url}`]
+  if (route.scope === 'companion' && !route.noAuth) lines.push('-H "authorization: Bearer $TOKEN"')
+  if (route.body) {
+    lines.push("-H 'content-type: application/json'")
+    lines.push(`-d ${shellQuote(JSON.stringify(route.body))}`)
+  }
+  return lines.map((line, index) => (index === 0 ? line : `  ${line}`)).join(' \\\n')
+}
+
+function haystackFor(route) {
+  return [
+    route.groupLabel,
+    route.title,
+    route.summary,
+    route.fullPath,
+    route.handler,
+    route.source,
+    route.method,
+    ...(route.usedBy || []),
+    ...(route.request || []),
+    ...(route.response || []),
+    route.implementation,
+  ]
+    .join(' ')
+    .toLowerCase()
+}
+const haystacks = new Map(flattenedRoutes.map((route) => [route.id, haystackFor(route)]))
+
+function matches(route, { group = activeGroup, method = activeMethod, query = searchQuery } = {}) {
+  if (group !== 'all' && route.groupId !== group) return false
+  if (method !== 'ALL' && route.method !== method) return false
+  if (query && !haystacks.get(route.id).includes(query)) return false
+  return true
+}
+
+function getFilteredRoutes() {
+  return flattenedRoutes.filter((route) => matches(route))
+}
+
+function plural(count, noun) {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`
+}
+
+function renderStats() {
+  if (!statsMount) return
+  const count = (method) => flattenedRoutes.filter((route) => route.method === method).length
+  const items = [
+    [flattenedRoutes.length, 'Routes in 1.0.6'],
+    [count('GET'), 'GET'],
+    [count('POST'), 'POST'],
+    [count('DELETE'), 'DELETE'],
+  ]
+  statsMount.innerHTML = items
+    .map(([value, label]) => `<li class="nx-stat"><span class="nx-stat__value">${value}</span><span class="nx-stat__label">${escapeHTML(label)}</span></li>`)
+    .join('')
+}
+
+function renderGroupNav() {
+  const items = [
+    { id: 'all', label: 'All routes', scope: '' },
+    ...apiGroups.map((group) => ({ id: group.id, label: group.label, scope: group.scope })),
+  ]
+  groupNav.innerHTML = items
+    .map((item) => {
+      const visible = flattenedRoutes.filter((route) => matches(route, { group: item.id })).length
+      const active = item.id === activeGroup
+      return `
+        <li>
+          <button class="api-rail__item${active ? ' is-active' : ''}${visible ? '' : ' is-empty'}" data-group-id="${item.id}" type="button" aria-pressed="${active}">
+            <span class="api-rail__label">${escapeHTML(item.label)}</span>
+            <span class="api-rail__count" aria-label="${plural(visible, 'route')}">${visible}</span>
+          </button>
+        </li>`
+    })
+    .join('')
+}
+
+function renderMethodFilter() {
+  methodFilter.innerHTML = presentMethods
+    .map((method) => {
+      const count = flattenedRoutes.filter((route) => matches(route, { method })).length
+      const active = method === activeMethod
+      return `
+        <button class="api-chip api-chip--${method.toLowerCase()}${active ? ' is-active' : ''}" data-method="${method}" type="button" aria-pressed="${active}">
+          <span>${method === 'ALL' ? 'All' : method}</span>
+          <span class="api-chip__count">${count}</span>
+        </button>`
+    })
+    .join('')
+}
+
+function renderSummary() {
+  const group = apiGroups.find((item) => item.id === activeGroup) || null
+  const filtered = getFilteredRoutes()
+  const surface = group ? surfaces[group.scope] : null
+  viewTitle.textContent = group ? group.label : searchQuery ? 'Search results' : 'All routes'
+  routeCount.textContent = plural(filtered.length, 'route')
+
+  groupSummary.innerHTML = group
+    ? `
+      <p class="api-summary__text">${rich(group.summary)}</p>
+      <dl class="api-summary__meta">
+        <div><dt>Server</dt><dd>${escapeHTML(surface.label)} · ${rich(surface.where)}</dd></div>
+        <div><dt>Path</dt><dd>${escapeHTML(group.stack)}</dd></div>
+      </dl>`
+    : `<p class="api-summary__text">${
+        searchQuery
+          ? `Matching “${escapeHTML(searchQuery)}” across paths, handlers and notes.`
+          : 'Four servers: the setup service, the loopback API, the companion bridge, and two functions on roachnet.org.'
+      }</p>`
+}
+
+function renderRouteList() {
+  const filtered = getFilteredRoutes()
+  if (!filtered.length) {
+    routeList.innerHTML = `
+      <li class="api-empty">
+        <p class="api-empty__title">Nothing answers to that.</p>
+        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${activeMethod}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
+        <button class="nx-btn nx-btn--sm" type="button" data-api-reset>Clear filters</button>
+      </li>`
+    return
+  }
+  const grouped = activeGroup === 'all'
+  let lastGroup = null
+  routeList.classList.toggle('is-grouped', grouped)
+  routeList.innerHTML = filtered
+    .map((route) => {
+      const active = route.id === activeRouteId
+      let heading = ''
+      if (grouped && route.groupId !== lastGroup) {
+        lastGroup = route.groupId
+        const count = filtered.filter((item) => item.groupId === route.groupId).length
+        heading = `<li class="api-routes__group" aria-hidden="true"><span>${escapeHTML(route.groupLabel)}</span><span>${count}</span></li>`
+      }
+      return `${heading}
+        <li>
+          <button class="api-route${active ? ' is-active' : ''}" data-route-id="${route.id}" type="button" aria-pressed="${active}" aria-controls="api-detail-pane">
+            <span class="api-method api-method--${route.method.toLowerCase()}">${route.method}</span>
+            <span class="api-route__main">
+              <span class="api-route__path">${pathBreaks(highlight(route.fullPath))}</span>
+              <span class="api-route__title">${highlight(route.title)}</span>
+            </span>
+            <span class="api-route__group">${escapeHTML(route.groupLabel)}</span>
+          </button>
+        </li>`
+    })
+    .join('')
+}
+
+function list(items) {
+  return `<ul>${(items || []).map((item) => `<li>${rich(item)}</li>`).join('')}</ul>`
+}
+
+function renderDetail({ animate = false } = {}) {
+  const route = routeIndex.get(activeRouteId)
+  if (!route || !getFilteredRoutes().includes(route)) {
+    detailBody.innerHTML = `
+      <div class="api-empty api-empty--detail">
+        <p class="api-empty__title">Pick a route.</p>
+        <p class="api-empty__text">Its request, response, source line and a curl you can paste land here.</p>
+      </div>`
+    return
+  }
+  const surface = surfaces[route.scope]
+  const curl = curlFor(route)
+  detailBody.innerHTML = `
+    <header class="api-detail__head">
+      <div class="api-detail__badges">
+        <span class="api-method api-method--${route.method.toLowerCase()}">${route.method}</span>
+        <span class="api-detail__group">${escapeHTML(route.groupLabel)}</span>
+      </div>
+      <h2 class="api-detail__title" id="api-detail-title" tabindex="-1">${escapeHTML(route.title)}</h2>
+      <div class="api-detail__path">
+        <code id="api-detail-path">${escapeHTML(route.fullPath)}</code>
+        <button class="api-copy" type="button" data-api-copy="${escapeHTML(route.fullPath)}" data-api-copied="Path copied">Copy path</button>
+      </div>
+      <p class="api-detail__summary">${rich(route.summary)}</p>
+    </header>
+    <dl class="api-detail__facts">
+      <div><dt>Server</dt><dd>${escapeHTML(surface.label)} · ${rich(surface.where)}</dd></div>
+      <div><dt>Auth</dt><dd>${route.noAuth ? 'None. This route is open on purpose.' : rich(surface.auth)}</dd></div>
+      <div><dt>Handler</dt><dd><code>${escapeHTML(route.handler)}</code></dd></div>
+      <div><dt>Source</dt><dd><code>${escapeHTML(route.source)}</code></dd></div>
+    </dl>
+    <section class="api-detail__block" aria-labelledby="api-d-req"><h3 id="api-d-req">Request</h3>${list(route.request)}</section>
+    <section class="api-detail__block" aria-labelledby="api-d-res"><h3 id="api-d-res">Response</h3>${list(route.response)}</section>
+    <section class="api-detail__block" aria-labelledby="api-d-notes"><h3 id="api-d-notes">Notes</h3><p>${rich(route.implementation)}</p></section>
+    <section class="api-detail__block" aria-labelledby="api-d-call"><h3 id="api-d-call">Called from</h3>${list(route.usedBy || route.groupCallers)}</section>
+    <section class="api-detail__block api-detail__block--example" aria-labelledby="api-d-ex">
+      <div class="api-detail__example-head">
+        <h3 id="api-d-ex">Example</h3>
+        ${route.scope === 'web' ? '' : `<a class="api-detail__vars" href="#before-you-call">Where ${escapeHTML(surfaces[route.scope].base)} comes from</a>`}
+        <button class="api-copy" type="button" data-api-copy-target="#api-detail-curl" data-api-copied="curl copied">Copy curl</button>
+      </div>
+      <pre class="api-curl" tabindex="0" aria-label="Example curl command"><code id="api-detail-curl">${escapeHTML(curl)}</code></pre>
+    </section>`
+  detailPane.scrollTop = 0
+  if (animate && !reducedMotion.matches) {
+    detailBody.classList.remove('is-swapping')
+    void detailBody.offsetWidth
+    detailBody.classList.add('is-swapping')
+  }
+}
+
+function syncSelection() {
+  const filtered = getFilteredRoutes()
+  if (!filtered.find((route) => route.id === activeRouteId)) {
+    activeRouteId = filtered[0]?.id || null
+  }
+}
+
+function renderAll() {
+  renderGroupNav()
+  renderMethodFilter()
+  renderSummary()
+  renderRouteList()
+  renderDetail()
+}
+
+// After a filter shrinks the list, keep its top in view under the sticky toolbar
+// instead of leaving the reader below an emptied page.
+const toolbar = document.querySelector('.api-toolbar')
+const workArea = document.querySelector('.api-work')
+const listSection = document.querySelector('.api-list')
+function keepListInView() {
+  if (!toolbar || !workArea || !listSection) return
+  const stickyTop = Number.parseFloat(getComputedStyle(toolbar).top) || 0
+  const listTop = listSection.getBoundingClientRect().top
+  if (listTop < stickyTop + toolbar.offsetHeight) {
+    window.scrollTo({ top: window.scrollY + workArea.getBoundingClientRect().top - stickyTop, behavior: 'instant' })
+  }
+}
+
+function applyFilters() {
+  syncSelection()
+  renderAll()
+  keepListInView()
+}
+
+function updateHash() {
+  if (!activeRouteId) return
+  try {
+    history.replaceState(null, '', `#${activeRouteId}`)
+  } catch {
+    // A sandboxed preview may refuse history writes; the page still works.
+  }
+}
+
+function showNotice(text) {
+  if (!notice) return
+  notice.textContent = text
+  notice.hidden = !text
+}
+
+function focusRoute(id) {
+  const button = routeList.querySelector(`[data-route-id="${CSS.escape(id)}"]`)
+  if (button) button.focus({ preventScroll: false })
+}
+
+function selectRoute(id, { fromKeyboard = false, openSheet = true } = {}) {
+  if (!routeIndex.has(id)) return
+  const changed = id !== activeRouteId
+  activeRouteId = id
+  routeList.querySelectorAll('[data-route-id]').forEach((button) => {
+    const on = button.getAttribute('data-route-id') === id
+    button.classList.toggle('is-active', on)
+    button.setAttribute('aria-pressed', String(on))
+  })
+  renderDetail({ animate: changed })
+  updateHash()
+  showNotice('')
+  if (sheetQuery.matches && openSheet) {
+    openDetailSheet(routeList.querySelector(`[data-route-id="${CSS.escape(id)}"]`))
+  } else if (fromKeyboard) {
+    routeList.querySelector(`[data-route-id="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'nearest' })
+  }
+}
+
+/* Phone sheet: the detail pane slides up over the list. */
+function setInert(open) {
+  detailPane.toggleAttribute('inert', sheetQuery.matches && !open)
+}
+
+function trapFocus(event) {
+  if (!sheetOpen || event.key !== 'Tab') return
+  const focusable = [...detailPane.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')].filter((element) => element.getClientRects().length)
+  if (!focusable.length) return
+  const first = focusable[0]
+  const last = focusable.at(-1)
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+function openDetailSheet(returnTo) {
+  if (!sheetQuery.matches) return
+  sheetOpen = true
+  sheetReturnFocus = returnTo || document.activeElement
+  document.documentElement.classList.add('api-sheet-open')
+  detailPane.classList.add('is-open')
+  detailScrim.hidden = false
+  detailPane.setAttribute('role', 'dialog')
+  detailPane.setAttribute('aria-modal', 'true')
+  detailPane.setAttribute('aria-labelledby', 'api-detail-title')
+  setInert(true)
+  requestAnimationFrame(() => detailPane.querySelector('#api-detail-title')?.focus({ preventScroll: true }))
+}
+
+function closeDetailSheet() {
+  if (!sheetOpen) return
+  sheetOpen = false
+  document.documentElement.classList.remove('api-sheet-open')
+  detailPane.classList.remove('is-open')
+  detailScrim.hidden = true
+  detailPane.removeAttribute('role')
+  detailPane.removeAttribute('aria-modal')
+  detailPane.removeAttribute('aria-labelledby')
+  setInert(false)
+  const target = sheetReturnFocus
+  sheetReturnFocus = null
+  if (target && document.contains(target)) target.focus({ preventScroll: true })
+  else if (activeRouteId) focusRoute(activeRouteId)
+}
+
+function onLayoutChange() {
+  if (!sheetQuery.matches && sheetOpen) closeDetailSheet()
+  setInert(false)
+}
+
+/* Copy with a toast. nx.js binds static copy buttons at boot; these are rendered later. */
+let toast
+function showToast(message) {
+  toast = toast || document.querySelector('.nx-toast')
+  if (!toast) {
+    toast = document.createElement('div')
+    toast.className = 'nx-toast'
+    toast.setAttribute('role', 'status')
+    toast.setAttribute('aria-live', 'polite')
+    document.body.append(toast)
+  }
+  toast.textContent = message
+  toast.classList.add('is-on')
+  clearTimeout(toast._apiTimer)
+  toast._apiTimer = setTimeout(() => toast.classList.remove('is-on'), 2200)
+}
+
+async function copyFrom(button) {
+  const target = button.dataset.apiCopyTarget ? document.querySelector(button.dataset.apiCopyTarget) : null
+  const text = target ? target.textContent : button.dataset.apiCopy
+  if (!text) return
+  try {
+    await navigator.clipboard.writeText(text)
+    button.classList.add('is-done')
+    setTimeout(() => button.classList.remove('is-done'), 1200)
+    showToast(button.dataset.apiCopied || 'Copied to your clipboard')
+  } catch {
+    if (target) {
+      const range = document.createRange()
+      range.selectNodeContents(target)
+      const selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(range)
+    }
+    showToast('Selected. Press ⌘C to copy')
+  }
+}
+
+function resetFilters() {
+  activeGroup = 'all'
+  activeMethod = 'ALL'
+  searchQuery = ''
+  if (searchInput) searchInput.value = ''
+  applyFilters()
+}
+
+function hydrateFromHash({ initial = false } = {}) {
+  const id = decodeURIComponent(window.location.hash.replace(/^#/, '').trim())
+  if (!id) return
+  const route = routeIndex.get(id)
+  if (!route) {
+    if (/^[a-z0-9-]+$/.test(id) && !document.getElementById(id)) {
+      showNotice(`There is no route called “${id}” in 1.0.6. It may have left with the Node runtime.`)
+    }
+    return
+  }
+  activeGroup = route.groupId
+  activeMethod = 'ALL'
+  searchQuery = ''
+  if (searchInput) searchInput.value = ''
+  activeRouteId = route.id
+  syncSelection()
+  renderAll()
+  requestAnimationFrame(() => {
+    const button = routeList.querySelector(`[data-route-id="${CSS.escape(route.id)}"]`)
+    button?.scrollIntoView({ block: 'center', behavior: initial || reducedMotion.matches ? 'auto' : 'smooth' })
+    if (sheetQuery.matches) openDetailSheet(button)
+  })
+}
+
+/* Events */
+groupNav.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-group-id]')
+  if (!button) return
+  activeGroup = button.getAttribute('data-group-id') || 'all'
+  applyFilters()
+  updateHash()
+})
+
+methodFilter.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-method]')
+  if (!button) return
+  activeMethod = button.getAttribute('data-method') || 'ALL'
+  applyFilters()
+  updateHash()
+})
+
+routeList.addEventListener('click', (event) => {
+  if (event.target.closest('[data-api-reset]')) {
+    resetFilters()
+    searchInput?.focus()
+    return
+  }
+  const button = event.target.closest('[data-route-id]')
+  if (button) selectRoute(button.getAttribute('data-route-id'))
+})
+
+routeList.addEventListener('keydown', (event) => {
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+  const buttons = [...routeList.querySelectorAll('[data-route-id]')]
+  const index = buttons.indexOf(document.activeElement)
+  if (index === -1) return
+  event.preventDefault()
+  const next = buttons[Math.max(0, Math.min(buttons.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1)))]
+  next.focus()
+  if (!sheetQuery.matches) selectRoute(next.getAttribute('data-route-id'), { fromKeyboard: true })
+})
+
+document.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-api-copy], [data-api-copy-target]')
+  if (button) copyFrom(button)
+})
+
+searchInput?.addEventListener('input', (event) => {
+  searchQuery = String(event.currentTarget.value || '').trim().toLowerCase()
+  applyFilters()
+})
+
+searchInput?.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    event.stopPropagation()
+    if (searchInput.value) {
+      searchInput.value = ''
+      searchQuery = ''
+      applyFilters()
+    } else {
+      searchInput.blur()
+    }
+  } else if (event.key === 'Enter') {
+    const first = routeList.querySelector('[data-route-id]')
+    if (first) {
+      event.preventDefault()
+      selectRoute(first.getAttribute('data-route-id'))
+      if (!sheetQuery.matches) first.focus()
+    }
+  }
+})
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && sheetOpen) {
+    event.preventDefault()
+    closeDetailSheet()
+    return
+  }
+  trapFocus(event)
+  if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return
+  const target = event.target
+  if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return
+  if (sheetOpen) closeDetailSheet()
+  event.preventDefault()
+  searchInput?.focus()
+  searchInput?.select()
+})
+
+detailClose?.addEventListener('click', closeDetailSheet)
+detailPane.addEventListener('click', (event) => {
+  if (event.target.closest('.api-detail__vars') && sheetOpen) closeDetailSheet()
+})
+detailScrim?.addEventListener('click', closeDetailSheet)
+sheetQuery.addEventListener('change', onLayoutChange)
+
+window.addEventListener('hashchange', () => hydrateFromHash())
+
+/* Boot */
+renderStats()
+syncSelection()
+renderAll()
+setInert(false)
+hydrateFromHash({ initial: true })
+document.documentElement.classList.add('api-ready')
+```
+
+## api/index.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="api-index-html" file="api/index.html"}
+<!doctype html>
+<html lang="en" class="nx">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet API: every route in 1.0.6</title>
+    <meta
+      name="description"
+      content="Reference for the RoachNet 1.0.6 native runtime: the loopback API, the companion bridge your phone uses, the setup service, and the two roachnet.org functions. Methods, bodies, responses and source lines."
+    />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://roachnet.org/api/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet API: every route in 1.0.6" />
+    <meta
+      property="og:description"
+      content="Every route the RoachNet 1.0.6 runtime answers, with bodies, responses, source lines and a curl you can paste."
+    />
+    <meta property="og:url" content="https://roachnet.org/api/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet API: every route in 1.0.6" />
+    <meta
+      name="twitter:description"
+      content="Every route the RoachNet 1.0.6 runtime answers, with bodies, responses, source lines and a curl you can paste."
+    />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="../nx.css" />
+    <link rel="stylesheet" href="../nx-docs.css" />
+  </head>
+  <body data-page="api">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
+
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">API · v1.0.6</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost is-current" href="#top" aria-current="page">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top" class="nx-main api" tabindex="-1">
+      <section class="api-hero" aria-labelledby="api-title">
+        <div class="api-hero__copy">
+          <p class="nx-overline">API reference · RoachNet 1.0.6</p>
+          <h1 class="nx-display api-hero__title" id="api-title">Every route your Mac answers.</h1>
+          <p class="nx-lede">
+            RoachNet 1.0.6 runs one native Swift helper, <code>roachnet-runtime</code>. It gives the app a loopback API, your phone a token-gated bridge, and the installer a setup service. All three listen on 127.0.0.1 and nowhere else. Below is every route they answer, plus the two functions roachnet.org runs.
+          </p>
+          <p class="api-hero__hint">Examples use <code>$ROACHNET</code> and <code>$BRIDGE</code>. <a class="nx-link" href="#before-you-call">Here is where they come from.</a></p>
+        </div>
+        <ul class="nx-stats api-hero__stats" id="api-stats" aria-label="Route counts">
+          <li class="nx-stat"><span class="nx-stat__value">106</span><span class="nx-stat__label">Routes in 1.0.6</span></li>
+        </ul>
+      </section>
+
+      <section class="api-docs" aria-label="Route reference">
+        <nav class="api-rail" aria-label="Route groups">
+          <p class="api-rail__head">Groups</p>
+          <ul class="api-rail__list" id="api-group-nav"></ul>
+          <p class="api-rail__foot">Checked against <code>Router.swift</code> at tag v1.0.6.</p>
+        </nav>
+
+        <div class="api-work">
+          <div class="api-toolbar">
+            <label class="api-search" for="api-search">
+              <span class="nx-sr">Search routes</span>
+              <svg class="api-search__icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2" /><path d="m13.5 13.5 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+              <input id="api-search" type="search" autocomplete="off" spellcheck="false" placeholder="Search paths, handlers, notes" aria-describedby="api-search-hint" />
+              <kbd class="api-search__key" aria-hidden="true">/</kbd>
+            </label>
+            <span class="nx-sr" id="api-search-hint">Press slash to search from anywhere, Escape to clear.</span>
+            <div class="api-chips" id="api-method-filter" role="group" aria-label="Filter by HTTP method"></div>
+          </div>
+
+          <div class="api-panes">
+            <section class="api-list" aria-labelledby="api-view-title">
+              <header class="api-list__head">
+                <h2 class="api-list__title" id="api-view-title">All routes</h2>
+                <p class="api-list__count" id="api-route-count" aria-live="polite">0 routes</p>
+              </header>
+              <div class="api-summary" id="api-group-summary"></div>
+              <p class="api-notice" id="api-notice" role="status" hidden></p>
+              <ul class="api-routes" id="api-route-list"></ul>
+            </section>
+
+            <div class="api-scrim" id="api-detail-scrim" hidden></div>
+            <aside class="api-detail" id="api-detail-pane" aria-label="Route detail">
+              <div class="api-detail__bar">
+                <span class="api-detail__grab" aria-hidden="true"></span>
+                <button class="api-detail__close" id="api-detail-close" type="button">Close</button>
+              </div>
+              <div class="api-detail__body" id="api-detail-body">
+                <noscript><p class="api-empty__text">The route browser needs JavaScript. The routes themselves do not.</p></noscript>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="api-start" id="before-you-call" aria-labelledby="api-start-title">
+        <div class="api-start__head">
+          <p class="nx-overline nx-overline--cyan">Before you call</p>
+          <h2 class="nx-h2" id="api-start-title">Find the port. Bring JSON.</h2>
+        </div>
+        <div class="api-start__grid">
+          <article class="api-start__card">
+            <h3 class="nx-h3">Loopback API</h3>
+            <p class="nx-prose">It takes a fresh port on every launch and writes it down for you. This sets <code>$ROACHNET</code> for every example on this page.</p>
+            <div class="nx-console api-console">
+              <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
+              <div class="nx-console__body">
+                <span class="nx-console__line">ROACHNET=$(sed -n 's/.*"baseUrl" *: *"\([^"]*\)".*/\1/p' ~/RoachNet/storage/.runtime/roachnet-native-api-state.json)</span>
+                <span class="nx-console__line">curl -s "$ROACHNET/api/health"</span>
+                <span class="nx-console__line nx-console__line--out">{"status":"ok"}</span>
+              </div>
+              <div class="nx-console__copy">
+                <button class="nx-btn nx-btn--sm nx-btn--mono" type="button" data-api-copy="ROACHNET=$(sed -n 's/.*&quot;baseUrl&quot; *: *&quot;\([^&quot;]*\)&quot;.*/\1/p' ~/RoachNet/storage/.runtime/roachnet-native-api-state.json)&#10;curl -s &quot;$ROACHNET/api/health&quot;" data-api-copied="Commands copied">Copy</button>
+              </div>
+            </div>
+          </article>
+          <article class="api-start__card">
+            <h3 class="nx-h3">Companion bridge</h3>
+            <p class="nx-prose">Port 38111 unless you changed it. It wants the companion token from your installer config. Treat that token like a password, because it is one.</p>
+            <div class="nx-console api-console">
+              <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
+              <div class="nx-console__body">
+                <span class="nx-console__line">BRIDGE=http://127.0.0.1:38111</span>
+                <span class="nx-console__line">TOKEN=$(sed -n 's/.*"companionToken" *: *"\([^"]*\)".*/\1/p' ~/Library/Application\ Support/roachnet/roachnet-installer.json)</span>
+                <span class="nx-console__line">curl -s "$BRIDGE/api/companion/runtime" -H "authorization: Bearer $TOKEN"</span>
+              </div>
+              <div class="nx-console__copy">
+                <button class="nx-btn nx-btn--sm nx-btn--mono" type="button" data-api-copy="BRIDGE=http://127.0.0.1:38111&#10;TOKEN=$(sed -n 's/.*&quot;companionToken&quot; *: *&quot;\([^&quot;]*\)&quot;.*/\1/p' ~/Library/Application\ Support/roachnet/roachnet-installer.json)&#10;curl -s &quot;$BRIDGE/api/companion/runtime&quot; -H &quot;authorization: Bearer $TOKEN&quot;" data-api-copied="Commands copied">Copy</button>
+              </div>
+            </div>
+          </article>
+          <article class="api-start__card api-start__card--rules">
+            <h3 class="nx-h3">House rules</h3>
+            <ul class="api-rules">
+              <li><strong>JSON means JSON.</strong> Bodies must say <code>content-type: application/json</code>. Anything else gets a 415. That is CSRF protection, not pedantry.</li>
+              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a rebinding web page can’t read your Mac.</li>
+              <li><strong>Errors are boring.</strong> <code>{ "error": "…" }</code> with a real status code.</li>
+              <li><strong>Small bodies.</strong> 1 MB on the loopback API, 2 MB through the bridge.</li>
+              <li><strong>Setup keeps to itself.</strong> Its service runs only while Setup is open, on a port only Setup knows. To try it by hand, start <code>roachnet-runtime --setup</code> with <code>ROACHNET_SETUP_PORT=38080</code> and set <code>SETUP=http://127.0.0.1:38080</code>.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="api-outside" aria-labelledby="api-outside-title">
+        <div class="api-outside__copy">
+          <p class="nx-overline nx-overline--purple">Not HTTP, still useful</p>
+          <h2 class="nx-h2" id="api-outside-title">The helper has a command line too.</h2>
+          <p class="nx-prose">
+            <code>roachnet-runtime</code> lives inside the app at <code>~/RoachNet/app/RoachNet.app/Contents/Helpers/</code>. The Homebrew cask and the Setup app run the same install workflow it does. The iPhone app is not an API either: it is an IPA you sideload, and it talks to the bridge above.
+          </p>
+          <ul class="api-outside__links">
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Install with Homebrew</a></li>
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet for iPhone and iPad</a></li>
+            <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/tag/v1.0.6" target="_blank" rel="noreferrer">Release notes for v1.0.6</a></li>
+          </ul>
+        </div>
+        <div class="nx-console api-console api-console--cli">
+          <div class="nx-console__bar"><i></i><i></i><i></i> roachnet-runtime</div>
+          <div class="nx-console__body">
+            <span class="nx-console__line">roachnet-runtime --version</span>
+            <span class="nx-console__line">roachnet-runtime --stop</span>
+            <span class="nx-console__line">roachnet-runtime --setup</span>
+            <span class="nx-console__line">roachnet-runtime --install --install-path ~/RoachNet --no-roachclaw</span>
+            <span class="nx-console__line">roachnet-runtime --provision-alias --print-command</span>
+            <span class="nx-console__line nx-console__line--out">--stop ends the runtime that owns ROACHNET_STORAGE_PATH</span>
+            <span class="nx-console__line nx-console__line--out">--setup serves the setup routes on 127.0.0.1</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="#top" aria-current="page">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
+
+    <script src="../nx.js" type="module"></script>
+    <script src="../api.js" type="module"></script>
+  </body>
+</html>
+```
+
+## app-store.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="app-store-html" file="app-store.html"}
+<!doctype html>
+<html lang="en" class="nx">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet Apps: Pick the pack. Know where it lands.</title>
+    <meta
+      name="description"
+      content="Maps, local models, offline libraries, voice packs and feature packs that install straight into RoachNet on your Mac, each with its size, its source and the place it lands."
+    />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://apps.roachnet.org/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet Apps: Pick the pack. Know where it lands." />
+    <meta
+      property="og:description"
+      content="Maps, local models, offline libraries and voice packs for RoachNet. Every install says how big it is and where it goes."
+    />
+    <meta property="og:url" content="https://apps.roachnet.org/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet Apps: Pick the pack. Know where it lands." />
+    <meta
+      name="twitter:description"
+      content="Maps, local models, offline libraries and voice packs for RoachNet. Every install says how big it is and where it goes."
+    />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="preload" as="fetch" href="./app-store-catalog.json" crossorigin />
+    <link rel="stylesheet" href="./nx.css" />
+    <link rel="stylesheet" href="./nx-store.css" />
+  </head>
+  <body data-page="apps">
+    <a class="rn-skip-link" href="#apps-main">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
+
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Apps</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link is-current" href="#apps-main" aria-current="page">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="nx-main st-main" id="apps-main" tabindex="-1">
+      <section class="st-head" aria-labelledby="apps-title">
+        <div class="st-head__copy">
+          <p class="nx-overline">RoachNet Apps <span class="st-head__count" data-store-total>323 installs</span></p>
+          <h1 class="st-head__title" id="apps-title">Pick the pack. <span class="nx-accent">Know where it lands.</span></h1>
+          <p class="nx-lede st-head__lede">
+            Maps, local models, offline libraries and voice packs that hand straight to RoachNet on your Mac. Every one says how big it is, where it comes from and which part of the app it lands in. Nothing to unzip. Nothing lost in Downloads.
+          </p>
+        </div>
+        <aside class="st-get" aria-labelledby="apps-get-title">
+          <p class="st-get__kicker" id="apps-get-title">Installs open RoachNet</p>
+          <p class="st-get__body">The buttons here hand off to the Mac app. No RoachNet yet? Get it first, then come back for the packs.</p>
+          <a class="nx-btn nx-btn--primary st-get__btn" id="apps-primary-download" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">
+            Download RoachNet 1.0.6 for macOS
+          </a>
+          <p class="st-get__meta" id="apps-download-meta">
+            <span>376 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>ad-hoc signed, not Apple-notarized</span>
+          </p>
+          <a class="nx-link nx-link--arrow st-get__alt" href="https://roachnet.org/brew/">Or install it with Homebrew</a>
+        </aside>
+      </section>
+
+      <div class="st-layout">
+        <aside class="st-rail" aria-label="Store">
+          <div class="st-search" role="search">
+            <label class="nx-sr" for="apps-search">Search the RoachNet Apps catalog</label>
+            <svg class="st-search__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg>
+            <input
+              id="apps-search"
+              class="st-search__input"
+              type="search"
+              autocomplete="off"
+              spellcheck="false"
+              enterkeyhint="search"
+              placeholder="Search maps, models, docs"
+              aria-describedby="apps-search-hint"
+            />
+            <kbd class="st-search__key" aria-hidden="true">/</kbd>
+            <span class="nx-sr" id="apps-search-hint">Press slash to jump here from anywhere on the page. Results update as you type.</span>
+          </div>
+
+          <nav class="st-rail__nav" id="apps-sidebar-nav" aria-label="Store sections">
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+          </nav>
+
+          <div class="st-rail__note">
+            <p class="st-rail__note-title">How installs work</p>
+            <p>Install opens RoachNet with the pack already picked. RoachNet downloads it, checks it, and files it under <code>~/RoachNet</code>.</p>
+            <p class="st-rail__net" data-store-connectivity data-state="pending">Checking connection</p>
+          </div>
+        </aside>
+
+        <div class="st-content">
+          <p class="nx-sr" id="apps-live" role="status" aria-live="polite"></p>
+          <section class="st-section-head" id="apps-section-head" hidden></section>
+          <div class="st-stage" id="apps-store-stage" aria-busy="true">
+            <p class="nx-sr">Loading the catalog.</p>
+            <div class="st-skel st-skel--hero" aria-hidden="true">
+              <span class="st-skel__icon"></span>
+              <span class="st-skel__line st-skel__line--title"></span>
+              <span class="st-skel__line"></span>
+              <span class="st-skel__line st-skel__line--short"></span>
+            </div>
+            <div class="st-skel-row" aria-hidden="true">
+              <span class="st-skel st-skel--card"></span>
+              <span class="st-skel st-skel--card"></span>
+              <span class="st-skel st-skel--card"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="app-detail-overlay st-overlay" id="apps-detail-overlay" hidden>
+      <div class="app-detail-sheet st-sheet" role="dialog" aria-modal="true" aria-labelledby="apps-detail-title">
+        <span class="st-sheet__grip" aria-hidden="true"></span>
+        <button class="app-detail-sheet__close st-sheet__close" id="apps-detail-close" type="button" aria-label="Close details">
+          <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m5 5 10 10M15 5 5 15"></path></svg>
+          <span class="st-sheet__close-label">Close</span>
+        </button>
+        <div class="st-sheet__body" id="apps-detail-content"></div>
+      </div>
+    </div>
+
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="#apps-main" aria-current="page">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
+
+    <script src="./site-config.js"></script>
+    <script src="./app-store.js" type="module"></script>
+    <script src="./nx.js" type="module"></script>
   </body>
 </html>
 ```
@@ -1089,11 +3935,17 @@ This root is reconciled byte-for-byte from the current production source.
 This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="app-store-js" file="app-store.js"}
+// RoachNet Apps storefront (apps.roachnet.org).
+// Renders app-store-catalog.json into a store: section rail, instant search,
+// a Today view with shelf rows, section grids and a detail sheet. Install
+// buttons are roachnet://install-content deep links built from each item's
+// installIntent and handed to the native app by attemptNativeInstall.
+// CSP note: the apps CSP is style-src 'self', so nothing here writes a style
+// attribute into markup. Dynamic values go through CSSOM (style.setProperty).
+
 const owner = 'RoachWares'
 const repo = 'RoachNet'
 const releaseVersion = window.__ROACHNET_SITE_CONFIG__?.releaseVersion || '1.0.6'
-const latestReleaseApi = `https://api.github.com/repos/${owner}/${repo}/releases/latest`
-const latestReleasePage = `https://github.com/${owner}/${repo}/releases/latest`
 const latestDownloadBase = `https://github.com/${owner}/${repo}/releases/latest/download`
 const hostedDownloads = {
   mac: {
@@ -1103,316 +3955,299 @@ const hostedDownloads = {
   },
 }
 
+// key + navLabel are contracts: key matches catalog `section`, navLabel feeds the
+// URL hash (#models, #voice, #medicine…). Everything else is presentation copy.
 const sectionDefinitions = [
   {
     key: 'Today',
     navLabel: 'Today',
     eyebrow: 'Today in RoachNet Apps',
-    title: 'Apps and packs worth installing.',
-    description:
-      'Maps, shelves, guides, voice packs, and model packs that hand straight into the native app with a route attached.',
+    title: 'Today in RoachNet Apps.',
+    description: 'A featured pick, good first installs, and the newest shelves.',
     icon: 'NOW',
-    layout: 'today',
+    group: 'Discover',
   },
   {
     key: 'Map Regions',
     navLabel: 'Map Regions',
     eyebrow: 'Offline atlas',
-    title: 'Offline atlas packs by region.',
+    title: 'Maps by region.',
     description:
-      'City detail, road networks, coastlines, and small-town coverage grouped into named installs for when the signal takes a walk.',
+      'City streets, highways, coastlines and the long empty bits in between, grouped into regional packs that open in RoachNet Maps without a signal.',
+    short: 'Regional packs for RoachNet Maps. They come back once the new mirror is live.',
     icon: 'MAP',
-    layout: 'map',
+    group: 'Maps',
   },
   {
     key: 'Map Picks',
     navLabel: 'Map Picks',
     eyebrow: 'Single-file maps',
-    title: 'Focused map installs for one region, one job, less shelf noise.',
-    description:
-      'Single-region PMTiles packs for users who need a place, not a geography dissertation.',
+    title: 'One place, one file.',
+    description: 'Single-region PMTiles maps for when you need one state, not the whole continent.',
     icon: 'PIN',
-    layout: 'map',
+    group: 'Maps',
   },
   {
     key: 'Starter Stacks',
     navLabel: 'Stacks',
-    eyebrow: 'One-tap stacks',
-    title: 'Fresh RoachNet, fewer chores.',
+    eyebrow: 'Starter stacks',
+    title: 'A fresh RoachNet, set up in one go.',
     description:
-      'Curated bundles that install through the same native desktop lane as the rest of the catalog.',
+      'Hand-picked bundles of shelves for one kind of work. One install queues the lot, and every shelf in it still gets its own name.',
+    short: 'One install, several shelves, all filed where they belong.',
     icon: 'STK',
-    layout: 'grid',
+    group: 'Discover',
   },
   {
     key: 'Medicine',
     navLabel: 'Medicine',
     eyebrow: 'Care library',
-    title: 'Medical shelves for actual pressure, not search-result roulette.',
+    title: 'Medical reference that does not need a signal.',
     description:
-      'Drug references, treatment steps, emergency guides, and deeper libraries that stay on your machine.',
+      'Drug references, treatment steps, emergency guides and deeper textbooks, on your disk for the day you need an answer fast.',
+    short: 'Drug references, treatment steps and emergency guides, on your disk.',
     icon: 'MED',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Survival & Preparedness',
     navLabel: 'Survival',
     eyebrow: 'Field guides',
-    title: 'Planning, gear, food, routes, and bad-weather thinking in one place.',
+    title: 'Plans, gear, food and bad weather.',
     description:
-      'Video series, manuals, route notes, and deep reading for people who want useful material on disk.',
+      'Video series, manuals and long reading for people who would rather keep the answer on disk than on a cell tower.',
     icon: 'SUR',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Education & Reference',
     navLabel: 'Education',
     eyebrow: 'Reference shelf',
-    title: 'Study packs and reference sets that make your RoachNet machine feel like a small campus.',
-    description:
-      'Open textbooks, course bundles, tutorials, and talk archives that turn the RoachNet vault into a real offline study shelf.',
+    title: 'A small campus on your Mac.',
+    description: 'Open textbooks, course bundles, tutorials and talks, shelved where you can find them again.',
     icon: 'EDU',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Science & Simulations',
     navLabel: 'Science',
     eyebrow: 'Lab shelf',
-    title: 'Science shelves for the curious machine.',
-    description:
-      'Physics, astronomy, chemistry, biology, and interactive science installs that feel like a compact lab bench inside RoachNet.',
+    title: 'Science for the curious machine.',
+    description: 'Physics, astronomy, chemistry, biology and interactive simulations you can poke at offline.',
     icon: 'LAB',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Kids & Family',
     navLabel: 'Kids',
     eyebrow: 'Family shelf',
-    title: 'Youth-friendly shelves, reading packs, and shared-machine installs.',
-    description:
-      'Story collections, lighter encyclopedias, and family-oriented shelves that make sense on a machine other people touch too.',
+    title: 'Shelves for a machine other people use too.',
+    description: 'Story collections, lighter encyclopedias and family reading.',
     icon: 'KID',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Open Courses & Lectures',
     navLabel: 'Courses',
     eyebrow: 'Course shelf',
-    title: 'Study installs for people who use the desktop as a campus.',
+    title: 'Lectures and open courses.',
     description:
-      'Lecture libraries, open courses, and structured study packs that install like real apps instead of random downloads.',
+      'Lecture libraries and structured study packs that install like apps, not like a folder of mystery videos.',
     icon: 'CRS',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Math & Problem Solving',
     navLabel: 'Math',
     eyebrow: 'Problem shelf',
-    title: 'Proofs, worked examples, and problem-solving shelves with real depth.',
-    description:
-      'Math shelves for drills, intuition, advanced reference, and the kind of long-form thinking that deserves its own place.',
+    title: 'Proofs, drills and worked examples.',
+    description: 'Math shelves from practice problems to advanced reference, for the long think.',
     icon: 'MTH',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Law, History & Society',
     navLabel: 'Society',
     eyebrow: 'Civic shelf',
-    title: 'Law, history, philosophy, and public-life reference in one place.',
-    description:
-      'Useful context for policy, institutions, philosophy, and civic life without turning the machine into a browser graveyard.',
+    title: 'Law, history, philosophy and public life.',
+    description: 'Context for institutions, policy and the old arguments that keep coming back.',
     icon: 'SOC',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Language & Writing',
     navLabel: 'Words',
     eyebrow: 'Language shelf',
-    title: 'Writing, language study, linguistics, and quote-heavy reference that stays close.',
-    description:
-      'Editing, reading, language learning, and language-design shelves that feel useful on a working machine.',
+    title: 'Writing, language and quotations.',
+    description: 'Editing, reading, language learning and linguistics shelves for a machine that writes a lot.',
     icon: 'TXT',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'DIY & Repair',
     navLabel: 'DIY',
     eyebrow: 'Repair shelf',
-    title: 'Fix guides, repair notes, and hands-on practical reference.',
-    description:
-      'DIY and repair installs keep workshop answers, teardown notes, and field fixes one click away inside the vault.',
+    title: 'Fix it yourself.',
+    description: 'Repair guides, teardown notes and practical how-to for the workbench.',
     icon: 'FIX',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Maker & Electronics',
     navLabel: 'Maker',
     eyebrow: 'Bench shelf',
-    title: 'Boards, components, fabrication, and electronics learning with real mileage.',
-    description:
-      'Hardware-minded installs for people who solder, print, breadboard, repair, or just like understanding how the box actually works.',
+    title: 'Boards, parts and fabrication.',
+    description: 'Electronics, 3D printing and hardware reference for people who solder, print or breadboard.',
     icon: 'PCB',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Agriculture & Food',
     navLabel: 'Agriculture',
-    eyebrow: 'Grow & cook',
-    title: 'Food, gardening, and self-reliance packs with practical mileage.',
-    description:
-      'Cooking, pantry planning, gardening, and homesteading installs that feel useful on a real machine, not just aspirational.',
+    eyebrow: 'Grow and cook',
+    title: 'Food, gardens and the pantry.',
+    description: 'Cooking, food storage, gardening and homesteading reference you can use with dirt on your hands.',
     icon: 'GRW',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Homestead & Sustainability',
     navLabel: 'Homestead',
     eyebrow: 'Self-reliance',
-    title: 'Energy, growing, repair, and practical build-it-yourself reference.',
-    description:
-      'Longer-lived shelves for self-reliance, field fixes, sustainability, and real-world making.',
+    title: 'Energy, growing and building it yourself.',
+    description: 'Longer-lived shelves for sustainability, field fixes and real-world making.',
     icon: 'HME',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Finance & Crypto',
     navLabel: 'Finance',
     eyebrow: 'Money shelf',
-    title: 'Money reference without the finance-influencer fog machine.',
-    description:
-      'Investing, accounting, economics, crypto, and money-management installs grouped for research, not hype.',
+    title: 'Money reference, minus the influencer.',
+    description: 'Investing, accounting, economics and crypto, grouped for research rather than hype.',
     icon: 'FIN',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Software Development',
     navLabel: 'Dev',
     eyebrow: 'Dev shelf',
-    title: 'Coding docs and dev shelves that stay local.',
-    description:
-      'Programming references, system docs, software engineering material, and local-first dev packs for the RoachNet workspace.',
+    title: 'Docs that load when the Wi-Fi does not.',
+    description: 'Language docs, framework references and engineering shelves for the RoachNet Dev workspace.',
+    short: 'Language and framework docs that sit next to the editor.',
     icon: 'DEV',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Machine Learning & Data Science',
     navLabel: 'ML',
     eyebrow: 'ML shelf',
-    title: 'Stats, data, and model-building references that stay local.',
-    description:
-      'Machine-learning and data-science packs that make RoachNet feel like a local lab instead of a tab farm.',
+    title: 'Stats, data and model building.',
+    description: 'Machine learning and data science reference, kept local like the models.',
     icon: 'ML',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Platforms & Systems',
     navLabel: 'Systems',
     eyebrow: 'Systems shelf',
-    title: 'OS docs, package-manager lore, and platform reference for the long machine session.',
-    description:
-      'Platform-specific shelves for package managers, Linux docs, SBCs, and systems work that always seems to matter at 1 AM.',
+    title: 'Operating systems and package managers.',
+    description: 'Linux docs, package-manager lore, single-board computers and platform reference for the 1 AM session.',
     icon: 'SYS',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Security & Privacy',
     navLabel: 'Security',
     eyebrow: 'Defense shelf',
-    title: 'Privacy, defense, reverse-engineering, and security reference for the machine you actually trust.',
-    description:
-      'A tighter shelf for threat models, Tor, edge security, and defensive work that should not depend on a tab staying open.',
+    title: 'Security reference for the machine you trust.',
+    description: 'Threat models, Tor, defensive work and reverse engineering, readable without a tab staying open.',
     icon: 'SEC',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Music Production & Audio',
     navLabel: 'Audio',
     eyebrow: 'Audio craft',
-    title: 'Theory, sound, and production references for studio days.',
-    description:
-      'Open music-theory tracks, sound-focused talk archives, and audio references that belong next to the music tools instead of somewhere in Downloads.',
+    title: 'Theory and sound for studio days.',
+    description: 'Music theory, production and audio talks that live next to the tools instead of somewhere in Downloads.',
     icon: 'AUD',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Design & Visual Media',
     navLabel: 'Design',
     eyebrow: 'Visual craft',
-    title: '3D, graphics, photography, and visual-thinking shelves that feel useful on a workstation.',
-    description:
-      'Design and media installs for visual reference, Blender work, production art, and the questions you only remember when you are already in the middle of the thing.',
+    title: 'Graphics, 3D and photography.',
+    description: 'Blender, visual reference and production art shelves for the questions you only have mid-project.',
     icon: 'DES',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'IT & Infrastructure',
     navLabel: 'Infra',
     eyebrow: 'Infra shelf',
-    title: 'Networking, systems, and operations references for the long session.',
-    description:
-      'Docs and guides for operators, builders, and anyone who still expects their machine to keep moving when hosted tooling slows down.',
+    title: 'Networks, servers and operations.',
+    description: 'Docs for operators and builders who expect the machine to keep working when the hosted tools do not.',
     icon: 'NET',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Travel & Field Guides',
     navLabel: 'Travel',
     eyebrow: 'Route shelf',
-    title: 'City guides, region notes, and practical travel reference sized like real installs.',
-    description:
-      'Travel packs that stay readable offline and slot into the same vault as the maps instead of disappearing behind a dead connection.',
+    title: 'City guides that work offline.',
+    description: 'Travel guides and region notes that stay readable when the roaming data runs out.',
     icon: 'TRV',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Travel, Mobility & Outdoors',
     navLabel: 'Mobility',
     eyebrow: 'Move around',
-    title: 'Travel problem-solving, route thinking, and moving-around reference.',
-    description:
-      'Outdoor, travel, bicycle, aviation, expat, and mobility shelves for life away from the desk.',
+    title: 'Outdoors, bikes and getting places.',
+    description: 'Outdoor, cycling, aviation, expat and travel problem-solving shelves for life away from the desk.',
     icon: 'MOV',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Games, Film & Pop Culture',
     navLabel: 'Culture',
     eyebrow: 'Culture shelf',
-    title: 'Film, anime, games, genre reference, and media-brain installs.',
-    description:
-      'A deeper pop-culture shelf for fandom reference, worldbuilding, film trivia, and the weirdly useful side shelves.',
+    title: 'Film, games, anime and genre lore.',
+    description: 'Pop-culture reference for trivia, worldbuilding and settling arguments.',
     icon: 'PLY',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Dictionaries & Primary Sources',
     navLabel: 'Library',
     eyebrow: 'Deep reference',
-    title: 'Dictionaries, source texts, and oversized public-domain shelves for the machine that keeps everything close.',
-    description:
-      'Wordbooks, source libraries, and enormous public-domain archives when you want the vault to feel more like a study room than a download folder.',
+    title: 'Dictionaries and primary sources.',
+    description: 'Wordbooks, source texts and very large public-domain archives, for when the vault should feel like a reading room.',
     icon: 'LIB',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Wikipedia',
     navLabel: 'Wikipedia',
     eyebrow: 'Quick reference',
-    title: 'Wikipedia installs sized like real choices, not one giant commitment.',
-    description:
-      'Pick the small quick-reference shelf or go all the way up to the full archive, depending on how much space you want to spend.',
+    title: 'Wikipedia, in the size you pick.',
+    description: 'From a quick-reference shelf to the full archive. Pick by how much disk you want to give it.',
+    short: 'From a quick-reference shelf to the full archive. Pick by disk space.',
     icon: 'WIK',
-    layout: 'grid',
+    group: 'Library',
   },
   {
     key: 'Model Packs',
     navLabel: 'Models',
     eyebrow: 'RoachClaw models',
-    title: 'Local model packs for RoachClaw.',
+    title: 'Local models for RoachClaw.',
     description:
-      'Starter models, coding packs, and general-purpose models queued straight into the contained local AI stack.',
+      'Starter, coding and general models that run on your Mac. A few still wait on the native engine; they say so, and their install button stays off.',
+    short: 'Starter, coding and general models that run on your Mac.',
     icon: 'AI',
-    layout: 'grid',
+    group: 'RoachClaw',
   },
   {
     key: 'Feature Packs',
@@ -1420,69 +4255,40 @@ const sectionDefinitions = [
     eyebrow: 'Settings › Packs',
     title: 'Feature packs for RoachNet 1.1.',
     description:
-      'RoachNet 1.1 ships a 31 MB core and installs the rest on demand. These packs land through the Pack Manager: checksum-verified, installed transactionally, removable without losing your data.',
-    icon: 'PACK',
-    layout: 'grid',
+      'RoachNet 1.1 ships a core of about 31 MB and installs the rest on demand. Packs are checksum-verified, installed transactionally and removable without losing your data. They need 1.1, which is still in the workshop.',
+    short: 'Pieces of RoachNet 1.1 you add when you want them. They need 1.1, which is still in the workshop.',
+    rowEyebrow: 'New for 1.1',
+    icon: 'PCK',
+    group: 'RoachClaw',
   },
   {
     key: 'Voice Packs',
     navLabel: 'Voice',
     eyebrow: 'RoachSpeech packs',
-    title: 'RoachSpeech and RoachVoice model packs.',
+    title: 'Voices and ears for RoachClaw.',
     description:
-      'RoachVoice, RoachWhisper, transcripts, read-aloud, and cloning shelves staged as optional installs instead of surprise ballast.',
+      'RoachVoice read-aloud, RoachWhisper transcription and voice cloning, each an optional install instead of surprise ballast.',
     icon: 'VOX',
-    layout: 'grid',
+    group: 'RoachClaw',
   },
+]
+
+const railGroups = [
+  ['Discover', 'Discover'],
+  ['Maps', 'Maps'],
+  ['RoachClaw', 'RoachClaw and packs'],
+  ['Library', 'Library'],
 ]
 
 const sectionLookup = new Map(sectionDefinitions.map((section) => [section.key, section]))
 const sectionSlugLookup = new Map(sectionDefinitions.map((section) => [slugify(section.navLabel), section.key]))
-const sectionGlyphs = {
-  Today: '✦',
-  'Map Regions': '🌍',
-  'Map Picks': '⌖',
-  'Starter Stacks': '▦',
-  Medicine: '🩺',
-  'Survival & Preparedness': '🏕',
-  'Education & Reference': '📖',
-  'Science & Simulations': '🔬',
-  'Kids & Family': '🧸',
-  'Open Courses & Lectures': '🎓',
-  'Math & Problem Solving': '🧮',
-  'Law, History & Society': '⚖',
-  'Language & Writing': '✍',
-  'DIY & Repair': '🔧',
-  'Maker & Electronics': '🔌',
-  'Agriculture & Food': '🌱',
-  'Homestead & Sustainability': '🏡',
-  'Finance & Crypto': '📊',
-  'Software Development': '⌨',
-  'Machine Learning & Data Science': '🧠',
-  'Platforms & Systems': '🖥',
-  'Security & Privacy': '🔒',
-  'Music Production & Audio': '🎵',
-  'Design & Visual Media': '🎨',
-  'IT & Infrastructure': '🌐',
-  'Travel & Field Guides': '🧭',
-  'Travel, Mobility & Outdoors': '🚴',
-  'Games, Film & Pop Culture': '🎮',
-  'Dictionaries & Primary Sources': '📚',
-  Wikipedia: 'Ⓦ',
-  'Model Packs': '⬡',
-  'Feature Packs': '⧉',
-  'Voice Packs': '◉',
-}
-
-function getSectionGlyph(section) {
-  return sectionGlyphs[section.key] || '•'
-}
 
 const todayFeaturedId = 'course-wikibooks_en_all_nopic'
 const todayRows = [
   {
-    title: 'Quick installs',
-    note: 'Good first adds once the shell is in place.',
+    eyebrow: 'Start here',
+    title: 'Good first installs.',
+    note: 'One ready-to-install pick from each corner of the store.',
     sections: [
       'Map Regions',
       'Map Picks',
@@ -1498,8 +4304,9 @@ const todayRows = [
     ],
   },
   {
-    title: 'Editors’ picks',
-    note: 'Field packs, study shelves, and RoachClaw picks worth adding next.',
+    eyebrow: 'Editors’ picks',
+    title: 'Worth the disk space.',
+    note: 'Study shelves, deep reference and RoachClaw picks for the second weekend.',
     sections: [
       'Math & Problem Solving',
       'Law, History & Society',
@@ -1514,6 +4321,18 @@ const todayRows = [
     ],
   },
 ]
+// Whole-section shelves on Today, each with a "See all" jump.
+const todaySectionRows = [
+  'Feature Packs',
+  'Model Packs',
+  'Voice Packs',
+  'Medicine',
+  'Software Development',
+  'Starter Stacks',
+  'Wikipedia',
+  'Map Regions',
+]
+const searchSuggestions = ['python', 'medicine', 'wikipedia', 'voice', 'linux', 'math']
 
 const itemCopy = {
   'course-wikibooks_en_all_nopic': {
@@ -1694,272 +4513,42 @@ const root = document.documentElement
 const sidebarNav = document.querySelector('#apps-sidebar-nav')
 const sectionHead = document.querySelector('#apps-section-head')
 const storeStage = document.querySelector('#apps-store-stage')
-const viewKicker = document.querySelector('#apps-view-kicker')
+const storeContent = document.querySelector('.st-content')
+const storeRail = document.querySelector('.st-rail')
 const searchInput = document.querySelector('#apps-search')
 const primaryDownloadButton = document.querySelector('#apps-primary-download')
 const downloadMeta = document.querySelector('#apps-download-meta')
 const detailOverlay = document.querySelector('#apps-detail-overlay')
 const detailContent = document.querySelector('#apps-detail-content')
 const detailClose = document.querySelector('#apps-detail-close')
-const returnHomeButtons = [...document.querySelectorAll('[data-return-home]')]
-const timeNode = document.querySelector('[data-store-time]')
 const connectivityNode = document.querySelector('[data-store-connectivity]')
-const storageNode = document.querySelector('[data-store-storage]')
+const totalNodes = [...document.querySelectorAll('[data-store-total]')]
+const liveRegion = document.querySelector('#apps-live')
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+const finePointer = window.matchMedia('(pointer: fine)')
+const compactLayout = window.matchMedia('(max-width: 1023px)')
+const motionOK = () => !reducedMotion.matches
 
 const state = {
-  latestRelease: null,
   catalog: null,
+  items: [],
   activeSection: resolveInitialSection(),
   query: '',
-  activePreviewId: todayFeaturedId,
 }
 
-let shouldScrollPreviewIntoView = false
-let sidebarNavBound = false
-let sidebarNavResizeObserver = null
-let initialHashScrollHandled = false
 let detailTrigger = null
+let detailClosing = false
+let detailCloseTimer = null
+let uid = 0
+let renderQueued = false
+let animateNextRender = true
+let toastNode = null
+let toastTimer = null
 
-function getSiteChromeOffset() {
-  const siteHeader = document.querySelector('.site-header')
-  const storeTopbar = document.querySelector('.apps-store-topbar')
-  const headerHeight = siteHeader?.getBoundingClientRect().height || 0
-  const topbarHeight = storeTopbar?.getBoundingClientRect().height || 0
-  const baseline = window.matchMedia('(max-width: 760px)').matches ? 224 : 248
-  return Math.ceil(Math.max(headerHeight, topbarHeight, baseline) + 18)
-}
-
-function scrollStoreMainIntoView({ behavior = 'smooth' } = {}) {
-  const target = document.querySelector('.apps-store-main') || document.querySelector('#apps-store-stage')
-  if (!target) return
-
-  const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - getSiteChromeOffset())
-  window.scrollTo({ top, behavior })
-}
-
-function syncSidebarNavOverflowState() {
-  if (!sidebarNav) return
-
-  const hasVerticalOverflow = sidebarNav.scrollHeight > sidebarNav.clientHeight + 8
-  const hasHorizontalOverflow = sidebarNav.scrollWidth > sidebarNav.clientWidth + 8
-
-  sidebarNav.classList.toggle('is-scrollable-y', hasVerticalOverflow)
-  sidebarNav.classList.toggle('is-scrollable-x', hasHorizontalOverflow)
-  sidebarNav.classList.toggle('is-scrolled-y', sidebarNav.scrollTop > 6)
-  sidebarNav.classList.toggle(
-    'is-at-end-y',
-    !hasVerticalOverflow || sidebarNav.scrollTop + sidebarNav.clientHeight >= sidebarNav.scrollHeight - 6
-  )
-  sidebarNav.classList.toggle('is-scrolled-x', sidebarNav.scrollLeft > 6)
-  sidebarNav.classList.toggle(
-    'is-at-end-x',
-    !hasHorizontalOverflow || sidebarNav.scrollLeft + sidebarNav.clientWidth >= sidebarNav.scrollWidth - 6
-  )
-}
-
-function syncSidebarNavHighlight({ behavior = 'smooth' } = {}) {
-  if (!sidebarNav) return
-
-  const activeButton = sidebarNav.querySelector('.apps-nav-item--active')
-  const highlight = sidebarNav.querySelector('.apps-nav-highlight')
-  const compactLayout = window.matchMedia('(max-width: 760px)').matches
-
-  syncSidebarNavOverflowState()
-
-  if (!activeButton || !highlight) {
-    sidebarNav.classList.remove('is-ready')
-    return
-  }
-
-  if (compactLayout) {
-    sidebarNav.classList.remove('is-ready')
-    activeButton.scrollIntoView({
-      behavior,
-      block: 'nearest',
-      inline: 'center',
-    })
-    return
-  }
-
-  sidebarNav.style.setProperty('--apps-nav-highlight-top', `${activeButton.offsetTop}px`)
-  sidebarNav.style.setProperty('--apps-nav-highlight-height', `${activeButton.offsetHeight}px`)
-  sidebarNav.classList.add('is-ready')
-
-  activeButton.scrollIntoView({
-    block: 'center',
-    inline: 'nearest',
-    behavior,
-  })
-}
-
-function ensureSidebarNavBindings() {
-  if (!sidebarNav || sidebarNavBound) return
-
-  sidebarNavBound = true
-
-  sidebarNav.addEventListener('scroll', syncSidebarNavOverflowState, { passive: true })
-
-  sidebarNav.addEventListener('keydown', (event) => {
-    const current = event.target.closest('[data-section]')
-    if (!current) return
-
-    const items = [...sidebarNav.querySelectorAll('[data-section]')]
-    const index = items.indexOf(current)
-    if (index === -1) return
-
-    let nextIndex = null
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-      nextIndex = Math.min(items.length - 1, index + 1)
-    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-      nextIndex = Math.max(0, index - 1)
-    } else if (event.key === 'Home') {
-      nextIndex = 0
-    } else if (event.key === 'End') {
-      nextIndex = items.length - 1
-    }
-
-    if (nextIndex === null || nextIndex === index) return
-
-    event.preventDefault()
-    const nextButton = items[nextIndex]
-    nextButton?.focus()
-    nextButton?.click()
-  })
-
-  const resizeHandler = () => syncSidebarNavHighlight({ behavior: 'auto' })
-  window.addEventListener('resize', resizeHandler)
-
-  if ('ResizeObserver' in window) {
-    sidebarNavResizeObserver = new ResizeObserver(() => {
-      syncSidebarNavHighlight({ behavior: 'auto' })
-    })
-    sidebarNavResizeObserver.observe(sidebarNav)
-  }
-}
-
-function enhanceShelfScrollers() {
-  storeStage?.querySelectorAll('.apps-row__scroller').forEach((scroller) => {
-    if (scroller.dataset.scrollEnhanced === 'true') {
-      return
-    }
-
-    scroller.dataset.scrollEnhanced = 'true'
-    scroller.tabIndex = 0
-
-    scroller.addEventListener(
-      'wheel',
-      (event) => {
-        if (scroller.scrollWidth <= scroller.clientWidth + 8) {
-          return
-        }
-
-        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
-          return
-        }
-
-        event.preventDefault()
-        scroller.scrollBy({
-          left: event.deltaY,
-          behavior: 'auto',
-        })
-      },
-      { passive: false }
-    )
-
-    let pointerState = null
-    let velocity = 0
-    let lastMoveTime = 0
-    let animFrame = null
-
-    scroller.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse' && event.button !== 0) {
-        return
-      }
-
-      if (
-        event.target.closest(
-          'a[href], button, input, textarea, select, [data-select-id], [data-preview-id]'
-        )
-      ) {
-        return
-      }
-
-      if (animFrame) {
-        cancelAnimationFrame(animFrame)
-        animFrame = null
-      }
-
-      velocity = 0
-      pointerState = {
-        id: event.pointerId,
-        startX: event.clientX,
-        lastX: event.clientX,
-        startScrollLeft: scroller.scrollLeft,
-      }
-
-      lastMoveTime = Date.now()
-      scroller.setPointerCapture?.(event.pointerId)
-      scroller.dataset.dragging = 'true'
-    })
-
-    scroller.addEventListener('pointermove', (event) => {
-      if (!pointerState || pointerState.id !== event.pointerId) {
-        return
-      }
-
-      const delta = event.clientX - pointerState.startX
-      if (Math.abs(delta) < 2) {
-        return
-      }
-
-      const now = Date.now()
-      const dt = now - lastMoveTime
-      if (dt > 0) {
-        velocity = (event.clientX - pointerState.lastX) / dt
-      }
-      pointerState.lastX = event.clientX
-      lastMoveTime = now
-
-      scroller.scrollLeft = pointerState.startScrollLeft - delta
-    })
-
-    const clearPointerState = (event) => {
-      if (pointerState && pointerState.id === event.pointerId) {
-        scroller.releasePointerCapture?.(event.pointerId)
-
-        const releaseVelocity = velocity * -1
-        pointerState = null
-        delete scroller.dataset.dragging
-
-        if (Math.abs(releaseVelocity) > 0.15) {
-          let momentum = releaseVelocity * 180
-          const decelerate = () => {
-            momentum *= 0.94
-            if (Math.abs(momentum) < 0.5) return
-            scroller.scrollLeft += momentum * 0.016
-            animFrame = requestAnimationFrame(decelerate)
-          }
-          animFrame = requestAnimationFrame(decelerate)
-        }
-      }
-    }
-
-    scroller.addEventListener('pointerup', clearPointerState)
-    scroller.addEventListener('pointercancel', clearPointerState)
-    scroller.addEventListener('keydown', (event) => {
-      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
-        return
-      }
-
-      event.preventDefault()
-      const direction = event.key === 'ArrowRight' ? 1 : -1
-      scroller.scrollBy({
-        left: direction * Math.max(280, Math.round(scroller.clientWidth * 0.7)),
-        behavior: 'smooth',
-      })
-    })
-  })
-}
+/* ---------------------------------------------------------------------------
+   Small helpers
+   ------------------------------------------------------------------------ */
 
 function slugify(value) {
   return String(value || '')
@@ -1967,142 +4556,6 @@ function slugify(value) {
     .replace(/&/g, 'and')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-}
-
-function resolveInitialSection() {
-  const hash = window.location.hash.replace(/^#/, '')
-  return sectionSlugLookup.get(hash) || 'Today'
-}
-
-function detectPlatform() {
-  const ua = navigator.userAgent.toLowerCase()
-  const platform = navigator.platform.toLowerCase()
-
-  if (platform.includes('mac') || ua.includes('mac os')) return 'mac'
-  return 'mac'
-}
-
-function setDownloadButton() {
-  if (!primaryDownloadButton) return
-
-  const platformKey = detectPlatform()
-  const asset = hostedDownloads[platformKey] || hostedDownloads.mac
-  const label = 'macOS'
-
-  primaryDownloadButton.textContent = `Download RoachNet ${asset.version} for ${label}`
-  primaryDownloadButton.onclick = () => {
-    window.location.href = asset.url
-  }
-
-  if (downloadMeta) {
-    downloadMeta.textContent = `Starts with RoachNet Setup v${asset.version} · ${asset.name}`
-  }
-}
-
-async function loadLatestRelease() {
-  setDownloadButton()
-
-  try {
-    const response = await fetch(latestReleaseApi, {
-      headers: {
-        Accept: 'application/vnd.github+json',
-      },
-    })
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`)
-    }
-
-    state.latestRelease = await response.json()
-    const platformKey = detectPlatform()
-    const asset =
-      state.latestRelease.assets?.find((candidate) =>
-        /RoachNet-Setup-macOS\.dmg/i.test(candidate.name)
-      ) || null
-    const version = state.latestRelease.tag_name?.replace(/^v/i, '') || releaseVersion
-    const label = 'macOS'
-
-    primaryDownloadButton.textContent = `Download RoachNet ${version} for ${label}`
-    primaryDownloadButton.onclick = () => {
-      window.location.href = asset?.browser_download_url || (hostedDownloads[platformKey] || hostedDownloads.mac).url
-    }
-
-    if (downloadMeta) {
-      const fallbackAsset = hostedDownloads[platformKey] || hostedDownloads.mac
-      downloadMeta.textContent = `Starts with RoachNet Setup v${version} · ${asset?.name || fallbackAsset.name}`
-    }
-  } catch (error) {
-    primaryDownloadButton.onclick = () => {
-      window.open(latestReleasePage, '_blank', 'noopener,noreferrer')
-    }
-    console.error(error)
-  }
-}
-
-function formatCompactBytes(bytes) {
-  if (!Number.isFinite(bytes) || bytes <= 0) return '0 GB'
-
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  let value = bytes
-  let unitIndex = 0
-
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024
-    unitIndex += 1
-  }
-
-  const precision = value >= 10 || unitIndex === 0 ? 0 : 1
-  return `${value.toFixed(precision)} ${units[unitIndex]}`
-}
-
-function updateStoreTime() {
-  if (!timeNode) return
-
-  timeNode.textContent = new Intl.DateTimeFormat(undefined, {
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date())
-}
-
-function updateConnectivity() {
-  if (!connectivityNode) return
-
-  const isOnline = navigator.onLine
-  connectivityNode.dataset.state = isOnline ? 'online' : 'offline'
-  connectivityNode.textContent = isOnline ? 'Online now' : 'Offline ready'
-}
-
-async function updateStorageEstimate() {
-  if (!storageNode) return
-
-  if (!navigator.storage?.estimate) {
-    storageNode.textContent = 'Storage estimate unavailable'
-    return
-  }
-
-  try {
-    const { quota = 0, usage = 0 } = await navigator.storage.estimate()
-    const available = Math.max(0, quota - usage)
-    storageNode.textContent = available ? `${formatCompactBytes(available)} storage est.` : 'Storage estimate unavailable'
-  } catch (error) {
-    storageNode.textContent = 'Storage estimate unavailable'
-    console.error(error)
-  }
-}
-
-function startTelemetry() {
-  updateStoreTime()
-  updateConnectivity()
-  updateStorageEstimate()
-  window.setInterval(updateStoreTime, 30_000)
-  window.addEventListener('online', updateConnectivity)
-  window.addEventListener('offline', updateConnectivity)
-}
-
-function normalizeValue(value) {
-  return String(value || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim()
 }
 
 function escapeHtml(value) {
@@ -2114,231 +4567,111 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;')
 }
 
-function deriveTier(status = '') {
-  const normalized = status.toLowerCase()
-
-  if (
-    normalized.includes('deep archive') ||
-    normalized.includes('largest install') ||
-    normalized.includes('heavy') ||
-    normalized.includes('full')
-  ) {
-    return { label: 'Comprehensive', tone: 'comprehensive' }
-  }
-
-  if (
-    normalized.includes('recommended next install') ||
-    normalized.includes('balanced') ||
-    normalized.includes('popular') ||
-    normalized.includes('ready')
-  ) {
-    return { label: 'Standard', tone: 'standard' }
-  }
-
-  return { label: 'Essential', tone: 'essential' }
+function normalizeValue(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
 }
 
-function deriveIconMonogram(item) {
-  if (item.iconMonogram) return item.iconMonogram
-
-  const segments = String(item.title || 'RN')
-    .split(/[\s:/-]+/)
-    .filter(Boolean)
-
-  if (segments.length >= 2) {
-    return segments
-      .slice(0, 3)
-      .map((segment) => segment[0].toUpperCase())
-      .join('')
-      .slice(0, 4)
-  }
-
-  return segments.join('').replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase() || 'RN'
+function nextId(prefix) {
+  uid += 1
+  return `${prefix}-${uid}`
 }
 
-function deriveIconFamily(item) {
-  if (item.iconFamily) return item.iconFamily
-
-  const haystack = normalizeValue([item.section, item.category, item.title].join(' '))
-
-  if (haystack.includes('map')) return 'maps'
-  if (haystack.includes('medicine')) return 'medicine'
-  if (haystack.includes('survival') || haystack.includes('preparedness')) return 'survival'
-  if (haystack.includes('education') || haystack.includes('reference')) return 'education'
-  if (
-    haystack.includes('science') ||
-    haystack.includes('simulation') ||
-    haystack.includes('astronomy') ||
-    haystack.includes('physics') ||
-    haystack.includes('chemistry') ||
-    haystack.includes('biology') ||
-    haystack.includes('bioinformatics')
-  ) {
-    return 'science'
-  }
-  if (haystack.includes('kids') || haystack.includes('family') || haystack.includes('story')) return 'kids'
-  if (haystack.includes('course') || haystack.includes('lecture')) return 'courses'
-  if (haystack.includes('math') || haystack.includes('problem solving')) return 'math'
-  if (haystack.includes('law') || haystack.includes('history') || haystack.includes('society')) return 'civic'
-  if (haystack.includes('language') || haystack.includes('writing') || haystack.includes('linguistics')) return 'language'
-  if (haystack.includes('repair') || haystack.includes('diy')) return 'repair'
-  if (
-    haystack.includes('maker') ||
-    haystack.includes('electronics') ||
-    haystack.includes('arduino') ||
-    haystack.includes('semiconductor') ||
-    haystack.includes('3d printing')
-  ) {
-    return 'maker'
-  }
-  if (haystack.includes('homestead') || haystack.includes('sustainability')) return 'homestead'
-  if (haystack.includes('finance') || haystack.includes('crypto')) return 'finance'
-  if (haystack.includes('agriculture') || haystack.includes('food')) return 'agriculture'
-  if (haystack.includes('software') || haystack.includes('dev')) return 'development'
-  if (haystack.includes('machine learning') || haystack.includes('data science')) return 'ml'
-  if (haystack.includes('platform') || haystack.includes('systems')) return 'systems'
-  if (haystack.includes('security') || haystack.includes('privacy') || haystack.includes('tor')) return 'security'
-  if (haystack.includes('audio') || haystack.includes('music')) return 'audio'
-  if (
-    haystack.includes('design') ||
-    haystack.includes('blender') ||
-    haystack.includes('graphic') ||
-    haystack.includes('photo')
-  ) {
-    return 'design'
-  }
-  if (haystack.includes('infrastructure') || haystack.includes('it')) return 'infrastructure'
-  if (haystack.includes('travel') || haystack.includes('voyage') || haystack.includes('guide')) return 'travel'
-  if (haystack.includes('culture') || haystack.includes('games') || haystack.includes('film')) return 'culture'
-  if (
-    haystack.includes('dictionary') ||
-    haystack.includes('primary sources') ||
-    haystack.includes('wiktionary') ||
-    haystack.includes('wikisource') ||
-    haystack.includes('gutenberg')
-  ) {
-    return 'library'
-  }
-  if (haystack.includes('wikipedia')) return 'wikipedia'
-  if (
-    haystack.includes('voice') ||
-    haystack.includes('speech') ||
-    haystack.includes('whisper') ||
-    haystack.includes('transcript') ||
-    haystack.includes('listener')
-  ) {
-    return 'voice'
-  }
-  if (haystack.includes('model')) return 'models'
-  return 'general'
+function plural(count, word, many = `${word}s`) {
+  return `${count} ${count === 1 ? word : many}`
 }
 
-function deriveIconGlyph(item, family = deriveIconFamily(item)) {
-  switch (family) {
-    case 'maps':
-      return 'GRID'
-    case 'medicine':
-      return 'MED'
-    case 'survival':
-      return 'FIELD'
-    case 'education':
-      return 'READ'
-    case 'science':
-      return 'LAB'
-    case 'kids':
-      return 'KIDS'
-    case 'courses':
-      return 'COURSE'
-    case 'math':
-      return 'MATH'
-    case 'civic':
-      return 'CIVIC'
-    case 'language':
-      return 'WORDS'
-    case 'repair':
-      return 'FIX'
-    case 'maker':
-      return 'MKR'
-    case 'agriculture':
-      return 'ROOT'
-    case 'finance':
-      return 'FIN'
-    case 'development':
-      return 'DEV'
-    case 'ml':
-      return 'ML'
-    case 'systems':
-      return 'SYS'
-    case 'security':
-      return 'SEC'
-    case 'audio':
-      return 'AUDIO'
-    case 'design':
-      return 'VIS'
-    case 'infrastructure':
-      return 'NET'
-    case 'travel':
-      return 'TRVL'
-    case 'culture':
-      return 'PLAY'
-    case 'homestead':
-      return 'HOME'
-    case 'library':
-      return 'LIB'
-    case 'wikipedia':
-      return 'WIKI'
-    case 'models':
-      return 'AI'
-    default:
-      return 'RN'
+function shortVersion(version) {
+  return String(version || '').replace(/\.0$/, '')
+}
+
+function sizeToBytes(size) {
+  const match = /([\d.]+)\s*(B|KB|MB|GB|TB)\b/i.exec(String(size || ''))
+  if (!match) return 0
+  const power = { B: 0, KB: 1, MB: 2, GB: 3, TB: 4 }[match[2].toUpperCase()]
+  return Number.parseFloat(match[1]) * 1024 ** power
+}
+
+function formatCompactBytes(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 GB'
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  let value = bytes
+  let unitIndex = 0
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024
+    unitIndex += 1
+  }
+  const precision = value >= 10 || unitIndex === 0 ? 0 : 1
+  return `${value.toFixed(precision)} ${units[unitIndex]}`
+}
+
+function safeHref(url) {
+  const value = String(url || '')
+  if (/^https:\/\//i.test(value) || /^\.\//.test(value) || /^\/[^/]/.test(value)) return value
+  return ''
+}
+
+function resolveInitialSection() {
+  const hash = window.location.hash.replace(/^#/, '')
+  return sectionSlugLookup.get(hash) || 'Today'
+}
+
+function announce(message) {
+  if (!liveRegion) return
+  liveRegion.textContent = ''
+  window.setTimeout(() => {
+    liveRegion.textContent = message
+  }, 40)
+}
+
+function showToast(message) {
+  if (!toastNode) {
+    toastNode = document.createElement('div')
+    toastNode.className = 'nx-toast'
+    toastNode.setAttribute('role', 'status')
+    toastNode.setAttribute('aria-live', 'polite')
+    document.body.append(toastNode)
+  }
+  toastNode.textContent = message
+  toastNode.classList.add('is-on')
+  window.clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => toastNode.classList.remove('is-on'), 2200)
+}
+
+/* ---------------------------------------------------------------------------
+   Download + status
+   ------------------------------------------------------------------------ */
+
+function setDownloadButton() {
+  if (!primaryDownloadButton) return
+  const asset = hostedDownloads.mac
+  primaryDownloadButton.setAttribute('href', asset.url)
+  primaryDownloadButton.textContent = `Download RoachNet ${asset.version} for macOS`
+  // The size line in the HTML describes 1.0.6. If the site config moves on,
+  // say less rather than something stale.
+  if (downloadMeta && asset.version !== '1.0.6') {
+    downloadMeta.textContent = `v${asset.version} · Apple Silicon · ad-hoc signed, not Apple-notarized`
   }
 }
 
-function renderStoreIcon(item, variant = 'card') {
-  if (item.iconAsset) {
-    return `
-      <div
-        class="store-generated-icon store-generated-icon--${variant} store-generated-icon--asset"
-        data-icon-family="${escapeHtml(deriveIconFamily(item))}"
-        data-accent="${item.accent || 'blue'}"
-        role="img"
-        aria-label="${escapeHtml(item.title)} icon"
-      >
-        <img class="store-generated-icon__art" src="${escapeHtml(item.iconAsset)}" alt="" loading="lazy" decoding="async" />
-      </div>
-    `
-  }
-
-  const family = deriveIconFamily(item)
-  const glyph = deriveIconGlyph(item, family)
-  const band = item.iconBand || item.category || 'RoachNet'
-
-  return `
-    <div
-      class="store-generated-icon store-generated-icon--${variant}"
-      data-icon-family="${family}"
-      data-accent="${item.accent || 'blue'}"
-      role="img"
-      aria-label="${escapeHtml(item.title)} icon"
-    >
-      <span class="store-generated-icon__mesh" aria-hidden="true"></span>
-      <span class="store-generated-icon__glyph" aria-hidden="true">${escapeHtml(glyph)}</span>
-      <span class="store-generated-icon__band">${escapeHtml(band)}</span>
-      <strong class="store-generated-icon__mono">${escapeHtml(deriveIconMonogram(item))}</strong>
-    </div>
-  `
+function updateConnectivity() {
+  if (!connectivityNode) return
+  const isOnline = navigator.onLine
+  connectivityNode.dataset.state = isOnline ? 'online' : 'offline'
+  connectivityNode.textContent = isOnline ? 'Online. Installs can start right away.' : 'You are offline. Installs need a connection to download.'
 }
 
-/** The install button, or an honest "not right now" when the source is down or the engine can't run it. */
-function renderInstallControl(item, extraClass = '') {
-  if (item.availability?.reason) {
-    const label = item.availability.state === 'unsupported' ? 'Not supported yet' : 'Temporarily unavailable'
-    return `<span class="apps-card__install apps-card__install--disabled${extraClass}" role="status" title="${escapeHtml(item.availability.reason)}">${label}</span><p class="apps-card__availability">${escapeHtml(item.availability.reason)}</p>`
-  }
-  if (!item.installUrl) return ''
-  const minimum = item.minimumRoachNet ? ` (RoachNet ${item.minimumRoachNet}+)` : ''
-  return `<a class="apps-card__install${extraClass}" href="${item.installUrl}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet${minimum}`)}">${escapeHtml(item.installLabel || 'Install to RoachNet')}</a>`
+function startTelemetry() {
+  updateConnectivity()
+  window.addEventListener('online', updateConnectivity)
+  window.addEventListener('offline', updateConnectivity)
 }
+
+/* ---------------------------------------------------------------------------
+   Install contract (do not change the URL shape: the native app parses it)
+   ------------------------------------------------------------------------ */
 
 function buildInstallUrl(item) {
   if (!item?.installIntent) return ''
@@ -2410,36 +4743,9 @@ function attemptNativeInstall(url) {
   window.location.href = url
 }
 
-function getCatalogItems() {
-  return Array.isArray(state.catalog?.items) ? state.catalog.items : []
-}
-
-function buildFallbackBlurb(item, section) {
-  const subtitle = String(item.subtitle || '').trim()
-  const summary = String(item.summary || '').trim()
-
-  if (subtitle && subtitle.length <= 140) {
-    return subtitle.replace(/\.$/, '')
-  }
-
-  if (summary) {
-    const firstSentence = summary.split(/(?<=[.!?])\s+/)[0]?.trim()
-    if (firstSentence) {
-      return firstSentence.replace(/\.$/, '')
-    }
-  }
-
-  return `${item.title} installs cleanly into ${section.navLabel} instead of vanishing into Downloads.`
-}
-
-function buildFallbackDetail(item, section, blurb) {
-  const sourceLine = item.source ? `${item.source} stays grouped under ${section.navLabel}.` : `${section.title}.`
-  return [
-    `${blurb}.`,
-    `${item.title} stays named, grouped, and install-ready inside RoachNet.`,
-    sourceLine,
-  ]
-}
+/* ---------------------------------------------------------------------------
+   Catalog model
+   ------------------------------------------------------------------------ */
 
 function getArtifactLabel(item) {
   const artifact = item.artifact || {}
@@ -2448,11 +4754,9 @@ function getArtifactLabel(item) {
     if (artifact.status === 'published' || artifact.status === 'descriptor-backed') {
       return 'Apps descriptor'
     }
-
     if (artifact.status === 'manifest-backed') {
       return 'Catalog manifest'
     }
-
     return 'Source descriptor'
   }
 
@@ -2463,83 +4767,130 @@ function getArtifactLabel(item) {
   return 'Catalog handoff'
 }
 
-function getArtifactTone(item) {
-  const status = item.artifact?.status || ''
-
-  if (status === 'published' || status === 'descriptor-backed') return 'green'
-  if (status === 'runtime-pull') return 'violet'
-  if (status.includes('mirror')) return 'cyan'
-  return 'blue'
-}
-
-function enrichItem(item) {
-  const copy = itemCopy[item.id] || {}
-  const section = sectionLookup.get(item.section) || sectionLookup.get('Today')
-  const tier = deriveTier(item.status)
-  const blurb = copy.blurb || buildFallbackBlurb(item, section)
-  const detail = copy.detail || buildFallbackDetail(item, section, blurb)
-
-  return {
-    ...item,
-    tier,
-    blurb,
-    detail,
-    sectionMeta: section,
-    codeLabel: `${item.iconBand || section.navLabel} · ${deriveIconMonogram(item)}`,
-    installUrl: buildInstallUrl(item),
-    artifactLabel: getArtifactLabel(item),
-    artifactTone: getArtifactTone(item),
-    metaRow: [section.navLabel, tier.label, item.size, getArtifactLabel(item)].filter(Boolean),
+// Where an install shows up inside RoachNet, by install action.
+function landingFor(item, section) {
+  const action = item.installIntent?.action
+  switch (action) {
+    case 'base-map-assets':
+    case 'map-collection':
+      return { place: 'Maps', note: 'Goes straight into RoachNet Maps and opens without a connection.' }
+    case 'direct-download':
+      return item.installIntent?.filetype === 'map'
+        ? { place: 'Maps', note: 'One map file, filed into RoachNet Maps.' }
+        : { place: 'Downloads lane', note: 'Fetched by RoachNet from the descriptor and filed with your other installs.' }
+    case 'education-tier':
+      return { place: 'A shelf per pack', note: 'One install queues every shelf in the stack. Each one keeps its own name.' }
+    case 'education-resource':
+      return { place: `${section.navLabel} shelf`, note: 'Lands as its own named shelf you can read offline.' }
+    case 'wikipedia-option':
+      return { place: 'Wikipedia', note: 'Queued straight into the RoachNet Wikipedia lane.' }
+    case 'roachclaw-model':
+      return { place: 'RoachClaw', note: 'Joins the RoachClaw model list and runs on your Mac.' }
+    case 'roachspeech-pack':
+      return { place: 'RoachSpeech', note: 'Adds a voice or a listener to RoachSpeech, on your Mac.' }
+    case 'pack':
+      return {
+        place: 'Settings › Packs',
+        note: 'The Pack Manager checks the published SHA-256 before anything is unpacked. Remove keeps your data unless you say otherwise.',
+      }
+    default:
+      return { place: section.navLabel, note: 'Filed with the rest of your RoachNet installs.' }
   }
 }
 
-function matchesQuery(item, query) {
-  if (!query) return true
+function buildFallbackBlurb(item) {
+  const subtitle = String(item.subtitle || '').trim()
+  const summary = String(item.summary || '').trim()
 
-  const haystack = normalizeValue([
-    item.title,
-    item.subtitle,
-    item.category,
-    item.section,
-    item.status,
-    item.source,
-    item.summary,
-    item.blurb,
-    item.machineFit,
-    item.artifactLabel,
-    item.artifact?.provider,
-    item.artifact?.status,
-    item.artifact?.key,
-    item.artifact?.url,
-    item.installIntent?.artifactProvider,
-    item.installIntent?.artifactKey,
-    ...(item.includes || []),
-    ...(item.detail || []),
-  ].join(' '))
-
-  return haystack.includes(query)
+  if (subtitle && subtitle.length <= 140) {
+    return subtitle.replace(/\.$/, '')
+  }
+  if (summary) {
+    const firstSentence = summary.split(/(?<=[.!?])\s+/)[0]?.trim()
+    if (firstSentence) return firstSentence.replace(/\.$/, '')
+  }
+  return item.title
 }
 
-function getEnrichedItems() {
-  return getCatalogItems().map(enrichItem)
+function itemState(item) {
+  if (!item.availability?.reason) return 'ready'
+  return item.availability.state === 'unsupported' ? 'unsupported' : 'unavailable'
 }
 
-function getSectionItems(sectionKey, query = state.query.trim()) {
-  const normalizedQuery = normalizeValue(query)
-  const items = getEnrichedItems()
+function enrichItem(item, index) {
+  const copy = itemCopy[item.id] || {}
+  const section = sectionLookup.get(item.section) || sectionLookup.get('Today')
+  const blurb = copy.blurb || buildFallbackBlurb(item)
+  const detail = copy.detail || [item.summary].filter(Boolean)
+  const tier = ['Essential', 'Standard', 'Comprehensive'].includes(item.category) ? item.category : ''
+  const artifactLabel = getArtifactLabel(item)
 
-  return items.filter((item) => {
-    const matchesSection = sectionKey === 'Today' ? true : item.section === sectionKey
-    return matchesSection && matchesQuery(item, normalizedQuery)
-  })
+  return {
+    ...item,
+    index,
+    sectionMeta: section,
+    blurb,
+    detail,
+    tier,
+    state: itemState(item),
+    minimum: item.minimumRoachNet ? shortVersion(item.minimumRoachNet) : '',
+    bytes: Number(item.sizeBytes) || Number(item.artifact?.bytes) || sizeToBytes(item.size),
+    installUrl: buildInstallUrl(item),
+    artifactLabel,
+    landing: landingFor(item, section),
+    titleKey: normalizeValue(item.title),
+    haystack: normalizeValue([
+      item.title,
+      item.subtitle,
+      item.category,
+      item.section,
+      section.navLabel,
+      item.status,
+      item.source,
+      item.summary,
+      blurb,
+      item.machineFit,
+      artifactLabel,
+      item.artifact?.provider,
+      item.artifact?.key,
+      item.installIntent?.artifactKey,
+      item.installIntent?.model,
+      item.installIntent?.pack,
+      ...(item.includes || []),
+      ...detail,
+    ].join(' ')),
+  }
 }
 
 function findItemById(id) {
-  return getEnrichedItems().find((item) => item.id === id)
+  return state.items.find((item) => item.id === id)
 }
 
-function byIds(ids) {
-  return ids.map(findItemById).filter(Boolean)
+function searchItems(items, query) {
+  const normalized = normalizeValue(query)
+  if (!normalized) return items
+  const terms = normalized.split(' ').filter(Boolean)
+
+  return items
+    .map((item) => {
+      if (!terms.every((term) => item.haystack.includes(term))) return null
+      let score = 3
+      if (item.titleKey.startsWith(normalized)) score = 0
+      else if (item.titleKey.includes(normalized)) score = 1
+      else if (terms.every((term) => item.titleKey.includes(term))) score = 2
+      return { item, score }
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.score - b.score || a.item.index - b.item.index)
+    .map(({ item }) => item)
+}
+
+function itemsInSection(sectionKey, items = state.items) {
+  return sectionKey === 'Today' ? items : items.filter((item) => item.section === sectionKey)
+}
+
+function readyFirst(items) {
+  return [...items].sort((a, b) => (a.state === 'ready' ? 0 : 1) - (b.state === 'ready' ? 0 : 1) || a.index - b.index)
 }
 
 function bySections(sectionKeys, limit = sectionKeys.length) {
@@ -2547,7 +4898,7 @@ function bySections(sectionKeys, limit = sectionKeys.length) {
   const seen = new Set()
 
   for (const section of sectionKeys) {
-    const candidate = getSectionItems(section).find((item) => {
+    const candidate = itemsInSection(section).find((item) => {
       if (seen.has(item.id)) return false
       // Shelf rows are install suggestions; an item whose source is
       // withdrawn or unsupported still shows in its section, not here.
@@ -2558,544 +4909,137 @@ function bySections(sectionKeys, limit = sectionKeys.length) {
     if (!candidate) continue
     seen.add(candidate.id)
     picks.push(candidate)
-
     if (picks.length >= limit) break
   }
 
   return picks
 }
 
-function renderSidebarNav() {
-  if (!sidebarNav) return
+/* ---------------------------------------------------------------------------
+   Markup
+   ------------------------------------------------------------------------ */
 
-  const items = getEnrichedItems()
-  const counts = items.reduce((map, item) => {
-    map.set(item.section, (map.get(item.section) || 0) + 1)
-    return map
-  }, new Map())
-
-  sidebarNav.innerHTML = `
-    <div class="apps-nav-highlight" aria-hidden="true"></div>
-    ${sectionDefinitions
-      .map((section, index) => {
-      const count = section.key === 'Today' ? items.length : counts.get(section.key) || 0
-      const active = state.activeSection === section.key
-
-      return `
-        <button
-          class="apps-nav-item${active ? ' apps-nav-item--active' : ''}"
-          type="button"
-          data-section="${section.key}"
-          aria-current="${active ? 'page' : 'false'}"
-          style="--apps-nav-index:${index};"
-        >
-          <span class="apps-nav-item__icon" data-icon="${slugify(section.navLabel)}" aria-hidden="true">
-            <span class="apps-nav-item__glyph">${escapeHtml(getSectionGlyph(section))}</span>
-            <span class="apps-nav-item__code">${escapeHtml(section.icon)}</span>
-          </span>
-          <span class="apps-nav-item__label">${escapeHtml(section.navLabel)}</span>
-          <span class="apps-nav-item__count">${count}</span>
-        </button>
-      `
-      })
-      .join('')}
-  `
-
-  ensureSidebarNavBindings()
-  requestAnimationFrame(() => {
-    syncSidebarNavHighlight({
-      behavior: state.catalog ? 'smooth' : 'auto',
-    })
-  })
-}
-
-function renderSectionHead(content = '') {
-  if (!sectionHead) return
-
-  if (!content) {
-    sectionHead.hidden = true
-    sectionHead.innerHTML = ''
-    return
-  }
-
-  sectionHead.hidden = false
-  sectionHead.innerHTML = content
-}
-
-function renderBadgeRow(item) {
+function renderIcon(item, size = 'card') {
+  const mono = item.iconMonogram || String(item.title || 'RN').slice(0, 3).toUpperCase()
+  const eager = size !== 'card'
   return `
-    <div class="apps-badge-row">
-      <span class="apps-pill apps-pill--${item.tier.tone}">${item.tier.label}</span>
-      <span class="apps-pill">${escapeHtml(item.status)}</span>
-      <span class="apps-pill">${escapeHtml(item.size)}</span>
-      <span class="apps-pill apps-pill--artifact apps-pill--artifact-${item.artifactTone}">${escapeHtml(item.artifactLabel)}</span>
-    </div>
+    <span class="st-icon st-icon--${size}" data-accent="${escapeHtml(item.accent || 'blue')}" aria-hidden="true">
+      <span class="st-icon__mono">${escapeHtml(mono)}</span>
+      ${item.iconAsset ? `<img class="st-icon__art" src="${escapeHtml(item.iconAsset)}" alt="" width="512" height="512" ${eager ? '' : 'loading="lazy" '}decoding="async" />` : ''}
+    </span>
   `
 }
 
-function renderCard(item) {
-  const isSelected = item.id === state.activePreviewId
+function stateLabel(item) {
+  if (item.state === 'unsupported') return 'Not supported yet'
+  if (item.state === 'unavailable') return 'Temporarily unavailable'
+  return ''
+}
 
-  return `
-    <article
-      class="apps-card ${isSelected ? 'is-selected' : ''}"
-      data-accent="${item.accent || 'blue'}"
-      data-tier="${item.tier.tone}"
-    >
-      <button
-        class="apps-card__focus"
-        type="button"
-        data-select-id="${item.id}"
-        aria-pressed="${isSelected ? 'true' : 'false'}"
-      >
-        <div class="apps-card__head">
-          <div class="apps-card__copy">
-            <div class="apps-card__title-row">
-              <div class="apps-card__icon">${renderStoreIcon(item, 'compact')}</div>
-              <div class="apps-card__title-copy">
-                <span class="apps-card__code">${escapeHtml(item.codeLabel)}</span>
-                <h3>${escapeHtml(item.title)}</h3>
-              </div>
-            </div>
-            <p>${escapeHtml(item.blurb)}</p>
-          </div>
-        </div>
-        <div class="apps-card__meta">
-          ${item.metaRow.map((value) => `<span>${escapeHtml(value)}</span>`).join('')}
-        </div>
-      </button>
-      <div class="apps-card__actions">
-        ${renderInstallControl(item, '')}
-        <button class="apps-card__more" type="button" data-preview-id="${item.id}" aria-label="${escapeHtml(`Open details for ${item.title}`)}">Open details</button>
+function renderBadges(item, { withTier = true } = {}) {
+  const badges = []
+  if (item.size) badges.push(`<li class="st-badge st-badge--size">${escapeHtml(item.size)}</li>`)
+  if (withTier && item.tier) badges.push(`<li class="st-badge">${escapeHtml(item.tier)}</li>`)
+  if (item.minimum) badges.push(`<li class="st-badge st-badge--needs">Needs ${escapeHtml(item.minimum)}</li>`)
+  return badges.length ? `<ul class="st-badges">${badges.join('')}</ul>` : ''
+}
+
+/** The install button, or an honest "not right now" when the source is down or the engine can't run it. */
+function renderInstallControl(item, variant = 'card') {
+  if (item.availability?.reason) {
+    const whyId = nextId('apps-why')
+    return `
+      <div class="st-install-wrap" data-state="${item.state}">
+        <button class="st-install st-install--off st-install--${variant}" type="button" disabled aria-describedby="${whyId}">${stateLabel(item)}</button>
+        <p class="st-why" id="${whyId}">${escapeHtml(item.availability.reason)}</p>
       </div>
+    `
+  }
+  if (!item.installUrl) return ''
+  const minimum = item.minimumRoachNet ? ` (RoachNet ${item.minimumRoachNet}+)` : ''
+  const label = variant === 'card' ? 'Install' : item.installLabel || 'Install to RoachNet'
+  return `
+    <a class="st-install st-install--${variant}" href="${escapeHtml(item.installUrl)}" data-install-title="${escapeHtml(item.title)}" aria-label="${escapeHtml(`Install ${item.title} to RoachNet${minimum}`)}">
+      <span class="st-install__label">${escapeHtml(label)}</span>
+      <span class="st-install__busy" aria-hidden="true">Opening RoachNet</span>
+    </a>
+  `
+}
+
+function renderCard(item, { kicker = 'section' } = {}) {
+  const kickerText = kicker === 'status' ? item.status || item.sectionMeta.navLabel : item.sectionMeta.navLabel
+  return `
+    <article class="apps-card st-card" data-accent="${escapeHtml(item.accent || 'blue')}" data-state="${item.state}">
+      <div class="st-card__top">
+        ${renderIcon(item, 'card')}
+        <div class="st-card__id">
+          <p class="st-card__kicker">${escapeHtml(kickerText)}</p>
+          <h3 class="st-card__title">
+            <button class="st-card__open" type="button" data-preview-id="${escapeHtml(item.id)}" aria-haspopup="dialog">${escapeHtml(item.title)}</button>
+          </h3>
+        </div>
+      </div>
+      <p class="st-card__blurb">${escapeHtml(item.blurb)}</p>
+      ${renderBadges(item)}
+      <div class="st-card__foot">${renderInstallControl(item, 'card')}</div>
     </article>
   `
 }
 
-function resolvePreviewItem(items, fallbackId = state.activePreviewId || todayFeaturedId) {
-  const preview =
-    items.find((item) => item.id === fallbackId) ||
-    items.find((item) => item.id === state.activePreviewId) ||
-    items[0] ||
-    null
-
-  if (preview) {
-    state.activePreviewId = preview.id
-  }
-
-  return preview
-}
-
-function trimPreviewLine(value, fallback = 'Contained RoachNet install') {
-  const text = String(value || '')
-    .replace(/\s+/g, ' ')
-    .replace(/\.$/, '')
-    .trim()
-
-  if (!text) {
-    return fallback
-  }
-
-  return text.length > 82 ? `${text.slice(0, 79).trimEnd()}…` : text
-}
-
-function normalizedPreviewPool(item) {
-  return [...(item.includes || []), ...(item.detail || []), item.machineFit, item.summary]
-    .map((entry) => trimPreviewLine(entry, ''))
-    .filter(Boolean)
-    .filter((entry) => !/^Version\s/i.test(entry))
-}
-
-function previewTitle(item, fallback) {
-  const subtitle = trimPreviewLine(item.subtitle, '')
-  if (!subtitle) return fallback
-  return subtitle.length > 48 ? fallback : subtitle
-}
-
-const fieldPreviewSections = new Set([
-  'Survival & Preparedness',
-  'Travel & Field Guides',
-  'Travel, Mobility & Outdoors',
-  'Homestead & Sustainability',
-  'Agriculture & Food',
-])
-
-const studyPreviewSections = new Set([
-  'Education & Reference',
-  'Open Courses & Lectures',
-  'Law, History & Society',
-  'Language & Writing',
-  'Dictionaries & Primary Sources',
-  'Wikipedia',
-  'Kids & Family',
-  'Games, Film & Pop Culture',
-])
-
-const technicalPreviewSections = new Set([
-  'Science & Simulations',
-  'Math & Problem Solving',
-  'DIY & Repair',
-  'Maker & Electronics',
-  'Finance & Crypto',
-  'Software Development',
-  'Machine Learning & Data Science',
-  'Platforms & Systems',
-  'Security & Privacy',
-  'IT & Infrastructure',
-  'Design & Visual Media',
-])
-
-function buildPanel(label, title, lines) {
-  return {
-    label,
-    title,
-    lines: lines.map((line) => trimPreviewLine(line)).filter(Boolean).slice(0, 3),
-  }
-}
-
-function buildPreviewPanels(item) {
-  const pool = normalizedPreviewPool(item)
-  const fallbackLines = pool.slice(0, 3)
-
-  if (item.section === 'Map Regions' || item.category === 'Maps' || item.id.startsWith('map-') || item.id === 'base-atlas') {
-    const coverage = pool
-      .filter((entry) => !/native maps lane|install-ready|best/i.test(entry))
-      .slice(0, 3)
-
-    return [
-      {
-        label: 'Coverage',
-        title: previewTitle(item, item.title),
-        lines: coverage.length ? coverage : ['Roads and routes', 'City detail', 'Offline lookup'],
-      },
-      {
-        label: 'Inside Maps',
-        title: 'Layers that stay close',
-        lines: ['Offline basemap handoff', 'Fast zoom and route context', 'Native RoachNet Maps shelf'],
-      },
-      {
-        label: 'Use it for',
-        title: 'Field-ready map lane',
-        lines: [
-          trimPreviewLine(item.machineFit, 'Good when one region matters'),
-          'Works without a browser session',
-          'Snaps straight into the Maps lane',
-        ],
-      },
-    ]
-  }
-
-  if (item.section === 'Model Packs') {
-    const promptSet = /coder/i.test(`${item.title} ${item.subtitle}`)
-      ? ['Refactor this SwiftUI view', 'Explain this crash log', 'Write the install script']
-      : /analyst|research/i.test(`${item.title} ${item.subtitle}`)
-        ? ['Summarize this doc set', 'Pull the action items', 'Compare these notes']
-        : ['Draft this reply', 'Organize this plan', 'Answer locally first']
-
-    return [
-      {
-        label: 'Prompt starter',
-        title: 'RoachClaw opens here',
-        lines: promptSet,
-      },
-      {
-        label: 'What it does',
-        title: previewTitle(item, 'Local model lane'),
-        lines: (item.includes || []).slice(0, 3).map((entry) => trimPreviewLine(entry)),
-      },
-      {
-        label: 'Machine fit',
-        title: 'Contained model queue',
-        lines: [
-          trimPreviewLine(item.machineFit, 'Fits the contained local lane'),
-          'Cloud lane stays optional',
-          'Drops into RoachClaw directly',
-        ],
-      },
-    ]
-  }
-
-  if (item.section === 'Voice Packs') {
-    const isWhisper = /whisper|listener|transcript|stt/i.test(`${item.title} ${item.subtitle} ${item.summary}`)
-    const isCloner = /clone|cloning|chatterbox/i.test(`${item.title} ${item.subtitle} ${item.summary}`)
-    const promptSet = isWhisper
-      ? ['Transcribe this vault audio', 'Extract lyrics from this track', 'Make a transcript sidecar']
-      : isCloner
-        ? ['Train from this reference', 'Preview my RoachClaw voice', 'Keep the voice pack local']
-        : ['Read this book aloud', 'Narrate this document', 'Give RoachClaw a voice']
-
-    return [
-      {
-        label: 'Voice lane',
-        title: isWhisper ? 'RoachWhisper listens here' : isCloner ? 'RoachVoice cloning shelf' : 'RoachVoice reads here',
-        lines: promptSet,
-      },
-      {
-        label: 'What it adds',
-        title: previewTitle(item, 'Native speech pack'),
-        lines: (item.includes || []).slice(0, 3).map((entry) => trimPreviewLine(entry)),
-      },
-      {
-        label: 'Machine fit',
-        title: 'Optional local speech shelf',
-        lines: [
-          trimPreviewLine(item.machineFit, 'Fits the Apple Silicon speech lane'),
-          'No cloud ears required',
-          'Drops into RoachSpeech directly',
-        ],
-      },
-    ]
-  }
-
-  if (item.section === 'Medicine') {
-    return [
-      {
-        label: 'Quick lookup',
-        title: 'Care shelf preview',
-        lines: ['Symptoms and conditions', 'Drug and dose reference', 'Triage and treatment notes'],
-      },
-      {
-        label: 'Inside this pack',
-        title: previewTitle(item, 'Field-ready reference'),
-        lines: fallbackLines.length ? fallbackLines : ['Field guides', 'Reference tables', 'Care workflows'],
-      },
-      {
-        label: 'Why install it',
-        title: 'Useful under pressure',
-        lines: [
-          trimPreviewLine(item.detail?.[0], 'Built for the quick answer first'),
-          'Native shelf, not a browser maze',
-          'Fast handoff into RoachNet care lanes',
-        ],
-      },
-    ]
-  }
-
-  if (item.section === 'Music Production & Audio') {
-    return [
-      {
-        label: 'Inside the shelf',
-        title: 'Audio study lane',
-        lines: ['Harmony and chord movement', 'Rhythm, notation, and timing', 'Listening and production context'],
-      },
-      {
-        label: 'Open first',
-        title: previewTitle(item, 'Course-style audio reference'),
-        lines: fallbackLines.length ? fallbackLines : ['Theory notes', 'Worked examples', 'Long-form reading'],
-      },
-      {
-        label: 'Studio use',
-        title: 'Keeps the session moving',
-        lines: [
-          trimPreviewLine(item.detail?.[0], 'Useful during writing or mix sessions'),
-          'Lives next to the rest of the stack',
-          'No tab hunt in the middle of the session',
-        ],
-      },
-    ]
-  }
-
-  if (item.section === 'Education & Reference' || item.section === 'Open Courses & Lectures') {
-    return [
-      {
-        label: 'Shelf contents',
-        title: 'Study lane preview',
-        lines: ['Course paths and chapters', 'Reference shelf search', 'Long-form reading that stays local'],
-      },
-      {
-        label: 'Inside this pack',
-        title: previewTitle(item, 'Reference shelf'),
-        lines: fallbackLines.length ? fallbackLines : ['Tutorials', 'Open textbooks', 'Reference material'],
-      },
-      {
-        label: 'Best for',
-        title: 'Useful when you stay in flow',
-        lines: [
-          trimPreviewLine(item.detail?.[0], 'Good when you need the answer without the tab pile'),
-          'Downloads into the named shelf',
-          'Works cleanly when the network is bad',
-        ],
-      },
-    ]
-  }
-
-  if (fieldPreviewSections.has(item.section)) {
-    return [
-      buildPanel('Field view', previewTitle(item, 'Go-bag reference'), [
-        item.detail?.[0] || 'Practical field notes without the browser mess',
-        item.includes?.[0] || 'Offline reading built for bad connections',
-        item.includes?.[1] || 'Reference that stays local when you leave the desk',
-      ]),
-      buildPanel('Inside the pack', 'What lands in RoachNet', [
-        item.includes?.[0] || 'Checklists and working notes',
-        item.includes?.[1] || 'Long-form reading and guides',
-        item.includes?.[2] || 'Named shelf with direct native handoff',
-      ]),
-      buildPanel('Use it when', 'Useful away from the desk', [
-        item.machineFit || 'Good on a field machine or travel laptop',
-        item.detail?.[1] || 'Built for the quick answer first',
-        'Snaps into the right shelf automatically',
-      ]),
-    ]
-  }
-
-  if (studyPreviewSections.has(item.section)) {
-    return [
-      buildPanel('Shelf preview', previewTitle(item, 'Contained study shelf'), [
-        item.detail?.[0] || 'Long-form reading without the tab pile',
-        item.includes?.[0] || 'Structured chapters and reference paths',
-        item.includes?.[1] || 'Searchable locally inside RoachNet',
-      ]),
-      buildPanel('Inside the pack', 'What you open first', [
-        item.includes?.[0] || 'Primary texts and course chapters',
-        item.includes?.[1] || 'Reference lookups and side reading',
-        item.includes?.[2] || 'Fast shelf handoff into the vault',
-      ]),
-      buildPanel('Why install it', 'Useful when the signal drops', [
-        item.machineFit || 'Good for keeping core reading close',
-        item.detail?.[1] || 'Stays readable offline',
-        'Feels like a shelf, not a downloads folder',
-      ]),
-    ]
-  }
-
-  if (technicalPreviewSections.has(item.section)) {
-    return [
-      buildPanel('Workbench view', previewTitle(item, 'Technical reference lane'), [
-        item.detail?.[0] || 'Answers that stay on the machine instead of in old tabs',
-        item.includes?.[0] || 'Command-ready notes and references',
-        item.includes?.[1] || 'Local shelf search when the session gets long',
-      ]),
-      buildPanel('Inside the pack', 'What lands in the shelf', [
-        item.includes?.[0] || 'Guides and primary docs',
-        item.includes?.[1] || 'Worked examples and deeper notes',
-        item.includes?.[2] || 'Named install with clean native placement',
-      ]),
-      buildPanel('Machine fit', 'Built for long sessions', [
-        item.machineFit || 'Useful on the builder machine',
-        item.detail?.[1] || 'Good when you need the answer without breaking flow',
-        'Shows up in the right RoachNet lane automatically',
-      ]),
-    ]
-  }
-
-  return [
-    {
-      label: 'Inside this pack',
-      title: previewTitle(item, item.section),
-      lines: fallbackLines.length ? fallbackLines : ['Contained install', 'Named shelf in RoachNet', 'Ready on demand'],
-    },
-    {
-      label: 'What it feels like',
-      title: 'Preview surface',
-      lines: [
-        trimPreviewLine(item.detail?.[0], 'Useful content first'),
-        trimPreviewLine(item.detail?.[1], 'The shelf stays grouped and named'),
-        'Native handoff instead of another download pile',
-      ],
-    },
-    {
-      label: 'Machine fit',
-      title: 'Install notes',
-      lines: [
-        trimPreviewLine(item.machineFit, 'Works on supported RoachNet installs'),
-        trimPreviewLine(item.source, 'RoachNet mirror'),
-        'Shows up in the right shelf automatically',
-      ],
-    },
-  ]
-}
-
-function renderPreviewPanels(item) {
-  const panels = buildPreviewPanels(item)
-
+function renderHero(item) {
+  if (!item) return ''
+  const body = item.detail?.[0] && item.detail[0] !== item.blurb ? item.detail[0] : item.summary || ''
+  const topics = (item.includes || []).filter((entry) => !/^version\s/i.test(entry)).slice(0, 3)
   return `
-    <div class="apps-preview-stage__surface">
-      <div class="apps-preview-stage__surface-bar">
-        <span>Preview</span>
-        <strong>${escapeHtml(item.section)}</strong>
-      </div>
-      <div class="apps-preview-stage__surface-grid">
-        ${panels
-          .map(
-            (panel) => `
-              <section class="apps-preview-stage__panel">
-                <span class="apps-preview-stage__panel-kicker">${escapeHtml(panel.label)}</span>
-                <h2>${escapeHtml(panel.title)}</h2>
-                <ul>
-                  ${panel.lines.map((line) => `<li>${escapeHtml(trimPreviewLine(line))}</li>`).join('')}
-                </ul>
-              </section>
-            `
-          )
-          .join('')}
-      </div>
-    </div>
-  `
-}
-
-function renderPreviewStage(item, options = {}) {
-  if (!item) {
-    return ''
-  }
-
-  const eyebrow = options.eyebrow || item.section || 'Selected app'
-  const lead = options.lead || item.blurb
-  const body = item.detail?.[0] || item.summary || ''
-  const secondary = item.detail?.[1] || item.machineFit || item.source || ''
-  const previewTopics = (item.includes?.slice(0, 3) || [item.section, item.category, item.machineFit].filter(Boolean)).slice(0, 3)
-  const detailUrl = item.detailUrl || item.primaryUrl
-
-  return `
-    <section class="apps-preview-stage apps-hero-panel" data-accent="${item.accent || 'blue'}">
-      <div class="apps-hero-panel__copy">
-        <p class="apps-hero-panel__eyebrow">${escapeHtml(eyebrow)}</p>
-        <span class="apps-card__code apps-card__code--hero">${escapeHtml(item.codeLabel)}</span>
-        <h2>${escapeHtml(item.title)}</h2>
-        <p class="apps-hero-panel__lead">${escapeHtml(lead)}</p>
-        <p class="apps-hero-panel__body">${escapeHtml(body)}</p>
-        ${secondary ? `<p class="apps-preview-stage__secondary">${escapeHtml(secondary)}</p>` : ''}
-        ${renderBadgeRow(item)}
-        <div class="apps-hero-panel__actions">
-          ${renderInstallControl(item, ' apps-card__install--hero')}
-          <button class="apps-card__more apps-card__more--hero" type="button" data-preview-id="${item.id}" aria-label="${escapeHtml(`Open details for ${item.title}`)}">Open details</button>
-          ${
-            detailUrl
-              ? `<a class="apps-card__secondary" href="${detailUrl}">${escapeHtml(item.detailLabel || 'Open manifest')}</a>`
-              : ''
-          }
+    <section class="apps-preview-stage apps-hero-panel st-hero" data-accent="${escapeHtml(item.accent || 'blue')}" aria-labelledby="apps-hero-title">
+      <div class="st-hero__copy">
+        <p class="nx-overline">Today’s pick</p>
+        <h2 class="st-hero__title" id="apps-hero-title">${escapeHtml(item.title)}</h2>
+        <p class="st-hero__lead">${escapeHtml(item.blurb)}</p>
+        ${body ? `<p class="st-hero__body">${escapeHtml(body)}</p>` : ''}
+        <div class="st-hero__actions">
+          ${renderInstallControl(item, 'hero')}
+          <button class="nx-btn st-hero__more" type="button" data-preview-id="${escapeHtml(item.id)}" aria-haspopup="dialog">See what is inside</button>
         </div>
       </div>
-
-      <div class="apps-hero-panel__art apps-preview-stage__art" aria-hidden="true">
-        <div class="apps-hero-panel__icon apps-preview-stage__icon">
-          ${renderStoreIcon(item, 'hero')}
-        </div>
-        <div class="apps-hero-panel__strip">
-          <span>${escapeHtml(item.section)}</span>
-          <strong>${escapeHtml(item.machineFit || 'Install-ready')}</strong>
-        </div>
-        <div class="apps-hero-panel__stack apps-preview-stage__stack">
-          ${previewTopics.map((topic) => `<span>${escapeHtml(topic)}</span>`).join('')}
-        </div>
-        ${renderPreviewPanels(item)}
+      <div class="st-hero__art">
+        ${renderIcon(item, 'hero')}
+        ${topics.length ? `<ul class="st-hero__topics">${topics.map((topic) => `<li>${escapeHtml(topic)}</li>`).join('')}</ul>` : ''}
       </div>
+      <dl class="apps-hero-panel__strip st-hero__strip">
+        <div><dt>Shelf</dt><dd>${escapeHtml(item.sectionMeta.navLabel)}</dd></div>
+        <div><dt>Size</dt><dd>${escapeHtml(item.size || 'Varies')}</dd></div>
+        <div><dt>Lands in</dt><dd>${escapeHtml(item.landing.place)}</dd></div>
+      </dl>
     </section>
   `
 }
 
-function renderShelfRow(title, note, items) {
-  if (!items.length) return ''
+const chevron = (direction) =>
+  `<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="${direction < 0 ? 'm12 4-6 6 6 6' : 'm8 4 6 6-6 6'}"></path></svg>`
 
+function renderShelfRow({ eyebrow, title, note, items, section = null, total = 0, flag = '' }) {
+  if (!items.length) return ''
+  const rowId = nextId('apps-row')
+  const titleId = `${rowId}-title`
+  const seeAll = section
+    ? `<a class="st-row__all" href="#${slugify(section.navLabel)}" data-section="${escapeHtml(section.key)}">See all ${total}<span class="nx-sr"> in ${escapeHtml(section.navLabel)}</span></a>`
+    : ''
   return `
-    <section class="apps-row">
-      <div class="apps-row__head">
-        <div>
-          <p class="apps-row__eyebrow">${escapeHtml(title)}</p>
-          <h2>${escapeHtml(note)}</h2>
+    <section class="apps-row st-row" aria-labelledby="${titleId}">
+      <div class="st-row__head">
+        <div class="st-row__copy">
+          <p class="st-row__eyebrow">${escapeHtml(eyebrow)}${flag ? ` <span class="st-flag">${escapeHtml(flag)}</span>` : ''}</p>
+          <h2 class="st-row__title" id="${titleId}">${escapeHtml(title)}</h2>
+          ${note ? `<p class="st-row__note">${escapeHtml(note)}</p>` : ''}
+        </div>
+        <div class="st-row__tools">
+          ${seeAll}
+          <button class="st-arrow" type="button" data-row-scroll="-1" aria-controls="${rowId}" aria-label="Scroll ${escapeHtml(title.replace(/\.$/, ''))} back">${chevron(-1)}</button>
+          <button class="st-arrow" type="button" data-row-scroll="1" aria-controls="${rowId}" aria-label="Scroll ${escapeHtml(title.replace(/\.$/, ''))} forward">${chevron(1)}</button>
         </div>
       </div>
-      <div class="apps-row__scroller">
+      <div class="apps-row__scroller st-row__scroller" id="${rowId}" tabindex="0" role="region" aria-label="${escapeHtml(title.replace(/\.$/, ''))}">
         ${items.map((item) => renderCard(item)).join('')}
       </div>
     </section>
@@ -3103,169 +5047,400 @@ function renderShelfRow(title, note, items) {
 }
 
 function renderTodayView() {
-  const featured = resolvePreviewItem(getEnrichedItems(), state.activePreviewId || todayFeaturedId)
-  const quickRows = todayRows
-    .map((row) => renderShelfRow(row.title, row.note, row.ids ? byIds(row.ids) : bySections(row.sections || [])))
-    .join('')
+  const featured = findItemById(todayFeaturedId) || state.items.find((item) => item.state === 'ready')
+  const pickRows = todayRows.map((row) => renderShelfRow({ ...row, items: bySections(row.sections) }))
+  const sectionRows = todaySectionRows.map((key) => {
+    const section = sectionLookup.get(key)
+    const all = itemsInSection(key)
+    if (!section || !all.length) return ''
+    const allOff = all.every((item) => item.state !== 'ready')
+    return renderShelfRow({
+      eyebrow: section.rowEyebrow || section.eyebrow,
+      title: section.title,
+      note: section.short || section.description,
+      items: readyFirst(all).slice(0, 10),
+      section,
+      total: all.length,
+      flag: allOff ? 'Temporarily unavailable' : '',
+    })
+  })
 
   renderSectionHead('')
-
   storeStage.innerHTML = `
-    ${renderPreviewStage(featured, { eyebrow: 'Today in RoachNet Apps' })}
-    ${quickRows}
+    ${renderHero(featured)}
+    ${pickRows[0] || ''}
+    ${sectionRows.slice(0, 3).join('')}
+    ${pickRows[1] || ''}
+    ${sectionRows.slice(3).join('')}
   `
 }
 
-function renderCategoryView() {
-  const activeSection = sectionLookup.get(state.activeSection) || sectionLookup.get('Today')
-  const items = getSectionItems(state.activeSection)
-  const isSearch = Boolean(state.query.trim())
-  const countLabel = `${items.length} app${items.length === 1 ? '' : 's'}`
-
-  renderSectionHead(`
-    <div class="apps-section-head__copy">
-      <p class="apps-section-head__eyebrow">${escapeHtml(isSearch ? 'Search results' : activeSection.eyebrow)}</p>
-      <h2>${escapeHtml(isSearch ? `Results in ${activeSection.navLabel}` : activeSection.title)}</h2>
-      <p>${escapeHtml(isSearch ? `Showing ${countLabel} in ${activeSection.navLabel} matching “${state.query.trim()}”.` : activeSection.description)}</p>
-    </div>
-    <div class="apps-section-head__meta">
-      <span>${countLabel}</span>
-      <span>${escapeHtml(activeSection.navLabel)}</span>
-    </div>
-  `)
-
-  if (!items.length) {
-    storeStage.innerHTML = `
-      <section class="apps-empty-state">
-        <strong>No apps matched this view.</strong>
-        <p>Try a broader search or switch to another section.</p>
-      </section>
-    `
+function renderSectionHead(content = '') {
+  if (!sectionHead) return
+  if (!content) {
+    sectionHead.hidden = true
+    sectionHead.innerHTML = ''
     return
   }
+  sectionHead.hidden = false
+  sectionHead.innerHTML = content
+}
 
-  const layoutClass =
-    activeSection.layout === 'map'
-      ? 'apps-card-grid--map'
-      : activeSection.layout === 'grid'
-        ? 'apps-card-grid--standard'
-        : 'apps-card-grid--standard'
+function renderAvailabilityNotice(items) {
+  const off = items.filter((item) => item.state !== 'ready')
+  if (!off.length) return ''
+  const reasons = [...new Set(off.map((item) => item.availability.reason))]
+  const tone = off.every((item) => item.state === 'unsupported') ? 'unsupported' : 'unavailable'
+  const lead = off.length === items.length
+    ? tone === 'unsupported' ? 'None of these run yet.' : 'This whole shelf is on a short break.'
+    : tone === 'unsupported'
+      ? `${plural(off.length, 'item')} here cannot run yet.`
+      : `${plural(off.length, 'item')} here ${off.length === 1 ? 'is' : 'are'} temporarily unavailable.`
+  const reasonText = reasons.length === 1 ? reasons[0] : 'Each one says why on its card.'
+  return `
+    <div class="st-notice" data-state="${tone}" role="note">
+      <span class="st-notice__icon" aria-hidden="true">${tone === 'unsupported' ? '×' : '!'}</span>
+      <p><strong>${escapeHtml(lead)}</strong> ${escapeHtml(reasonText)}</p>
+    </div>
+  `
+}
 
-  const previewId = state.activePreviewId || items[0]?.id
-  const previewItem = resolvePreviewItem(items, previewId) || resolvePreviewItem(getEnrichedItems(), previewId) || resolvePreviewItem(items, items[0]?.id)
-
-  storeStage.innerHTML = `
-    ${renderPreviewStage(previewItem, { eyebrow: activeSection.eyebrow })}
-    <section class="apps-card-grid ${layoutClass}">
-      ${items.map((item) => renderCard(item)).join('')}
+function renderEmptyState(query, sectionKey) {
+  const elsewhere = sectionKey !== 'Today' ? searchItems(state.items, query).length : 0
+  const section = sectionLookup.get(sectionKey)
+  return `
+    <section class="st-empty" aria-labelledby="apps-empty-title">
+      <span class="st-empty__art" aria-hidden="true"><span>0</span></span>
+      <h2 class="st-empty__title" id="apps-empty-title">Nothing on ${sectionKey === 'Today' ? 'the shelves' : `the ${escapeHtml(section?.navLabel || '')} shelf`} called “${escapeHtml(query)}”.</h2>
+      <p class="st-empty__body">${elsewhere ? `There ${elsewhere === 1 ? 'is' : 'are'} ${plural(elsewhere, 'match', 'matches')} in other sections, though.` : 'Try one word, or a topic. These usually turn something up:'}</p>
+      <div class="st-empty__actions">
+        ${elsewhere ? `<button class="nx-btn nx-btn--primary nx-btn--sm" type="button" data-section="Today">Search every section</button>` : searchSuggestions.map((word) => `<button class="nx-chip st-suggest" type="button" data-search-suggest="${word}">${word}</button>`).join('')}
+        <button class="nx-btn nx-btn--sm" type="button" data-clear-search>Clear search</button>
+      </div>
     </section>
   `
 }
 
-function renderStore() {
-  renderSidebarNav()
+function renderListView() {
+  const section = sectionLookup.get(state.activeSection) || sectionLookup.get('Today')
+  const query = state.query.trim()
+  const scoped = itemsInSection(section.key)
+  const items = query ? searchItems(scoped, query) : scoped
+  const totalBytes = items.reduce((sum, item) => sum + (item.bytes || 0), 0)
 
-  const activeSection = sectionLookup.get(state.activeSection) || sectionLookup.get('Today')
-  if (viewKicker) {
-    viewKicker.textContent = state.query.trim() ? `${activeSection.navLabel} Search` : activeSection.navLabel
+  if (query && !items.length) {
+    // The empty state carries its own heading; a "No results" head on top
+    // would just say it twice.
+    renderSectionHead('')
+  } else if (query) {
+    const where = section.key === 'Today' ? 'across the store' : `in ${section.navLabel}`
+    renderSectionHead(`
+      <div class="st-section-head__copy">
+        <p class="nx-overline nx-overline--cyan">Search</p>
+        <h2 class="st-section-head__title">${items.length ? `${plural(items.length, 'result')} for “${escapeHtml(query)}”` : 'No results'}</h2>
+        <p class="st-section-head__lede">${items.length ? `Best title matches first, ${escapeHtml(where)}.` : `Nothing matched ${escapeHtml(where)}.`}</p>
+      </div>
+      <div class="st-section-head__meta">
+        ${section.key !== 'Today' ? `<button class="nx-chip" type="button" data-section="Today">Search every section</button>` : ''}
+        <button class="nx-chip" type="button" data-clear-search>Clear search</button>
+      </div>
+    `)
+  } else {
+    renderSectionHead(`
+      <div class="st-section-head__copy">
+        <p class="nx-overline">${escapeHtml(section.eyebrow)}</p>
+        <h2 class="st-section-head__title">${escapeHtml(section.title)}</h2>
+        <p class="st-section-head__lede">${escapeHtml(section.description)}</p>
+      </div>
+      <ul class="st-section-head__meta st-stats">
+        <li><strong>${items.length}</strong><span>${items.length === 1 ? 'install' : 'installs'}</span></li>
+        ${totalBytes ? `<li><strong>${escapeHtml(formatCompactBytes(totalBytes))}</strong><span>if you take the lot</span></li>` : ''}
+      </ul>
+      ${renderAvailabilityNotice(items)}
+    `)
   }
 
-  root.style.setProperty('--apps-accent-name', activeSection.key)
-
-  if (state.activeSection === 'Today' && !state.query.trim()) {
-    renderTodayView()
-    enhanceShelfScrollers()
-    if (shouldScrollPreviewIntoView) {
-      shouldScrollPreviewIntoView = false
-      requestAnimationFrame(() => {
-        document.querySelector('.apps-preview-stage')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
-    }
+  if (!items.length) {
+    storeStage.innerHTML = renderEmptyState(query, section.key)
     return
   }
 
-  renderCategoryView()
-  enhanceShelfScrollers()
-  if (!initialHashScrollHandled && window.location.hash && state.activeSection !== 'Today') {
-    initialHashScrollHandled = true
-    requestAnimationFrame(() => {
-      scrollStoreMainIntoView({ behavior: 'auto' })
+  storeStage.innerHTML = `
+    <div class="apps-card-grid st-grid">
+      ${(query ? items : readyFirst(items)).map((item) => renderCard(item, { kicker: query || section.key === 'Today' ? 'section' : 'status' })).join('')}
+    </div>
+  `
+}
+
+/* ---------------------------------------------------------------------------
+   Rail (built once, then updated in place so focus survives)
+   ------------------------------------------------------------------------ */
+
+function buildRail() {
+  if (!sidebarNav) return
+  const groups = railGroups
+    .map(([group, label]) => {
+      const sections = sectionDefinitions.filter((section) => section.group === group)
+      return `
+        <p class="st-rail__group">${escapeHtml(label)}</p>
+        ${sections
+          .map(
+            (section) => `
+              <a class="st-rail__item" href="#${slugify(section.navLabel)}" data-section="${escapeHtml(section.key)}">
+                <span class="st-rail__code" aria-hidden="true">${escapeHtml(section.icon)}</span>
+                <span class="st-rail__label">${escapeHtml(section.navLabel)}</span>
+                <span class="st-rail__count"><span class="nx-sr">, </span><span data-rail-count>0</span><span class="nx-sr"> installs</span></span>
+              </a>
+            `
+          )
+          .join('')}
+      `
     })
+    .join('')
+  sidebarNav.innerHTML = groups
+}
+
+function updateRail() {
+  if (!sidebarNav) return
+  const query = state.query.trim()
+  const pool = query ? searchItems(state.items, query) : state.items
+  const counts = pool.reduce((map, item) => map.set(item.section, (map.get(item.section) || 0) + 1), new Map())
+  let active = null
+
+  sidebarNav.querySelectorAll('[data-section]').forEach((link) => {
+    const key = link.dataset.section
+    const count = key === 'Today' ? pool.length : counts.get(key) || 0
+    const isActive = key === state.activeSection
+    const countNode = link.querySelector('[data-rail-count]')
+    if (countNode) countNode.textContent = String(count)
+    link.classList.toggle('is-active', isActive)
+    link.classList.toggle('is-empty', Boolean(query) && count === 0)
+    if (isActive) {
+      link.setAttribute('aria-current', 'page')
+      active = link
+    } else {
+      link.removeAttribute('aria-current')
+    }
+  })
+  sidebarNav.classList.toggle('is-searching', Boolean(query))
+  keepRailItemInView(active)
+}
+
+function keepRailItemInView(link) {
+  if (!link || !sidebarNav) return
+  const nav = sidebarNav
+  if (compactLayout.matches) {
+    const left = link.offsetLeft - (nav.clientWidth - link.offsetWidth) / 2
+    nav.scrollTo({ left: Math.max(0, left), behavior: motionOK() ? 'smooth' : 'auto' })
+    return
   }
-  if (shouldScrollPreviewIntoView) {
-    shouldScrollPreviewIntoView = false
-    requestAnimationFrame(() => {
-      document.querySelector('.apps-preview-stage')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
+  const top = link.offsetTop
+  const bottom = top + link.offsetHeight
+  if (top < nav.scrollTop + 8 || bottom > nav.scrollTop + nav.clientHeight - 8) {
+    nav.scrollTo({ top: Math.max(0, top - nav.clientHeight / 2), behavior: motionOK() ? 'smooth' : 'auto' })
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Render loop
+   ------------------------------------------------------------------------ */
+
+function renderStore() {
+  if (!state.catalog || !storeStage) return
+  updateRail()
+
+  if (state.activeSection === 'Today' && !state.query.trim()) {
+    renderTodayView()
+  } else {
+    renderListView()
+  }
+
+  storeStage.setAttribute('aria-busy', 'false')
+  bindShelfScrollers()
+  staggerCards()
+}
+
+function queueRender({ animate = false } = {}) {
+  animateNextRender = animateNextRender || animate
+  if (renderQueued) return
+  renderQueued = true
+  requestAnimationFrame(() => {
+    renderQueued = false
+    renderStore()
+  })
+}
+
+function staggerCards() {
+  const animate = animateNextRender && motionOK()
+  animateNextRender = false
+  // The stagger delay comes from :nth-child rules in nx-store.css, so no
+  // per-card style is written.
+  storeStage.classList.toggle('st-stage--enter', animate)
+  if (!animate) return
+  window.setTimeout(() => storeStage.classList.remove('st-stage--enter'), 1400)
+}
+
+function syncArrows(scroller) {
+  const row = scroller.closest('.st-row')
+  if (!row) return
+  const max = scroller.scrollWidth - scroller.clientWidth - 2
+  const back = row.querySelector('[data-row-scroll="-1"]')
+  const forward = row.querySelector('[data-row-scroll="1"]')
+  if (back) back.disabled = scroller.scrollLeft <= 2
+  if (forward) forward.disabled = scroller.scrollLeft >= max
+  row.classList.toggle('is-scrollable', max > 0)
+}
+
+function bindShelfScrollers() {
+  storeStage.querySelectorAll('.st-row__scroller').forEach((scroller) => {
+    syncArrows(scroller)
+    scroller.addEventListener('scroll', () => syncArrows(scroller), { passive: true })
+    scroller.addEventListener('keydown', (event) => {
+      if (event.target !== scroller || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return
+      event.preventDefault()
+      scrollRow(scroller, event.key === 'ArrowRight' ? 1 : -1)
+    })
+  })
+}
+
+function scrollRow(scroller, direction) {
+  const card = scroller.querySelector('.st-card')
+  const step = card ? card.getBoundingClientRect().width + 16 : 300
+  const visible = Math.max(1, Math.floor(scroller.clientWidth / step))
+  scroller.scrollBy({ left: direction * step * visible, behavior: motionOK() ? 'smooth' : 'auto' })
+}
+
+function scrollToContent({ force = false } = {}) {
+  const target = storeContent || storeStage
+  if (!target) return
+  const nav = document.querySelector('.nx-nav')
+  let offset = (nav?.getBoundingClientRect().bottom || 0) + 16
+  if (compactLayout.matches && storeRail) offset += storeRail.getBoundingClientRect().height + 4
+  const top = target.getBoundingClientRect().top + window.scrollY - offset
+  if (window.scrollY > top + 4 || (force && Math.abs(window.scrollY - top) > 4)) {
+    window.scrollTo({ top: Math.max(0, top), behavior: force || !motionOK() ? 'auto' : 'smooth' })
+  }
+}
+
+function setActiveSection(sectionKey, { push = true } = {}) {
+  if (!sectionLookup.has(sectionKey)) sectionKey = 'Today'
+  state.activeSection = sectionKey
+  if (push) {
+    if (sectionKey !== 'Today') {
+      const slug = slugify(sectionLookup.get(sectionKey)?.navLabel || sectionKey)
+      if (window.location.hash !== `#${slug}`) window.location.hash = slug
+    } else if (window.location.hash) {
+      history.pushState(null, '', window.location.pathname + window.location.search)
+    }
+  }
+  animateNextRender = true
+  renderStore()
+  requestAnimationFrame(scrollToContent)
+}
+
+function setQuery(value, { focus = false } = {}) {
+  state.query = value
+  if (searchInput && searchInput.value !== value) searchInput.value = value
+  renderStore()
+  announceResults()
+  if (focus) searchInput?.focus()
+}
+
+let announceTimer = null
+function announceResults() {
+  window.clearTimeout(announceTimer)
+  const query = state.query.trim()
+  if (!query) return
+  announceTimer = window.setTimeout(() => {
+    const scoped = itemsInSection(state.activeSection)
+    const count = searchItems(scoped, query).length
+    announce(count ? `${plural(count, 'result')} for ${query}.` : `No results for ${query}.`)
+  }, 420)
+}
+
+/* ---------------------------------------------------------------------------
+   Detail sheet
+   ------------------------------------------------------------------------ */
+
+function factRow(label, value, { href = '', mono = false } = {}) {
+  if (!value) return ''
+  const link = safeHref(href)
+  const external = /^https:\/\//i.test(link)
+  const body = link
+    ? `<a class="st-facts__link" href="${escapeHtml(link)}"${external ? ' target="_blank" rel="noreferrer"' : ''}>${escapeHtml(value)}</a>`
+    : escapeHtml(value)
+  return `<div><dt>${escapeHtml(label)}</dt><dd${mono ? ' class="st-mono"' : ''}>${body}</dd></div>`
+}
+
 function renderDetail(item) {
-  const detailUrl = item.detailUrl || item.primaryUrl
   const artifact = item.artifact || {}
   const artifactUrl = artifact.url || item.installIntent?.mirrorUrl || item.installIntent?.url || ''
-  const artifactRows = [
-    ['Artifact lane', item.artifactLabel],
-    ['Provider', artifact.provider || item.installIntent?.artifactProvider || 'RoachNet catalog'],
-    ['Object key', artifact.key || item.installIntent?.artifactKey],
-    ['Download URL', artifactUrl],
-    ['Source fallback', artifact.sourceUrl],
-  ].filter(([, value]) => Boolean(value))
+  const detailHref = safeHref(item.detailUrl || item.primaryUrl)
+  const includes = item.includes?.length ? item.includes : ['Direct native install handoff into the right RoachNet section.']
+  // Unavailable / unsupported items explain themselves next to the disabled
+  // install control; the notice is only for the 1.1 requirement.
+  const notice = item.state === 'ready' && item.minimum
+      ? `<div class="st-notice" data-state="needs" role="note"><span class="st-notice__icon" aria-hidden="true">${escapeHtml(item.minimum)}</span><p><strong>Needs RoachNet ${escapeHtml(item.minimum)} or later.</strong> 1.1 is still in the workshop, so this one waits until you are on it.</p></div>`
+      : ''
 
   return `
-    <article class="apps-detail">
-      <div class="apps-detail__hero" data-accent="${item.accent || 'blue'}">
-        <div class="apps-detail__icon">
-          ${renderStoreIcon(item, 'detail')}
+    <article class="apps-detail st-detail" data-accent="${escapeHtml(item.accent || 'blue')}">
+      <header class="st-detail__hero">
+        ${renderIcon(item, 'detail')}
+        <div class="st-detail__id">
+          <p class="nx-overline">${escapeHtml(item.sectionMeta.navLabel)}</p>
+          <h2 class="st-detail__title" id="apps-detail-title">${escapeHtml(item.title)}</h2>
+          <p class="st-detail__sub">${escapeHtml(item.subtitle || item.source || item.section)}</p>
+          ${renderBadges(item)}
         </div>
-        <div class="apps-detail__copy">
-          <span class="apps-card__code apps-card__code--hero">${escapeHtml(item.codeLabel)}</span>
-          <h2 id="apps-detail-title">${escapeHtml(item.title)}</h2>
-          <p class="apps-detail__subtitle">${escapeHtml(item.subtitle || item.source || item.section)}</p>
-          ${renderBadgeRow(item)}
-          <div class="apps-detail__actions">
-            ${renderInstallControl(item, ' apps-card__install--hero')}
-            ${
-              detailUrl
-                ? `<a class="apps-card__secondary" href="${detailUrl}">${escapeHtml(item.detailLabel || 'Open manifest')}</a>`
-                : ''
-            }
-          </div>
-        </div>
+      </header>
+
+      ${notice}
+
+      <div class="st-detail__actions">
+        ${renderInstallControl(item, 'sheet')}
+        <button class="nx-btn st-copy" type="button" data-copy-link="${escapeHtml(item.id)}">
+          <span class="st-copy__label">Copy link</span>
+        </button>
+        ${detailHref ? `<a class="nx-link nx-link--arrow" href="${escapeHtml(detailHref)}"${/^https:/.test(detailHref) ? ' target="_blank" rel="noreferrer"' : ''}>${escapeHtml(item.detailLabel || 'Open manifest')}</a>` : ''}
       </div>
 
-      <div class="apps-detail__body">
-        <section class="apps-detail__story">
-          <h3>What’s inside</h3>
+      <div class="st-detail__grid">
+        <section class="st-detail__story" aria-labelledby="apps-detail-inside">
+          <h3 class="st-detail__h" id="apps-detail-inside">What’s inside</h3>
           ${item.detail.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
+          <ul class="st-ticks">
+            ${includes.map((entry) => `<li>${escapeHtml(entry)}</li>`).join('')}
+          </ul>
         </section>
 
-        <aside class="apps-detail__meta">
-          <section>
-            <h3>Install notes</h3>
-            <dl>
-              <div><dt>Shelf</dt><dd>${escapeHtml(item.section)}</dd></div>
-              <div><dt>Tier</dt><dd>${escapeHtml(item.tier.label)}</dd></div>
-              <div><dt>Size</dt><dd>${escapeHtml(item.size || 'Unknown')}</dd></div>
-              <div><dt>Source</dt><dd>${escapeHtml(item.source || 'RoachNet mirror')}</dd></div>
-              ${artifactRows
-                .map(
-                  ([label, value]) =>
-                    `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`
-                )
-                .join('')}
-            </dl>
-          </section>
-          <section>
-            <h3>Included topics</h3>
-            <ul>
-              ${(item.includes || ['Direct native install handoff into the right RoachNet section.'])
-                .map((entry) => `<li>${escapeHtml(entry)}</li>`)
-                .join('')}
-            </ul>
-          </section>
-        </aside>
+        <section class="st-land" aria-labelledby="apps-detail-land">
+          <h3 class="st-detail__h" id="apps-detail-land">Where it lands</h3>
+          <p class="st-land__path"><span>RoachNet</span><span aria-hidden="true">›</span><strong>${escapeHtml(item.landing.place)}</strong></p>
+          <p class="st-land__note">${escapeHtml(item.landing.note)}</p>
+          <p class="st-land__note">On disk it lives under <code>~/RoachNet</code>, with everything else.</p>
+          ${item.machineFit ? `<p class="st-land__fit"><span>Fits</span>${escapeHtml(item.machineFit)}</p>` : ''}
+        </section>
       </div>
+
+      <section class="st-facts" aria-labelledby="apps-detail-facts">
+        <h3 class="st-detail__h" id="apps-detail-facts">Install facts</h3>
+        <dl>
+          ${factRow('Size', item.size || 'Unknown')}
+          ${factRow('Shelf', item.section)}
+          ${factRow('Status', item.status)}
+          ${factRow('Tier', item.tier)}
+          ${factRow('Needs', item.minimumRoachNet ? `RoachNet ${item.minimumRoachNet} or later` : '')}
+          ${factRow('Source', item.source || 'RoachNet mirror')}
+          ${factRow('Artifact lane', item.artifactLabel)}
+          ${factRow('Provider', artifact.provider || item.installIntent?.artifactProvider || 'RoachNet catalog')}
+          ${factRow('Object key', artifact.key || item.installIntent?.artifactKey, { mono: true })}
+          ${factRow('Download URL', artifactUrl, { href: artifactUrl, mono: true })}
+          ${factRow('Source fallback', artifact.sourceUrl, { href: artifact.sourceUrl, mono: true })}
+          ${factRow('SHA-256', artifact.sha256, { mono: true })}
+          ${factRow('Checksum file', artifact.checksumUrl, { href: artifact.checksumUrl, mono: true })}
+        </dl>
+      </section>
     </article>
   `
 }
@@ -3274,54 +5449,88 @@ function openDetail(id, trigger) {
   const item = findItemById(id)
   if (!item || !detailOverlay || !detailContent) return
 
+  window.clearTimeout(detailCloseTimer)
+  detailClosing = false
   detailTrigger = trigger instanceof HTMLElement ? trigger : document.activeElement instanceof HTMLElement ? document.activeElement : null
   detailContent.innerHTML = renderDetail(item)
+  detailContent.scrollTop = 0
   detailOverlay.hidden = false
   document.body.classList.add('app-detail-open')
+  void detailOverlay.offsetWidth
+  detailOverlay.classList.add('is-open')
   requestAnimationFrame(() => {
     if (!detailOverlay.hidden) detailClose?.focus()
   })
 }
 
 function closeDetail() {
-  if (!detailOverlay || !detailContent) return
+  if (!detailOverlay || !detailContent || detailOverlay.hidden || detailClosing) return
 
-  detailOverlay.hidden = true
-  detailContent.innerHTML = ''
+  detailClosing = true
+  detailOverlay.classList.remove('is-open')
   document.body.classList.remove('app-detail-open')
   const trigger = detailTrigger
   detailTrigger = null
-  if (trigger?.isConnected) trigger.focus()
+  if (trigger?.isConnected) {
+    trigger.focus({ preventScroll: true })
+  } else {
+    document.querySelector('#apps-main')?.focus({ preventScroll: true })
+  }
+  if (/^#app-/.test(window.location.hash)) {
+    history.replaceState(null, '', window.location.pathname + window.location.search)
+  }
+
+  const finish = () => {
+    detailClosing = false
+    detailOverlay.hidden = true
+    detailContent.innerHTML = ''
+  }
+  if (motionOK()) {
+    detailCloseTimer = window.setTimeout(finish, 260)
+  } else {
+    finish()
+  }
 }
 
-function returnToRoachNetHome(event) {
-  event?.preventDefault()
-  window.location.href = 'https://roachnet.org/home/'
+async function copyItemLink(button) {
+  const id = button.dataset.copyLink
+  const url = `${window.location.origin}${window.location.pathname}#app-${encodeURIComponent(id)}`
+  const label = button.querySelector('.st-copy__label')
+  try {
+    await navigator.clipboard.writeText(url)
+    button.classList.add('is-done')
+    if (label) label.textContent = 'Link copied'
+    showToast('Link copied to your clipboard')
+    window.setTimeout(() => {
+      button.classList.remove('is-done')
+      if (label) label.textContent = 'Copy link'
+    }, 1800)
+  } catch {
+    showToast(`Copy this by hand: ${url}`)
+  }
 }
+
+function openFromHash() {
+  const match = /^#app-(.+)$/.exec(window.location.hash)
+  if (!match) return false
+  const id = decodeURIComponent(match[1])
+  if (!findItemById(id)) return false
+  openDetail(id, null)
+  return true
+}
+
+/* ---------------------------------------------------------------------------
+   Loading
+   ------------------------------------------------------------------------ */
 
 async function loadCatalog() {
-  storeStage.innerHTML = `
-    <section class="apps-empty-state apps-empty-state--loading">
-      <strong>Loading the catalog…</strong>
-      <p>Pulling the current RoachNet Apps shelves and the install handoff for each pack.</p>
-    </section>
-  `
-
-  const loadingFallbackTimer = window.setTimeout(() => {
-    if (state.catalog) {
-      return
-    }
-
-    storeStage.innerHTML = `
-      <section class="apps-empty-state">
-        <strong>RoachNet does not seem to be running.</strong>
-        <p>Open RoachNet if it is already installed. If not, download it first and come back for the packs.</p>
-        <div class="apps-empty-state__actions">
-          <a class="apps-card__install apps-card__install--hero" href="${hostedDownloads.mac.url}">Download RoachNet</a>
-          <a class="apps-card__secondary" href="roachnet://open">Open RoachNet</a>
-        </div>
-      </section>
-    `
+  storeStage?.setAttribute('aria-busy', 'true')
+  const slowTimer = window.setTimeout(() => {
+    if (state.catalog || !storeStage || storeStage.querySelector('.st-slow')) return
+    storeStage.insertAdjacentHTML(
+      'beforeend',
+      '<p class="st-slow">Still fetching the catalog. It is one file, so a slow connection is the usual suspect.</p>'
+    )
   }, 4000)
 
   try {
@@ -3336,119 +5545,165 @@ async function loadCatalog() {
     }
 
     state.catalog = await response.json()
-    window.clearTimeout(loadingFallbackTimer)
+    state.items = (Array.isArray(state.catalog?.items) ? state.catalog.items : []).map(enrichItem)
+    window.clearTimeout(slowTimer)
+    totalNodes.forEach((node) => {
+      node.textContent = plural(state.items.length, 'install')
+    })
+    if (searchInput) searchInput.placeholder = `Search ${state.items.length} installs`
+    buildRail()
+    animateNextRender = true
     renderStore()
+    // A deep link to a section (#models, #voice…) lands on that section.
+    if (state.activeSection !== 'Today') requestAnimationFrame(() => scrollToContent({ force: true }))
+    openFromHash()
   } catch (error) {
-    window.clearTimeout(loadingFallbackTimer)
+    window.clearTimeout(slowTimer)
     console.error(error)
+    if (!storeStage) return
+    storeStage.setAttribute('aria-busy', 'false')
     storeStage.innerHTML = `
-      <section class="apps-empty-state">
-        <strong>Catalog unavailable right now.</strong>
-        <p>The App Store manifest could not be loaded. Try again in a moment.</p>
+      <section class="st-empty" aria-labelledby="apps-error-title">
+        <span class="st-empty__art" aria-hidden="true"><span>?</span></span>
+        <h2 class="st-empty__title" id="apps-error-title">The catalog did not load.</h2>
+        <p class="st-empty__body">Your connection or ours. RoachNet itself is fine, and anything already installed still works.</p>
+        <div class="st-empty__actions">
+          <button class="nx-btn nx-btn--primary nx-btn--sm" type="button" data-retry>Try again</button>
+        </div>
       </section>
     `
   }
 }
 
-function setActiveSection(sectionKey) {
-  state.activeSection = sectionKey
-  if (sectionKey === 'Today') {
-    state.activePreviewId = todayFeaturedId
-  } else {
-    const sectionItems = getSectionItems(sectionKey)
-    state.activePreviewId = sectionItems[0]?.id || ''
-  }
-  if (sectionKey !== 'Today') {
-    window.location.hash = slugify(sectionLookup.get(sectionKey)?.navLabel || sectionKey)
-  } else {
-    history.replaceState(null, '', window.location.pathname)
-  }
-  renderStore()
-  requestAnimationFrame(() => {
-    scrollStoreMainIntoView({ behavior: 'smooth' })
-  })
-}
+/* ---------------------------------------------------------------------------
+   Events
+   ------------------------------------------------------------------------ */
 
 sidebarNav?.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-section]')
-  if (!button) return
+  const link = event.target.closest('[data-section]')
+  if (!link) return
+  event.preventDefault()
+  setActiveSection(link.dataset.section || 'Today')
+})
 
-  setActiveSection(button.dataset.section || 'Today')
+sidebarNav?.addEventListener('keydown', (event) => {
+  const current = event.target.closest('[data-section]')
+  if (!current) return
+  const items = [...sidebarNav.querySelectorAll('[data-section]')]
+  const index = items.indexOf(current)
+  if (index === -1) return
+
+  let nextIndex = null
+  if (event.key === 'ArrowDown' || event.key === 'ArrowRight') nextIndex = Math.min(items.length - 1, index + 1)
+  else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') nextIndex = Math.max(0, index - 1)
+  else if (event.key === 'Home') nextIndex = 0
+  else if (event.key === 'End') nextIndex = items.length - 1
+  if (nextIndex === null || nextIndex === index) return
+
+  event.preventDefault()
+  items[nextIndex].focus()
+  setActiveSection(items[nextIndex].dataset.section || 'Today')
 })
 
 document.querySelectorAll('[data-apps-section-jump]').forEach((link) => {
   link.addEventListener('click', (event) => {
     const section = link.getAttribute('data-apps-section-jump') || 'Today'
-    if (!sectionLookup.has(section)) {
-      return
-    }
-
+    if (!sectionLookup.has(section)) return
     event.preventDefault()
     setActiveSection(section)
   })
 })
 
 searchInput?.addEventListener('input', (event) => {
+  const wasEmpty = !state.query.trim()
   state.query = event.currentTarget.value || ''
-  renderStore()
+  queueRender()
+  announceResults()
+  // On phones the results start below the fold; bring them up once, on the
+  // first character, and leave the page alone after that.
+  if (wasEmpty && state.query.trim() && compactLayout.matches) {
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToContent({ force: true })))
+  }
 })
 
-storeStage?.addEventListener('click', (event) => {
+searchInput?.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && searchInput.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    setQuery('')
+  } else if (event.key === 'Enter') {
+    event.preventDefault()
+    storeStage?.querySelector('[data-preview-id]')?.focus()
+  }
+})
+
+storeContent?.addEventListener('click', (event) => {
+  const sectionLink = event.target.closest('[data-section]')
+  if (sectionLink) {
+    event.preventDefault()
+    setActiveSection(sectionLink.dataset.section || 'Today')
+    return
+  }
+
+  const arrow = event.target.closest('[data-row-scroll]')
+  if (arrow) {
+    const scroller = document.getElementById(arrow.getAttribute('aria-controls') || '')
+    if (scroller) scrollRow(scroller, Number(arrow.dataset.rowScroll) || 1)
+    return
+  }
+
+  const suggestion = event.target.closest('[data-search-suggest]')
+  if (suggestion) {
+    setQuery(suggestion.dataset.searchSuggest || '', { focus: true })
+    return
+  }
+
+  if (event.target.closest('[data-clear-search]')) {
+    setQuery('', { focus: true })
+    return
+  }
+
+  if (event.target.closest('[data-retry]')) {
+    loadCatalog()
+    return
+  }
+
   const previewButton = event.target.closest('[data-preview-id]')
   if (previewButton) {
-    const previewId = previewButton.dataset.previewId || state.activePreviewId
-    if (previewId && previewId !== state.activePreviewId) {
-      state.activePreviewId = previewId
-      shouldScrollPreviewIntoView = true
-      renderStore()
-    }
     event.preventDefault()
-    const currentTrigger = storeStage?.querySelector(`[data-preview-id="${previewId}"]`) || previewButton
-    openDetail(previewId, currentTrigger)
-    return
-  }
-
-  const previewCard = event.target.closest('[data-select-id]')
-  if (previewCard) {
-    const previewId = previewCard.dataset.selectId || state.activePreviewId
-    const actionLink = event.target.closest('a[href]')
-    if (actionLink) {
-      return
-    }
-
-    if (previewId && previewId !== state.activePreviewId) {
-      state.activePreviewId = previewId
-      shouldScrollPreviewIntoView = true
-      event.preventDefault()
-      renderStore()
-    }
+    openDetail(previewButton.dataset.previewId, previewButton)
   }
 })
 
-storeStage?.addEventListener('keydown', (event) => {
-  const previewCard = event.target.closest('[data-select-id]')
-  if (!previewCard) {
-    return
-  }
-
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault()
-    state.activePreviewId = previewCard.dataset.selectId || state.activePreviewId
-    shouldScrollPreviewIntoView = true
-    renderStore()
-  }
-})
+// Pointer light on cards and the hero (fine pointers, motion allowed).
+let lightFrame = null
+storeContent?.addEventListener('pointermove', (event) => {
+  if (!finePointer.matches || !motionOK() || event.pointerType !== 'mouse') return
+  const surface = event.target.closest('.st-card, .st-hero')
+  if (!surface || lightFrame) return
+  lightFrame = requestAnimationFrame(() => {
+    lightFrame = null
+    const box = surface.getBoundingClientRect()
+    surface.style.setProperty('--nx-mx', `${(((event.clientX - box.left) / box.width) * 100).toFixed(1)}%`)
+    surface.style.setProperty('--nx-my', `${(((event.clientY - box.top) / box.height) * 100).toFixed(1)}%`)
+  })
+}, { passive: true })
 
 detailClose?.addEventListener('click', closeDetail)
 
 detailOverlay?.addEventListener('click', (event) => {
   if (event.target === detailOverlay) {
     closeDetail()
+    return
   }
+  const copyButton = event.target.closest('[data-copy-link]')
+  if (copyButton) copyItemLink(copyButton)
 })
 
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Tab' && detailOverlay && !detailOverlay.hidden) {
+  const detailOpen = detailOverlay && !detailOverlay.hidden && !detailClosing
+
+  if (event.key === 'Tab' && detailOpen) {
     const focusable = [...detailOverlay.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
       .filter((element) => element instanceof HTMLElement && element.getClientRects().length > 0)
     if (!focusable.length) return
@@ -3461,9 +5716,20 @@ document.addEventListener('keydown', (event) => {
     return
   }
 
-  if (event.key === 'Escape' && detailOverlay && !detailOverlay.hidden) {
+  if (event.key === 'Escape' && detailOpen) {
     event.preventDefault()
     closeDetail()
+    return
+  }
+
+  // "/" jumps to search from anywhere that is not already a text field.
+  if (event.key === '/' && !detailOpen && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    const target = event.target
+    const typing = target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+    if (typing || !searchInput) return
+    event.preventDefault()
+    searchInput.focus()
+    searchInput.select()
   }
 })
 
@@ -3472,16 +5738,827 @@ document.addEventListener('click', (event) => {
   if (!installLink) return
 
   event.preventDefault()
+  installLink.classList.add('is-launching')
+  announce(`Opening RoachNet to install ${installLink.dataset.installTitle || 'this pack'}.`)
+  window.setTimeout(() => installLink.classList.remove('is-launching'), 1600)
   attemptNativeInstall(installLink.getAttribute('href') || '')
 })
 
-returnHomeButtons.forEach((button) => {
-  button.addEventListener('click', returnToRoachNetHome)
+window.addEventListener('hashchange', () => {
+  if (/^#app-/.test(window.location.hash)) {
+    openFromHash()
+    return
+  }
+  const hash = window.location.hash.replace(/^#/, '')
+  if (hash && !sectionSlugLookup.has(hash)) return
+  const key = sectionSlugLookup.get(hash) || 'Today'
+  if (key !== state.activeSection && state.catalog) {
+    state.activeSection = key
+    animateNextRender = true
+    renderStore()
+  }
 })
 
+window.addEventListener('popstate', () => {
+  if (!window.location.hash && state.activeSection !== 'Today' && state.catalog) {
+    state.activeSection = 'Today'
+    animateNextRender = true
+    renderStore()
+  }
+})
+
+compactLayout.addEventListener?.('change', () => {
+  keepRailItemInView(sidebarNav?.querySelector('.is-active'))
+  storeStage?.querySelectorAll('.st-row__scroller').forEach(syncArrows)
+})
+
+window.addEventListener('resize', () => {
+  storeStage?.querySelectorAll('.st-row__scroller').forEach(syncArrows)
+}, { passive: true })
+
+// Decorative loops (floating hero icon, skeleton shimmer) pause in a hidden tab.
+document.addEventListener('visibilitychange', () => {
+  root.classList.toggle('st-tab-hidden', document.visibilityState === 'hidden')
+})
+
+setDownloadButton()
 startTelemetry()
-loadLatestRelease()
 loadCatalog()
+```
+
+## brew/index.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="brew-index-html" file="brew/index.html"}
+<!doctype html>
+<html lang="en" class="nx">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet Brew: Three commands to ~/RoachNet</title>
+    <meta name="description" content="Install RoachNet 1.0.6 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://roachnet.org/brew/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet Brew: Three commands to ~/RoachNet" />
+    <meta property="og:description" content="Install RoachNet 1.0.6 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
+    <meta property="og:url" content="https://roachnet.org/brew/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet Brew: Three commands to ~/RoachNet" />
+    <meta name="twitter:description" content="Install RoachNet 1.0.6 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="../nx.css" />
+  </head>
+  <body data-page="brew">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__scan"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
+
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Brew · v1.0.6</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link is-current" href="#top" aria-current="page">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top" class="nx-main" tabindex="-1">
+      <section class="nx-hero" aria-labelledby="hero-title">
+        <div class="nx-hero__copy">
+          <p class="nx-overline">RoachNet Brew · Homebrew cask</p>
+          <h1 class="nx-display" id="hero-title">Terminal type? Three commands to <span class="nx-accent">~/RoachNet.</span></h1>
+          <p class="nx-lede">
+            Same app, same folder, same easy goodbye if you change your mind. This route skips the setup window and lets Homebrew do the walking.
+          </p>
+          <div class="nx-actions">
+            <button class="nx-btn nx-btn--primary" data-homebrew-install type="button">Install with Homebrew</button>
+            <button class="nx-btn" data-homebrew-copy type="button">Copy brew command</button>
+          </div>
+          <p class="nx-hero__meta">
+            <span>RoachNet 1.0.6</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>needs <a class="nx-link" href="https://brew.sh" target="_blank" rel="noreferrer">Homebrew</a></span>
+          </p>
+          <p class="nx-prose" id="homebrew-note">
+            RoachNet v1.0.6 is not Apple-notarized yet, so the cask clears only the macOS flags that would block launch, then runs the same native installer the Setup app uses. It brings its own tools instead of borrowing yours.
+          </p>
+        </div>
+        <div class="nx-hero__visual" aria-hidden="true">
+          <div class="nx-console nx-console--hero">
+            <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
+            <div class="nx-console__body">
+              <span class="nx-console__line" id="brew-command" data-type>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</span>
+              <span class="nx-console__line nx-console__line--out">==&gt; Tapping roachwares/roachnet</span>
+              <span class="nx-console__line nx-console__line--out">==&gt; Downloading RoachNet-Setup-macOS.dmg (376 MB)</span>
+              <span class="nx-console__line nx-console__line--out">==&gt; Verifying SHA-256 … ok</span>
+              <span class="nx-console__line nx-console__line--out">==&gt; RoachNet installed to ~/RoachNet/app/RoachNet.app</span>
+              <span class="nx-console__line">open ~/RoachNet/app/RoachNet.app</span>
+            </div>
+            <div class="nx-console__copy">
+              <button class="nx-btn nx-btn--sm nx-btn--mono" data-homebrew-copy type="button">Copy</button>
+            </div>
+          </div>
+          <div class="nx-screen screen-frame nx-mt-24 nx-brew-shot">
+            <img src="../assets/screens/roachnet-native-home.webp" width="1568" height="1032" alt="RoachNet home screen" loading="lazy" decoding="async" />
+            <span class="nx-screen__chip">What opens</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="nx-section" id="install" aria-labelledby="install-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Install</p>
+          <h2 class="nx-h2" id="install-title">Three steps. Same destination.</h2>
+        </div>
+        <ol class="nx-steps nx-steps--row">
+          <li class="nx-step nx-reveal" data-install-step="1">
+            <strong>Add the tap.</strong>
+            <p><code>brew update &amp;&amp; brew tap --force RoachWares/roachnet</code></p>
+          </li>
+          <li class="nx-step nx-reveal" data-install-step="2">
+            <strong>Install the cask.</strong>
+            <p><code>brew install --cask roachnet</code></p>
+          </li>
+          <li class="nx-step nx-reveal" data-install-step="3">
+            <strong>Launch.</strong>
+            <p><code>open ~/RoachNet/app/RoachNet.app</code></p>
+          </li>
+        </ol>
+        <div class="nx-actions nx-mt-32">
+          <button class="nx-btn nx-btn--primary" data-homebrew-install type="button">Install with Homebrew</button>
+          <a class="nx-btn" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">Use the Setup app instead</a>
+        </div>
+      </section>
+
+      <section class="nx-section" id="layout" aria-labelledby="layout-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">What it installs</p>
+          <h2 class="nx-h2" id="layout-title">What lands on disk.</h2>
+        </div>
+        <div class="nx-grid nx-grid--4" role="list">
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">App bundle</p>
+            <h3 class="nx-card__title"><code>~/RoachNet/app/RoachNet.app</code></h3>
+            <p class="nx-card__body">The same app the Setup app installs, cleared so macOS opens it without an argument. The Setup app itself stays in <code>~/RoachNet/setup</code> for repairs.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Storage root</p>
+            <h3 class="nx-card__title"><code>~/RoachNet/storage</code></h3>
+            <p class="nx-card__body">Models, logs, the vault and everything else live here. Nothing gets scattered into <code>/usr/local</code>, <code>/tmp</code>, or some staging folder you'll never find again.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Local tools</p>
+            <h3 class="nx-card__title"><code>~/RoachNet/bin</code></h3>
+            <p class="nx-card__body">Helper tools sit next to the app. Clean install, clean uninstall, nothing left behind for future-you to curse at.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Config writes</p>
+            <h3 class="nx-card__title"><code>~/Library/Application Support/roachnet</code></h3>
+            <p class="nx-card__body">A small settings file so the app knows where everything is the first time it opens. No scavenger hunt.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="runtime" aria-labelledby="runtime-title">
+        <div class="nx-section__head">
+          <p class="nx-overline nx-overline--amber">Homebrew runtime</p>
+          <h2 class="nx-h2" id="runtime-title">More than a <code>brew install</code> in a trenchcoat.</h2>
+        </div>
+        <div class="nx-grid nx-grid--3" role="list">
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Native installer</p>
+            <h3 class="nx-card__title">The cask runs RoachNet's own Swift installer.</h3>
+            <p class="nx-card__body">Preflight checks, a smoke test, and a swap that keeps your storage. No Node, no source tree, nothing global.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Launch-safe</p>
+            <h3 class="nx-card__title">Clears only the quarantine flags that block a fresh download.</h3>
+            <p class="nx-card__body">Nothing else gets touched.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Cache that stays put</p>
+            <h3 class="nx-card__title">Cache lives in <code>~/RoachNet/storage/state/runtime-cache</code>.</h3>
+            <p class="nx-card__body">Not <code>/tmp</code>. It won't vanish on reboot and act surprised next launch.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Safer first boot</p>
+            <h3 class="nx-card__title">The phone bridge stays off until you turn it on.</h3>
+            <p class="nx-card__body">If the first launch goes sideways, RoachNet tries to fix itself once before it bothers you.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Logs in one place</p>
+            <h3 class="nx-card__title">All logs live in <code>~/RoachNet/storage/logs</code>.</h3>
+            <p class="nx-card__body">When something breaks, you know exactly where to look.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Identical either way</p>
+            <h3 class="nx-card__title">Same API and same behaviour as the Setup app install.</h3>
+            <p class="nx-card__body">Only the route is different.</p>
+          </article>
+        </div>
+        <div class="nx-console nx-mt-24 nx-reveal">
+          <div class="nx-console__bar"><i></i><i></i><i></i> Checksum · RoachNet-Setup-macOS.dmg</div>
+          <div class="nx-console__body">
+            <span class="nx-console__line">shasum -a 256 ~/Downloads/RoachNet-Setup-macOS.dmg</span>
+            <span class="nx-console__line nx-console__line--out" id="dmg-sha">b6a31dc48faf6a48822bb6770fc8958473c2e0bed460e5ca131f9ab460a90a6f</span>
+          </div>
+          <div class="nx-console__copy">
+            <button class="nx-btn nx-btn--sm nx-btn--mono" data-nx-copy-target="#dmg-sha" data-nx-copied="Checksum copied" type="button">Copy</button>
+          </div>
+        </div>
+        <p class="nx-prose nx-mt-16">The Setup app and Homebrew pull the exact same file from the public release, and the published <a class="nx-link" href="https://github.com/RoachWares/RoachNet/releases/download/v1.0.6/RoachNet-Setup-macOS.dmg.sha256" target="_blank" rel="noreferrer">checksum sidecar</a> is what the cask verifies against. Check it yourself.</p>
+        <div class="nx-actions nx-mt-24">
+          <a class="nx-btn" href="https://roachnet.org/api/">Read the API docs</a>
+          <a class="nx-btn" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Read the cask</a>
+        </div>
+      </section>
+    </main>
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
+
+    <script src="../site-config.js"></script>
+    <script src="../app.js" type="module"></script>
+    <script src="../nx.js" type="module"></script>
+  </body>
+</html>
+```
+
+## home/index.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="home-index-html" file="home/index.html"}
+<!doctype html>
+<html lang="en" class="nx">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet: Offline on purpose.</title>
+    <meta
+      name="description"
+      content="Local AI, code, maps, docs, games and media in one native Mac app that keeps working when the internet doesn't. Download RoachNet 1.0.6 or install it with Homebrew."
+    />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://roachnet.org/home/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet: Offline on purpose." />
+    <meta
+      property="og:description"
+      content="Local AI, code, maps, docs, games and media in one native Mac app that keeps working when the internet doesn't."
+    />
+    <meta property="og:url" content="https://roachnet.org/home/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet: Offline on purpose." />
+    <meta
+      name="twitter:description"
+      content="Local AI, code, maps, docs, games and media in one native Mac app that keeps working when the internet doesn't."
+    />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="preload" as="image" href="../assets/screens/roachnet-native-home.webp" />
+    <link rel="stylesheet" href="../nx.css" />
+  </head>
+  <body data-page="home">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__scan"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
+
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Home · v1.0.6</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link is-current" href="#top" aria-current="page">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top" class="nx-main" tabindex="-1">
+      <section class="nx-hero" aria-labelledby="hero-title">
+        <div class="nx-hero__copy">
+          <p class="nx-overline">RoachNet 1.0.6 for macOS</p>
+          <h1 class="nx-display nx-display--xl" id="hero-title">Everything you need, <span class="nx-accent">where you left it.</span></h1>
+          <p class="nx-lede">
+            Local AI, code, maps, media, games and your vault in one native Mac app, with RoachClaw a shortcut or a spoken word away. Offline on purpose, not by chance.
+          </p>
+          <div class="nx-actions">
+            <button class="nx-btn nx-btn--primary" id="primary-download" type="button">Download RoachNet 1.0.6 for macOS</button>
+            <button class="nx-btn" data-homebrew-install type="button">Install with Homebrew</button>
+          </div>
+          <p class="nx-hero__meta" id="download-meta">
+            <span>v1.0.6</span><span aria-hidden="true">·</span><span>376 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>lands in <code>~/RoachNet</code></span>
+          </p>
+          <p class="nx-prose">
+            Not Apple-notarized yet, so macOS asks you to approve it once. The Setup app and Homebrew both put everything in the same folder, so backing up, moving or deleting RoachNet is one drag.
+          </p>
+          <ul class="nx-status" aria-label="Live status">
+            <li data-state="pending" data-hero-time>--:--</li>
+            <li data-state="pending" data-hero-connectivity>Checking connection</li>
+            <li data-state="pending" data-hero-storage>Checking free space</li>
+          </ul>
+          <ul class="nx-links" aria-label="RoachNet utility links">
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Homebrew details</a></li>
+            <li><a class="nx-link nx-link--arrow" href="https://apps.roachnet.org/">Browse RoachNet Apps</a></li>
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API blueprint</a></li>
+          </ul>
+        </div>
+
+        <div class="nx-hero__visual" aria-hidden="true">
+          <div class="nx-screen screen-frame screen-frame--hero">
+            <span class="nx-screen__glow"></span>
+            <img
+              src="../assets/screens/roachnet-native-home.webp"
+              width="1568"
+              height="1032"
+              alt="RoachNet home screen on macOS"
+              fetchpriority="high"
+              decoding="async"
+            />
+            <span class="nx-screen__chip">Native macOS</span>
+          </div>
+          <div class="nx-floats">
+            <div class="nx-float nx-float--tl"><span>Local AI</span><strong>RoachClaw, on your own models</strong></div>
+            <div class="nx-float nx-float--br"><span>One folder</span><strong>Everything in ~/RoachNet</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="nx-ticker" aria-hidden="true">
+        <div class="nx-ticker__track">
+          <span class="nx-ticker__item">Offline on purpose</span>
+          <span class="nx-ticker__item">Your models, your Mac</span>
+          <span class="nx-ticker__item">One folder, ~/RoachNet</span>
+          <span class="nx-ticker__item">No account required</span>
+          <span class="nx-ticker__item">Native Apple Silicon</span>
+          <span class="nx-ticker__item">Checksums on every release</span>
+          <span class="nx-ticker__item">Pairs with your iPhone</span>
+        </div>
+      </div>
+
+      <section class="nx-section" id="features" aria-labelledby="features-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Why RoachNet</p>
+          <h2 class="nx-h2" id="features-title">Offline on purpose. Not by chance.</h2>
+          <p class="nx-lede">One folder on your machine. Easier to trust, easier to move, and still useful when the network stops pretending.</p>
+        </div>
+        <div class="nx-grid nx-grid--3" role="list">
+          <article class="nx-card nx-card--tilt nx-reveal" role="listitem">
+            <span class="nx-card__num" aria-hidden="true">01</span>
+            <p class="nx-card__eyebrow">Local models first</p>
+            <h3 class="nx-card__title">Your models stay on your hardware.</h3>
+            <p class="nx-card__body">Open RoachClaw anywhere and share vault or project context only when you decide to. No API keys, nothing phoning home.</p>
+          </article>
+          <article class="nx-card nx-card--tilt nx-reveal" role="listitem">
+            <span class="nx-card__num" aria-hidden="true">02</span>
+            <p class="nx-card__eyebrow">One folder, that's it</p>
+            <h3 class="nx-card__title">Take it anywhere. Delete it in a second.</h3>
+            <p class="nx-card__body">Everything lives under <code>~/RoachNet</code>. Easy to move, easy to back up, easy to wipe, easy to trust.</p>
+          </article>
+          <article class="nx-card nx-card--tilt nx-reveal" role="listitem">
+            <span class="nx-card__num" aria-hidden="true">03</span>
+            <p class="nx-card__eyebrow">Designed to disappear</p>
+            <h3 class="nx-card__title">Quick when called. Quiet when not.</h3>
+            <p class="nx-card__body">Open it, do the thing, close it. RoachNet is a tool, not a place to lose an afternoon.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="screens" aria-labelledby="screens-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">The app</p>
+          <h2 class="nx-h2" id="screens-title">Screens that do real work.</h2>
+          <p class="nx-lede">Everything in one place. No digging through tabs that refuse to load without a connection.</p>
+        </div>
+        <div class="nx-grid nx-grid--2 nx-shots" role="list">
+          <article class="nx-card nx-card--feature nx-shot nx-shot--wide nx-reveal" role="listitem">
+            <div class="nx-screen app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-native-home.webp" width="1568" height="1032" alt="RoachNet home screen" loading="lazy" decoding="async" />
+              <span class="nx-screen__chip">Home</span>
+            </div>
+            <div class="nx-shot__copy">
+              <p class="nx-card__eyebrow">Home</p>
+              <h3 class="nx-card__title">The command grid.</h3>
+              <p class="nx-card__body">Start a chat or a project, open a map, or browse the vault. The things you do most are one click from the first screen.</p>
+            </div>
+          </article>
+          <article class="nx-card nx-shot nx-reveal" role="listitem">
+            <div class="nx-screen app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-native-dev.webp" width="1538" height="1016" alt="Dev workspace in RoachNet" loading="lazy" decoding="async" />
+              <span class="nx-screen__chip">Dev</span>
+            </div>
+            <div class="nx-shot__copy">
+              <p class="nx-card__eyebrow">Dev</p>
+              <h3 class="nx-card__title">The native coding workspace.</h3>
+              <p class="nx-card__body">Start a project, open a file and get going. RoachBrain remembers the project and RoachClaw pairs with you, so you think about the code instead of the setup.</p>
+            </div>
+          </article>
+          <article class="nx-card nx-shot nx-reveal" role="listitem">
+            <div class="nx-screen app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-native-roachclaw.webp" width="1568" height="1032" alt="RoachClaw screen in RoachNet" loading="lazy" decoding="async" />
+              <span class="nx-screen__chip">RoachClaw</span>
+            </div>
+            <div class="nx-shot__copy">
+              <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachClaw</p>
+              <h3 class="nx-card__title">The local AI workbench.</h3>
+              <p class="nx-card__body">Run models on your own machine, switch between them, see exactly what's loaded, and pull in project context without playing prompt telephone. A shortcut or a spoken word away.</p>
+            </div>
+          </article>
+          <article class="nx-card nx-shot nx-reveal" role="listitem">
+            <div class="nx-screen app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-native-vault.webp" width="1556" height="1016" alt="RoachNet vault screen" loading="lazy" decoding="async" />
+              <span class="nx-screen__chip">Vault</span>
+            </div>
+            <div class="nx-shot__copy">
+              <p class="nx-card__eyebrow">Vault</p>
+              <h3 class="nx-card__title">Your library, offline.</h3>
+              <p class="nx-card__body">Notes, maps, courses, books, saved web pages, music, video, and anything you've installed from RoachNet Apps. Part library, part workshop, entirely yours.</p>
+            </div>
+          </article>
+          <article class="nx-card nx-shot nx-reveal" role="listitem">
+            <div class="nx-screen app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-native-runtime.webp" width="1568" height="1032" alt="RoachNet runtime screen" loading="lazy" decoding="async" />
+              <span class="nx-screen__chip">Runtime</span>
+            </div>
+            <div class="nx-shot__copy">
+              <p class="nx-card__eyebrow nx-card__eyebrow--amber">Runtime</p>
+              <h3 class="nx-card__title">The engine room.</h3>
+              <p class="nx-card__body">See what's running, what's downloading and where a problem is hiding, without opening a log file by hand.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="fit" aria-labelledby="fit-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Where it fits</p>
+          <h2 class="nx-h2" id="fit-title">Where it actually helps.</h2>
+          <p class="nx-lede">For people who want their files, tools and context to keep working when the internet doesn't. If you like owning your hardware and your data, you're in the right place.</p>
+        </div>
+        <div class="nx-grid nx-grid--3" role="list">
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Studio days</p>
+            <h3 class="nx-card__title">Docs, stems, notes and AI in one window instead of the usual eleven-tab disaster.</h3>
+            <p class="nx-card__body">Still there when the studio Wi-Fi taps out mid-take.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Travel</p>
+            <h3 class="nx-card__title">Pack it like a suitcase.</h3>
+            <p class="nx-card__body">Airplane mode changes nothing. Maps, references and your models fly with you.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Outages</p>
+            <h3 class="nx-card__title">Internet down, service down, whatever.</h3>
+            <p class="nx-card__body">Your files, models, maps and vault are exactly where you left them.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="inside" aria-labelledby="inside-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">RoachNet Apps</p>
+          <h2 class="nx-h2" id="inside-title">Things worth installing.</h2>
+          <p class="nx-lede">Wikipedia, a medical reference, a stack of developer docs, a voice pack. It all lands in the same place, ready when you need it.</p>
+        </div>
+        <div class="nx-grid nx-grid--4" role="list">
+          <a class="nx-card nx-card--clickable nx-reveal" role="listitem" href="https://apps.roachnet.org/#wikipedia">
+            <p class="nx-card__eyebrow">Wikipedia &amp; reference</p>
+            <h3 class="nx-card__title">From the top 100,000 articles to the whole encyclopedia.</h3>
+            <p class="nx-card__body">Offline and searchable, in the size you choose.</p>
+            <p class="nx-card__foot nx-link nx-link--arrow">Browse</p>
+          </a>
+          <a class="nx-card nx-card--clickable nx-reveal" role="listitem" href="https://apps.roachnet.org/#medicine">
+            <p class="nx-card__eyebrow">Medicine</p>
+            <h3 class="nx-card__title">Remedies, treatments and references for people who prepare.</h3>
+            <p class="nx-card__body">Instead of trusting search results under pressure.</p>
+            <p class="nx-card__foot nx-link nx-link--arrow">Browse</p>
+          </a>
+          <a class="nx-card nx-card--clickable nx-reveal" role="listitem" href="https://apps.roachnet.org/#dev">
+            <p class="nx-card__eyebrow">Dev &amp; ML</p>
+            <h3 class="nx-card__title">API references, command-line guides and machine-learning material.</h3>
+            <p class="nx-card__body">No hunting for docs at the exact moment you need them.</p>
+            <p class="nx-card__foot nx-link nx-link--arrow">Browse</p>
+          </a>
+          <a class="nx-card nx-card--clickable nx-reveal" role="listitem" href="https://apps.roachnet.org/#packs">
+            <p class="nx-card__eyebrow nx-card__eyebrow--purple">Packs</p>
+            <h3 class="nx-card__title">Voice packs today. Feature packs with RoachNet 1.1.</h3>
+            <p class="nx-card__body">Speech in and out, installed on demand and removed without losing your data.</p>
+            <p class="nx-card__foot nx-link nx-link--arrow">Browse</p>
+          </a>
+        </div>
+        <div class="nx-actions nx-mt-32">
+          <a class="nx-btn" href="https://apps.roachnet.org/">Browse RoachNet Apps</a>
+        </div>
+      </section>
+
+      <section class="nx-section" id="runtime" aria-labelledby="runtime-title">
+        <div class="nx-section__head">
+          <p class="nx-overline nx-overline--amber">Under the hood</p>
+          <h2 class="nx-h2" id="runtime-title">The window is the nice part. The engine is the good part.</h2>
+        </div>
+        <div class="nx-grid nx-grid--4" role="list">
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Local runtime</p>
+            <h3 class="nx-card__title">One folder, not a confetti trail.</h3>
+            <p class="nx-card__body">Everything RoachNet needs lives inside <code>~/RoachNet</code>, not scattered across your home directory.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachClaw</p>
+            <h3 class="nx-card__title">A local AI for your code, notes and everything between.</h3>
+            <p class="nx-card__body">One shortcut or one spoken word away. No API keys, no cloud required.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Dev Studio</p>
+            <h3 class="nx-card__title">Write, run and ask, in one workspace.</h3>
+            <p class="nx-card__body">Manage projects, run commands and get AI help in a place that picks up your habits as you go.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Maps &amp; vault</p>
+            <h3 class="nx-card__title">Plan the trip, sketch the route, keep the map.</h3>
+            <p class="nx-card__body">Open the map pack, ask RoachClaw to rough out the route, and let RoachAtlas handle the turns. Same app, no tab-hopping.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="release" aria-labelledby="release-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">What's new</p>
+          <h2 class="nx-h2" id="release-title">1.0.6: same RoachNet, lighter on its feet.</h2>
+          <p class="nx-lede">The engine underneath was rewritten in Swift. The download shrank, the setup got simpler, and the phone pairs properly again.</p>
+        </div>
+        <ul class="nx-stats nx-reveal" aria-label="1.0.6 by the numbers">
+          <li class="nx-stat"><span class="nx-stat__value"><span data-count="376" data-suffix=" MB">376 MB</span></span><span class="nx-stat__label">Installer, down from 540</span></li>
+          <li class="nx-stat"><span class="nx-stat__value"><span data-count="0">0</span><small>bundled Node</small></span><span class="nx-stat__label">Native Swift runtime</span></li>
+          <li class="nx-stat"><span class="nx-stat__value">1<small>folder</small></span><span class="nx-stat__label">~/RoachNet, as always</span></li>
+          <li class="nx-stat"><span class="nx-stat__value">0.2.0</span><span class="nx-stat__label">iOS companion it pairs with</span></li>
+        </ul>
+        <div class="nx-grid nx-grid--4 nx-mt-24" role="list">
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Native runtime</p>
+            <h3 class="nx-card__title">The engine is now a native Swift program.</h3>
+            <p class="nx-card__body">No bundled Node, nothing extra to update behind your back.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Smaller download</p>
+            <h3 class="nx-card__title">376 MB, down from 540 MB in 1.0.5.</h3>
+            <p class="nx-card__body">Same apps, same <code>~/RoachNet</code>.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Phone pairing</p>
+            <h3 class="nx-card__title">RoachNet iOS 0.2.0 works against the new engine.</h3>
+            <p class="nx-card__body">RoachTail pairing, RoachClaw chat and service controls from your phone.</p>
+          </article>
+          <article class="nx-card nx-card--signal nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow nx-card__eyebrow--amber">In the workshop: 1.1</p>
+            <h3 class="nx-card__title">RoachClaw on its own engine, and an app that installs only what you use.</h3>
+            <p class="nx-card__body">Models on hand-written Metal with no Ollama inside, RoachClaw Org approvals from your phone, and feature packs so the core download stays small. No date until it's ready.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="downloads" aria-labelledby="downloads-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Download</p>
+          <h2 class="nx-h2" id="downloads-title">Get it on your machine.</h2>
+          <p class="nx-lede">Installer or Homebrew, the ending is the same: RoachNet on hardware you own, in a folder you can back up, move or delete in one drag.</p>
+        </div>
+        <div class="nx-grid nx-grid--2 nx-downloads">
+          <button class="nx-card nx-card--feature nx-card--clickable download-hero-card nx-reveal" data-platform="mac" type="button">
+            <p class="nx-card__eyebrow">macOS · Apple Silicon</p>
+            <h3 class="nx-card__title">Download RoachNet 1.0.6. It all lands in <code>~/RoachNet</code>.</h3>
+            <p class="nx-card__body">RoachNet-Setup-macOS.dmg · 376 MB · not Apple-notarized yet, so macOS asks once.</p>
+            <p class="nx-card__foot nx-link nx-link--arrow">Download the DMG</p>
+          </button>
+          <div class="nx-console nx-reveal">
+            <div class="nx-console__bar"><i></i><i></i><i></i> Terminal · Homebrew</div>
+            <div class="nx-console__body">
+              <span class="nx-console__line" id="brew-command" data-type>brew update &amp;&amp; brew tap --force RoachWares/roachnet &amp;&amp; brew install --cask roachnet</span>
+              <span class="nx-console__line nx-console__line--out">RoachNet lands in ~/RoachNet. Same app, no setup window.</span>
+            </div>
+            <div class="nx-console__copy">
+              <button class="nx-btn nx-btn--sm nx-btn--mono" data-homebrew-copy type="button">Copy</button>
+            </div>
+          </div>
+          <a class="nx-card nx-card--clickable nx-reveal" href="https://roachnet.org/ios/">
+            <p class="nx-card__eyebrow">iPhone &amp; iPad · SideStore + AltStore</p>
+            <h3 class="nx-card__title">RoachNet iOS 0.2.0</h3>
+            <p class="nx-card__body">RoachClaw, your vault, app installs and a live look at the Mac, over your own RoachTail link.</p>
+            <p class="nx-card__foot nx-link nx-link--arrow">Install on iOS</p>
+          </a>
+          <a class="nx-card nx-card--clickable nx-reveal" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">
+            <p class="nx-card__eyebrow">Source · RoachWares</p>
+            <h3 class="nx-card__title">Read the code that makes all of this work.</h3>
+            <p class="nx-card__body">Every release is public, down to the checksum of the file you download.</p>
+            <p class="nx-card__foot nx-link nx-link--arrow">Latest GitHub release</p>
+          </a>
+        </div>
+        <p class="nx-prose nx-mt-24" id="homebrew-note">
+          Mac only. Browsers can't open Terminal, so the Homebrew button downloads a small helper that opens it and runs the install. Read it first; we'd think more of you for it.
+        </p>
+        <div class="nx-actions nx-mt-24">
+          <button class="nx-btn nx-btn--primary" id="downloads-primary" type="button">Download RoachNet 1.0.6 for macOS</button>
+          <button class="nx-btn" data-homebrew-install type="button">Install with Homebrew</button>
+          <a class="nx-btn" href="https://roachnet.org/ios/">RoachNet iOS</a>
+        </div>
+      </section>
+
+      <section class="nx-section" id="support" aria-labelledby="support-title">
+        <div class="nx-band nx-reveal">
+          <p class="nx-overline nx-overline--purple">Independent</p>
+          <h2 class="nx-h2 nx-mt-16" id="support-title">Made by one stubborn Roach, for people who keep their own machines.</h2>
+          <p class="nx-lede nx-mt-16 nx-content">RoachNet is made by RoachWares LLC: one person, one company, no committee. It exists because someone wanted it badly enough to build it, and it keeps improving because people like you show up.</p>
+          <div class="nx-actions nx-actions--center nx-mt-32">
+            <a class="nx-btn nx-btn--primary" href="https://www.roachwares.org/">Meet RoachWares</a>
+            <a class="nx-btn" href="https://www.paypal.com/ncp/payment/ZV8RL9DWQXHGE" target="_blank" rel="noreferrer">Chip in</a>
+            <a class="nx-btn" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Read the changelog</a>
+          </div>
+          <span class="nx-band__rail" aria-hidden="true"></span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="#top">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
+
+    <script src="../site-config.js"></script>
+    <script src="../app.js" type="module"></script>
+    <script src="../nx.js" type="module"></script>
+    <script src="./release-chip.js"></script>
+  </body>
+</html>
 ```
 
 ## html-validate.json
@@ -3507,11 +6584,11 @@ This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="index-html" file="index.html"}
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx nx-mission">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachNet – Offline-first AI, Archiving & Dev Stack</title>
+    <title>RoachNet – Offline-first AI, Archiving &amp; Dev Stack</title>
     <meta
       name="description"
       content="You weren't crazy. The cloud got loud. RoachNet brings your AI, code, maps, and archive back to one place: your own machine."
@@ -3537,60 +6614,61 @@ This root is reconciled byte-for-byte from the current production source.
       content="Bring the important stuff home. RoachNet keeps your AI, code, maps, and archive on the machine in front of you."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
-    />
-    <link rel="stylesheet" href="./app.css" />
-    <link rel="stylesheet" href="./app-polish.css" />
-    <link rel="stylesheet" href="./motion-layer.css" />
-    <link rel="stylesheet" href="./landing.css" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="./nx.css" />
+    <link rel="stylesheet" href="./nx-mission.css" />
   </head>
   <body class="rn-body" data-page="landing">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
 
-    <!-- Dithered parallax background -->
     <div class="dither-bg" aria-hidden="true">
       <canvas id="dither-canvas"></canvas>
     </div>
+    <div class="nx-atmos nx-atmos--mission" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="landing-scroll-progress" aria-hidden="true"></div>
 
-    <!-- Navigation -->
-    <header class="rn-nav">
-      <div class="rn-nav-inner">
-        <a href="https://roachnet.org/" class="rn-logo" aria-label="RoachNet landing page">
-          <img class="rn-logo-img" src="./favicon-32x32.png" width="26" height="26" alt="RoachNet logo" decoding="async" />
-          <span class="rn-logo-text">RoachNet</span>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Mission</span>
         </a>
-        <nav class="rn-nav-links" aria-label="Primary">
-          <a href="#top" class="rn-nav-link is-current">Mission</a>
-          <a href="https://roachnet.org/home/" class="rn-nav-link">Home</a>
-          <a href="https://apps.roachnet.org" class="rn-nav-link">Apps</a>
-          <a href="https://roachnet.org/roachclaw/" class="rn-nav-link">Claw</a>
-          <a href="https://roachnet.org/brew/" class="rn-nav-link">Brew</a>
-          <a href="https://roachnet.org/ios/" class="rn-nav-link">iOS</a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link is-current" href="#top" aria-current="page">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
         </nav>
-        <div class="rn-nav-cta">
-          <a class="rn-nav-ghost" href="https://accounts.roachnet.org/">Account</a>
-          <a class="rn-nav-ghost" href="https://roachnet.org/api/">API</a>
-          <a class="rn-nav-primary" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
     </header>
 
-    <div class="landing-scroll-progress" aria-hidden="true"></div>
+    <main id="top" class="rn-main nx-mission-main" tabindex="-1">
 
-    <!-- Main content -->
-    <main id="top" class="rn-main" tabindex="-1">
-
-      <!-- Hero: single-column, centered, editorial -->
-      <section class="why-hero">
+      <section class="why-hero" aria-labelledby="why-title">
         <div class="why-hero__inner">
-          <h1 class="why-hero__title">
-            You weren't crazy.<br />
+          <h1 class="why-hero__title" id="why-title">
+            <span class="why-hero__line">You weren't crazy.</span>
             <span class="why-hero__sheen">The&nbsp;cloud got&nbsp;loud.</span>
           </h1>
           <div class="why-hero__signal" aria-hidden="true">
             <div class="why-hero__signal-core">
+              <span class="why-hero__signal-core-ring"></span>
               <span class="why-hero__signal-core-ring"></span>
               <span class="why-hero__signal-core-ring"></span>
               <span class="why-hero__signal-core-dot"></span>
@@ -3607,22 +6685,31 @@ This root is reconciled byte-for-byte from the current production source.
             setup, chasing logins, or nursing along some &ldquo;smart&rdquo; cloud tool
             that keeps trying to help by getting in your way.
           </p>
+          <a class="why-hero__cue" href="#why-pile" aria-label="Keep reading">
+            <span aria-hidden="true"></span>
+          </a>
         </div>
       </section>
 
-      <!-- Flow: the problem -->
-      <section class="why-section" data-reveal>
+      <section class="why-section why-section--pile" id="why-pile" data-reveal>
         <div class="why-section__inner">
-          <p class="why-prose">
+          <p class="why-prose why-prose--lead">
             Now your work lives in a dozen tabs, three different logins, and
             however many dashboards decided to redesign themselves this
             quarter. Your setup stopped feeling like a system and started
             feeling like a pile.
           </p>
         </div>
+        <div class="why-pile" aria-hidden="true">
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+        </div>
       </section>
 
-      <!-- Blockquote: the turn -->
       <section class="why-section why-section--quote" data-reveal>
         <div class="why-section__inner">
           <blockquote class="why-blockquote">
@@ -3630,7 +6717,7 @@ This root is reconciled byte-for-byte from the current production source.
               And yet, for the work that actually matters, you still crave
               something simple:
             </p>
-            <div class="why-blockquote__lines" aria-hidden="true">
+            <div class="why-blockquote__lines">
               <span>A machine that&rsquo;s yours.</span>
               <span>Tools that don&rsquo;t move.</span>
               <span>A setup that keeps working, even when the internet doesn&rsquo;t.</span>
@@ -3640,8 +6727,7 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- What RoachNet is -->
-      <section class="why-section" data-reveal>
+      <section class="why-section why-section--meet" data-reveal>
         <div class="why-section__inner">
           <h2 class="why-heading">Meet RoachNet.</h2>
           <p class="why-prose">
@@ -3661,17 +6747,16 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- App showcase: the real app, tilting flat as it scrolls in -->
       <section class="why-section why-section--showcase" data-reveal aria-label="RoachNet on macOS">
         <figure class="why-showcase" data-why-showcase>
           <div class="why-showcase__glow" aria-hidden="true"></div>
           <div class="why-showcase__window">
+            <div class="why-showcase__bar" aria-hidden="true"><i></i><i></i><i></i><span>RoachNet 1.0.6</span></div>
             <img src="./assets/screens/roachnet-native-home.webp" width="1568" height="1032" alt="RoachNet on macOS: the Home screen with RoachClaw, the vault and the runtime" loading="lazy" decoding="async" />
           </div>
         </figure>
       </section>
 
-      <!-- What you can do -->
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <h2 class="why-heading">Bring the important stuff home.</h2>
@@ -3684,20 +6769,19 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- Capability cards -->
-      <section class="why-section" data-reveal>
+      <section class="why-section why-section--caps" data-reveal>
         <div class="why-capabilities">
-          <article class="why-cap-card" data-reveal>
+          <article class="why-cap-card nx-card nx-card--tilt" data-reveal>
             <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9.5 9.5h5v5h-5z"/><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3"/></svg></span>
             <h3>Local AI</h3>
             <p>Real models, running on your own Mac. No API keys, no monthly meter, no asking anyone's permission.</p>
           </article>
-          <article class="why-cap-card" data-reveal>
+          <article class="why-cap-card nx-card nx-card--tilt" data-reveal>
             <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9"/><path d="M10 13h4"/></svg></span>
             <h3>Your own archive</h3>
             <p>Park the pages, docs, playlists, and projects you care about somewhere they'll still be in five years.</p>
           </article>
-          <article class="why-cap-card" data-reveal>
+          <article class="why-cap-card nx-card nx-card--tilt" data-reveal>
             <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9.5l3 2.5-3 2.5"/><path d="M12.5 15h4.5"/></svg></span>
             <h3>A place to build</h3>
             <p>The same setup on your desktop, your laptop, and that machine in the closet. No browser required.</p>
@@ -3705,7 +6789,6 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- Accent statement -->
       <section class="why-section why-section--accent" data-reveal>
         <div class="why-section__inner">
           <p class="why-accent-line">
@@ -3715,7 +6798,6 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- A different relationship -->
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <h2 class="why-heading">A different relationship with computing</h2>
@@ -3731,7 +6813,6 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- Closing -->
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <p class="why-prose">
@@ -3746,7 +6827,6 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- The choice -->
       <section class="why-section why-section--final" data-reveal>
         <div class="why-section__inner">
           <p class="why-final-line">
@@ -3756,7 +6836,6 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
-      <!-- Download CTA -->
       <section class="why-section why-section--cta" id="download-section" data-reveal>
         <div class="why-cta">
           <div class="why-cta__keys" data-landing-shortcut aria-label="Download shortcut">
@@ -3772,3997 +6851,451 @@ This root is reconciled byte-for-byte from the current production source.
           </p>
           <p class="why-cta__status why-cta__status--fine">RoachNet v1.0.6 is not Apple-notarized; macOS may ask you to approve it on first launch.</p>
           <div class="why-cta__buttons">
-            <button class="rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
-            <a class="rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
+            <button class="nx-btn nx-btn--primary rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
+            <a class="nx-btn rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
           </div>
         </div>
       </section>
 
-      <!-- Bottom wordmark -->
       <div class="why-bottom-mark" aria-hidden="true">
         <span class="why-bottom-wordmark">RoachNet</span>
         <span class="why-bottom-tag">offline on purpose</span>
       </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="rn-footer">
-      <div class="rn-footer-inner">
-        <div class="rn-footer-copy">
+    <footer class="nx-foot nx-foot--mission">
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
           <strong>RoachNet</strong>
           <span>RoachNet &middot; offline on purpose.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
         </div>
-        <nav class="rn-footer-nav" aria-label="Footer">
-          <a href="#top">Mission</a>
-          <a href="https://roachnet.org/home/">Home</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-          <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
-          <a href="https://roachnet.org/ios/">iOS</a>
-          <a href="https://roachnet.org/api/">API</a>
-          <a href="https://roachnet.org/sitemap/">Sitemap</a>
-          <a href="https://www.roachwares.org/">RoachWares</a>
-          <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
-        <div class="rn-footer-meta">
-          <div class="rn-footer-brand" aria-hidden="true">
-            <span>RoachNet</span>
-          </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="#top">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
           <a
-            class="rn-release-chip"
+            class="nx-release rn-release-chip"
             id="footer-release-badge"
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
             aria-label="Latest RoachNet release v1.0.6"
           >v1.0.6</a>
-          <a
-            class="rn-netlify-badge"
-            href="https://www.netlify.com"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Proudly powered by Netlify"
-          >
-            <span>Proudly powered by Netlify</span>
-            <img
-              src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-              alt="Netlify"
-              loading="lazy"
-            />
-          </a>
+          <span>© 2026 RoachWares LLC</span>
         </div>
+        <a class="nx-netlify rn-netlify-badge" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Proudly powered by Netlify</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" loading="lazy" />
+        </a>
       </div>
     </footer>
 
     <script src="./site-config.js"></script>
     <script src="./app.js" type="module"></script>
     <script src="./landing-script.js"></script>
-    <script src="./site-polish.js" type="module"></script>
-    <script src="./motion-layer.js" type="module"></script>
+    <script src="./nx.js" type="module"></script>
     <script src="./landing-dither.js"></script>
-</body>
+  </body>
 </html>
 ```
 
-## landing.css
+## ios/index.html
 
 This root is reconciled byte-for-byte from the current production source.
 
-```text {chunk="landing-css" file="landing.css"}
-/* =========================================================
-   landing.css
-   Raycast /why–inspired editorial layout for the RoachNet
-   Mission page. Single-column, centered, vertical scroll,
-   large typography, generous whitespace.
-   ========================================================= */
-
-/* 0) Variables */
-:root {
-  --rn-font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-    "SF Pro Text", "Segoe UI", sans-serif;
-  --rn-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
-    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-
-  --why-bg: #000000;
-  --why-text: #f0f0f0;
-  --why-text-muted: #999999;
-  --why-text-soft: #666666;
-  --why-accent: #9138D8;
-  --why-accent-soft: rgba(145, 56, 216, 0.18);
-  --why-border: rgba(255, 255, 255, 0.08);
-  --why-content-width: 720px;
-  --why-wide-width: 1080px;
-}
-
-/* 1) Body reset */
-body.rn-body {
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  font-family: var(--rn-font-sans);
-  background: var(--why-bg);
-  color: var(--why-text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  opacity: 1;
-  animation: none;
-}
-
-body.rn-body::before,
-body.rn-body::after {
-  display: none;
-}
-
-/* Hide old site-level layout artifacts */
-body.rn-body .bg-glow { display: none; }
-body.rn-body .site-header { display: none; }
-body.rn-body .site-footer { display: none; }
-
-/* 2) Navigation */
-.rn-nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(24px) saturate(1.35);
-  -webkit-backdrop-filter: blur(24px) saturate(1.35);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(145, 56, 216, 0.1), transparent 38%),
-    rgba(0, 0, 0, 0.72);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
-}
-
-.rn-nav-inner {
-  max-width: var(--why-wide-width);
-  margin: 0 auto;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-}
-
-.rn-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--why-text);
-  text-decoration: none;
-}
-
-.rn-logo-img {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-  border-radius: 6px;
-}
-
-.rn-logo-text {
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: -0.01em;
-}
-
-.rn-nav-links {
-  display: flex;
-  gap: 5px;
-  max-width: 42vw;
-  padding: 4px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.035);
-  scrollbar-width: none;
-  font-size: 13px;
-}
-
-.rn-nav-links::-webkit-scrollbar {
-  display: none;
-}
-
-.rn-nav-link {
-  flex: 0 0 auto;
-  min-height: 30px;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 12px;
-  color: var(--why-text-muted);
-  text-decoration: none;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  transition:
-    color 160ms ease,
-    background 160ms ease,
-    border-color 160ms ease,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.rn-nav-link:hover,
-.rn-nav-link:focus-visible,
-.rn-nav-link.is-current,
-.rn-nav-link[aria-current="page"] {
-  color: var(--why-text);
-  border-color: rgba(145, 56, 216, 0.28);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(145, 56, 216, 0.22), transparent 72%),
-    rgba(255, 255, 255, 0.065);
-}
-
-.rn-nav-link:hover {
-  transform: translateY(-1px);
-}
-
-.rn-nav-cta {
-  display: inline-flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.rn-nav-cta::-webkit-scrollbar {
-  display: none;
-}
-
-.rn-nav-ghost,
-.rn-nav-primary {
-  font-size: 13px;
-  padding: 6px 14px;
-  border-radius: 8px;
-  text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--why-text-muted);
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-  transition:
-    color 150ms ease,
-    background 150ms ease,
-    border-color 150ms ease,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.rn-nav-ghost:hover {
-  color: var(--why-text);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.rn-nav-primary {
-  border-color: transparent;
-  background: var(--why-accent);
-  color: #fff;
-}
-
-.rn-nav-primary:hover {
-  filter: brightness(1.15);
-}
-
-/* 3) Main container */
-.rn-main {
-  padding: 0 24px 80px;
-}
-
-/* 4) Hero: large, centered, editorial */
-.why-hero {
-  max-width: var(--why-content-width);
-  margin: 0 auto;
-  padding: 120px 0 80px;
-  text-align: center;
-}
-
-.why-hero__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.why-hero__kicker {
-  display: inline-block;
-  margin: 0 0 28px;
-  padding: 6px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--why-text-muted);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  animation: why-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.why-hero__title {
-  margin: 0 0 32px;
-  font-size: clamp(40px, 7vw, 72px);
-  font-weight: 800;
-  line-height: 1.0;
-  letter-spacing: -0.045em;
-  color: var(--why-text);
-  animation: why-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) 100ms both;
-}
-
-.why-hero__lede {
-  margin: 0;
-  max-width: 560px;
-  font-size: clamp(16px, 2vw, 19px);
-  line-height: 1.6;
-  color: var(--why-text-muted);
-  animation: why-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
-}
-
-.why-hero__signal {
-  width: min(100%, 840px);
-  margin-top: 52px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  min-height: 184px;
-  justify-content: center;
-  border-radius: 999px;
-  background:
-    radial-gradient(ellipse at 50% 46%, rgba(145, 56, 216, 0.24), rgba(145, 56, 216, 0.07) 44%, transparent 72%),
-    radial-gradient(ellipse at 50% 82%, rgba(50, 255, 126, 0.12), transparent 64%);
-  opacity: 1;
-  animation: why-signal-mobile-breathe 6.2s ease-in-out infinite;
-  --hero-scroll-shift: 0px;
-  position: relative;
-  isolation: isolate;
-}
-
-.why-hero__signal::before {
-  content: "";
-  position: absolute;
-  inset: 8% 14% 18%;
-  z-index: -1;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(145, 56, 216, 0.26), transparent 48%),
-    radial-gradient(circle at 32% 62%, rgba(50, 255, 126, 0.1), transparent 46%);
-  filter: blur(18px);
-  opacity: 0.9;
-  transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * 0.35), 0);
-  animation: why-signal-halo 7.8s ease-in-out infinite;
-}
-
-.why-hero__signal-core {
-  --hero-core-x: 0px;
-  --hero-core-y: 0px;
-  --hero-scroll-y: 0px;
-  position: relative;
-  width: min(100%, 320px);
-  aspect-ratio: 16 / 9;
-  display: grid;
-  place-items: center;
-  transform: translate3d(var(--hero-core-x), calc(var(--hero-core-y) + var(--hero-scroll-y)), 0);
-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.why-hero__signal-core::before {
-  content: "";
-  position: absolute;
-  inset: 18% 10%;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at center, rgba(145, 56, 216, 0.34), rgba(145, 56, 216, 0) 62%),
-    radial-gradient(circle at 70% 32%, rgba(92, 141, 255, 0.2), rgba(92, 141, 255, 0) 58%);
-  filter: blur(26px);
-  opacity: 0.94;
-  animation: why-core-haze 9s ease-in-out infinite;
-}
-
-.why-hero__signal-core-ring,
-.why-hero__signal-core-dot {
-  position: absolute;
-  pointer-events: none;
-}
-
-.why-hero__signal-core-ring {
-  top: 50%;
-  left: 50%;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: linear-gradient(90deg, rgba(145, 56, 216, 0.08), rgba(92, 141, 255, 0.04));
-  box-shadow:
-    0 0 0 1px rgba(145, 56, 216, 0.08),
-    0 0 38px rgba(145, 56, 216, 0.16);
-  transform: translate(-50%, -50%);
-}
-
-.why-hero__signal-core-ring:nth-child(1) {
-  width: min(100%, 268px);
-  height: 84px;
-  animation: why-core-breathe 8.8s ease-in-out infinite;
-}
-
-.why-hero__signal-core-ring:nth-child(2) {
-  width: min(74%, 196px);
-  height: 48px;
-  border-color: rgba(92, 141, 255, 0.24);
-  box-shadow:
-    0 0 0 1px rgba(92, 141, 255, 0.08),
-    0 0 32px rgba(92, 141, 255, 0.18);
-  animation: why-core-breathe 7.1s ease-in-out infinite reverse;
-}
-
-.why-hero__signal-core-dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 35% 35%, rgba(249, 252, 255, 0.98), rgba(249, 252, 255, 0.22) 45%, rgba(145, 56, 216, 0.08) 100%),
-    rgba(145, 56, 216, 0.94);
-  box-shadow:
-    0 0 0 6px rgba(145, 56, 216, 0.08),
-    0 0 20px rgba(145, 56, 216, 0.48),
-    0 0 44px rgba(92, 141, 255, 0.2);
-  animation: why-core-pulse 4.6s ease-in-out infinite;
-}
-
-.why-hero__signal.is-bursting,
-.why-bottom-mark.is-bursting {
-  animation: glitch-flicker 300ms steps(2, end) 1;
-}
-
-.why-hero__signal.is-bursting .why-hero__signal-core-ring:nth-child(1),
-.why-bottom-mark.is-bursting .why-bottom-wordmark::before {
-  animation: glitch-shift-1 260ms steps(2, end) 1;
-}
-
-.why-hero__signal.is-bursting .why-hero__signal-core-ring:nth-child(2),
-.why-bottom-mark.is-bursting .why-bottom-wordmark::after {
-  animation: glitch-shift-2 260ms steps(2, end) 1;
-}
-
-.why-hero__signal-rails {
-  width: min(100%, 620px);
-  display: grid;
-  gap: 8px;
-}
-
-.why-hero__signal-rails span {
-  display: block;
-  height: 2px;
-  border-radius: 999px;
-  background-size: 180% 100%;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(145, 56, 216, 0) 0%,
-      rgba(145, 56, 216, 0.22) 12%,
-      rgba(92, 141, 255, 0.7) 44%,
-      rgba(50, 255, 126, 0.46) 68%,
-      rgba(145, 56, 216, 0) 100%
-    );
-  opacity: 0.72;
-  transform: translateX(calc(var(--hero-rail-shift, 0px) + var(--hero-scroll-shift, 0px)));
-  transform-origin: center;
-  animation:
-    why-rail-shift 7s cubic-bezier(0.22, 1, 0.36, 1) infinite,
-    why-rail-glow 4.8s ease-in-out infinite;
-}
-
-.why-hero__signal-rails span:nth-child(2) {
-  width: 88%;
-  justify-self: center;
-  animation-delay: -2.1s;
-}
-
-.why-hero__signal-rails span:nth-child(3) {
-  width: 72%;
-  justify-self: center;
-  animation-delay: -4.2s;
-}
-
-/* 5) Content sections */
-.why-section {
-  max-width: var(--why-content-width);
-  margin: 0 auto;
-  padding: 60px 0;
-}
-
-.why-section__inner {
-  /* no special styling — just structure */
-}
-
-/* Prose text */
-.why-prose {
-  margin: 0 0 20px;
-  font-size: clamp(16px, 1.8vw, 18px);
-  line-height: 1.7;
-  color: var(--why-text-muted);
-}
-
-.why-prose:last-child {
-  margin-bottom: 0;
-}
-
-.why-prose em {
-  font-style: normal;
-  color: var(--why-text);
-}
-
-.why-prose strong {
-  color: var(--why-text);
-  font-weight: 600;
-}
-
-/* Section headings */
-.why-heading {
-  margin: 0 0 24px;
-  font-size: clamp(24px, 4vw, 36px);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  color: var(--why-text);
-}
-
-/* 6) Blockquote — the turn */
-.why-section--quote {
-  padding: 80px 0;
-}
-
-.why-blockquote {
-  margin: 0;
-  padding: 0;
-  border: none;
-  text-align: center;
-  display: grid;
-  gap: 20px;
-}
-
-.why-blockquote__intro,
-.why-blockquote__outro {
-  margin: 0;
-  font-size: clamp(20px, 3vw, 28px);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.04em;
-  color: var(--why-text);
-}
-
-.why-blockquote__intro {
-  max-width: 26ch;
-  margin-inline: auto;
-}
-
-.why-blockquote__lines {
-  display: grid;
-  gap: 10px;
-  justify-items: center;
-}
-
-.why-blockquote__lines span {
-  font-size: clamp(30px, 5vw, 54px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.06em;
-  color: var(--why-text);
-  text-wrap: balance;
-}
-
-.why-blockquote__lines span:nth-child(2) {
-  color: rgba(247, 250, 255, 0.9);
-}
-
-.why-blockquote__lines span:nth-child(3) {
-  max-width: 16ch;
-  color: rgba(229, 235, 242, 0.78);
-}
-
-.why-blockquote__outro {
-  color: var(--why-accent);
-  text-shadow:
-    0 0 18px rgba(145, 56, 216, 0.24),
-    0 0 36px rgba(145, 56, 216, 0.12);
-}
-
-/* 7) Capability cards */
-.why-capabilities {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  max-width: var(--why-wide-width);
-  margin: 0 auto;
-}
-
-.why-cap-card {
-  padding: 32px 28px;
-  border-radius: 16px;
-  border: 1px solid var(--why-border);
-  background: rgba(255, 255, 255, 0.02);
-  transition: border-color 250ms ease, transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.why-cap-card:hover {
-  border-color: rgba(145, 56, 216, 0.25);
-  transform: translateY(-2px);
-}
-
-.why-cap-card__icon {
-  display: inline-grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  margin-bottom: 16px;
-  border-radius: 14px;
-  color: #b06cf0;
-  background: radial-gradient(circle at 30% 25%, rgba(145, 56, 216, 0.28), rgba(145, 56, 216, 0.06) 70%);
-  border: 1px solid rgba(176, 108, 240, 0.22);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 30px rgba(145, 56, 216, 0.12);
-}
-
-.why-cap-card__icon svg {
-  display: block;
-}
-
-.why-cta__status--fine {
-  font-size: 12px;
-  opacity: 0.72;
-}
-
-/* Keyboard bypass: hidden until focused, high contrast when it shows. */
-body.rn-body .rn-skip-link {
-  color: #fff;
-  background: #000;
-}
-
-.why-cap-card h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--why-text);
-}
-
-.why-cap-card p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--why-text-soft);
-}
-
-.company-hero {
-  padding-bottom: 54px;
-}
-
-.company-signal {
-  margin-top: 42px;
-}
-
-.company-hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin: 26px auto 0;
-}
-
-.company-status,
-.company-proof {
-  width: min(100%, var(--why-wide-width));
-  margin: 0 auto;
-  padding: 30px;
-  border: 1px solid var(--why-border);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.3);
-}
-
-.company-status__label {
-  margin-bottom: 10px;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.76rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.company-status__grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 26px;
-}
-
-.company-status__grid a {
-  min-height: 160px;
-  padding: 18px;
-  border: 1px solid var(--why-border);
-  border-radius: 16px;
-  color: inherit;
-  text-decoration: none;
-  background: rgba(0, 0, 0, 0.22);
-  transition: border-color 220ms ease, transform 220ms ease, background 220ms ease;
-}
-
-.company-status__grid a:hover {
-  border-color: rgba(88, 255, 168, 0.35);
-  background: rgba(255, 255, 255, 0.045);
-  transform: translateY(-2px);
-}
-
-.company-status__grid span,
-.company-card span {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-
-.company-status__grid span {
-  display: block;
-  margin-bottom: 12px;
-  color: var(--why-text-soft);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.company-status__grid strong {
-  display: block;
-  color: var(--why-text);
-  font-size: 1rem;
-  line-height: 1.25;
-}
-
-.company-status__grid small {
-  display: block;
-  margin-top: 10px;
-  color: var(--why-text-muted);
-  font-size: 0.84rem;
-  line-height: 1.55;
-}
-
-.company-grid {
-  max-width: var(--why-wide-width);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.company-card {
-  min-height: 210px;
-  padding: 28px;
-  border: 1px solid var(--why-border);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.035);
-  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
-}
-
-.company-card span {
-  display: block;
-  margin-bottom: 18px;
-  color: var(--why-text-soft);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-.company-card h3 {
-  margin: 0 0 12px;
-  color: var(--why-text);
-  font-size: 1.28rem;
-  line-height: 1.16;
-}
-
-.company-card p {
-  margin: 0;
-  color: var(--why-text-muted);
-  font-size: 0.98rem;
-  line-height: 1.58;
-}
-
-.company-list {
-  margin-top: 28px;
-}
-
-.company-cta {
-  max-width: 720px;
-}
-
-/* 8) Accent statement */
-.why-section--accent {
-  padding: 40px 0;
-}
-
-.why-accent-line {
-  margin: 0;
-  font-size: clamp(20px, 3vw, 28px);
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: -0.03em;
-  color: var(--why-text);
-  padding-left: 28px;
-  border-left: 3px solid var(--why-accent);
-}
-
-/* 9) List */
-.why-list {
-  display: grid;
-  gap: 14px;
-  margin: 20px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.why-list li {
-  padding-left: 24px;
-  position: relative;
-  font-size: clamp(16px, 1.8vw, 18px);
-  line-height: 1.6;
-  color: var(--why-text-muted);
-}
-
-.why-list li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 11px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--why-accent);
-}
-
-/* 10) Final line */
-.why-section--final {
-  padding: 80px 0 40px;
-  text-align: center;
-}
-
-.why-final-line {
-  margin: 0;
-  font-size: clamp(24px, 4.5vw, 44px);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.04em;
-  color: var(--why-text);
-}
-
-@keyframes why-core-haze {
-  0%,
-  100% {
-    opacity: 0.84;
-    transform: scale(0.96);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-}
-
-@keyframes why-core-breathe {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(0.985);
-    opacity: 0.8;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.04);
-    opacity: 1;
-  }
-}
-
-@keyframes why-core-pulse {
-  0%,
-  100% {
-    transform: scale(0.95);
-    box-shadow:
-      0 0 0 6px rgba(145, 56, 216, 0.08),
-      0 0 20px rgba(145, 56, 216, 0.48),
-      0 0 44px rgba(92, 141, 255, 0.2);
-  }
-  50% {
-    transform: scale(1.12);
-    box-shadow:
-      0 0 0 10px rgba(145, 56, 216, 0.12),
-      0 0 28px rgba(145, 56, 216, 0.58),
-      0 0 54px rgba(92, 141, 255, 0.28);
-  }
-}
-
-@keyframes why-rail-glow {
-  0%,
-  100% {
-    opacity: 0.58;
-    filter: blur(0);
-  }
-  50% {
-    opacity: 0.86;
-    filter: blur(0.6px);
-  }
-}
-
-@keyframes why-signal-halo {
-  0%,
-  100% {
-    opacity: 0.66;
-    transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * 0.35), 0) scaleX(0.9);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translate3d(0, calc(var(--hero-scroll-shift, 0px) * 0.35), 0) scaleX(1.04);
-  }
-}
-
-@keyframes why-signal-mobile-pop {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0) scale(0.96);
-    filter: blur(8px) saturate(0.8);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0) saturate(1);
-  }
-}
-
-@keyframes why-signal-mobile-breathe {
-  0%,
-  100% {
-    opacity: 0.92;
-    filter: saturate(1) brightness(1);
-  }
-
-  50% {
-    opacity: 1;
-    filter: saturate(1.24) brightness(1.08);
-  }
-}
-
-/* 11) Download CTA */
-.why-section--cta {
-  padding: 60px 0 0;
-  max-width: 560px;
-  text-align: center;
-}
-
-.why-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.why-cta__keys {
-  display: flex;
-  gap: 8px;
-}
-
-.why-cta__key {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 52px;
-  min-height: 48px;
-  padding: 8px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--why-text-muted);
-  font-size: 14px;
-  font-weight: 600;
-  font-family: var(--rn-font-mono);
-  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
-}
-
-.why-cta__key[data-active="true"] {
-  border-color: rgba(145, 56, 216, 0.6);
-  background: var(--why-accent-soft);
-  color: var(--why-text);
-  transform: translateY(-2px);
-}
-
-.why-cta__text {
-  margin: 0;
-  font-size: clamp(16px, 2vw, 20px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--why-text);
-}
-
-.why-cta__kbd {
-  display: inline-block;
-  padding: 1px 6px;
-  margin: 0 1px;
-  border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.06);
-  font-size: 0.85em;
-  vertical-align: baseline;
-}
-
-.why-cta__status {
-  margin: 0;
-  font-size: 13px;
-  color: var(--why-text-soft);
-  font-family: var(--rn-font-mono);
-}
-
-.why-cta__buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* Buttons */
-.rn-btn {
-  border-radius: 10px;
-  border: 1px solid transparent;
-  font-size: 14px;
-  padding: 10px 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  background: none;
-  color: inherit;
-  text-decoration: none;
-  transition: transform 150ms ease, box-shadow 150ms ease, background 200ms ease, border-color 200ms ease, color 200ms ease;
-}
-
-.rn-btn-primary {
-  background: var(--why-accent);
-  color: #fff;
-  box-shadow: 0 12px 32px rgba(145, 56, 216, 0.35);
-}
-
-.rn-btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(145, 56, 216, 0.5);
-  filter: brightness(1.1);
-}
-
-.rn-btn-ghost {
-  border-color: rgba(255, 255, 255, 0.15);
-  color: var(--why-text-muted);
-  background: transparent;
-}
-
-.rn-btn-ghost:hover {
-  color: var(--why-text);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-/* 12) Bottom wordmark */
-.why-bottom-mark {
-  max-width: var(--why-wide-width);
-  margin: 80px auto 0;
-  text-align: center;
-}
-
-.why-bottom-wordmark {
-  display: block;
-  font-size: clamp(4rem, 14vw, 12rem);
-  line-height: 0.84;
-  letter-spacing: -0.08em;
-  color: var(--why-accent);
-  font-weight: 800;
-  position: relative;
-  animation: glitch-flicker 5s infinite;
-  text-shadow:
-    0 0 20px rgba(145, 56, 216, 0.26),
-    0 0 56px rgba(145, 56, 216, 0.14),
-    0 0 92px rgba(92, 141, 255, 0.08);
-}
-
-.why-bottom-wordmark::before,
-.why-bottom-wordmark::after {
-  content: "RoachNet";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-
-.why-bottom-wordmark::before {
-  animation: glitch-shift-1 5s infinite;
-  clip-path: inset(0 0 60% 0);
-  color: #b06aff;
-}
-
-.why-bottom-wordmark::after {
-  animation: glitch-shift-2 5s infinite;
-  clip-path: inset(55% 0 0 0);
-  color: #7b2fba;
-}
-
-.why-bottom-tag {
-  display: block;
-  margin-top: 12px;
-  color: rgba(240, 240, 240, 0.84);
-  opacity: 0.92;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  animation: glitch-flicker 6s infinite 1s;
-  text-shadow: 0 0 18px rgba(145, 56, 216, 0.16);
-}
-
-/* 13) Footer */
-.rn-footer {
-  margin-top: 48px;
-  padding: 24px 0 32px;
-  border-top: 1px solid var(--why-border);
-}
-
-.rn-footer-inner {
-  max-width: var(--why-wide-width);
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 18px;
-}
-
-.rn-footer-copy {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  font-size: 13px;
-  color: var(--why-text-soft);
-}
-
-.rn-footer-copy strong {
-  color: var(--why-text);
-}
-
-.rn-footer-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  font-size: 13px;
-  margin-left: auto;
-}
-
-.rn-footer-nav a {
-  color: var(--why-text-soft);
-  text-decoration: none;
-  transition: color 150ms ease;
-}
-
-.rn-footer-nav a:hover {
-  color: var(--why-text);
-}
-
-.rn-footer-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  width: 100%;
-  justify-content: center;
-  padding-top: 12px;
-}
-
-.rn-footer-brand {
-  flex-basis: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 6px;
-}
-
-.rn-footer-brand span {
-  position: relative;
-  display: inline-block;
-  font-size: clamp(1.75rem, 6vw, 3.2rem);
-  line-height: 0.92;
-  letter-spacing: -0.08em;
-  font-weight: 800;
-  color: rgba(145, 56, 216, 0.88);
-  text-shadow:
-    0 0 12px rgba(145, 56, 216, 0.26),
-    0 0 28px rgba(92, 141, 255, 0.12);
-}
-
-.rn-footer-brand span::before,
-.rn-footer-brand span::after {
-  content: "RoachNet";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.64;
-}
-
-.rn-footer-brand span::before {
-  color: rgba(92, 141, 255, 0.72);
-  clip-path: polygon(0 0, 100% 0, 100% 42%, 0 54%);
-}
-
-.rn-footer-brand span::after {
-  color: rgba(50, 255, 126, 0.58);
-  clip-path: polygon(0 58%, 100% 46%, 100% 100%, 0 100%);
-}
-
-.rn-release-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: transparent;
-  color: var(--why-text-soft);
-  font-size: 12px;
-  font-family: var(--rn-font-mono);
-  text-decoration: none;
-  transition: border-color 150ms ease, color 150ms ease;
-}
-
-.rn-release-chip:hover {
-  border-color: rgba(145, 56, 216, 0.4);
-  color: var(--why-text);
-}
-
-.rn-netlify-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  text-decoration: none;
-  color: var(--why-text-soft);
-  font-size: 12px;
-  transition: color 150ms ease;
-}
-
-.rn-netlify-badge:hover {
-  color: var(--why-text);
-}
-
-.rn-netlify-badge img {
-  height: 18px;
-  width: auto;
-}
-
-/* 14) Scroll progress bar */
-.landing-scroll-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 2px;
-  background: linear-gradient(90deg, var(--why-accent), #c084fc);
-  z-index: 9999;
-  transition: width 60ms linear;
-  will-change: width;
-}
-
-/* 14b) Shared chrome polish: compact, reactive, less SaaS dashboard. */
-.rn-nav {
-  isolation: isolate;
-  transition:
-    background 220ms ease,
-    border-color 220ms ease,
-    box-shadow 260ms ease,
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.rn-nav::before,
-.rn-nav::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.rn-nav::before {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.22), transparent 32%),
-    linear-gradient(90deg, transparent 0 8%, rgba(255, 255, 255, 0.06) 48%, transparent 90%);
-  opacity: 0.52;
-  transform: translateX(calc((var(--landing-scroll-ratio, 0) - 0.5) * 18px));
-  transition: opacity 180ms ease;
-}
-
-.rn-nav::after {
-  top: auto;
-  height: 1px;
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(145, 56, 216, 0.46),
-      rgba(92, 141, 255, 0.42),
-      rgba(50, 255, 126, 0.32),
-      transparent
-    );
-  opacity: 0.68;
-  transform: scaleX(calc(0.22 + (var(--landing-scroll-ratio, 0) * 0.78)));
-  transform-origin: left center;
-}
-
-.rn-nav.is-scrolled {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.13), transparent 34%),
-    rgba(0, 0, 0, 0.88);
-  border-bottom-color: rgba(145, 56, 216, 0.22);
-  box-shadow:
-    0 18px 64px rgba(0, 0, 0, 0.42),
-    0 0 34px rgba(145, 56, 216, 0.08);
-}
-
-.rn-logo {
-  position: relative;
-  padding: 4px 6px 4px 4px;
-  border-radius: 12px;
-  transition:
-    background 180ms ease,
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 220ms ease;
-}
-
-.rn-logo::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border-radius: inherit;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(145, 56, 216, 0.24), transparent 62%),
-    rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  opacity: 0;
-  transition: opacity 180ms ease;
-}
-
-.rn-logo:hover,
-.rn-logo:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
-}
-
-.rn-logo:hover::after,
-.rn-logo:focus-visible::after {
-  opacity: 1;
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  position: relative;
-  isolation: isolate;
-}
-
-.rn-nav-links {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.16), transparent 70%),
-    rgba(255, 255, 255, 0.036);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.055),
-    0 14px 44px rgba(0, 0, 0, 0.22);
-}
-
-.rn-nav-link {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  font-weight: 650;
-}
-
-.rn-nav .rn-nav-indicator {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22), transparent 58%),
-    linear-gradient(135deg, rgba(145, 56, 216, 0.34), rgba(92, 141, 255, 0.18) 52%, rgba(50, 255, 126, 0.18));
-  border-color: rgba(183, 117, 255, 0.28);
-  box-shadow:
-    0 0 0 1px rgba(145, 56, 216, 0.09),
-    0 0 28px rgba(145, 56, 216, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
-}
-
-.rn-nav-link::before,
-.rn-nav-link::after,
-.rn-nav-primary::before,
-.rn-nav-ghost::before,
-.rn-btn::before {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-.rn-nav-link::before,
-.rn-nav-primary::before,
-.rn-nav-ghost::before,
-.rn-btn::before {
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 0%), rgba(255, 255, 255, 0.16), transparent 58%),
-    linear-gradient(180deg, rgba(145, 56, 216, 0.26), rgba(45, 18, 71, 0.1));
-  opacity: 0;
-  transform: scaleX(0.7);
-  transition:
-    opacity 170ms ease,
-    transform 230ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.rn-nav-link::after {
-  inset: auto 12px 5px;
-  height: 1px;
-  border-radius: 999px;
-  background:
-    linear-gradient(90deg, transparent, rgba(50, 255, 126, 0.58), rgba(145, 56, 216, 0.66), transparent);
-  opacity: 0;
-  transform: scaleX(0.34);
-  transition:
-    opacity 180ms ease,
-    transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.rn-nav-link:hover::before,
-.rn-nav-link:focus-visible::before,
-.rn-nav-link.is-current::before,
-.rn-nav-link[aria-current="page"]::before,
-.rn-nav-primary:hover::before,
-.rn-nav-primary:focus-visible::before,
-.rn-nav-ghost:hover::before,
-.rn-nav-ghost:focus-visible::before,
-.rn-btn:hover::before,
-.rn-btn:focus-visible::before {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-.rn-nav-link:hover::after,
-.rn-nav-link:focus-visible::after,
-.rn-nav-link.is-current::after,
-.rn-nav-link[aria-current="page"]::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-.rn-nav-primary,
-.rn-nav-ghost,
-.rn-btn {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-.rn-nav-primary {
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.26), transparent 52%),
-    linear-gradient(180deg, #a64dff, #6d20ac);
-  box-shadow:
-    0 14px 34px rgba(145, 56, 216, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-
-.rn-nav-primary:hover,
-.rn-nav-ghost:hover,
-.rn-btn:hover {
-  transform: translateY(-2px);
-}
-
-.rn-click-ripple--landing {
-  position: fixed;
-  z-index: 9999;
-  width: 14px;
-  aspect-ratio: 1;
-  margin: -7px 0 0 -7px;
-  border-radius: 999px;
-  pointer-events: none;
-  border: 1px solid rgba(183, 117, 255, 0.7);
-  box-shadow:
-    0 0 24px rgba(145, 56, 216, 0.38),
-    inset 0 0 16px rgba(50, 255, 126, 0.16);
-  animation: landing-click-ripple 600ms ease-out forwards;
-}
-
-@keyframes landing-click-ripple {
-  0% {
-    opacity: 0.94;
-    transform: scale(0.32);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(9);
-  }
-}
-
-body.rn-body [data-reveal] {
-  will-change: opacity, transform, filter;
-}
-
-body.rn-body [data-reveal]:not(.is-visible) {
-  filter: blur(10px) saturate(0.72);
-  transform: translateY(38px) scale(0.985);
-}
-
-body.rn-body [data-reveal].is-visible {
-  filter: blur(0) saturate(1);
-  transform: translateY(0) scale(1);
-}
-
-body.rn-body.is-scrolling .dither-bg {
-  filter: saturate(1.28) contrast(1.14);
-  opacity: 0.98;
-}
-
-.dither-bg::before,
-.dither-bg::after {
-  content: "";
-  position: absolute;
-  inset: -18%;
-  pointer-events: none;
-}
-
-.dither-bg::before {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(145, 56, 216, 0.28), transparent 26%),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(50, 255, 126, 0.12), transparent 28%);
-  mix-blend-mode: screen;
-  opacity: 0.74;
-  transform:
-    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -46px), 0)
-    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 5deg));
-}
-
-.dither-bg::after {
-  background:
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 5px),
-    repeating-linear-gradient(90deg, rgba(145, 56, 216, 0.08) 0 1px, transparent 1px 13px);
-  opacity: 0.16;
-  animation: landing-scan-drift 12s linear infinite;
-}
-
-@keyframes landing-scan-drift {
-  from { transform: translate3d(0, -3%, 0); }
-  to { transform: translate3d(0, 3%, 0); }
-}
-
-/* 15) Pixelated-glitch keyframes */
-@keyframes glitch-flicker {
-  0%, 90%, 100% { opacity: 1; filter: none; }
-  91% { opacity: 0.85; filter: brightness(1.3); }
-  92% { opacity: 1; filter: none; }
-  93% { opacity: 0.9; filter: brightness(1.1) saturate(1.4); }
-  94% { opacity: 1; filter: none; }
-  95% { opacity: 0.7; filter: brightness(1.5); }
-  96% { opacity: 1; filter: none; }
-}
-
-@keyframes glitch-shift-1 {
-  0%, 89%, 100% { transform: translate(0); }
-  90% { transform: translate(-3px, -1px); }
-  91% { transform: translate(2px, 1px); }
-  92% { transform: translate(0); }
-  95% { transform: translate(-2px, -2px); }
-  96% { transform: translate(0); }
-}
-
-@keyframes glitch-shift-2 {
-  0%, 88%, 100% { transform: translate(0); }
-  89% { transform: translate(3px, 1px); }
-  90% { transform: translate(-1px, -1px); }
-  91% { transform: translate(0); }
-  94% { transform: translate(2px, 2px); }
-  95% { transform: translate(-3px, 1px); }
-  96% { transform: translate(0); }
-}
-
-@keyframes why-rail-shift {
-  0%, 100% {
-    transform: translateX(-1.5%) scaleX(0.98);
-    opacity: 0.48;
-  }
-  35% {
-    transform: translateX(1.25%) scaleX(1);
-    opacity: 0.86;
-  }
-  65% {
-    transform: translateX(-0.75%) scaleX(0.94);
-    opacity: 0.66;
-  }
-}
-
-/* 15b) Dithered parallax background */
-.dither-bg {
-  position: fixed;
-  inset: -8vh -4vw;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0.92;
-  filter: saturate(1.16) contrast(1.08);
-  mask-image: radial-gradient(ellipse at 50% 36%, #000 0 60%, rgba(0, 0, 0, 0.68) 78%, transparent 100%);
-}
-
-.dither-bg canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  opacity: 0.9;
-}
-
-/* 16) Reveal animations */
-@keyframes why-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-body.rn-body [data-reveal] {
-  opacity: 0;
-  transform: translateY(32px);
-  transition:
-    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-body.rn-body [data-reveal].is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Stagger for capability cards */
-body.rn-body .why-cap-card[data-reveal]:nth-child(1) { transition-delay: 0ms; }
-body.rn-body .why-cap-card[data-reveal]:nth-child(2) { transition-delay: 120ms; }
-body.rn-body .why-cap-card[data-reveal]:nth-child(3) { transition-delay: 240ms; }
-
-/* 16) Responsiveness */
-@media (max-width: 920px) {
-  .rn-nav-links {
-    max-width: none;
-    order: 3;
-    flex-basis: 100%;
-    margin-top: 8px;
-  }
-
-  .rn-nav {
-    background: rgba(0, 0, 0, 0.84);
-  }
-
-  .rn-nav-inner {
-    height: auto;
-    min-height: 56px;
-    flex-wrap: wrap;
-    gap: 8px 12px;
-    padding-block: 8px;
-  }
-
-  .rn-nav-cta {
-    max-width: calc(100vw - 146px);
-  }
-
-  .why-hero {
-    padding: 104px 0 70px;
-  }
-
-  .why-hero__title {
-    max-width: 10ch;
-  }
-
-  .why-capabilities {
-    grid-template-columns: 1fr;
-    max-width: var(--why-content-width);
-  }
-
-  .company-grid {
-    grid-template-columns: 1fr;
-    max-width: var(--why-content-width);
-  }
-
-  .company-status__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .rn-nav-inner {
-    padding: 0 16px;
-    padding-block: 8px;
-    min-width: 0;
-    width: 100%;
-    max-width: 100vw;
-    justify-content: flex-start;
-    box-sizing: border-box;
-  }
-
-  .rn-logo-text {
-    max-width: 82px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .rn-nav-cta {
-    order: 2;
-    flex-basis: 100%;
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: 100%;
-    margin-left: 0;
-    justify-content: flex-start;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
-    mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
-  }
-
-  .rn-nav-links {
-    order: 3;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    min-height: 32px;
-    padding-inline: 10px;
-    font-size: 12px;
-  }
-
-  .rn-main {
-    padding: 0 16px 60px;
-  }
-
-  .why-hero {
-    padding: 80px 0 60px;
-  }
-
-  .why-hero__title {
-    margin-bottom: 24px;
-    width: 100%;
-    max-width: min(100%, 9.5ch);
-    font-size: clamp(2.25rem, 10.4vw, 2.58rem);
-    line-height: 1.05;
-    letter-spacing: -0.045em;
-    text-wrap: balance;
-    opacity: 1 !important;
-    color: rgba(246, 246, 246, 0.96);
-    animation: why-title-mobile-glow 6s ease-in-out infinite;
-  }
-
-  .why-hero__lede {
-    max-width: none;
-    font-size: 1rem;
-    line-height: 1.62;
-  }
-
-  .company-status,
-  .company-proof {
-    padding: 22px;
-    border-radius: 18px;
-  }
-
-  .company-status__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .why-hero__signal {
-    margin-top: 34px;
-    gap: 12px;
-    min-height: 146px;
-    justify-content: center;
-    opacity: 1 !important;
-    transform: translate3d(0, 0, 0) !important;
-    background:
-      radial-gradient(ellipse at 50% 45%, rgba(145, 56, 216, 0.34), rgba(145, 56, 216, 0.08) 42%, transparent 72%),
-      radial-gradient(ellipse at 50% 76%, rgba(50, 255, 126, 0.16), transparent 68%);
-    box-shadow:
-      inset 0 0 44px rgba(145, 56, 216, 0.08),
-      0 0 38px rgba(145, 56, 216, 0.1);
-    animation: why-signal-mobile-breathe 5.4s ease-in-out infinite;
-  }
-
-  .why-hero__signal-core {
-    width: min(100%, 280px);
-  }
-
-  .why-hero__signal-core::before {
-    inset: 12% 5%;
-    opacity: 1;
-    filter: blur(18px);
-    background:
-      radial-gradient(circle at center, rgba(145, 56, 216, 0.48), rgba(145, 56, 216, 0.08) 54%, transparent 72%),
-      radial-gradient(circle at 70% 32%, rgba(92, 141, 255, 0.28), transparent 62%),
-      radial-gradient(circle at 28% 72%, rgba(50, 255, 126, 0.2), transparent 58%);
-  }
-
-  .why-hero__signal-core-ring {
-    border-color: rgba(255, 255, 255, 0.22);
-    box-shadow:
-      0 0 0 1px rgba(145, 56, 216, 0.16),
-      0 0 38px rgba(145, 56, 216, 0.24);
-  }
-
-  .why-hero__signal-core-dot {
-    box-shadow:
-      0 0 0 8px rgba(145, 56, 216, 0.12),
-      0 0 26px rgba(145, 56, 216, 0.68),
-      0 0 58px rgba(92, 141, 255, 0.32);
-  }
-
-  .why-hero__signal-rails span {
-    opacity: 0.9;
-    height: 2px;
-  }
-
-  .why-hero__signal-rails {
-    width: 100%;
-    gap: 6px;
-  }
-
-  .why-section {
-    padding: 40px 0;
-  }
-
-  .why-section--quote {
-    padding: 50px 0;
-  }
-
-  .why-section--final {
-    padding: 50px 0 30px;
-  }
-
-  .why-heading {
-    font-size: clamp(2rem, 10vw, 3rem);
-  }
-
-  .why-blockquote__lines span {
-    font-size: clamp(2.2rem, 11.5vw, 3.3rem);
-  }
-
-  .why-accent-line {
-    padding-left: 20px;
-  }
-
-  .why-cta__key {
-    min-width: 44px;
-    min-height: 40px;
-    padding: 6px 12px;
-    font-size: 13px;
-  }
-
-  .rn-footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .rn-footer-nav {
-    margin-left: 0;
-  }
-}
-
-/* Reduced motion: disable glitch and dithered background */
-@media (prefers-reduced-motion: reduce) {
-  .why-bottom-wordmark,
-  .why-bottom-wordmark::before,
-  .why-bottom-wordmark::after,
-  .rn-footer-brand span::before,
-  .rn-footer-brand span::after,
-  .why-bottom-tag {
-    animation: none !important;
-  }
-
-  .dither-bg::after,
-  .rn-click-ripple--landing {
-    animation: none !important;
-  }
-
-  .rn-nav,
-  .rn-logo,
-  .rn-nav-link,
-  .rn-nav-primary,
-  .rn-nav-ghost,
-  .rn-btn,
-  body.rn-body [data-reveal],
-  body.rn-body [data-reveal].is-visible {
-    transition: none !important;
-  }
-
-  .dither-bg {
-    opacity: 0.34;
-    filter: saturate(0.9) contrast(0.9);
-  }
-}
-
-/* Final Mission chrome pass: black-first with animated signal accents. */
-.rn-nav {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.11), transparent 32%),
-    rgba(0, 0, 0, 0.86);
-  border-bottom-color: rgba(255, 255, 255, 0.085);
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.1), transparent 64%),
-    rgba(0, 0, 0, 0.42);
-  border-color: rgba(255, 255, 255, 0.078);
-}
-
-.rn-nav-link,
-.rn-nav-ghost {
-  color: rgba(238, 244, 239, 0.76);
-  background: rgba(255, 255, 255, 0.018);
-  border-color: rgba(255, 255, 255, 0.052);
-}
-
-.rn-nav-primary {
-  border-color: rgba(183, 117, 255, 0.24);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
-    linear-gradient(180deg, #a54aff, #6f22b0);
-}
-
-.rn-nav-link:hover,
-.rn-nav-link:focus-visible,
-.rn-nav-link.is-current,
-.rn-nav-link[aria-current="page"],
-.rn-nav-link.is-hovered,
-.rn-nav-ghost:hover,
-.rn-nav-primary:hover {
-  color: rgba(250, 255, 251, 0.98);
-  border-color: rgba(50, 255, 126, 0.2);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(50, 255, 126, 0.14), transparent 68%),
-    rgba(255, 255, 255, 0.045);
-  box-shadow:
-    0 0 0 1px rgba(50, 255, 126, 0.06),
-    0 14px 36px rgba(0, 0, 0, 0.28),
-    0 0 26px rgba(145, 56, 216, 0.1);
-}
-
-.dither-bg {
-  opacity: 0.72;
-  filter: saturate(1.04) contrast(1.06);
-}
-
-.dither-bg canvas {
-  opacity: 0.66;
-}
-
-.dither-bg::before {
-  opacity: 0.5;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(145, 56, 216, 0.18), transparent 24%),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(50, 255, 126, 0.09), transparent 28%);
-}
-
-body.rn-body.is-scrolling .dither-bg,
-body.rn-body:hover .dither-bg {
-  opacity: 0.86;
-  filter: saturate(1.18) contrast(1.1);
-}
-
-@keyframes why-title-mobile-glow {
-  0%,
-  100% {
-    text-shadow: 0 0 0 rgba(145, 56, 216, 0);
-  }
-
-  50% {
-    text-shadow:
-      0 0 18px rgba(145, 56, 216, 0.12),
-      0 0 28px rgba(50, 255, 126, 0.06);
-  }
-}
-
-/* 2026-05 Mission signal-field rewrite: same black-first system as the rest of the site. */
-.rn-nav {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.16), transparent 30%),
-    linear-gradient(180deg, rgba(4, 5, 7, 0.94), rgba(0, 0, 0, 0.9));
-  border-bottom-color: rgba(255, 255, 255, 0.09);
-  box-shadow:
-    0 18px 70px rgba(0, 0, 0, 0.42),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.035);
-}
-
-.rn-nav-inner {
-  max-width: min(1180px, calc(100vw - 36px));
-  gap: clamp(8px, 1.4vw, 16px);
-}
-
-.rn-logo {
-  min-height: 40px;
-  padding: 5px 9px 5px 5px;
-  border: 1px solid rgba(255, 255, 255, 0.055);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(50, 255, 126, 0.1), transparent 56%),
-    rgba(255, 255, 255, 0.014);
-}
-
-.rn-logo-img {
-  filter:
-    drop-shadow(0 0 18px rgba(50, 255, 126, 0.2))
-    drop-shadow(0 0 22px rgba(145, 56, 216, 0.16));
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  min-height: 42px;
-  padding: 4px;
-  gap: 4px;
-  border-color: rgba(255, 255, 255, 0.075);
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.12), transparent 62%),
-    rgba(0, 0, 0, 0.45);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    0 14px 34px rgba(0, 0, 0, 0.24);
-}
-
-.rn-nav-link,
-.rn-nav-ghost,
-.rn-nav-primary {
-  min-height: 34px;
-  padding-inline: 13px;
-  border-color: rgba(255, 255, 255, 0.052);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.052), transparent 60%),
-    rgba(255, 255, 255, 0.014);
-  color: rgba(240, 245, 242, 0.76);
-}
-
-.rn-nav-primary {
-  border-color: rgba(183, 117, 255, 0.28);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
-    linear-gradient(180deg, #a64dff, #6820a6);
-}
-
-.rn-nav-link:hover,
-.rn-nav-link:focus-visible,
-.rn-nav-link.is-current,
-.rn-nav-link[aria-current="page"],
-.rn-nav-link.is-hovered,
-.rn-nav-ghost:hover,
-.rn-nav-ghost:focus-visible,
-.rn-nav-ghost.is-hovered,
-.rn-nav-primary:hover,
-.rn-nav-primary:focus-visible,
-.rn-nav-primary.is-hovered {
-  color: rgba(252, 255, 252, 0.98);
-  border-color: rgba(50, 255, 126, 0.23);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(50, 255, 126, 0.16), transparent 72%),
-    radial-gradient(circle at 70% 100%, rgba(145, 56, 216, 0.14), transparent 68%),
-    rgba(255, 255, 255, 0.046);
-}
-
-.rn-nav .rn-nav-indicator {
-  border-color: rgba(50, 255, 126, 0.22);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22), transparent 58%),
-    linear-gradient(135deg, rgba(50, 255, 126, 0.2), rgba(8, 12, 16, 0.82) 48%, rgba(145, 56, 216, 0.28));
-  box-shadow:
-    0 0 0 1px rgba(50, 255, 126, 0.055),
-    0 0 26px rgba(50, 255, 126, 0.1),
-    0 0 34px rgba(145, 56, 216, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-.dither-bg {
-  inset: -12vh -8vw;
-  opacity: 0.58;
-  filter: saturate(1.08) contrast(1.14);
-  mask-image: radial-gradient(ellipse at 50% 20%, #000 0 30%, rgba(0, 0, 0, 0.64) 54%, transparent 90%);
-}
-
-.dither-bg canvas {
-  opacity: 0.52;
-}
-
-.dither-bg::before {
-  opacity: 0.62;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(145, 56, 216, 0.2), transparent 20rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(50, 255, 126, 0.1), transparent 22rem),
-    linear-gradient(115deg, transparent 0 18%, rgba(50, 255, 126, 0.025) 42%, transparent 58%, rgba(145, 56, 216, 0.03) 78%, transparent 100%);
-  animation: landing-signal-field-breathe 12s ease-in-out infinite alternate;
-}
-
-.dither-bg::after {
-  opacity: 0.18;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 8px, rgba(255, 255, 255, 0.018) 9px, transparent 10px),
-    repeating-linear-gradient(90deg, rgba(145, 56, 216, 0.036) 0 1px, transparent 1px 18px);
-  animation: landing-scan-drift 12s linear infinite;
-}
-
-body.rn-body.is-scrolling .dither-bg,
-body.rn-body:hover .dither-bg {
-  opacity: 0.74;
-  filter: saturate(1.22) contrast(1.18);
-}
-
-@media (max-width: 760px) {
-  .rn-nav-inner {
-    max-width: 100%;
-  }
-
-  .rn-nav-links,
-  .rn-nav-cta {
-    min-height: 40px;
-  }
-
-  .rn-nav-cta {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    justify-content: center;
-  }
-
-  .dither-bg {
-    opacity: 0.44;
-    mask-image: radial-gradient(ellipse at 50% 18%, #000 0 30%, rgba(0, 0, 0, 0.58) 56%, transparent 92%);
-  }
-}
-
-@keyframes landing-signal-field-breathe {
-  0% {
-    opacity: 0.42;
-    filter: saturate(0.92);
-  }
-
-  100% {
-    opacity: 0.74;
-    filter: saturate(1.22);
-  }
-}
-
-/* 2026-05 Mission nav/background final pass: same signal language, cleaner scroll. */
-html {
-  scroll-behavior: auto;
-  overscroll-behavior-y: auto;
-}
-
-.rn-nav {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.13), transparent 34%),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 0%, rgba(50, 255, 126, 0.07), transparent 44%),
-    linear-gradient(180deg, rgba(2, 3, 4, 0.92), rgba(0, 0, 0, 0.82));
-  border-bottom-color: rgba(255, 255, 255, 0.075);
-  backdrop-filter: blur(24px) saturate(1.16);
-  -webkit-backdrop-filter: blur(24px) saturate(1.16);
-}
-
-.rn-nav-inner {
-  max-width: min(1200px, calc(100vw - 32px));
-  align-items: center;
-}
-
-.rn-logo,
-.rn-nav-links,
-.rn-nav-cta {
-  backdrop-filter: blur(20px) saturate(1.14);
-  -webkit-backdrop-filter: blur(20px) saturate(1.14);
-}
-
-.rn-logo {
-  border-color: rgba(255, 255, 255, 0.07);
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(50, 255, 126, 0.09), transparent 58%),
-    rgba(0, 0, 0, 0.4);
-  box-shadow:
-    0 14px 36px rgba(0, 0, 0, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.045);
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  scroll-snap-type: none !important;
-  scroll-behavior: auto !important;
-  overscroll-behavior: auto !important;
-  overscroll-behavior-inline: auto !important;
-  touch-action: pan-x pan-y;
-  border-color: rgba(255, 255, 255, 0.085);
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.105), transparent 58%),
-    linear-gradient(180deg, rgba(4, 6, 7, 0.86), rgba(0, 0, 0, 0.66));
-}
-
-.rn-nav-link,
-.rn-nav-ghost,
-.rn-nav-primary {
-  letter-spacing: 0;
-  transition:
-    color 180ms ease,
-    border-color 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
-}
-
-.rn-nav-link:hover,
-.rn-nav-link:focus-visible,
-.rn-nav-ghost:hover,
-.rn-nav-ghost:focus-visible,
-.rn-nav-primary:hover,
-.rn-nav-primary:focus-visible {
-  transform: translate3d(var(--rn-magnet-x, 0px), var(--rn-magnet-y, 0px), 0);
-}
-
-.dither-bg {
-  opacity: 0.54;
-  filter: saturate(1.12) contrast(1.18) brightness(0.96);
-  will-change: opacity, filter, transform;
-  background:
-    radial-gradient(circle at calc(16% + (var(--landing-scroll-ratio, 0) * 18%)) -10%, rgba(50, 255, 126, 0.07), transparent 34rem),
-    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 12%)) 10%, rgba(145, 56, 216, 0.1), transparent 32rem),
-    linear-gradient(180deg, #000 0%, #010202 50%, #000 100%);
-}
-
-.dither-bg canvas {
-  opacity: 0.46;
-  image-rendering: pixelated;
-}
-
-.dither-bg::before {
-  opacity: 0.66;
-  transform:
-    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -48px), 0)
-    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
-}
-
-.dither-bg::after {
-  opacity: 0.2;
-}
-
-body.rn-body.is-scrolling .dither-bg,
-body.rn-body:hover .dither-bg {
-  opacity: 0.68;
-  filter: saturate(1.22) contrast(1.2) brightness(1);
-}
-
-@media (max-width: 760px) {
-  .rn-nav {
-    background:
-      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(145, 56, 216, 0.1), transparent 42%),
-      linear-gradient(180deg, rgba(2, 3, 4, 0.94), rgba(0, 0, 0, 0.9));
-  }
-
-  .rn-nav-inner {
-    max-width: calc(100vw - 20px);
-  }
-
-  .rn-nav-links,
-  .rn-nav-cta {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .dither-bg {
-    opacity: 0.42;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dither-bg,
-  .dither-bg::before,
-  .dither-bg::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* 2026-05 worker pass: Mission chrome aligned with the black-first site system. */
-html {
-  scroll-behavior: auto !important;
-  overscroll-behavior-y: auto !important;
-  background: #000;
-}
-
-body.rn-body {
-  background:
-    radial-gradient(circle at calc(10% + (var(--landing-scroll-ratio, 0) * 15%)) -15%, rgba(54, 255, 132, 0.03), transparent 31rem),
-    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 12%)) 5%, rgba(150, 74, 255, 0.048), transparent 32rem),
-    linear-gradient(180deg, #000 0%, #010101 52%, #000 100%) !important;
-}
-
-.rn-nav {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(150, 74, 255, 0.12), transparent 36%),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 0%, rgba(54, 255, 132, 0.062), transparent 44%),
-    linear-gradient(180deg, rgba(3, 4, 5, 0.92), rgba(0, 0, 0, 0.78)) !important;
-  border-bottom-color: rgba(255, 255, 255, 0.075) !important;
-  box-shadow:
-    0 18px 60px rgba(0, 0, 0, 0.36),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.034) !important;
-}
-
-.rn-nav-inner {
-  height: 54px;
-  max-width: min(1200px, calc(100vw - 34px));
-  gap: clamp(8px, 1.3vw, 14px);
-}
-
-.rn-logo,
-.rn-nav-links,
-.rn-nav-cta {
-  backdrop-filter: blur(22px) saturate(1.16);
-  -webkit-backdrop-filter: blur(22px) saturate(1.16);
-}
-
-.rn-logo {
-  min-height: 38px;
-  padding: 4px 9px 4px 5px;
-  border-color: rgba(255, 255, 255, 0.075) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(54, 255, 132, 0.09), transparent 58%),
-    rgba(0, 0, 0, 0.42) !important;
-  box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.045) !important;
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  min-height: 42px;
-  padding: 4px;
-  gap: 4px;
-  scroll-snap-type: none !important;
-  scroll-behavior: auto !important;
-  overscroll-behavior: auto !important;
-  overscroll-behavior-inline: auto !important;
-  touch-action: pan-x pan-y;
-  border-color: rgba(255, 255, 255, 0.09) !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(150, 74, 255, 0.1), transparent 58%),
-    linear-gradient(180deg, rgba(4, 6, 7, 0.86), rgba(0, 0, 0, 0.66)) !important;
-  box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.048) !important;
-}
-
-.rn-nav-link,
-.rn-nav-ghost,
-.rn-nav-primary {
-  min-height: 32px;
-  padding-inline: 12px;
-  letter-spacing: 0;
-  color: rgba(238, 245, 241, 0.75);
-  border-color: rgba(255, 255, 255, 0.052) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.052), transparent 62%),
-    rgba(255, 255, 255, 0.012) !important;
-  transform: translate3d(var(--rn-magnet-x, 0px), var(--rn-magnet-y, 0px), 0);
-  transition:
-    color 170ms ease,
-    border-color 170ms ease,
-    background 170ms ease,
-    box-shadow 170ms ease,
-    transform 170ms ease;
-}
-
-.rn-nav-primary {
-  color: rgba(255, 255, 255, 0.95);
-  border-color: rgba(183, 117, 255, 0.3) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
-    linear-gradient(180deg, #9d3cff, #5f1c99) !important;
-}
-
-.rn-nav-link:hover,
-.rn-nav-link:focus-visible,
-.rn-nav-link.is-current,
-.rn-nav-link[aria-current="page"],
-.rn-nav-link.is-hovered,
-.rn-nav-ghost:hover,
-.rn-nav-ghost:focus-visible,
-.rn-nav-ghost.is-hovered,
-.rn-nav-primary:hover,
-.rn-nav-primary:focus-visible,
-.rn-nav-primary.is-hovered {
-  color: rgba(252, 255, 252, 0.98) !important;
-  border-color: rgba(54, 255, 132, 0.24) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(54, 255, 132, 0.15), transparent 72%),
-    radial-gradient(circle at 74% 100%, rgba(150, 74, 255, 0.15), transparent 68%),
-    rgba(255, 255, 255, 0.045) !important;
-  box-shadow:
-    0 0 0 1px rgba(54, 255, 132, 0.065),
-    0 16px 34px rgba(0, 0, 0, 0.28),
-    0 0 28px rgba(150, 74, 255, 0.12) !important;
-}
-
-.rn-nav .rn-nav-indicator {
-  border-color: rgba(54, 255, 132, 0.22) !important;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.24), transparent 58%),
-    linear-gradient(135deg, rgba(54, 255, 132, 0.22), rgba(7, 10, 13, 0.84) 48%, rgba(150, 74, 255, 0.28)) !important;
-  box-shadow:
-    0 0 0 1px rgba(54, 255, 132, 0.055),
-    0 0 26px rgba(54, 255, 132, 0.105),
-    0 0 34px rgba(150, 74, 255, 0.13),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-}
-
-.dither-bg {
-  inset: -16vh -12vw;
-  opacity: 0.56;
-  filter: saturate(1.18) contrast(1.2) brightness(0.94);
-  will-change: opacity, filter, transform;
-  mask-image: radial-gradient(ellipse at 50% 18%, #000 0 28%, rgba(0, 0, 0, 0.62) 54%, transparent 91%);
-  background:
-    radial-gradient(circle at calc(12% + (var(--landing-scroll-ratio, 0) * 16%)) -12%, rgba(54, 255, 132, 0.06), transparent 34rem),
-    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 12%)) 10%, rgba(150, 74, 255, 0.095), transparent 32rem),
-    linear-gradient(180deg, #000 0%, #010101 50%, #000 100%);
-}
-
-.dither-bg canvas {
-  opacity: 0.48;
-  image-rendering: pixelated;
-}
-
-.dither-bg::before {
-  opacity: 0.68;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(150, 74, 255, 0.19), transparent 20rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(54, 255, 132, 0.1), transparent 22rem),
-    radial-gradient(circle at 52% calc(12% + (var(--landing-scroll-ratio, 0) * 24%)), rgba(255, 255, 255, 0.028), transparent 18rem),
-    linear-gradient(118deg, transparent 0 18%, rgba(54, 255, 132, 0.024) 42%, transparent 58%, rgba(150, 74, 255, 0.034) 80%, transparent 100%);
-  transform:
-    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -58px), 0)
-    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
-  animation: landing-signal-field-breathe 12s ease-in-out infinite alternate;
-}
-
-.dither-bg::after {
-  opacity: 0.24;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.72), transparent 18%, transparent 72%, rgba(0, 0, 0, 0.74)),
-    repeating-linear-gradient(0deg, transparent 0 7px, rgba(255, 255, 255, 0.019) 8px, transparent 9px),
-    repeating-linear-gradient(90deg, rgba(150, 74, 255, 0.033) 0 1px, transparent 1px 17px);
-  animation: landing-worker-scan-crawl 13s linear infinite;
-}
-
-body.rn-body.is-scrolling .dither-bg,
-body.rn-body.is-pointer-live .dither-bg {
-  opacity: 0.7;
-  filter: saturate(1.28) contrast(1.22) brightness(1);
-}
-
-@media (max-width: 760px) {
-  .rn-nav {
-    background:
-      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(150, 74, 255, 0.1), transparent 42%),
-      linear-gradient(180deg, rgba(2, 3, 4, 0.94), rgba(0, 0, 0, 0.88)) !important;
-  }
-
-  .rn-nav-inner {
-    height: auto;
-    max-width: calc(100vw - 20px);
-    padding-block: 5px;
-    gap: 5px;
-  }
-
-  .rn-logo {
-    min-height: 32px;
-    border-radius: 22px;
-  }
-
-  .rn-nav-links,
-  .rn-nav-cta {
-    min-height: 34px;
-    padding: 3px;
-    gap: 3px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .rn-nav-links::-webkit-scrollbar,
-  .rn-nav-cta::-webkit-scrollbar {
-    display: none;
-  }
-
-  .rn-nav-link,
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    min-height: 28px;
-    padding-inline: 9px;
-    font-size: 0.72rem;
-  }
-
-  .dither-bg {
-    opacity: 0.44;
-    mask-image: radial-gradient(ellipse at 50% 16%, #000 0 31%, rgba(0, 0, 0, 0.56) 58%, transparent 94%);
-  }
-}
-
-@keyframes landing-worker-scan-crawl {
-  from {
-    background-position: 0 0, 0 0, 0 0;
-  }
-
-  to {
-    background-position: 0 18px, 0 36px, 28px 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dither-bg::before,
-  .dither-bg::after {
-    animation: none !important;
-  }
-}
-
-/* Final decorative containment guard: keep the animated field vivid without
-   letting its fixed canvas create a horizontal scroll lane on small screens. */
-.dither-bg {
-  inset: 0 !important;
-  width: auto !important;
-  max-width: 100vw !important;
-  overflow: clip !important;
-  contain: paint !important;
-}
-
-.dither-bg canvas {
-  max-width: 100vw !important;
-}
-
-/* 2026-05 worker pass B: Mission shares the same black signal chrome as the app pages. */
-:root {
-  --rn-site-green: 54, 255, 132;
-  --rn-site-purple: 150, 74, 255;
-  --rn-site-blue: 92, 141, 255;
-}
-
-html {
-  scroll-behavior: auto !important;
-  overscroll-behavior-y: auto !important;
-  background: #000 !important;
-}
-
-body.rn-body {
-  background:
-    radial-gradient(circle at calc(8% + (var(--landing-scroll-ratio, 0) * 12%)) -18%, rgba(var(--rn-site-green), 0.026), transparent 32rem),
-    radial-gradient(circle at calc(100% - (var(--landing-scroll-ratio, 0) * 10%)) 4%, rgba(var(--rn-site-purple), 0.05), transparent 32rem),
-    linear-gradient(180deg, #000 0%, #010101 48%, #000 100%) !important;
-}
-
-.rn-nav {
-  min-height: 58px;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-purple), 0.12), transparent 38%),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 0%, rgba(var(--rn-site-green), 0.058), transparent 42%),
-    linear-gradient(180deg, rgba(3, 4, 5, 0.92), rgba(0, 0, 0, 0.8)) !important;
-  border-bottom-color: rgba(255, 255, 255, 0.072) !important;
-  box-shadow:
-    0 18px 58px rgba(0, 0, 0, 0.36),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.032) !important;
-}
-
-.rn-nav-inner {
-  height: 54px;
-  max-width: min(1180px, calc(100vw - 32px));
-  gap: clamp(8px, 1.2vw, 14px);
-}
-
-.rn-logo,
-.rn-nav-links,
-.rn-nav-cta {
-  border: 1px solid rgba(255, 255, 255, 0.105) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(var(--rn-site-purple), 0.105), transparent 42%),
-    linear-gradient(180deg, rgba(6, 8, 8, 0.9), rgba(0, 0, 0, 0.76)) !important;
-  box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(22px) saturate(1.14);
-  -webkit-backdrop-filter: blur(22px) saturate(1.14);
-}
-
-.rn-logo {
-  min-height: 38px;
-  padding: 4px 9px 4px 5px;
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  min-height: 42px;
-  padding: 4px;
-  gap: 4px;
-  border-radius: 999px;
-  scroll-snap-type: none !important;
-  scroll-behavior: auto !important;
-  overscroll-behavior: auto !important;
-  overscroll-behavior-inline: auto !important;
-  touch-action: pan-x pan-y;
-}
-
-.rn-nav-link,
-.rn-nav-ghost,
-.rn-nav-primary {
-  min-height: 32px;
-  padding-inline: 12px;
-  border-radius: 999px;
-  letter-spacing: 0;
-  color: rgba(238, 245, 241, 0.76) !important;
-  border-color: rgba(255, 255, 255, 0.052) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.055), transparent 62%),
-    rgba(255, 255, 255, 0.012) !important;
-  transform:
-    translate3d(var(--rn-magnet-x, 0px), var(--rn-magnet-y, 0px), 0)
-    scale(var(--rn-nav-scale, 1));
-  transition:
-    color 160ms ease,
-    border-color 160ms ease,
-    background 160ms ease,
-    box-shadow 180ms ease,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.rn-nav-primary {
-  color: rgba(255, 255, 255, 0.96) !important;
-  border-color: rgba(var(--rn-site-purple), 0.34) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 52%),
-    linear-gradient(180deg, #9d3cff, #5f1c99) !important;
-}
-
-.rn-nav-link:hover,
-.rn-nav-link:focus-visible,
-.rn-nav-link.is-current,
-.rn-nav-link[aria-current="page"],
-.rn-nav-link.is-hovered,
-.rn-nav-ghost:hover,
-.rn-nav-ghost:focus-visible,
-.rn-nav-ghost.is-hovered,
-.rn-nav-primary:hover,
-.rn-nav-primary:focus-visible,
-.rn-nav-primary.is-hovered {
-  --rn-nav-scale: 1.025;
-  color: rgba(252, 255, 252, 0.98) !important;
-  border-color: rgba(var(--rn-site-green), 0.24) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(var(--rn-site-green), 0.16), transparent 72%),
-    radial-gradient(circle at 78% 100%, rgba(var(--rn-site-purple), 0.16), transparent 68%),
-    rgba(255, 255, 255, 0.046) !important;
-  box-shadow:
-    0 0 0 1px rgba(var(--rn-site-green), 0.07),
-    0 15px 32px rgba(0, 0, 0, 0.29),
-    0 0 28px rgba(var(--rn-site-purple), 0.13) !important;
-}
-
-.rn-nav .rn-nav-indicator {
-  border-color: rgba(var(--rn-site-green), 0.22) !important;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.24), transparent 58%),
-    linear-gradient(135deg, rgba(var(--rn-site-green), 0.22), rgba(7, 10, 13, 0.84) 48%, rgba(var(--rn-site-purple), 0.28)) !important;
-  box-shadow:
-    0 0 0 1px rgba(var(--rn-site-green), 0.055),
-    0 0 24px rgba(var(--rn-site-green), 0.11),
-    0 0 34px rgba(var(--rn-site-purple), 0.13),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-}
-
-.dither-bg {
-  inset: -15vh -11vw;
-  opacity: 0.5 !important;
-  filter: saturate(1.1) contrast(1.18) brightness(0.9);
-  will-change: opacity, filter, transform;
-  mask-image: radial-gradient(ellipse at 50% 18%, #000 0 30%, rgba(0, 0, 0, 0.56) 58%, transparent 92%) !important;
-  background:
-    radial-gradient(circle at calc(10% + (var(--landing-scroll-ratio, 0) * 12%)) -12%, rgba(var(--rn-site-green), 0.06), transparent 34rem),
-    radial-gradient(circle at calc(96% - (var(--landing-scroll-ratio, 0) * 10%)) 10%, rgba(var(--rn-site-purple), 0.096), transparent 32rem),
-    linear-gradient(180deg, #000 0%, #010101 50%, #000 100%) !important;
-}
-
-.dither-bg canvas {
-  opacity: 0.56 !important;
-  image-rendering: pixelated;
-}
-
-.dither-bg::before {
-  opacity: 0.5 !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 30%), rgba(var(--rn-site-purple), 0.2), transparent 22rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 82%, rgba(var(--rn-site-green), 0.105), transparent 24rem),
-    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1turn) at 50% 50%, rgba(var(--rn-site-green), 0.024), transparent 20%, rgba(var(--rn-site-blue), 0.028), transparent 54%, rgba(var(--rn-site-purple), 0.035), transparent 78%, rgba(var(--rn-site-green), 0.018)) !important;
-  transform:
-    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -64px), 0)
-    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
-}
-
-.dither-bg::after {
-  opacity: 0.23 !important;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.76), transparent 18%, transparent 72%, rgba(0, 0, 0, 0.78)),
-    repeating-linear-gradient(0deg, transparent 0 8px, rgba(255, 255, 255, 0.022) 9px, transparent 10px),
-    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.03) 0 1px, transparent 1px 19px) !important;
-}
-
-body.rn-body.is-scrolling .dither-bg,
-body.rn-body.is-pointer-live .dither-bg {
-  opacity: 0.64 !important;
-  filter: saturate(1.24) contrast(1.2) brightness(0.98);
-}
-
-@media (max-width: 760px) {
-  .rn-nav {
-    min-height: 0;
-    background:
-      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-purple), 0.1), transparent 42%),
-      linear-gradient(180deg, rgba(2, 3, 4, 0.94), rgba(0, 0, 0, 0.88)) !important;
-  }
-
-  .rn-nav-inner {
-    height: auto;
-    max-width: calc(100vw - 20px);
-    padding-block: 6px;
-    gap: 6px;
-  }
-
-  .rn-logo {
-    min-height: 34px;
-  }
-
-  .rn-nav-links,
-  .rn-nav-cta {
-    min-height: 38px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .rn-nav-links::-webkit-scrollbar,
-  .rn-nav-cta::-webkit-scrollbar {
-    display: none;
-  }
-
-  .rn-nav-link,
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    min-height: 30px;
-    padding-inline: 10px;
-  }
-
-  .dither-bg {
-    opacity: 0.42 !important;
-    mask-image: radial-gradient(ellipse at 50% 16%, #000 0 33%, rgba(0, 0, 0, 0.54) 62%, transparent 94%) !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dither-bg,
-  .dither-bg::before,
-  .dither-bg::after,
-  .rn-nav-link,
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    animation: none !important;
-    transform: none !important;
-  }
-}
-
-/* 2026-05 worker pass C: Mission gets the same black-first signal field as the site pages. */
-:root {
-  --rn-site-green: 54, 255, 132;
-  --rn-site-purple: 145, 56, 216;
-  --rn-site-blue: 70, 116, 190;
-}
-
-html,
-body {
-  scroll-behavior: auto !important;
-  overscroll-behavior-y: auto !important;
-  background: #000 !important;
-}
-
-body.rn-body {
-  overflow-x: clip;
-  background:
-    radial-gradient(circle at calc(8% + (var(--landing-scroll-ratio, 0) * 16%)) -16%, rgba(var(--rn-site-green), 0.034), transparent 35rem),
-    radial-gradient(circle at calc(94% - (var(--landing-scroll-ratio, 0) * 18%)) 7%, rgba(var(--rn-site-purple), 0.062), transparent 34rem),
-    radial-gradient(circle at 50% 118%, rgba(var(--rn-site-blue), 0.02), transparent 46rem),
-    linear-gradient(180deg, #000 0%, #010202 44%, #000 100%) !important;
-}
-
-body.rn-body::before,
-body.rn-body::after {
-  content: "" !important;
-  display: block !important;
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-}
-
-body.rn-body::after {
-  z-index: -1;
-}
-
-.dither-bg {
-  inset: -18vh -12vw !important;
-  opacity: 0.56 !important;
-  filter: saturate(1.18) contrast(1.22) brightness(0.88);
-  mix-blend-mode: screen;
-  mask-image: radial-gradient(ellipse at 50% 16%, #000 0 33%, rgba(0, 0, 0, 0.68) 60%, transparent 95%) !important;
-  will-change: opacity, filter, transform;
-}
-
-.dither-bg canvas {
-  opacity: 0.84 !important;
-  image-rendering: pixelated;
-  transform:
-    translate3d(calc(var(--landing-scroll-ratio, 0) * -10px), calc(var(--landing-dither-scroll, 0) * -22px), 0)
-    scale(1.016);
-}
-
-.dither-bg::before {
-  opacity: 0.62 !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 24%), rgba(var(--rn-site-purple), 0.19), transparent 21rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 84%, rgba(var(--rn-site-green), 0.1), transparent 27rem),
-    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1.15turn) at 50% 48%, rgba(var(--rn-site-green), 0.03), transparent 15%, rgba(var(--rn-site-blue), 0.022), transparent 38%, rgba(var(--rn-site-purple), 0.045), transparent 66%, rgba(var(--rn-site-green), 0.02), transparent 86%),
-    repeating-radial-gradient(circle at 50% 30%, transparent 0 28px, rgba(var(--rn-site-purple), 0.026) 29px, transparent 30px 58px) !important;
-  transform:
-    translate3d(calc((var(--landing-scroll-ratio, 0) - 0.5) * -20px), calc(var(--landing-scroll-ratio, 0) * -64px), 0)
-    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 4deg));
-  animation: landing-signal-vault-breathe 13s ease-in-out infinite alternate;
-}
-
-.dither-bg::after {
-  opacity: 0.24 !important;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.82), transparent 16%, transparent 72%, rgba(0, 0, 0, 0.86)),
-    repeating-linear-gradient(0deg, transparent 0 7px, rgba(255, 255, 255, 0.026) 8px, transparent 9px),
-    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.035) 0 1px, transparent 1px 17px),
-    repeating-linear-gradient(45deg, transparent 0 34px, rgba(var(--rn-site-green), 0.018) 35px, transparent 36px 78px) !important;
-  animation: landing-signal-scan-crawl 12s linear infinite;
-}
-
-body.rn-body::before {
-  opacity: 0.48 !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 22%), rgba(var(--rn-site-purple), 0.088), transparent 22rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) calc(100% - var(--landing-pointer-y, 22%)), rgba(var(--rn-site-green), 0.052), transparent 27rem),
-    linear-gradient(115deg, transparent 0 18%, rgba(var(--rn-site-green), 0.026) 19%, transparent 20% 46%, rgba(var(--rn-site-purple), 0.032) 47%, transparent 48% 100%),
-    repeating-linear-gradient(90deg, transparent 0 34px, rgba(255, 255, 255, 0.018) 35px, transparent 36px 78px),
-    repeating-linear-gradient(0deg, transparent 0 42px, rgba(var(--rn-site-green), 0.018) 43px, transparent 44px 96px) !important;
-  mix-blend-mode: screen;
-  transform:
-    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -52px), 0)
-    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 1.6deg));
-  animation: landing-signal-depth-field 24s linear infinite;
-}
-
-body.rn-body::after {
-  opacity: 0.26 !important;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.86), transparent 17%, transparent 76%, rgba(0, 0, 0, 0.9)),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 7px),
-    radial-gradient(ellipse at 50% calc(14% + (var(--landing-scroll-ratio, 0) * 42%)), rgba(var(--rn-site-green), 0.03), transparent 38%) !important;
-  animation: landing-signal-scan-crawl 15s linear infinite;
-}
-
-body.rn-body.is-scrolling .dither-bg,
-body.rn-body.is-pointer-live .dither-bg {
-  opacity: 0.64 !important;
-  filter: saturate(1.32) contrast(1.26) brightness(0.94);
-}
-
-@keyframes landing-signal-depth-field {
-  from {
-    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
-  }
-
-  to {
-    background-position: 0 0, 0 0, 48px -32px, -78px 0, 0 96px;
-  }
-}
-
-@keyframes landing-signal-scan-crawl {
-  from {
-    background-position: 0 0, 0 0, 0 0, 0 0;
-  }
-
-  to {
-    background-position: 0 0, 0 42px, 34px 0, 64px -64px;
-  }
-}
-
-@keyframes landing-signal-vault-breathe {
-  0% {
-    opacity: 0.46;
-    filter: saturate(1) contrast(1.06);
-  }
-
-  100% {
-    opacity: 0.68;
-    filter: saturate(1.22) contrast(1.22);
-  }
-}
-
-@media (max-width: 760px) {
-  body.rn-body::before {
-    opacity: 0.34 !important;
-  }
-
-  body.rn-body::after {
-    opacity: 0.2 !important;
-  }
-
-  .dither-bg {
-    inset: -12vh -16vw !important;
-    opacity: 0.38 !important;
-    filter: saturate(1.12) contrast(1.15) brightness(0.86);
-  }
-
-  body.rn-body.is-scrolling .dither-bg,
-  body.rn-body.is-pointer-live .dither-bg {
-    opacity: 0.48 !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.rn-body::before,
-  body.rn-body::after,
-  .dither-bg,
-  .dither-bg canvas,
-  .dither-bg::before,
-  .dither-bg::after {
-    animation: none !important;
-    transform: none !important;
-  }
-}
-
-/* VISUAL-CLAW EOF priority: these repeat the landing chrome guards after all earlier polish layers. */
-body[data-page="landing"] {
-  background: #000 !important;
-  overflow-x: clip !important;
-}
-
-body[data-page="landing"] .dither-bg {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 20%), rgba(63, 255, 139, 0.05), transparent 22rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 14%, rgba(145, 56, 216, 0.07), transparent 28rem),
-    #000 !important;
-}
-
-body[data-page="landing"] .rn-nav-inner {
-  width: min(1240px, calc(100vw - 24px)) !important;
-  max-width: min(1240px, calc(100vw - 24px)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.086) !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0, rgba(63, 255, 139, 0.082), transparent 21rem),
-    radial-gradient(circle at 100% 100%, rgba(145, 56, 216, 0.09), transparent 24rem),
-    linear-gradient(180deg, rgba(10, 14, 14, 0.86), rgba(0, 0, 0, 0.74)) !important;
-  box-shadow:
-    0 20px 58px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 -1px 0 rgba(63, 255, 139, 0.06) !important;
-}
-
-body[data-page="landing"] .rn-nav-links,
-body[data-page="landing"] .rn-nav-cta {
-  background:
-    linear-gradient(180deg, rgba(8, 11, 10, 0.88), rgba(0, 0, 0, 0.78)),
-    repeating-linear-gradient(90deg, rgba(63, 255, 139, 0.026) 0 1px, transparent 1px 10px) !important;
-}
-
-body[data-page="landing"] .rn-footer {
-  width: min(1240px, calc(100vw - 24px)) !important;
-  max-width: min(1240px, calc(100vw - 24px)) !important;
-  margin-inline: auto !important;
-  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(63, 255, 139, 0.075), transparent 24rem),
-    radial-gradient(circle at 84% 0%, rgba(145, 56, 216, 0.066), transparent 22rem),
-    linear-gradient(180deg, rgba(1, 2, 2, 0.94), #000) !important;
-}
-
-@media (max-width: 760px) {
-  body[data-page="landing"] .rn-nav-inner,
-  body[data-page="landing"] .rn-footer {
-    width: min(calc(100vw - 16px), 100%) !important;
-    max-width: min(calc(100vw - 16px), 100%) !important;
-  }
-
-  body[data-page="landing"] .rn-nav-links,
-  body[data-page="landing"] .rn-nav-cta {
-    min-height: 44px !important;
-    scroll-padding-inline: 0.75rem !important;
-  }
-
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    display: inline-flex !important;
-    align-items: center !important;
-    min-height: 40px !important;
-    touch-action: manipulation;
-  }
-
-  body[data-page="landing"] .rn-logo,
-  body[data-page="landing"] .rn-footer a {
-    display: inline-flex !important;
-    align-items: center !important;
-    min-height: 40px !important;
-    touch-action: manipulation;
-  }
-
-  body[data-page="landing"] .why-hero__signal {
-    overflow: clip !important;
-  }
-}
-
-@media (max-width: 360px) {
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    padding-inline: 0.58rem !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring {
-    max-width: calc(100% - 8px) !important;
-    max-height: calc(100% - 8px) !important;
-  }
-}
-
-/* MOBILE-CLAW-B: landing-specific mobile touch and signal containment. */
-@media (max-width: 760px) {
-  body[data-page="landing"] .rn-nav-links,
-  body[data-page="landing"] .rn-nav-cta {
-    min-height: 44px !important;
-    scroll-padding-inline: 0.75rem !important;
-  }
-
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    min-height: 40px !important;
-    touch-action: manipulation;
-  }
-
-  body[data-page="landing"] .why-hero__signal {
-    overflow: clip !important;
-  }
-}
-
-@media (max-width: 360px) {
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    padding-inline: 0.58rem !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring {
-    max-width: calc(100% - 8px) !important;
-    max-height: calc(100% - 8px) !important;
-  }
-}
-
-/* MOBILE-CLAW EOF guard: repeat after the visual EOF block so phones do not inherit wide bleed. */
-body[data-page="landing"] .dither-bg {
-  inset-inline: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: auto !important;
-  max-width: 100% !important;
-  contain: paint !important;
-}
-
-@media (max-width: 640px) {
-  body[data-page="landing"],
-  body[data-page="landing"] .rn-main,
-  body[data-page="landing"] .why-hero,
-  body[data-page="landing"] .why-hero__inner {
-    max-width: 100% !important;
-    overflow-x: clip !important;
-  }
-
-  body[data-page="landing"] .rn-nav-links,
-  body[data-page="landing"] .rn-nav-cta {
-    contain: paint !important;
-    max-width: 100% !important;
-    scroll-padding-inline: 0.85rem !important;
-  }
-
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    min-height: 40px !important;
-    touch-action: manipulation;
-  }
-
-  body[data-page="landing"] .why-hero__signal {
-    width: min(100%, calc(100vw - 32px)) !important;
-    max-width: calc(100vw - 32px) !important;
-    overflow: hidden !important;
-    contain: paint !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core {
-    width: min(100%, 232px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
-    width: min(92%, 220px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
-    width: min(68%, 160px) !important;
-  }
-}
-
-@media (max-width: 360px) {
-  body[data-page="landing"] .why-hero__signal {
-    max-width: calc(100vw - 24px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core {
-    width: min(100%, 208px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
-    width: min(90%, 196px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
-    width: min(64%, 142px) !important;
-  }
-}
-
-/* 2026-05-21 VISUAL-CLAW landing finish: keep the mission page black, dense, and overflow-safe. */
-body[data-page="landing"] {
-  --landing-claw-green: 63, 255, 139;
-  --landing-claw-purple: 145, 56, 216;
-  --landing-claw-cyan: 80, 222, 210;
-  background: #000 !important;
-  overflow-x: clip !important;
-}
-
-@supports not (overflow: clip) {
-  body[data-page="landing"] {
-    overflow-x: hidden !important;
-  }
-}
-
-body[data-page="landing"] .dither-bg {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 20%), rgba(var(--landing-claw-green), 0.05), transparent 22rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 14%, rgba(var(--landing-claw-purple), 0.07), transparent 28rem),
-    #000 !important;
-}
-
-body[data-page="landing"] .dither-bg::before {
-  background:
-    radial-gradient(circle at calc(18% + var(--landing-scroll-ratio, 0) * 20%) 16%, rgba(var(--landing-claw-green), 0.13), transparent 18rem),
-    radial-gradient(circle at calc(84% - var(--landing-scroll-ratio, 0) * 16%) 18%, rgba(var(--landing-claw-purple), 0.14), transparent 22rem),
-    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1.35turn) at 52% 40%, transparent 0 15%, rgba(var(--landing-claw-green), 0.08) 20%, transparent 31%, rgba(var(--landing-claw-purple), 0.09) 45%, transparent 59%, rgba(var(--landing-claw-cyan), 0.048) 72%, transparent 90%),
-    repeating-linear-gradient(118deg, transparent 0 48px, rgba(var(--landing-claw-green), 0.036) 49px, transparent 50px 104px),
-    repeating-linear-gradient(42deg, transparent 0 64px, rgba(var(--landing-claw-purple), 0.03) 65px, transparent 66px 124px) !important;
-}
-
-body[data-page="landing"] .rn-nav-inner {
-  width: min(1240px, calc(100vw - 24px)) !important;
-  max-width: min(1240px, calc(100vw - 24px)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.086) !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0, rgba(var(--landing-claw-green), 0.082), transparent 21rem),
-    radial-gradient(circle at 100% 100%, rgba(var(--landing-claw-purple), 0.09), transparent 24rem),
-    linear-gradient(180deg, rgba(10, 14, 14, 0.86), rgba(0, 0, 0, 0.74)) !important;
-  box-shadow:
-    0 20px 58px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 -1px 0 rgba(var(--landing-claw-green), 0.06) !important;
-}
-
-body[data-page="landing"] .rn-nav-links,
-body[data-page="landing"] .rn-nav-cta {
-  background:
-    linear-gradient(180deg, rgba(8, 11, 10, 0.88), rgba(0, 0, 0, 0.78)),
-    repeating-linear-gradient(90deg, rgba(var(--landing-claw-green), 0.026) 0 1px, transparent 1px 10px) !important;
-}
-
-body[data-page="landing"] .why-cap-card,
-body[data-page="landing"] .why-cta {
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 0%), rgba(var(--landing-claw-green), 0.08), transparent 42%),
-    linear-gradient(180deg, rgba(8, 12, 11, 0.72), rgba(0, 0, 0, 0.66)) !important;
-}
-
-body[data-page="landing"] .why-cap-card::after,
-body[data-page="landing"] .why-cta::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(112deg, transparent 0 34%, rgba(255, 255, 255, 0.07) 48%, transparent 62%),
-    repeating-linear-gradient(0deg, rgba(var(--landing-claw-green), 0.018) 0 1px, transparent 1px 9px);
-  opacity: 0;
-  transform: translateX(-18%);
-  transition:
-    opacity 180ms ease,
-    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-body[data-page="landing"] .why-cap-card:hover::after,
-body[data-page="landing"] .why-cap-card:focus-within::after,
-body[data-page="landing"] .why-cta:hover::after,
-body[data-page="landing"] .why-cta:focus-within::after {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-body[data-page="landing"] .rn-footer {
-  width: min(1240px, calc(100vw - 24px)) !important;
-  max-width: min(1240px, calc(100vw - 24px)) !important;
-  margin-inline: auto !important;
-  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(var(--landing-claw-green), 0.075), transparent 24rem),
-    radial-gradient(circle at 84% 0%, rgba(var(--landing-claw-purple), 0.066), transparent 22rem),
-    linear-gradient(180deg, rgba(1, 2, 2, 0.94), #000) !important;
-}
-
-@media (max-width: 760px) {
-  body[data-page="landing"] .rn-nav-inner,
-  body[data-page="landing"] .rn-footer {
-    width: min(calc(100vw - 16px), 100%) !important;
-    max-width: min(calc(100vw - 16px), 100%) !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body[data-page="landing"] .why-cap-card::after,
-  body[data-page="landing"] .why-cta::after {
-    transition: none !important;
-    transform: none !important;
-  }
-}
-
-/* 2026-05-21 Mission nav reconciliation: match the RoachNet page chrome without changing the Mission copy. */
-:root {
-  --rn-mission-nav-max: min(1240px, calc(100vw - 24px));
-  --rn-mission-nav-rail: rgba(255, 255, 255, 0.085);
-}
-
-.rn-nav {
-  padding-inline: 0 !important;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.52) 72%, transparent) !important;
-  backdrop-filter: blur(20px) saturate(1.24) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.24) !important;
-}
-
-.rn-nav-inner {
-  display: grid !important;
-  grid-template-columns: minmax(178px, auto) minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  width: var(--rn-mission-nav-max) !important;
-  max-width: var(--rn-mission-nav-max) !important;
-  min-height: 66px !important;
-  gap: 6px !important;
-  padding: 5px !important;
-  border: 1px solid rgba(255, 255, 255, 0.085) !important;
-  border-radius: 999px !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-green), 0.075), transparent 22rem),
-    linear-gradient(180deg, rgba(12, 16, 17, 0.86), rgba(0, 0, 0, 0.72)) !important;
-  box-shadow:
-    0 22px 58px rgba(0, 0, 0, 0.42),
-    0 0 0 1px rgba(var(--rn-site-purple), 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.085),
-    inset 0 -1px 0 rgba(var(--rn-site-green), 0.055) !important;
-  overflow: hidden !important;
-}
-
-.rn-logo {
-  min-width: 0 !important;
-  padding-inline: 0.55rem 0.78rem !important;
-}
-
-.rn-logo-text {
-  max-width: 14ch !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  display: inline-flex !important;
-  align-items: center !important;
-  flex-wrap: nowrap !important;
-  gap: 3px !important;
-  min-width: 0 !important;
-  min-height: 44px !important;
-  padding: 3px !important;
-  border: 1px solid var(--rn-mission-nav-rail) !important;
-  border-radius: 999px !important;
-  background:
-    linear-gradient(180deg, rgba(7, 10, 11, 0.88), rgba(0, 0, 0, 0.78)),
-    rgba(0, 0, 0, 0.58) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.055),
-    inset 0 -1px 0 rgba(var(--rn-site-green), 0.04) !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  scrollbar-width: none !important;
-}
-
-.rn-nav-links {
-  justify-self: center !important;
-}
-
-.rn-nav-cta {
-  justify-self: end !important;
-}
-
-.rn-nav-links::-webkit-scrollbar,
-.rn-nav-cta::-webkit-scrollbar {
-  display: none !important;
-}
-
-.rn-nav-link,
-.rn-nav-ghost,
-.rn-nav-primary {
-  z-index: 1 !important;
-  min-height: 38px !important;
-  padding: 0 clamp(0.62rem, 1vw, 0.86rem) !important;
-  font-size: clamp(0.7rem, 0.78vw, 0.76rem) !important;
-  font-weight: 800 !important;
-  line-height: 1 !important;
-  white-space: nowrap !important;
-}
-
-.rn-nav-primary {
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 54%),
-    linear-gradient(180deg, #9138d8, #5d1994) !important;
-}
-
-.rn-nav .rn-nav-indicator {
-  z-index: 0 !important;
-  opacity: 0.72 !important;
-  inset: 3px auto auto 3px !important;
-  width: max(0px, calc(var(--rn-nav-indicator-w, 0px) - 6px)) !important;
-  height: max(0px, calc(var(--rn-nav-indicator-h, 0px) - 6px)) !important;
-  transform:
-    translate3d(
-      calc(var(--rn-nav-indicator-x, 0px) - 3px),
-      calc(var(--rn-nav-indicator-y, 0px) - 3px),
-      0
-    ) !important;
-}
-
-@media (max-width: 980px) {
-  .rn-nav-inner {
-    grid-template-columns: auto minmax(0, 1fr) !important;
-    border-radius: 22px !important;
-    width: min(calc(100vw - 18px), 100%) !important;
-    max-width: min(calc(100vw - 18px), 100%) !important;
-  }
-
-  .rn-nav-cta {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-  }
-
-  .rn-nav-links {
-    grid-column: 1 / -1 !important;
-    grid-row: 2 !important;
-    width: 100% !important;
-    justify-self: stretch !important;
-    justify-content: flex-start !important;
-    mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .rn-nav-inner {
-    gap: 5px !important;
-    min-height: 0 !important;
-    padding: 5px !important;
-  }
-
-  .rn-logo {
-    padding-inline: 0.42rem !important;
-  }
-
-  .rn-logo-text {
-    max-width: 8ch !important;
-  }
-
-  .rn-nav-cta {
-    width: 100% !important;
-    justify-content: flex-end !important;
-    mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%) !important;
-  }
-
-  .rn-nav-link,
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    min-height: 32px !important;
-    padding-inline: 0.52rem !important;
-    font-size: 0.67rem !important;
-  }
-}
-
-/* MOBILE-CLAW final guard: keep the mission hero signal inside the phone viewport. */
-body[data-page="landing"] .dither-bg {
-  inset-inline: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: auto !important;
-  max-width: 100% !important;
-  contain: paint !important;
-}
-
-@media (max-width: 640px) {
-  body[data-page="landing"],
-  body[data-page="landing"] .rn-main,
-  body[data-page="landing"] .why-hero,
-  body[data-page="landing"] .why-hero__inner {
-    max-width: 100% !important;
-    overflow-x: clip !important;
-  }
-
-  body[data-page="landing"] .rn-nav-links,
-  body[data-page="landing"] .rn-nav-cta {
-    contain: paint !important;
-    max-width: 100% !important;
-    scroll-padding-inline: 0.85rem !important;
-  }
-
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    min-height: 40px !important;
-    touch-action: manipulation;
-  }
-
-  body[data-page="landing"] .why-hero__signal {
-    width: min(100%, calc(100vw - 32px)) !important;
-    max-width: calc(100vw - 32px) !important;
-    overflow: hidden !important;
-    contain: paint !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core {
-    width: min(100%, 232px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
-    width: min(92%, 220px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
-    width: min(68%, 160px) !important;
-  }
-}
-
-@media (max-width: 360px) {
-  body[data-page="landing"] .why-hero__signal {
-    max-width: calc(100vw - 24px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core {
-    width: min(100%, 208px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(1) {
-    width: min(90%, 196px) !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring:nth-child(2) {
-    width: min(64%, 142px) !important;
-  }
-}
-
-/* 2026-05 worker pass D: Mission chrome and field match the black-first RoachNet site system. */
-:root {
-  --rn-site-green: 54, 255, 132;
-  --rn-site-purple: 145, 56, 216;
-  --rn-site-blue: 70, 116, 190;
-  --rn-nav-surface:
-    linear-gradient(180deg, rgba(9, 12, 12, 0.78), rgba(0, 0, 0, 0.58)),
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-green), 0.08), transparent 62%),
-    radial-gradient(circle at 100% 100%, rgba(var(--rn-site-purple), 0.1), transparent 70%);
-  --rn-nav-border: rgba(255, 255, 255, 0.11);
-}
-
-html,
-body {
-  scroll-behavior: auto !important;
-  overscroll-behavior-y: auto !important;
-  background: #000 !important;
-}
-
-body.rn-body {
-  background:
-    radial-gradient(circle at calc(8% + (var(--landing-scroll-ratio, 0) * 12%)) -10%, rgba(var(--rn-site-green), 0.027), transparent 34rem),
-    radial-gradient(circle at calc(92% - (var(--landing-scroll-ratio, 0) * 14%)) 3%, rgba(var(--rn-site-purple), 0.054), transparent 34rem),
-    radial-gradient(ellipse at 50% 112%, rgba(8, 18, 14, 0.34), transparent 54rem),
-    linear-gradient(180deg, #000 0%, #010202 38%, #000 100%) !important;
-}
-
-body.rn-body::before {
-  opacity: 0.52 !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 54%) var(--landing-pointer-y, 22%), rgba(var(--rn-site-purple), 0.11), transparent 20rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 54%)) calc(100% - var(--landing-pointer-y, 22%)), rgba(var(--rn-site-green), 0.062), transparent 27rem),
-    linear-gradient(118deg, transparent 0 17%, rgba(var(--rn-site-green), 0.026) 18%, transparent 19% 45%, rgba(var(--rn-site-purple), 0.034) 46%, transparent 47% 100%),
-    linear-gradient(60deg, transparent 0 47%, rgba(var(--rn-site-green), 0.018) 48%, transparent 49% 100%),
-    linear-gradient(-60deg, transparent 0 49%, rgba(var(--rn-site-purple), 0.018) 50%, transparent 51% 100%),
-    repeating-linear-gradient(90deg, transparent 0 42px, rgba(255, 255, 255, 0.016) 43px, transparent 44px 92px) !important;
-  background-size: auto, auto, auto, 72px 72px, 72px 72px, auto;
-  mix-blend-mode: screen;
-  transform:
-    translate3d(0, calc(var(--landing-scroll-ratio, 0) * -58px), 0)
-    rotate(calc((var(--landing-scroll-ratio, 0) - 0.5) * 1.45deg));
-  animation: landing-code-therapy-field-drift 28s linear infinite;
-}
-
-body.rn-body::after {
-  opacity: 0.3 !important;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 18%, transparent 73%, rgba(0, 0, 0, 0.92)),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.032) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.026) 0 1px, transparent 1px 19px),
-    radial-gradient(ellipse at 50% calc(12% + (var(--landing-scroll-ratio, 0) * 46%)), rgba(var(--rn-site-green), 0.033), transparent 36%) !important;
-  animation: landing-code-therapy-vhs-scan 14s linear infinite;
-}
-
-.dither-bg {
-  inset: -20vh -14vw !important;
-  opacity: 0.58 !important;
-  filter: saturate(1.24) contrast(1.28) brightness(0.88);
-  mask-image: radial-gradient(ellipse at 50% 14%, #000 0 34%, rgba(0, 0, 0, 0.68) 58%, transparent 94%) !important;
-}
-
-.dither-bg canvas {
-  opacity: 0.9 !important;
-  transform:
-    translate3d(calc(var(--landing-scroll-ratio, 0) * -12px), calc(var(--landing-dither-scroll, 0) * -26px), 0)
-    scale(1.02);
-}
-
-.dither-bg::before {
-  opacity: 0.68 !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 24%), rgba(var(--rn-site-purple), 0.2), transparent 21rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 83%, rgba(var(--rn-site-green), 0.11), transparent 28rem),
-    conic-gradient(from calc(var(--landing-scroll-ratio, 0) * 1.2turn) at 50% 45%, rgba(var(--rn-site-green), 0.035), transparent 14%, rgba(var(--rn-site-blue), 0.024), transparent 36%, rgba(var(--rn-site-purple), 0.055), transparent 64%, rgba(var(--rn-site-green), 0.02), transparent 88%),
-    repeating-radial-gradient(circle at 52% 24%, transparent 0 26px, rgba(var(--rn-site-purple), 0.028) 27px, transparent 28px 56px),
-    linear-gradient(60deg, transparent 0 47%, rgba(var(--rn-site-green), 0.022) 48%, transparent 49% 100%),
-    linear-gradient(-60deg, transparent 0 49%, rgba(var(--rn-site-purple), 0.024) 50%, transparent 51% 100%) !important;
-  background-size: auto, auto, auto, auto, 92px 92px, 92px 92px;
-  animation: landing-code-therapy-vault-pulse 12s ease-in-out infinite alternate;
-}
-
-.dither-bg::after {
-  opacity: 0.27 !important;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.86), transparent 15%, transparent 72%, rgba(0, 0, 0, 0.88)),
-    repeating-linear-gradient(0deg, transparent 0 6px, rgba(255, 255, 255, 0.03) 7px, transparent 8px),
-    repeating-linear-gradient(90deg, rgba(var(--rn-site-purple), 0.038) 0 1px, transparent 1px 17px),
-    repeating-linear-gradient(45deg, transparent 0 32px, rgba(var(--rn-site-green), 0.021) 33px, transparent 34px 76px) !important;
-  animation: landing-code-therapy-vhs-scan 10s linear infinite;
-}
-
-body.rn-body.is-scrolling .dither-bg,
-body.rn-body.is-pointer-live .dither-bg {
-  opacity: 0.68 !important;
-  filter: saturate(1.38) contrast(1.32) brightness(0.94);
-}
-
-.rn-nav {
-  overscroll-behavior: auto !important;
-  overscroll-behavior-y: auto !important;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.76), rgba(0, 0, 0, 0.46)) !important;
-  border-bottom-color: rgba(255, 255, 255, 0.075) !important;
-}
-
-.rn-nav-inner {
-  max-width: min(1180px, calc(100vw - 24px));
-  min-height: 58px;
-  gap: 10px;
-}
-
-.rn-nav-links,
-.rn-nav-cta {
-  min-height: 40px;
-  padding: 4px !important;
-  border: 1px solid var(--rn-nav-border) !important;
-  border-radius: 999px !important;
-  background: var(--rn-nav-surface) !important;
-  box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.34),
-    0 0 0 1px rgba(var(--rn-site-green), 0.025),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  scroll-snap-type: none !important;
-  scroll-behavior: auto !important;
-  overscroll-behavior: auto !important;
-  overscroll-behavior-inline: auto !important;
-}
-
-.rn-nav-link,
-.rn-nav-ghost,
-.rn-nav-primary {
-  min-height: 30px;
-  padding: 0 12px;
-  border: 1px solid transparent !important;
-  border-radius: 999px !important;
-  color: rgba(232, 239, 226, 0.78) !important;
-  letter-spacing: 0 !important;
-  transform:
-    translate3d(var(--rn-magnet-x, 0), var(--rn-magnet-y, 0), 0)
-    scale(var(--rn-nav-scale, 1));
-}
-
-.rn-nav-primary {
-  color: rgba(255, 255, 255, 0.97) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(255, 255, 255, 0.18), transparent 54%),
-    linear-gradient(180deg, #9138D8, #5d1994) !important;
-  box-shadow: 0 14px 32px rgba(var(--rn-site-purple), 0.22) !important;
-}
-
-.rn-nav-link:hover,
-.rn-nav-link:focus-visible,
-.rn-nav-link.is-current,
-.rn-nav-link[aria-current="page"],
-.rn-nav-link.is-hovered,
-.rn-nav-ghost:hover,
-.rn-nav-ghost:focus-visible,
-.rn-nav-ghost.is-hovered,
-.rn-nav-primary:hover,
-.rn-nav-primary:focus-visible,
-.rn-nav-primary.is-hovered {
-  --rn-nav-scale: 1.035;
-  color: rgba(252, 255, 248, 0.98) !important;
-  border-color: rgba(var(--rn-site-green), 0.22) !important;
-  background:
-    radial-gradient(circle at var(--rn-hover-x, 50%) 0%, rgba(var(--rn-site-green), 0.16), transparent 62%),
-    radial-gradient(circle at 100% 100%, rgba(var(--rn-site-purple), 0.17), transparent 65%),
-    rgba(255, 255, 255, 0.045) !important;
-  box-shadow:
-    0 0 0 1px rgba(var(--rn-site-green), 0.045),
-    0 0 24px rgba(var(--rn-site-purple), 0.12),
-    0 10px 22px rgba(0, 0, 0, 0.28) !important;
-}
-
-.rn-nav .rn-nav-indicator {
-  border: 1px solid rgba(var(--rn-site-green), 0.22) !important;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 45% 0%, rgba(255, 255, 255, 0.22), transparent 55%),
-    linear-gradient(135deg, rgba(var(--rn-site-green), 0.2), rgba(2, 4, 5, 0.84) 50%, rgba(var(--rn-site-purple), 0.28)) !important;
-  box-shadow:
-    0 0 28px rgba(var(--rn-site-green), 0.12),
-    0 0 34px rgba(var(--rn-site-purple), 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.13) !important;
-}
-
-@keyframes landing-code-therapy-field-drift {
-  from {
-    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
-  }
-
-  to {
-    background-position: 0 0, 0 0, 56px -38px, 72px 72px, -72px 72px, -96px 0;
-  }
-}
-
-@keyframes landing-code-therapy-vhs-scan {
-  from {
-    background-position: 0 0, 0 0, 0 0, 0 0;
-  }
-
-  to {
-    background-position: 0 0, 0 42px, 36px 0, 76px -76px;
-  }
-}
-
-@keyframes landing-code-therapy-vault-pulse {
-  0% {
-    opacity: 0.52;
-    filter: saturate(1.04) contrast(1.08);
-  }
-
-  100% {
-    opacity: 0.72;
-    filter: saturate(1.26) contrast(1.24);
-  }
-}
-
-@media (max-width: 760px) {
-  .rn-nav {
-    background:
-      radial-gradient(circle at var(--landing-pointer-x, 50%) 0%, rgba(var(--rn-site-purple), 0.12), transparent 44%),
-      rgba(0, 0, 0, 0.82) !important;
-  }
-
-  .rn-nav-inner {
-    max-width: calc(100vw - 20px);
-    min-height: 0;
-    padding-block: 6px;
-    gap: 6px;
-  }
-
-  .rn-nav-links,
-  .rn-nav-cta {
-    min-height: 36px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .rn-nav-links::-webkit-scrollbar,
-  .rn-nav-cta::-webkit-scrollbar {
-    display: none;
-  }
-
-  .rn-nav-link,
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    min-height: 28px;
-    padding-inline: 9px;
-    font-size: 0.72rem;
-  }
-
-  .dither-bg {
-    opacity: 0.42 !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.rn-body::before,
-  body.rn-body::after,
-  .dither-bg,
-  .dither-bg canvas,
-  .dither-bg::before,
-  .dither-bg::after,
-  .rn-nav-link,
-  .rn-nav-ghost,
-  .rn-nav-primary {
-    animation: none !important;
-    transform: none !important;
-  }
-}
-
-/* VISUAL-CLAW EOF priority: these repeat the landing chrome guards after all earlier polish layers. */
-body[data-page="landing"] {
-  background: #000 !important;
-  overflow-x: clip !important;
-}
-
-body[data-page="landing"] .dither-bg {
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) var(--landing-pointer-y, 20%), rgba(63, 255, 139, 0.05), transparent 22rem),
-    radial-gradient(circle at calc(100% - var(--landing-pointer-x, 50%)) 14%, rgba(145, 56, 216, 0.07), transparent 28rem),
-    #000 !important;
-}
-
-body[data-page="landing"] .rn-nav-inner {
-  width: min(1240px, calc(100vw - 24px)) !important;
-  max-width: min(1240px, calc(100vw - 24px)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.086) !important;
-  background:
-    radial-gradient(circle at var(--landing-pointer-x, 50%) 0, rgba(63, 255, 139, 0.082), transparent 21rem),
-    radial-gradient(circle at 100% 100%, rgba(145, 56, 216, 0.09), transparent 24rem),
-    linear-gradient(180deg, rgba(10, 14, 14, 0.86), rgba(0, 0, 0, 0.74)) !important;
-  box-shadow:
-    0 20px 58px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 -1px 0 rgba(63, 255, 139, 0.06) !important;
-}
-
-body[data-page="landing"] .rn-nav-links,
-body[data-page="landing"] .rn-nav-cta {
-  background:
-    linear-gradient(180deg, rgba(8, 11, 10, 0.88), rgba(0, 0, 0, 0.78)),
-    repeating-linear-gradient(90deg, rgba(63, 255, 139, 0.026) 0 1px, transparent 1px 10px) !important;
-}
-
-body[data-page="landing"] .rn-footer {
-  width: min(1240px, calc(100vw - 24px)) !important;
-  max-width: min(1240px, calc(100vw - 24px)) !important;
-  margin-inline: auto !important;
-  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(63, 255, 139, 0.075), transparent 24rem),
-    radial-gradient(circle at 84% 0%, rgba(145, 56, 216, 0.066), transparent 22rem),
-    linear-gradient(180deg, rgba(1, 2, 2, 0.94), #000) !important;
-}
-
-@media (max-width: 760px) {
-  body[data-page="landing"] .rn-nav-inner,
-  body[data-page="landing"] .rn-footer {
-    width: min(calc(100vw - 16px), 100%) !important;
-    max-width: min(calc(100vw - 16px), 100%) !important;
-  }
-}
-
-/* MOBILE-CLAW-B EOF: keep the landing chrome tactile after all landing layers. */
-@media (max-width: 760px) {
-  body[data-page="landing"] .rn-nav-links,
-  body[data-page="landing"] .rn-nav-cta {
-    min-height: 44px !important;
-    scroll-padding-inline: 0.75rem !important;
-  }
-
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    display: inline-flex !important;
-    align-items: center !important;
-    min-height: 40px !important;
-    touch-action: manipulation;
-  }
-
-  body[data-page="landing"] .why-hero__signal {
-    overflow: clip !important;
-  }
-}
-
-@media (max-width: 360px) {
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary) {
-    padding-inline: 0.58rem !important;
-  }
-
-  body[data-page="landing"] .why-hero__signal-core-ring {
-    max-width: calc(100% - 8px) !important;
-    max-height: calc(100% - 8px) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  body[data-page="landing"] :where(.rn-nav-link, .rn-nav-ghost, .rn-nav-primary),
-  body[data-page="landing"] .rn-logo,
-  body[data-page="landing"] .rn-footer a {
-    display: inline-flex !important;
-    align-items: center !important;
-    min-height: 40px !important;
-    touch-action: manipulation;
-  }
-}
-
-
-/* ===========================
-   Release refresh (2026-10): app showcase, card light, headline sheen.
-   All decorative motion stops under prefers-reduced-motion.
-   =========================== */
-
-.why-hero__sheen {
-  background: linear-gradient(100deg, #f0f0f0 0%, #f0f0f0 38%, #d8b4ff 47%, #8affc1 53%, #f0f0f0 62%, #f0f0f0 100%);
-  background-size: 260% 100%;
-  background-position: 100% 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: why-sheen 7s cubic-bezier(0.16, 1, 0.3, 1) 1.2s infinite;
-}
-
-@keyframes why-sheen {
-  0% { background-position: 100% 0; }
-  45%, 100% { background-position: 0% 0; }
-}
-
-.why-section--showcase {
-  max-width: none;
-  padding-block: clamp(24px, 6vw, 72px);
-}
-
-.why-showcase {
-  position: relative;
-  width: min(1080px, 100%);
-  margin: 0 auto;
-  perspective: 1600px;
-}
-
-.why-showcase__glow {
-  position: absolute;
-  inset: 12% 8% -6%;
-  border-radius: 40px;
-  background:
-    radial-gradient(60% 60% at 30% 40%, rgba(145, 56, 216, 0.42), transparent 70%),
-    radial-gradient(50% 50% at 75% 70%, rgba(54, 255, 132, 0.22), transparent 70%);
-  filter: blur(48px);
-  opacity: calc(0.45 + var(--why-showcase-progress, 1) * 0.55);
-  pointer-events: none;
-}
-
-.why-showcase__window {
-  position: relative;
-  overflow: hidden;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #0c0d13;
-  box-shadow:
-    0 40px 120px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(176, 108, 240, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transform-origin: 50% 100%;
-  transform:
-    rotateX(calc((1 - var(--why-showcase-progress, 1)) * 18deg))
-    scale(calc(0.9 + var(--why-showcase-progress, 1) * 0.1));
-  will-change: transform;
-}
-
-.why-showcase__window img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.why-showcase__window::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.08) 50%, transparent 65%);
-  transform: translateX(calc((var(--why-showcase-progress, 1) - 0.5) * 140%));
-}
-
-/* Capability cards: a light that follows the pointer, and a small lift. */
-.why-cap-card {
-  position: relative;
-  overflow: hidden;
-  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease, box-shadow 420ms ease;
-}
-
-.why-cap-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(260px circle at var(--rn-hover-x, 50%) var(--rn-hover-y, 50%), rgba(176, 108, 240, 0.16), transparent 70%);
-  transition: opacity 300ms ease;
-}
-
-.why-cap-card:hover::before {
-  opacity: 1;
-}
-
-.why-cap-card:hover {
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(176, 108, 240, 0.18);
-}
-
-.why-cap-card:hover .why-cap-card__icon {
-  transform: translateY(-2px) scale(1.04);
-}
-
-.why-cap-card__icon {
-  transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .why-hero__sheen {
-    animation: none;
-    background: none;
-    color: inherit;
-  }
-
-  .why-showcase__window {
-    transform: none;
-  }
-
-  .why-showcase__window::after {
-    display: none;
-  }
-
-  .why-cap-card,
-  .why-cap-card__icon {
-    transition: none;
-  }
-}
+```text {chunk="ios-index-html" file="ios/index.html"}
+<!doctype html>
+<html lang="en" class="nx">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet iOS: RoachNet in your pocket</title>
+    <meta name="description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://roachnet.org/ios/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet iOS: RoachNet in your pocket" />
+    <meta property="og:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta property="og:url" content="https://roachnet.org/ios/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet iOS: RoachNet in your pocket" />
+    <meta name="twitter:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="preload" as="image" href="../assets/screens/roachnet-ios-020-home.webp" />
+    <link rel="stylesheet" href="../nx.css" />
+  </head>
+  <body data-page="ios">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__scan"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
+
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">iOS · v0.2.0</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link is-current" href="#top" aria-current="page">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top" class="nx-main" tabindex="-1">
+      <section class="nx-hero" aria-labelledby="hero-title">
+        <div class="nx-hero__copy">
+          <p class="nx-overline">RoachNet iOS 0.2.0 · iPhone &amp; iPad</p>
+          <h1 class="nx-display nx-display--xl" id="hero-title">RoachNet <span class="nx-accent">in your pocket.</span></h1>
+          <p class="nx-lede">
+            Your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
+          </p>
+          <div class="nx-actions">
+            <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download RoachNet iOS 0.2.0</a>
+            <a class="nx-btn" href="#install">Install with SideStore or AltStore</a>
+          </div>
+          <p class="nx-hero__meta">
+            <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.6 for Mac</span>
+          </p>
+          <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store account, no RoachNet account, nobody in the middle.</p>
+          <ul class="nx-chips" aria-label="What's in the app">
+            <li class="nx-chip nx-chip--mono">Home</li>
+            <li class="nx-chip nx-chip--mono">RoachClaw</li>
+            <li class="nx-chip nx-chip--mono">Org</li>
+            <li class="nx-chip nx-chip--mono">Apps</li>
+            <li class="nx-chip nx-chip--mono">Vault</li>
+            <li class="nx-chip nx-chip--mono">Runtime</li>
+          </ul>
+        </div>
+
+        <div class="nx-hero__visual nx-phone-stage" aria-hidden="true">
+          <div class="nx-screen nx-screen--phone ios-hero-shot app-screen-shot">
+            <span class="nx-screen__glow"></span>
+            <img src="../assets/screens/roachnet-ios-020-home.webp" width="1206" height="2622" alt="RoachNet iOS Home screen" fetchpriority="high" decoding="async" />
+          </div>
+          <div class="nx-floats">
+            <div class="nx-float nx-float--tl"><span>Paired</span><strong>Over your own RoachTail link</strong></div>
+            <div class="nx-float nx-float--br"><span>Thinks on the Mac</span><strong>Your models, your replies</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="nx-ticker" aria-hidden="true">
+        <div class="nx-ticker__track">
+          <span class="nx-ticker__item">Pairs in one tap</span>
+          <span class="nx-ticker__item">Every phone gets its own key</span>
+          <span class="nx-ticker__item">No RoachNet server</span>
+          <span class="nx-ticker__item">Useful when the Mac is asleep</span>
+          <span class="nx-ticker__item">SideStore and AltStore</span>
+          <span class="nx-ticker__item">Approve agents from the couch</span>
+        </div>
+      </div>
+
+      <section class="nx-section" id="screens" aria-labelledby="screens-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Screens</p>
+          <h2 class="nx-h2" id="screens-title">Everything the Mac knows, one thumb away.</h2>
+          <p class="nx-lede">Six tabs and one sheet, each doing one job. Pocket-sized, not toy-sized.</p>
+        </div>
+        <div class="nx-grid nx-grid--3 nx-phones" role="list">
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-ios-020-home.webp" width="1206" height="2622" alt="RoachNet iOS Home: vital signs for the paired Mac" loading="lazy" decoding="async" />
+            </div>
+            <p class="nx-card__eyebrow">Home · new</p>
+            <h3 class="nx-card__title">Your Mac's vital signs at a glance.</h3>
+            <p class="nx-card__body">Which brain is loaded, what's on the shelves, whether RoachTail is up, and what your agents are waiting on. One look before you put the phone back.</p>
+          </article>
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-ios-020-roachclaw.webp" width="1206" height="2622" alt="RoachNet iOS RoachClaw chat" loading="lazy" decoding="async" />
+            </div>
+            <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachClaw</p>
+            <h3 class="nx-card__title">Ask from here. It thinks on the Mac.</h3>
+            <p class="nx-card__body">Type, dictate or attach a photo. The reply comes from the model on your Mac, and the thread is there next time you open the laptop.</p>
+          </article>
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-ios-020-org.webp" width="1206" height="2622" alt="RoachNet iOS Org approvals" loading="lazy" decoding="async" />
+            </div>
+            <p class="nx-card__eyebrow nx-card__eyebrow--purple">Org · with RoachNet 1.1</p>
+            <h3 class="nx-card__title">Sign off on your agents from the couch.</h3>
+            <p class="nx-card__body">RoachClaw Org asks before it hires an agent or changes the plan. Approve, send it back with a note, or say no. Pause an agent that's wandering.</p>
+          </article>
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-ios-020-apps.webp" width="1206" height="2622" alt="RoachNet iOS Apps" loading="lazy" decoding="async" />
+            </div>
+            <p class="nx-card__eyebrow">Apps</p>
+            <h3 class="nx-card__title">Queue installs from anywhere.</h3>
+            <p class="nx-card__body">Pick maps, courses, models and packs; they install on the Mac as soon as it's reachable. If the web catalog is offline, the shelf you last loaded stays put.</p>
+          </article>
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-ios-020-vault.webp" width="1206" height="2622" alt="RoachNet iOS Vault" loading="lazy" decoding="async" />
+            </div>
+            <p class="nx-card__eyebrow">Vault</p>
+            <h3 class="nx-card__title">Your library, without the laptop.</h3>
+            <p class="nx-card__body">Maps, courses, saved pages, media and documents, readable on the phone and still there after the Mac drops off.</p>
+          </article>
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
+              <img src="../assets/screens/roachnet-ios-020-runtime.webp" width="1206" height="2622" alt="RoachNet iOS Runtime" loading="lazy" decoding="async" />
+            </div>
+            <p class="nx-card__eyebrow nx-card__eyebrow--amber">Runtime</p>
+            <h3 class="nx-card__title">See what the Mac is up to.</h3>
+            <p class="nx-card__body">Services, downloads, RoachTail, RoachSync and RoachAtlas GPS, with the controls to start, stop or retry right there.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="features" aria-labelledby="features-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">What's new in 0.2.0</p>
+          <h2 class="nx-h2" id="features-title">A new look, a Home tab, and your agents on call.</h2>
+          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for the agent company coming in 1.1.</p>
+        </div>
+        <div class="nx-grid nx-grid--3" role="list">
+          <article class="nx-card nx-card--feature nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">The app</p>
+            <h3 class="nx-card__title">Made for the moments you're away from the desk.</h3>
+            <p class="nx-card__body">It looks and talks like RoachNet on the Mac, so there's nothing to relearn. It opens on what you last saw and stays useful when the Mac goes quiet.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Home tab</p>
+            <h3 class="nx-card__title">Brains, shelves, archives and the Mac's health on one screen.</h3>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow nx-card__eyebrow--purple">RoachClaw Org</p>
+            <h3 class="nx-card__title">Approve, send back or reject with a note.</h3>
+            <p class="nx-card__body">Pause and resume agents. Join an Org from an invite link. Needs RoachNet 1.1 on the Mac.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">RoachTail</p>
+            <h3 class="nx-card__title">Each phone gets its own key.</h3>
+            <p class="nx-card__body">Cut one off without touching the rest. Works with the 1.0.6 pairing flow.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">New look</p>
+            <h3 class="nx-card__title">Inter, JetBrains Mono and a floating tab bar.</h3>
+            <p class="nx-card__body">Purple for actions, green for what's live. The same language as the Mac and this site.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Steadier chat</p>
+            <h3 class="nx-card__title">The composer stays above the keyboard.</h3>
+            <p class="nx-card__body">And a paired phone never slips back into sample data.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachAtlas GPS</p>
+            <h3 class="nx-card__title">Share your location with RoachAtlas on your own Mac.</h3>
+            <p class="nx-card__body">Only while the app is open, and only when you say so.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Useful offline</p>
+            <h3 class="nx-card__title">Answers from what it already has.</h3>
+            <p class="nx-card__body">When the Mac is out of reach, recent chats, files and status stay on the phone until it comes back.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Nobody in the middle</p>
+            <h3 class="nx-card__title">Phone and Mac talk over your own network.</h3>
+            <p class="nx-card__body">No RoachNet server, no account, no relay.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="install" aria-labelledby="install-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Install</p>
+          <h2 class="nx-h2" id="install-title">SideStore and AltStore, with the routes labeled.</h2>
+          <p class="nx-lede">Add the RoachNet source once and updates show up on their own, or grab the IPA directly. Same build either way.</p>
+        </div>
+        <div class="nx-grid nx-grid--2">
+          <article class="nx-card nx-card--feature nx-reveal">
+            <p class="nx-card__eyebrow">SideStore</p>
+            <h3 class="nx-card__title">Add the source, or hand SideStore the IPA directly.</h3>
+            <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
+            <div class="nx-actions nx-mt-16">
+              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to SideStore</a>
+              <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
+            </div>
+            <p class="nx-card__body" data-sidestore-note>Add the RoachNet source in SideStore, or download the IPA and share it to SideStore to install.</p>
+            <p class="nx-card__body" data-sidestore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
+            <ol class="nx-steps nx-mt-16">
+              <li class="nx-step"><strong>Add the RoachNet source to SideStore.</strong></li>
+              <li class="nx-step"><strong>Install RoachNetiOS from the source, or fall back to the IPA.</strong></li>
+              <li class="nx-step"><strong>Sign and install. Open RoachNetiOS and pair your Mac.</strong></li>
+            </ol>
+          </article>
+          <article class="nx-card nx-card--feature nx-reveal">
+            <p class="nx-card__eyebrow">AltStore</p>
+            <h3 class="nx-card__title">Use the same RoachNet source in AltStore.</h3>
+            <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
+            <div class="nx-actions nx-mt-16">
+              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to AltStore</a>
+              <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
+            </div>
+            <p class="nx-card__body" data-altstore-note>Add the same RoachNet source in AltStore, or download the IPA and import it from Files.</p>
+            <p class="nx-card__body" data-altstore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
+            <ol class="nx-steps nx-mt-16">
+              <li class="nx-step"><strong>Install AltStore and keep AltServer available on your Mac.</strong></li>
+              <li class="nx-step"><strong>Add the RoachNet source URL, then install RoachNetiOS from AltStore.</strong></li>
+              <li class="nx-step"><strong>Refresh before the 7-day signature runs out, then pair your Mac on first launch.</strong></li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <section class="nx-section" id="pairing" aria-labelledby="pairing-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Pairing</p>
+          <h2 class="nx-h2" id="pairing-title">Pair once. The phone stays useful.</h2>
+          <p class="nx-lede">Your Mac keeps the models, the vault and the installs. The phone stays fast because it isn't trying to be a second desktop.</p>
+        </div>
+        <div class="nx-grid nx-grid--3" role="list">
+          <article class="nx-card nx-card--signal nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Connecting</p>
+            <h3 class="nx-card__title">Scan the code on your Mac, or open its pair link.</h3>
+            <p class="nx-card__body">RoachNet on the Mac shows a QR code and a pair link. Either one fills in the details; press Pair with RoachTail and the phone gets its own key.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Alias</p>
+            <h3 class="nx-card__title"><code>https://roachnet.roachtail</code> is the front door.</h3>
+            <p class="nx-card__body">Or just scan the code on your Mac. Either way this device gets its own key.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Fallback</p>
+            <h3 class="nx-card__title">Mac offline? What you already loaded keeps working.</h3>
+            <p class="nx-card__body">Recent chats, files and status stay on the phone until the Mac reappears.</p>
+          </article>
+        </div>
+        <div class="nx-actions nx-mt-32">
+          <a class="nx-btn" href="https://roachnet.org/api/">Read the API</a>
+          <a class="nx-btn" href="https://roachnet.org/home/">RoachNet for Mac</a>
+        </div>
+      </section>
+    </main>
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
+
+    <script src="../app.js" type="module"></script>
+    <script src="../nx.js" type="module"></script>
+    <script src="./ios-install.js"></script>
+  </body>
+</html>
 ```
 
 ## landing-script.js
@@ -8481,1406 +8014,6 @@ void main() {
 })();
 ```
 
-## motion-layer.css
-
-This root is reconciled byte-for-byte from the current production source.
-
-```text {chunk="motion-layer-css" file="motion-layer.css"}
-/* ==========================================================================
-   RoachNet motion layer
-   Loads after app.css / app-polish.css / landing.css and layers a second
-   generation of micro-interactions on top of site-polish.js.
-
-   Naming: everything here is prefixed `rnm-` (RoachNet Motion) and every
-   custom property is `--rnm-*`, so nothing collides with the existing
-   `--rn-*` variables that site-polish.js already writes.
-
-   Every effect is opt-in via a class or data attribute added by
-   motion-layer.js, and everything switches off under
-   `prefers-reduced-motion: reduce`.
-   ========================================================================== */
-
-:root {
-  --rnm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --rnm-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --rnm-ease-swift: cubic-bezier(0.4, 0, 0.2, 1);
-
-  --rnm-cyan: var(--rn-cyan, #48e6ff);
-  --rnm-blue: var(--rn-blue, #4d8dff);
-  --rnm-green: var(--rn-green, #4bffa5);
-
-  /* Written every frame by motion-layer.js */
-  --rnm-vel: 0;
-  --rnm-vel-abs: 0;
-  --rnm-progress: 0;
-  --rnm-px: 50%;
-  --rnm-py: 50%;
-}
-
-/* --------------------------------------------------------------------------
-   1. Aurora field — a slow drifting gradient wash behind everything.
-   Cheap: three blurred radial blobs on a single composited layer.
-   -------------------------------------------------------------------------- */
-
-.rnm-aurora {
-  position: fixed;
-  inset: -20vmax;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0;
-  contain: strict;
-  will-change: opacity, transform;
-  transition: opacity 1.6s var(--rnm-ease-out);
-  mix-blend-mode: screen;
-}
-
-.rnm-aurora.is-rnm-lit {
-  opacity: 0.5;
-}
-
-.rnm-aurora__blob {
-  position: absolute;
-  width: 62vmax;
-  height: 62vmax;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.34;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-}
-
-.rnm-aurora__blob--a {
-  left: 4%;
-  top: 2%;
-  background: radial-gradient(circle at 40% 40%, rgba(77, 141, 255, 0.72), transparent 68%);
-  animation: rnm-drift-a 34s var(--rnm-ease-swift) infinite alternate;
-}
-
-.rnm-aurora__blob--b {
-  right: 2%;
-  top: 24%;
-  background: radial-gradient(circle at 55% 45%, rgba(72, 230, 255, 0.6), transparent 66%);
-  animation: rnm-drift-b 43s var(--rnm-ease-swift) infinite alternate;
-}
-
-.rnm-aurora__blob--c {
-  left: 26%;
-  bottom: 0%;
-  background: radial-gradient(circle at 50% 60%, rgba(75, 255, 165, 0.42), transparent 64%);
-  animation: rnm-drift-c 51s var(--rnm-ease-swift) infinite alternate;
-}
-
-@keyframes rnm-drift-a {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(14vmax, 8vmax, 0) scale(1.14); }
-  100% { transform: translate3d(-6vmax, 16vmax, 0) scale(0.94); }
-}
-
-@keyframes rnm-drift-b {
-  0% { transform: translate3d(0, 0, 0) scale(1.06); }
-  50% { transform: translate3d(-16vmax, 12vmax, 0) scale(0.9); }
-  100% { transform: translate3d(8vmax, -10vmax, 0) scale(1.18); }
-}
-
-@keyframes rnm-drift-c {
-  0% { transform: translate3d(0, 0, 0) scale(0.95); }
-  50% { transform: translate3d(12vmax, -14vmax, 0) scale(1.2); }
-  100% { transform: translate3d(-14vmax, -4vmax, 0) scale(1.02); }
-}
-
-/* Scan sweep — a single faint horizontal light bar crossing the viewport. */
-.rnm-scan {
-  position: fixed;
-  inset-inline: 0;
-  top: 0;
-  height: 34vh;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(72, 230, 255, 0.05) 44%,
-    rgba(140, 210, 255, 0.09) 50%,
-    rgba(72, 230, 255, 0.05) 56%,
-    transparent
-  );
-  animation: rnm-scan-pass 18s linear infinite;
-}
-
-.rnm-scan.is-rnm-lit {
-  opacity: 1;
-}
-
-@keyframes rnm-scan-pass {
-  0% { transform: translate3d(0, -40vh, 0); }
-  100% { transform: translate3d(0, 120vh, 0); }
-}
-
-/* Keep page content above the atmospherics. */
-body > header,
-body > main,
-body > footer,
-body > .page-shell,
-body > .apps-store-shell,
-body > .api-docs-shell,
-body > .page-view {
-  position: relative;
-  z-index: 1;
-}
-
-/* --------------------------------------------------------------------------
-   2. Cursor companion — a spring-lagged ring that swells over targets.
-   Complements (does not replace) the `.rn-cursor-light` glow.
-   -------------------------------------------------------------------------- */
-
-.rnm-cursor {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 34px;
-  height: 34px;
-  margin: -17px 0 0 -17px;
-  border-radius: 50%;
-  border: 1px solid rgba(140, 220, 255, 0.55);
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0;
-  will-change: transform, opacity;
-  transition: opacity 0.35s var(--rnm-ease-out), width 0.3s var(--rnm-ease-spring),
-    height 0.3s var(--rnm-ease-spring), border-color 0.3s var(--rnm-ease-out),
-    background-color 0.3s var(--rnm-ease-out), margin 0.3s var(--rnm-ease-spring);
-}
-
-body[data-rnm-pointer='fine'] .rnm-cursor.is-rnm-lit {
-  opacity: 0.85;
-}
-
-.rnm-cursor.is-rnm-target {
-  width: 62px;
-  height: 62px;
-  margin: -31px 0 0 -31px;
-  border-color: rgba(75, 255, 165, 0.7);
-  background: rgba(72, 230, 255, 0.07);
-}
-
-.rnm-cursor.is-rnm-press {
-  width: 24px;
-  height: 24px;
-  margin: -12px 0 0 -12px;
-  border-color: rgba(255, 255, 255, 0.85);
-}
-
-.rnm-cursor__dot {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 4px;
-  height: 4px;
-  margin: -2px 0 0 -2px;
-  border-radius: 50%;
-  background: rgba(190, 240, 255, 0.9);
-  transition: transform 0.3s var(--rnm-ease-spring);
-}
-
-.rnm-cursor.is-rnm-target .rnm-cursor__dot {
-  transform: scale(0.4);
-}
-
-/* --------------------------------------------------------------------------
-   3. Reveal choreography — staggered, direction-aware entrances.
-   `--rnm-i` is the stagger index inside a group, written by JS.
-   -------------------------------------------------------------------------- */
-
-[data-rnm-reveal] {
-  opacity: 0;
-  transform: translate3d(0, 26px, 0) scale(0.985);
-  filter: blur(6px);
-  transition:
-    opacity 0.78s var(--rnm-ease-out),
-    transform 0.86s var(--rnm-ease-out),
-    filter 0.6s var(--rnm-ease-out);
-  transition-delay: calc(var(--rnm-i, 0) * 68ms);
-  will-change: opacity, transform, filter;
-}
-
-[data-rnm-reveal='left'] {
-  transform: translate3d(-34px, 12px, 0) scale(0.985);
-}
-
-[data-rnm-reveal='right'] {
-  transform: translate3d(34px, 12px, 0) scale(0.985);
-}
-
-[data-rnm-reveal='tilt'] {
-  transform: perspective(1100px) translate3d(0, 40px, -40px) rotateX(9deg);
-  transform-origin: 50% 100%;
-}
-
-[data-rnm-reveal].is-rnm-in {
-  opacity: 1;
-  transform: none;
-  filter: none;
-}
-
-/* Once the entrance has played, drop the hints so hover transforms are free. */
-[data-rnm-reveal].is-rnm-settled {
-  will-change: auto;
-  transition-delay: 0ms;
-}
-
-/* --------------------------------------------------------------------------
-   4. Headline cascade — per-character rise on first view.
-   -------------------------------------------------------------------------- */
-
-.rnm-split {
-  display: inline-block;
-}
-
-/* Depth lives on the heading so every character shares one vanishing point. */
-.rnm-split-host {
-  perspective: 620px;
-}
-
-.rnm-split__char {
-  display: inline-block;
-  opacity: 0;
-  transform: translate3d(0, 0.55em, 0) rotateX(-58deg);
-  transform-origin: 50% 100%;
-  will-change: opacity, transform;
-  transition:
-    opacity 0.5s var(--rnm-ease-out),
-    transform 0.72s var(--rnm-ease-spring);
-  transition-delay: calc(var(--rnm-i, 0) * 22ms);
-}
-
-.rnm-split__word {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.is-rnm-in .rnm-split__char,
-.rnm-split.is-rnm-in .rnm-split__char {
-  opacity: 1;
-  transform: none;
-}
-
-/* --------------------------------------------------------------------------
-   5. Tilt cards — pointer-tracked 3D with a specular sheen.
-   Two-class selectors so these land after the single-class hover rules
-   already defined in app-polish.css / landing.css.
-   -------------------------------------------------------------------------- */
-
-.rnm-tilt {
-  transform-style: preserve-3d;
-  transition: transform 0.5s var(--rnm-ease-out), box-shadow 0.5s var(--rnm-ease-out);
-}
-
-.rnm-tilt.is-rnm-tracking {
-  transition: transform 0.12s linear, box-shadow 0.4s var(--rnm-ease-out);
-  transform:
-    perspective(var(--rnm-depth, 900px))
-    translate3d(var(--rn-magnet-x, 0px), calc(var(--rn-magnet-y, 0px) - 4px), 0)
-    rotateX(var(--rnm-rx, 0deg))
-    rotateY(var(--rnm-ry, 0deg))
-    scale(1.012);
-  box-shadow:
-    0 24px 60px -28px rgba(6, 12, 20, 0.85),
-    0 0 0 1px rgba(120, 200, 255, 0.14);
-}
-
-.rnm-tilt::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.4s var(--rnm-ease-out);
-  background: radial-gradient(
-    420px circle at var(--rnm-px) var(--rnm-py),
-    rgba(160, 225, 255, 0.16),
-    rgba(160, 225, 255, 0.05) 38%,
-    transparent 62%
-  );
-  z-index: 2;
-}
-
-.rnm-tilt.is-rnm-tracking::after {
-  opacity: 1;
-}
-
-/* Edge light that traces the pointer around the card border. */
-.rnm-tilt::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.45s var(--rnm-ease-out);
-  padding: 1px;
-  background: radial-gradient(
-    260px circle at var(--rnm-px) var(--rnm-py),
-    rgba(120, 220, 255, 0.75),
-    transparent 70%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  z-index: 3;
-}
-
-.rnm-tilt.is-rnm-tracking::before {
-  opacity: 1;
-}
-
-/* --------------------------------------------------------------------------
-   6. Buttons — shine sweep, spring press, spark burst.
-   -------------------------------------------------------------------------- */
-
-.rnm-shine {
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.32s var(--rnm-ease-spring), box-shadow 0.32s var(--rnm-ease-out),
-    filter 0.32s var(--rnm-ease-out);
-}
-
-.rnm-shine > * {
-  position: relative;
-  z-index: 1;
-}
-
-.rnm-shine::after {
-  content: '';
-  position: absolute;
-  top: -60%;
-  bottom: -60%;
-  left: -40%;
-  width: 34%;
-  pointer-events: none;
-  z-index: 0;
-  transform: translate3d(-260%, 0, 0) rotate(18deg);
-  background: linear-gradient(
-    100deg,
-    transparent,
-    rgba(255, 255, 255, 0.34),
-    transparent
-  );
-  opacity: 0;
-}
-
-.rnm-shine.is-rnm-hover::after {
-  animation: rnm-sweep 0.85s var(--rnm-ease-swift) forwards;
-}
-
-@keyframes rnm-sweep {
-  0% { transform: translate3d(-260%, 0, 0) rotate(18deg); opacity: 0; }
-  16% { opacity: 1; }
-  100% { transform: translate3d(560%, 0, 0) rotate(18deg); opacity: 0; }
-}
-
-.rnm-shine.is-rnm-hover {
-  transform: translate3d(0, -2px, 0);
-  filter: brightness(1.06);
-}
-
-.rnm-shine.is-rnm-press {
-  transform: translate3d(0, 1px, 0) scale(0.972);
-  filter: brightness(0.97);
-}
-
-/* Spark burst fired from the click point. */
-.rnm-spark {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9997;
-  will-change: transform, opacity;
-  animation: rnm-spark-fly var(--rnm-spark-life, 620ms) var(--rnm-ease-out) forwards;
-}
-
-@keyframes rnm-spark-fly {
-  0% {
-    transform: translate3d(var(--rnm-sx0, 0px), var(--rnm-sy0, 0px), 0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate3d(var(--rnm-sx1, 0px), var(--rnm-sy1, 0px), 0) scale(0.2);
-    opacity: 0;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   7. Media reveal — a clip wipe plus a light streak across screenshots.
-   -------------------------------------------------------------------------- */
-
-.rnm-wipe {
-  position: relative;
-  overflow: hidden;
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 1.05s var(--rnm-ease-out);
-}
-
-.rnm-wipe.is-rnm-in {
-  clip-path: inset(0 0 0 0);
-}
-
-.rnm-wipe img {
-  transform: scale(1.08);
-  transition: transform 1.4s var(--rnm-ease-out);
-}
-
-.rnm-wipe.is-rnm-in img {
-  transform: scale(1);
-}
-
-.rnm-wipe::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  background: linear-gradient(
-    104deg,
-    transparent 38%,
-    rgba(180, 235, 255, 0.3) 50%,
-    transparent 62%
-  );
-  transform: translate3d(-120%, 0, 0);
-  opacity: 0;
-}
-
-.rnm-wipe.is-rnm-in::after {
-  animation: rnm-streak 1.25s 0.28s var(--rnm-ease-swift) forwards;
-}
-
-@keyframes rnm-streak {
-  0% { transform: translate3d(-120%, 0, 0); opacity: 0; }
-  22% { opacity: 1; }
-  100% { transform: translate3d(120%, 0, 0); opacity: 0; }
-}
-
-/* Idle float for hero art, nudged by scroll velocity. */
-.rnm-float {
-  animation: rnm-bob 9s ease-in-out infinite alternate;
-}
-
-@keyframes rnm-bob {
-  from { transform: translate3d(0, -6px, 0) rotate(-0.25deg); }
-  to { transform: translate3d(0, 8px, 0) rotate(0.25deg); }
-}
-
-/* --------------------------------------------------------------------------
-   8. Chips, pills and nav — spring pop and travelling underline.
-   -------------------------------------------------------------------------- */
-
-.rnm-pop {
-  transition: transform 0.34s var(--rnm-ease-spring), color 0.28s var(--rnm-ease-out),
-    border-color 0.28s var(--rnm-ease-out), background-color 0.28s var(--rnm-ease-out);
-}
-
-.rnm-pop.is-rnm-hover {
-  transform: translate3d(0, -2px, 0) scale(1.045);
-}
-
-.rnm-underline {
-  position: relative;
-}
-
-.rnm-underline::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -3px;
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--rnm-blue), var(--rnm-cyan), var(--rnm-green));
-  transform: scaleX(0);
-  transform-origin: var(--rnm-origin, 0%) 50%;
-  transition: transform 0.42s var(--rnm-ease-out);
-}
-
-.rnm-underline.is-rnm-hover::after,
-.rnm-underline.is-current::after {
-  transform: scaleX(1);
-}
-
-/* Breathing status dots. */
-.rnm-pulse {
-  position: relative;
-}
-
-.rnm-pulse::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: inherit;
-  border: 1px solid currentColor;
-  opacity: 0;
-  animation: rnm-halo 2.8s var(--rnm-ease-out) infinite;
-  pointer-events: none;
-}
-
-@keyframes rnm-halo {
-  0% { transform: scale(0.9); opacity: 0.5; }
-  70% { transform: scale(1.5); opacity: 0; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-
-/* --------------------------------------------------------------------------
-   9. Scroll-reactive section skew — very small, keyed off scroll velocity.
-   -------------------------------------------------------------------------- */
-
-.rnm-kinetic {
-  transform: skewY(calc(var(--rnm-vel, 0) * 0.32deg));
-  transition: transform 0.5s var(--rnm-ease-out);
-  will-change: transform;
-}
-
-/* Section headings get a gradient sweep as you scroll past them. */
-.rnm-gradient-text {
-  background: linear-gradient(
-    92deg,
-    currentColor 0%,
-    currentColor 30%,
-    var(--rnm-cyan) 48%,
-    var(--rnm-green) 56%,
-    currentColor 74%,
-    currentColor 100%
-  );
-  background-size: 260% 100%;
-  background-position: calc(120% - var(--rnm-sweep, 0) * 140%) 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-/* --------------------------------------------------------------------------
-   10. Page veil — a soft curtain on load and on internal navigation.
-   -------------------------------------------------------------------------- */
-
-.rnm-veil {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 1;
-  background:
-    radial-gradient(120% 80% at 50% 0%, rgba(24, 44, 68, 0.9), transparent 70%),
-    var(--rn-bg, #070b10);
-  transition: opacity 0.62s var(--rnm-ease-out);
-}
-
-.rnm-veil.is-rnm-clear {
-  opacity: 0;
-}
-
-.rnm-veil.is-rnm-leaving {
-  opacity: 1;
-  transition-duration: 0.3s;
-}
-
-.rnm-veil__mark {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 46px;
-  height: 46px;
-  margin: -23px 0 0 -23px;
-  border-radius: 50%;
-  border: 1px solid rgba(120, 210, 255, 0.5);
-  border-top-color: rgba(75, 255, 165, 0.95);
-  animation: rnm-spin 1.1s linear infinite;
-  opacity: 0.85;
-}
-
-.rnm-veil.is-rnm-clear .rnm-veil__mark {
-  opacity: 0;
-  transition: opacity 0.3s var(--rnm-ease-out);
-}
-
-@keyframes rnm-spin {
-  to { transform: rotate(360deg); }
-}
-
-/* --------------------------------------------------------------------------
-   11. Focus — keyboard users get the same flourish, without the pointer work.
-   -------------------------------------------------------------------------- */
-
-body[data-rn-modality='keyboard'] .rnm-shine:focus-visible,
-body[data-rn-modality='keyboard'] .rnm-pop:focus-visible {
-  transform: translate3d(0, -2px, 0) scale(1.03);
-  outline-offset: 4px;
-}
-
-body[data-rn-modality='keyboard'] .rnm-cursor {
-  opacity: 0 !important;
-}
-
-/* --------------------------------------------------------------------------
-   12. Reduced motion — everything above collapses to a plain, static site.
-   -------------------------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .rnm-aurora,
-  .rnm-scan,
-  .rnm-cursor,
-  .rnm-veil,
-  .rnm-spark {
-    display: none !important;
-  }
-
-  [data-rnm-reveal],
-  [data-rnm-reveal].is-rnm-in,
-  .rnm-split__char,
-  .rnm-wipe,
-  .rnm-wipe img,
-  .rnm-tilt,
-  .rnm-tilt.is-rnm-tracking,
-  .rnm-shine,
-  .rnm-pop,
-  .rnm-kinetic,
-  .rnm-float {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    clip-path: none !important;
-    animation: none !important;
-    transition: none !important;
-  }
-
-  .rnm-tilt::before,
-  .rnm-tilt::after,
-  .rnm-shine::after,
-  .rnm-wipe::after,
-  .rnm-pulse::after {
-    display: none !important;
-  }
-
-  .rnm-gradient-text {
-    background: none;
-    -webkit-text-fill-color: currentColor;
-    color: inherit;
-  }
-}
-
-/* Small screens: keep the atmosphere, drop the per-pointer work. */
-@media (max-width: 720px) {
-  .rnm-aurora.is-rnm-lit { opacity: 0.34; }
-  .rnm-scan { display: none; }
-  .rnm-tilt.is-rnm-tracking { transform: none; }
-  .rnm-tilt::before { display: none; }
-}
-```
-
-## motion-layer.js
-
-This root is reconciled byte-for-byte from the current production source.
-
-```text {chunk="motion-layer-js" file="motion-layer.js"}
-/* ==========================================================================
-   RoachNet motion layer
-   A second pass of micro-interactions layered on top of site-polish.js.
-
-   Ground rules this file follows:
-   - Never touch anything site-polish.js already owns (`.rn-cursor-light`,
-     `.rn-click-ripple`, `[data-reveal]`, the nav indicator, scroll meter).
-   - Everything is additive and opt-in: elements are tagged from here, so a
-     failure in one module can't take the page down with it.
-   - `prefers-reduced-motion: reduce` disables the whole layer.
-   ========================================================================== */
-
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-const finePointer = window.matchMedia('(pointer: fine)')
-const smallScreen = window.matchMedia('(max-width: 720px)')
-
-const root = document.documentElement
-const body = document.body
-const page = body?.dataset?.page || ''
-
-/** Run a module in isolation — one broken effect shouldn't kill the rest. */
-function safely(name, fn) {
-  try {
-    fn()
-  } catch (error) {
-    console.warn(`[motion-layer] ${name} skipped:`, error)
-  }
-}
-
-function prefersReduced() {
-  return reduceMotion.matches
-}
-
-const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
-
-/* --------------------------------------------------------------------------
-   Atmosphere: aurora wash + slow scan sweep
-   -------------------------------------------------------------------------- */
-
-function mountAtmosphere() {
-  if (prefersReduced()) return
-
-  const aurora = document.createElement('div')
-  aurora.className = 'rnm-aurora'
-  aurora.setAttribute('aria-hidden', 'true')
-  aurora.innerHTML =
-    '<span class="rnm-aurora__blob rnm-aurora__blob--a"></span>' +
-    '<span class="rnm-aurora__blob rnm-aurora__blob--b"></span>' +
-    '<span class="rnm-aurora__blob rnm-aurora__blob--c"></span>'
-  body.prepend(aurora)
-
-  if (!smallScreen.matches) {
-    const scan = document.createElement('div')
-    scan.className = 'rnm-scan'
-    scan.setAttribute('aria-hidden', 'true')
-    body.prepend(scan)
-    requestAnimationFrame(() => scan.classList.add('is-rnm-lit'))
-  }
-
-  requestAnimationFrame(() => aurora.classList.add('is-rnm-lit'))
-}
-
-/* --------------------------------------------------------------------------
-   Cursor companion — a spring-lagged ring that swells over anything clickable
-   -------------------------------------------------------------------------- */
-
-const TARGET_SELECTOR =
-  'a, button, [role="button"], input, select, textarea, summary, [data-platform], [data-homebrew-install], [data-homebrew-copy]'
-
-function mountCursor() {
-  if (prefersReduced() || !finePointer.matches) return
-
-  const ring = document.createElement('div')
-  ring.className = 'rnm-cursor'
-  ring.setAttribute('aria-hidden', 'true')
-  ring.innerHTML = '<span class="rnm-cursor__dot"></span>'
-  body.appendChild(ring)
-
-  body.dataset.rnmPointer = 'fine'
-
-  let targetX = window.innerWidth / 2
-  let targetY = window.innerHeight / 2
-  let x = targetX
-  let y = targetY
-  let running = false
-
-  function frame() {
-    // Critically-ish damped follow: fast enough to feel attached, slow
-    // enough to read as a separate object.
-    x += (targetX - x) * 0.18
-    y += (targetY - y) * 0.18
-    ring.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`
-
-    if (Math.abs(targetX - x) > 0.1 || Math.abs(targetY - y) > 0.1) {
-      requestAnimationFrame(frame)
-    } else {
-      running = false
-    }
-  }
-
-  function kick() {
-    if (running) return
-    running = true
-    requestAnimationFrame(frame)
-  }
-
-  window.addEventListener(
-    'pointermove',
-    (event) => {
-      if (event.pointerType !== 'mouse') return
-      targetX = event.clientX
-      targetY = event.clientY
-      ring.classList.add('is-rnm-lit')
-      ring.classList.toggle('is-rnm-target', Boolean(event.target?.closest?.(TARGET_SELECTOR)))
-      kick()
-    },
-    { passive: true }
-  )
-
-  window.addEventListener('pointerdown', () => ring.classList.add('is-rnm-press'), { passive: true })
-  window.addEventListener('pointerup', () => ring.classList.remove('is-rnm-press'), { passive: true })
-  document.addEventListener('mouseleave', () => ring.classList.remove('is-rnm-lit'))
-  document.addEventListener('mouseenter', () => ring.classList.add('is-rnm-lit'))
-}
-
-/* --------------------------------------------------------------------------
-   Reveal choreography
-   Only elements WITHOUT the existing `data-reveal` attribute get tagged, so
-   the two systems never fight over the same transform.
-   -------------------------------------------------------------------------- */
-
-const REVEAL_TARGETS = [
-  ['.hero-copy > *', 'up'],
-  ['.section-head > *', 'up'],
-  ['.sitemap-card li', 'up'],
-  ['.hero-signal-card', 'tilt'],
-  ['.screen-chip', 'up'],
-  ['.hero-links a', 'up'],
-  ['.download-layout > *', 'tilt'],
-  ['.downloads-actions > *', 'up'],
-  ['.rc-starter-card', 'tilt'],
-  ['.rc-info-strip__item', 'up'],
-  ['.apps-store-sidebar__card > *', 'left'],
-  ['.api-docs-sidebar__intro > *', 'left'],
-  ['.site-footer__copy > *', 'up'],
-]
-
-function tagReveals() {
-  const groups = new Map()
-
-  REVEAL_TARGETS.forEach(([selector, direction]) => {
-    document.querySelectorAll(selector).forEach((node) => {
-      if (node.hasAttribute('data-reveal') || node.hasAttribute('data-rnm-reveal')) return
-      node.setAttribute('data-rnm-reveal', direction)
-
-      const parent = node.parentElement || body
-      const index = groups.get(parent) ?? 0
-      node.style.setProperty('--rnm-i', String(Math.min(index, 9)))
-      groups.set(parent, index + 1)
-    })
-  })
-}
-
-function observeReveals() {
-  const nodes = Array.from(
-    document.querySelectorAll('[data-rnm-reveal], .rnm-wipe, .rnm-split')
-  ).filter((node) => node.dataset.rnmObserved !== 'on')
-
-  if (!nodes.length) return
-  nodes.forEach((node) => {
-    node.dataset.rnmObserved = 'on'
-  })
-
-  if (prefersReduced() || typeof IntersectionObserver !== 'function') {
-    nodes.forEach((node) => node.classList.add('is-rnm-in', 'is-rnm-settled'))
-    return
-  }
-
-  // A wipe frame starts fully clipped, and Chrome won't report a fully clipped
-  // element as intersecting, so wipes are watched through their parent instead.
-  const watched = new Map()
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-        for (const node of watched.get(entry.target) || [entry.target]) {
-          node.classList.add('is-rnm-in')
-          window.setTimeout(() => node.classList.add('is-rnm-settled'), 1400)
-        }
-        observer.unobserve(entry.target)
-      })
-    },
-    { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
-  )
-
-  nodes.forEach((node) => {
-    const target = node.classList.contains('rnm-wipe') && node.parentElement ? node.parentElement : node
-    watched.set(target, [...(watched.get(target) || []), node])
-    observer.observe(target)
-  })
-}
-
-/* --------------------------------------------------------------------------
-   Headline cascade
-   Split only headings that are a single plain text node, wrap words so lines
-   still break correctly, and hand screen readers the original string.
-   -------------------------------------------------------------------------- */
-
-const SPLIT_SELECTOR = '.hero-copy h1, .section-head h2, .sitemap-hero h1, .rc-empty-state__heading'
-
-function splitHeadings() {
-  if (prefersReduced() || smallScreen.matches) return
-
-  document.querySelectorAll(SPLIT_SELECTOR).forEach((heading) => {
-    if (heading.dataset.rnmSplit === 'done') return
-    if (heading.childNodes.length !== 1 || heading.firstChild.nodeType !== Node.TEXT_NODE) return
-
-    const text = heading.textContent.trim()
-    if (!text || text.length > 90) return
-
-    const wrapper = document.createElement('span')
-    wrapper.className = 'rnm-split'
-    wrapper.setAttribute('aria-hidden', 'true')
-
-    let charIndex = 0
-    text.split(' ').forEach((word, wordIndex, words) => {
-      const wordSpan = document.createElement('span')
-      wordSpan.className = 'rnm-split__word'
-
-      Array.from(word).forEach((char) => {
-        const charSpan = document.createElement('span')
-        charSpan.className = 'rnm-split__char'
-        charSpan.style.setProperty('--rnm-i', String(charIndex))
-        charSpan.textContent = char
-        wordSpan.appendChild(charSpan)
-        charIndex += 1
-      })
-
-      wrapper.appendChild(wordSpan)
-
-      if (wordIndex < words.length - 1) {
-        wrapper.appendChild(document.createTextNode(' '))
-        charIndex += 1
-      }
-    })
-
-    heading.setAttribute('aria-label', text)
-    heading.textContent = ''
-    heading.appendChild(wrapper)
-    heading.dataset.rnmSplit = 'done'
-    heading.classList.add('rnm-split-host')
-  })
-}
-
-/* --------------------------------------------------------------------------
-   Tilt cards — pointer-tracked 3D with a specular sheen and a traced edge
-   -------------------------------------------------------------------------- */
-
-const TILT_SELECTOR = [
-  '.support-card',
-  '.runtime-card',
-  '.usecase-card',
-  '.shelf-card',
-  '.surface-card',
-  '.feature-card',
-  '.sitemap-card',
-  '.ios-shot-card',
-  '.ios-story-card',
-  '.hero-signal-card',
-  '.download-hero-card',
-  '.download-side-card',
-  '.apps-card',
-  '.rc-starter-card',
-  '.why-cap-card',
-  '.landing-why__capability',
-].join(', ')
-
-function mountTilt() {
-  if (prefersReduced() || !finePointer.matches || smallScreen.matches) return
-
-  const cards = Array.from(document.querySelectorAll(TILT_SELECTOR))
-  if (!cards.length) return
-
-  cards.forEach((card) => {
-    if (card.dataset.rnmTilt === 'on') return
-    card.dataset.rnmTilt = 'on'
-    card.classList.add('rnm-tilt')
-
-    // The sheen and edge light are absolutely positioned pseudo-elements.
-    if (getComputedStyle(card).position === 'static') {
-      card.style.position = 'relative'
-    }
-
-    let frame = 0
-    let rect = null
-
-    function track(event) {
-      if (frame) return
-      frame = requestAnimationFrame(() => {
-        frame = 0
-        if (!rect) rect = card.getBoundingClientRect()
-        if (!rect.width || !rect.height) return
-
-        const px = (event.clientX - rect.left) / rect.width
-        const py = (event.clientY - rect.top) / rect.height
-
-        // Bigger cards get a shallower tilt so nothing looks warped.
-        const strength = clamp(9 - rect.width / 260, 3.5, 9)
-
-        card.style.setProperty('--rnm-ry', `${((px - 0.5) * strength).toFixed(2)}deg`)
-        card.style.setProperty('--rnm-rx', `${((0.5 - py) * strength).toFixed(2)}deg`)
-        card.style.setProperty('--rnm-px', `${(px * 100).toFixed(1)}%`)
-        card.style.setProperty('--rnm-py', `${(py * 100).toFixed(1)}%`)
-      })
-    }
-
-    card.addEventListener(
-      'pointerenter',
-      (event) => {
-        if (event.pointerType !== 'mouse') return
-        rect = card.getBoundingClientRect()
-        card.classList.add('is-rnm-tracking')
-        track(event)
-      },
-      { passive: true }
-    )
-
-    card.addEventListener('pointermove', track, { passive: true })
-
-    card.addEventListener(
-      'pointerleave',
-      () => {
-        rect = null
-        if (frame) {
-          cancelAnimationFrame(frame)
-          frame = 0
-        }
-        card.classList.remove('is-rnm-tracking')
-        card.style.removeProperty('--rnm-rx')
-        card.style.removeProperty('--rnm-ry')
-      },
-      { passive: true }
-    )
-  })
-
-  // Cached rects go stale the moment the layout moves.
-  window.addEventListener(
-    'scroll',
-    () => {
-      document.querySelectorAll('.rnm-tilt.is-rnm-tracking').forEach((card) => {
-        card.classList.remove('is-rnm-tracking')
-      })
-    },
-    { passive: true }
-  )
-}
-
-/* --------------------------------------------------------------------------
-   Buttons — shine sweep on hover, spring press, spark burst on click
-   -------------------------------------------------------------------------- */
-
-const SHINE_SELECTOR = '.cta, .apps-card__install, .rc-composer__send, .apps-store-sidebar__download'
-const POP_SELECTOR =
-  '.site-action-pill, .screen-chip, .apps-store-status-chip, .rc-auth-gate__chip, .site-header__status, .screen-version-chip'
-
-const SPARK_COLORS = ['rgba(120, 220, 255, 0.95)', 'rgba(75, 255, 165, 0.9)', 'rgba(160, 190, 255, 0.9)']
-
-function mountButtons() {
-  if (prefersReduced()) return
-
-  document.querySelectorAll(SHINE_SELECTOR).forEach((el) => {
-    if (el.dataset.rnmShine === 'on') return
-    el.dataset.rnmShine = 'on'
-    el.classList.add('rnm-shine')
-
-    el.addEventListener('pointerenter', () => el.classList.add('is-rnm-hover'), { passive: true })
-    el.addEventListener(
-      'pointerleave',
-      () => el.classList.remove('is-rnm-hover', 'is-rnm-press'),
-      { passive: true }
-    )
-    el.addEventListener('pointerdown', () => el.classList.add('is-rnm-press'), { passive: true })
-    el.addEventListener('pointerup', () => el.classList.remove('is-rnm-press'), { passive: true })
-  })
-
-  document.querySelectorAll(POP_SELECTOR).forEach((el) => {
-    if (el.dataset.rnmPop === 'on') return
-    el.dataset.rnmPop = 'on'
-    el.classList.add('rnm-pop')
-    el.addEventListener('pointerenter', () => el.classList.add('is-rnm-hover'), { passive: true })
-    el.addEventListener('pointerleave', () => el.classList.remove('is-rnm-hover'), { passive: true })
-  })
-
-  document.querySelectorAll('.site-footer__nav a, .hero-links a').forEach((el) => {
-    if (el.dataset.rnmUnderline === 'on') return
-    el.dataset.rnmUnderline = 'on'
-    el.classList.add('rnm-underline')
-
-    el.addEventListener(
-      'pointerenter',
-      (event) => {
-        const rect = el.getBoundingClientRect()
-        const origin = rect.width ? ((event.clientX - rect.left) / rect.width) * 100 : 0
-        el.style.setProperty('--rnm-origin', `${clamp(origin, 0, 100).toFixed(0)}%`)
-        el.classList.add('is-rnm-hover')
-      },
-      { passive: true }
-    )
-    el.addEventListener('pointerleave', () => el.classList.remove('is-rnm-hover'), { passive: true })
-  })
-
-  document.addEventListener(
-    'pointerdown',
-    (event) => {
-      if (prefersReduced()) return
-      const trigger = event.target?.closest?.(SHINE_SELECTOR)
-      if (!trigger) return
-      burst(event.clientX, event.clientY)
-    },
-    { passive: true }
-  )
-}
-
-function burst(clientX, clientY) {
-  const count = smallScreen.matches ? 6 : 12
-  const fragment = document.createDocumentFragment()
-
-  for (let i = 0; i < count; i += 1) {
-    const spark = document.createElement('span')
-    spark.className = 'rnm-spark'
-
-    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5
-    const distance = 26 + Math.random() * 52
-
-    spark.style.left = `${clientX}px`
-    spark.style.top = `${clientY}px`
-    spark.style.background = SPARK_COLORS[i % SPARK_COLORS.length]
-    spark.style.setProperty('--rnm-sx1', `${(Math.cos(angle) * distance).toFixed(1)}px`)
-    spark.style.setProperty('--rnm-sy1', `${(Math.sin(angle) * distance).toFixed(1)}px`)
-    spark.style.setProperty('--rnm-spark-life', `${520 + Math.random() * 320}ms`)
-
-    spark.addEventListener('animationend', () => spark.remove(), { once: true })
-    fragment.appendChild(spark)
-  }
-
-  body.appendChild(fragment)
-}
-
-/* --------------------------------------------------------------------------
-   Media — clip wipe on entry, gentle float on hero art
-   -------------------------------------------------------------------------- */
-
-const WIPE_SELECTOR = '.screen-frame, .app-screen-shot, .ios-hero-shot'
-
-function mountMedia() {
-  if (prefersReduced()) return
-
-  document.querySelectorAll(WIPE_SELECTOR).forEach((frame) => {
-    if (frame.dataset.rnmWipe === 'on') return
-    frame.dataset.rnmWipe = 'on'
-    frame.classList.add('rnm-wipe')
-  })
-
-  if (!smallScreen.matches) {
-    document.querySelectorAll('.hero-visual .screen-frame--hero, .ios-hero-visual .ios-hero-shot').forEach((el) => {
-      el.classList.add('rnm-float')
-    })
-  }
-
-  // The wipe starts clipped shut, so every frame tagged here has to be watched.
-  // (boot() runs the reveal observer before this module; without this call the
-  // screenshots stayed clipped forever.)
-  observeReveals()
-}
-
-/* --------------------------------------------------------------------------
-   Status dots — a slow halo so "live" actually reads as live
-   -------------------------------------------------------------------------- */
-
-function mountPulses() {
-  if (prefersReduced()) return
-  document
-    .querySelectorAll('.rc-lane-dot--web, .hero-status__pill[data-state="online"]')
-    .forEach((el) => el.classList.add('rnm-pulse'))
-}
-
-/* --------------------------------------------------------------------------
-   Scroll kinetics — velocity variable, heading gradient sweep, section skew
-   -------------------------------------------------------------------------- */
-
-function mountScrollKinetics() {
-  if (prefersReduced()) return
-
-  const sweepTargets = Array.from(document.querySelectorAll('.section-head h2')).filter((el) => {
-    // Never hijack a heading that already paints itself with a gradient.
-    const styles = getComputedStyle(el)
-    return styles.backgroundImage === 'none' && styles.webkitTextFillColor !== 'rgba(0, 0, 0, 0)'
-  })
-
-  sweepTargets.forEach((el) => el.classList.add('rnm-gradient-text'))
-
-  document.querySelectorAll('.card-grid, .runtime-grid, .usecase-grid, .shelf-grid, .sitemap-grid').forEach((el) => {
-    el.classList.add('rnm-kinetic')
-  })
-
-  let lastY = window.scrollY
-  let velocity = 0
-  let ticking = false
-
-  function update() {
-    ticking = false
-
-    const y = window.scrollY
-    const delta = y - lastY
-    lastY = y
-    velocity += (delta - velocity) * 0.25
-    const clamped = clamp(velocity / 26, -1, 1)
-
-    root.style.setProperty('--rnm-vel', clamped.toFixed(3))
-    root.style.setProperty('--rnm-vel-abs', Math.abs(clamped).toFixed(3))
-
-    const viewport = window.innerHeight || 1
-    sweepTargets.forEach((el) => {
-      const rect = el.getBoundingClientRect()
-      if (rect.bottom < -200 || rect.top > viewport + 200) return
-      const progress = clamp(1 - (rect.top + rect.height / 2) / viewport, 0, 1)
-      el.style.setProperty('--rnm-sweep', progress.toFixed(3))
-    })
-  }
-
-  window.addEventListener(
-    'scroll',
-    () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(update)
-    },
-    { passive: true }
-  )
-
-  update()
-}
-
-/* --------------------------------------------------------------------------
-   Page veil — a short curtain when leaving for another RoachNet page
-   -------------------------------------------------------------------------- */
-
-const ROACHNET_HOSTS = new Set([
-  'roachnet.org',
-  'www.roachnet.org',
-  'apps.roachnet.org',
-  'accounts.roachnet.org',
-  window.location.host,
-])
-
-const FILE_LIKE = /\.(dmg|ipa|zip|pkg|json|png|jpg|jpeg|webp|svg|txt|xml|ico)$/i
-
-function mountVeil() {
-  if (prefersReduced()) return
-
-  const veil = document.createElement('div')
-  veil.className = 'rnm-veil is-rnm-clear'
-  veil.setAttribute('aria-hidden', 'true')
-  veil.innerHTML = '<span class="rnm-veil__mark"></span>'
-  body.appendChild(veil)
-
-  // Coming back through the bfcache must never leave the curtain drawn.
-  window.addEventListener('pageshow', () => {
-    veil.classList.add('is-rnm-clear')
-    veil.classList.remove('is-rnm-leaving')
-  })
-
-  document.addEventListener('click', (event) => {
-    if (event.defaultPrevented || event.button !== 0) return
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-
-    const link = event.target?.closest?.('a[href]')
-    if (!link) return
-    if (link.target && link.target !== '_self') return
-    if (link.hasAttribute('download')) return
-
-    let url
-    try {
-      url = new URL(link.getAttribute('href'), window.location.href)
-    } catch {
-      return
-    }
-
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') return
-    if (!ROACHNET_HOSTS.has(url.host)) return
-    if (FILE_LIKE.test(url.pathname)) return
-    // In-page anchors are not navigations.
-    if (url.pathname === window.location.pathname && url.hash) return
-
-    event.preventDefault()
-    veil.classList.remove('is-rnm-clear')
-    veil.classList.add('is-rnm-leaving')
-
-    // Navigate on the animation, with a hard fallback if it never fires.
-    let navigated = false
-    const go = () => {
-      if (navigated) return
-      navigated = true
-      window.location.href = url.href
-    }
-
-    veil.addEventListener('transitionend', (transition) => {
-      // Child transitions bubble; only the curtain itself means "covered".
-      if (transition.target === veil) go()
-    })
-    window.setTimeout(go, 420)
-  })
-}
-
-/* --------------------------------------------------------------------------
-   Late arrivals — the Apps and API pages render their content from JS,
-   so re-tag whenever the main stage changes.
-   -------------------------------------------------------------------------- */
-
-function watchDynamicContent() {
-  const stages = ['#apps-store-stage', '#api-route-list', '#api-detail-pane', '#roachclaw-log']
-    .map((selector) => document.querySelector(selector))
-    .filter(Boolean)
-
-  if (!stages.length || typeof MutationObserver !== 'function') return
-
-  let pending = 0
-  const observer = new MutationObserver(() => {
-    if (pending) return
-    pending = window.setTimeout(() => {
-      pending = 0
-      safely('tilt:rescan', mountTilt)
-      safely('buttons:rescan', mountButtons)
-      safely('media:rescan', mountMedia)
-      safely('reveal:rescan', () => {
-        tagReveals()
-        observeReveals()
-      })
-    }, 140)
-  })
-
-  stages.forEach((stage) => observer.observe(stage, { childList: true, subtree: true }))
-}
-
-/* --------------------------------------------------------------------------
-   Boot
-   -------------------------------------------------------------------------- */
-
-function boot() {
-  if (!body) return
-
-  body.dataset.rnmMotion = prefersReduced() ? 'reduced' : 'full'
-
-  safely('atmosphere', mountAtmosphere)
-  safely('cursor', mountCursor)
-  safely('headings', splitHeadings)
-  safely('reveal', () => {
-    tagReveals()
-    observeReveals()
-  })
-  safely('tilt', mountTilt)
-  safely('buttons', mountButtons)
-  safely('media', mountMedia)
-  safely('pulses', mountPulses)
-  safely('scroll', mountScrollKinetics)
-  safely('veil', mountVeil)
-  safely('dynamic', watchDynamicContent)
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot, { once: true })
-} else {
-  boot()
-}
-
-// Someone flipping the OS motion switch mid-session should see it take effect.
-reduceMotion.addEventListener?.('change', () => {
-  if (!prefersReduced()) return
-  document.querySelectorAll('.rnm-aurora, .rnm-scan, .rnm-cursor, .rnm-veil, .rnm-spark').forEach((el) => el.remove())
-  document.querySelectorAll('[data-rnm-reveal], .rnm-wipe, .rnm-split').forEach((el) => {
-    el.classList.add('is-rnm-in', 'is-rnm-settled')
-  })
-  body.dataset.rnmMotion = 'reduced'
-})
-
-// The landing page keeps its own bespoke canvas work; this flag lets that
-// script know a second motion layer is present if it ever needs to back off.
-window.__ROACHNET_MOTION_LAYER__ = { version: 1, page, reduced: prefersReduced() }
-```
-
 ## netlify.toml
 
 This root is reconciled byte-for-byte from the current production source.
@@ -9965,16 +8098,6922 @@ to = "https://accounts.roachnet.org/:splat"
 status = 301
 force = true
 
+[[redirects]]
+from = "/app-store.html"
+to = "https://apps.roachnet.org/"
+status = 301
+force = true
+
 [[headers]]
 for = "/*"
 
   [headers.values]
-  Content-Security-Policy = "default-src 'self'; base-uri 'none'; connect-src 'self' https://api.github.com https://challenges.cloudflare.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data: https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com https://cdn.jsdelivr.net; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src 'self' blob:; upgrade-insecure-requests"
+  Content-Security-Policy = "default-src 'self'; base-uri 'none'; connect-src 'self' https://api.github.com https://challenges.cloudflare.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; script-src-attr 'none'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests"
   X-Frame-Options = "DENY"
   X-Content-Type-Options = "nosniff"
   Referrer-Policy = "strict-origin-when-cross-origin"
   Strict-Transport-Security = "max-age=31536000; includeSubDomains"
   Permissions-Policy = "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+```
+
+## nx.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-css" file="nx.css"}
+/* ==========================================================================
+   RoachNet site system v5 ("nx") — shared chrome, type, cards, motion.
+   Loaded after app.css on every roachnet.org surface. Marketing pages are
+   built from these classes alone; functional pages (RoachClaw web, Account,
+   API docs, Apps) keep their own CSS and borrow the nav, footer and tokens.
+   Every decorative effect stands down under prefers-reduced-motion.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-var.v1.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-var.v1.woff2") format("woff2");
+}
+
+:root {
+  --nx-void: #000;
+  --nx-bg: #05060a;
+  --nx-bg-raised: #090a0f;
+  --nx-panel: #0c0d13;
+  --nx-panel-raised: #13141c;
+  --nx-panel-soft: #1b1c26;
+  --nx-glass: rgba(255, 255, 255, 0.04);
+  --nx-border: rgba(255, 255, 255, 0.08);
+  --nx-border-strong: rgba(255, 255, 255, 0.14);
+  --nx-text: #f0f0f0;
+  --nx-muted: #a3a3ab;
+  --nx-soft: #7b7b84;
+  --nx-purple: #9138d8;
+  --nx-purple-ink: #b06cf0;
+  --nx-purple-deep: #1c0d2e;
+  --nx-signal: #36ff84;
+  --nx-signal-deep: #0a2817;
+  --nx-cyan: #48e6ff;
+  --nx-blue: #4d8dff;
+  --nx-amber: #ff9a45;
+  --nx-hazard: #ff5a36;
+  --nx-on-signal: #03140a;
+  --nx-font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --nx-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --nx-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --nx-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --nx-r-sm: 8px;
+  --nx-r-md: 10px;
+  --nx-r-lg: 14px;
+  --nx-r-xl: 18px;
+  --nx-r-2xl: 24px;
+  --nx-max: 1280px;
+  --nx-wide: 1080px;
+  --nx-content: 720px;
+  --nx-gutter: clamp(16px, 4vw, 40px);
+  --nx-shadow-card: 0 18px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  --nx-shadow-capsule: 0 20px 58px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  --nx-shadow-primary: 0 12px 32px rgba(145, 56, 216, 0.35);
+  --nx-glow-signal: 0 0 24px rgba(54, 255, 132, 0.12), inset 0 0 0 1px rgba(54, 255, 132, 0.22);
+  --nx-gradient-signal: linear-gradient(90deg, var(--nx-purple) 0%, var(--nx-blue) 50%, var(--nx-signal) 100%);
+  --nx-mx: 50%;
+  --nx-my: 50%;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+html.nx {
+  background: var(--nx-bg);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+html.nx body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--nx-bg);
+  color: var(--nx-text);
+  font-family: var(--nx-font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01", "liga";
+  overflow-x: clip;
+  opacity: 1;
+  animation: none;
+}
+
+html.nx body::before,
+html.nx body::after {
+  display: none;
+}
+
+html.nx ::selection {
+  background: rgba(145, 56, 216, 0.45);
+  color: #fff;
+}
+
+html.nx :focus-visible {
+  outline: 2px solid var(--nx-signal);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+html.nx a {
+  color: inherit;
+  text-decoration: none;
+}
+
+html.nx code {
+  font-family: var(--nx-font-mono);
+  font-size: 0.92em;
+  padding: 0.1em 0.4em;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--nx-text);
+}
+
+html.nx img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.nx-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link: the test suite requires an explicit high-contrast default. */
+html.nx .rn-skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #fff;
+  background: #000;
+  border: 1px solid var(--nx-signal);
+  font: 700 13px/1 var(--nx-font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transform: translateY(-200%);
+  transition: transform 220ms var(--nx-ease);
+}
+
+html.nx .rn-skip-link:focus-visible {
+  transform: translateY(0);
+  outline-offset: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Atmosphere: aurora, scan beam, grain, vignette. Fixed, behind everything.
+   -------------------------------------------------------------------------- */
+
+.nx-atmos {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.nx-atmos__blob {
+  position: absolute;
+  width: 62vmax;
+  height: 62vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.nx-atmos__blob--purple {
+  top: -28vmax;
+  left: -16vmax;
+  background: radial-gradient(circle, rgba(145, 56, 216, 0.42), transparent 62%);
+  animation: nx-drift-a 34s ease-in-out infinite alternate;
+}
+
+.nx-atmos__blob--blue {
+  top: 10vmax;
+  right: -26vmax;
+  background: radial-gradient(circle, rgba(77, 141, 255, 0.28), transparent 62%);
+  animation: nx-drift-b 43s ease-in-out infinite alternate;
+}
+
+.nx-atmos__blob--signal {
+  bottom: -30vmax;
+  left: 24vmax;
+  background: radial-gradient(circle, rgba(54, 255, 132, 0.16), transparent 60%);
+  animation: nx-drift-c 51s ease-in-out infinite alternate;
+}
+
+.nx-atmos__scan {
+  position: absolute;
+  inset: -20% 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(72, 230, 255, 0.05) 48%, rgba(72, 230, 255, 0.11) 50%, rgba(72, 230, 255, 0.05) 52%, transparent 100%);
+  background-size: 100% 36%;
+  background-repeat: no-repeat;
+  animation: nx-scan 18s linear infinite;
+  mix-blend-mode: screen;
+}
+
+.nx-atmos__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9) 0.6px, transparent 0.8px),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.8) 0.5px, transparent 0.7px),
+    radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0.7) 0.5px, transparent 0.7px);
+  background-size: 23px 23px, 29px 29px, 31px 31px;
+  mix-blend-mode: screen;
+}
+
+.nx-atmos__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+@keyframes nx-drift-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(14vmax, 10vmax, 0) scale(1.12); }
+}
+
+@keyframes nx-drift-b {
+  from { transform: translate3d(0, 0, 0) scale(1.05); }
+  to { transform: translate3d(-12vmax, 16vmax, 0) scale(0.95); }
+}
+
+@keyframes nx-drift-c {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(18vmax, -14vmax, 0); }
+}
+
+@keyframes nx-scan {
+  from { background-position: 0 -40%; }
+  to { background-position: 0 140%; }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll progress
+   -------------------------------------------------------------------------- */
+
+.nx-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 120;
+  width: 100%;
+  height: 2px;
+  pointer-events: none;
+  background: var(--nx-gradient-signal);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--nx-progress, 0));
+  opacity: 0.9;
+}
+
+/* --------------------------------------------------------------------------
+   Nav capsule
+   -------------------------------------------------------------------------- */
+
+.nx-nav {
+  position: sticky;
+  top: 12px;
+  z-index: 100;
+  width: min(var(--nx-max), calc(100% - 2 * var(--nx-gutter)));
+  margin: 12px auto 0;
+}
+
+.nx-nav__bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 8px 14px;
+  border-radius: 999px;
+  background: rgba(8, 9, 14, 0.72);
+  border: 1px solid var(--nx-border);
+  box-shadow: var(--nx-shadow-capsule);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+  transition: padding 260ms var(--nx-ease), background 260ms var(--nx-ease), border-color 260ms var(--nx-ease);
+}
+
+.nx-nav.is-scrolled .nx-nav__bar {
+  padding: 6px 8px 6px 12px;
+  background: rgba(6, 7, 11, 0.86);
+  border-color: var(--nx-border-strong);
+}
+
+.nx-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding-right: 8px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.nx-nav__dot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--nx-signal);
+  box-shadow: 0 0 10px var(--nx-signal);
+}
+
+.nx-nav__dot::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(54, 255, 132, 0.6);
+  animation: nx-ping 2.4s var(--nx-ease) infinite;
+}
+
+.nx-nav__sub {
+  color: var(--nx-soft);
+  font: 700 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding-left: 10px;
+  border-left: 1px solid var(--nx-border);
+}
+
+@keyframes nx-ping {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.nx-nav__links {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  justify-self: center;
+}
+
+.nx-nav__ind {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: calc(100% - 6px);
+  width: 0;
+  border-radius: 999px;
+  background: rgba(54, 255, 132, 0.14);
+  box-shadow: var(--nx-glow-signal);
+  opacity: 0;
+  transition: transform 420ms var(--nx-spring), width 420ms var(--nx-spring), opacity 200ms ease;
+  pointer-events: none;
+}
+
+.nx-nav__links.has-ind .nx-nav__ind {
+  opacity: 1;
+}
+
+.nx-nav__link {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font: 800 11.25px/1 var(--nx-font-sans);
+  letter-spacing: 0.02em;
+  color: var(--nx-muted);
+  transition: color 200ms ease;
+}
+
+.nx-nav__link:hover,
+.nx-nav__link.is-current {
+  color: var(--nx-text);
+}
+
+.nx-nav__link.is-current {
+  color: var(--nx-signal);
+}
+
+.nx-nav__links:not(.has-ind) .nx-nav__link.is-current {
+  background: rgba(54, 255, 132, 0.14);
+  box-shadow: var(--nx-glow-signal);
+}
+
+.nx-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nx-nav__ghost,
+.nx-nav__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font: 700 11.5px/1 var(--nx-font-sans);
+  letter-spacing: 0.02em;
+  border: 1px solid var(--nx-border);
+  color: var(--nx-muted);
+  transition: color 200ms ease, border-color 200ms ease, background 200ms ease, transform 200ms var(--nx-ease);
+}
+
+.nx-nav__ghost.is-current {
+  color: var(--nx-signal);
+  border-color: rgba(54, 255, 132, 0.34);
+  background: rgba(54, 255, 132, 0.1);
+  box-shadow: var(--nx-glow-signal);
+}
+
+.nx-nav__ghost:hover {
+  color: var(--nx-text);
+  border-color: var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nx-nav__cta {
+  color: #fff;
+  background: var(--nx-purple);
+  border-color: transparent;
+  box-shadow: 0 8px 22px rgba(145, 56, 216, 0.35);
+}
+
+.nx-nav__cta:hover {
+  background: #a04ae8;
+  transform: translateY(-1px);
+}
+
+.nx-nav__burger {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-text);
+  cursor: pointer;
+  place-items: center;
+}
+
+.nx-nav__burger span,
+.nx-nav__burger span::before,
+.nx-nav__burger span::after {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 260ms var(--nx-ease), opacity 200ms ease;
+}
+
+.nx-nav__burger span {
+  position: relative;
+}
+
+.nx-nav__burger span::before,
+.nx-nav__burger span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.nx-nav__burger span::before { top: -5px; }
+.nx-nav__burger span::after { top: 5px; }
+
+.nx-nav.is-open .nx-nav__burger span { background: transparent; }
+.nx-nav.is-open .nx-nav__burger span::before { transform: translateY(5px) rotate(45deg); }
+.nx-nav.is-open .nx-nav__burger span::after { transform: translateY(-5px) rotate(-45deg); }
+
+@media (max-width: 860px) {
+  .nx-nav__bar {
+    grid-template-columns: 1fr auto;
+    padding: 8px 8px 8px 14px;
+  }
+
+  .nx-nav__sub { display: none; }
+
+  .nx-nav__burger { display: grid; }
+
+  .nx-nav__links,
+  .nx-nav__actions {
+    display: none;
+  }
+
+  .nx-nav.is-open .nx-nav__links,
+  .nx-nav.is-open .nx-nav__actions {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+
+  .nx-nav.is-open .nx-nav__bar {
+    border-radius: 26px;
+    padding-bottom: 12px;
+  }
+
+  .nx-nav.is-open .nx-nav__links {
+    gap: 4px;
+    padding-top: 10px;
+    border-top: 1px solid var(--nx-border);
+  }
+
+  .nx-nav.is-open .nx-nav__link,
+  .nx-nav.is-open .nx-nav__ghost,
+  .nx-nav.is-open .nx-nav__cta {
+    min-height: 40px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .nx-nav__ind { display: none; }
+
+  .nx-nav__links .nx-nav__link.is-current {
+    background: rgba(54, 255, 132, 0.14);
+    box-shadow: var(--nx-glow-signal);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Layout primitives
+   -------------------------------------------------------------------------- */
+
+.nx-main {
+  position: relative;
+  z-index: 1;
+  width: min(var(--nx-max), calc(100% - 2 * var(--nx-gutter)));
+  margin: 0 auto;
+  outline: 0;
+}
+
+.nx-section {
+  position: relative;
+  padding: clamp(64px, 9vw, 112px) 0;
+}
+
+.nx-section + .nx-section {
+  border-top: 1px solid var(--nx-border);
+}
+
+.nx-section--tight { padding-top: clamp(40px, 6vw, 72px); }
+
+.nx-section__head {
+  max-width: var(--nx-content);
+  margin-bottom: clamp(32px, 5vw, 56px);
+}
+
+.nx-section__head--center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.nx-section__head > * + * { margin-top: 14px; }
+
+.nx-overline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--nx-signal);
+  font: 800 11.75px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.nx-overline::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.nx-overline--purple { color: var(--nx-purple-ink); }
+.nx-overline--cyan { color: var(--nx-cyan); }
+.nx-overline--amber { color: var(--nx-amber); }
+.nx-overline--muted { color: var(--nx-muted); }
+
+.nx-display {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(42px, 6.4vw, 76px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.nx-display--xl {
+  font-size: clamp(48px, 7.6vw, 92px);
+}
+
+.nx-h2 {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.nx-h3 {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(18px, 1.6vw, 21px);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.nx-lede {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: clamp(17px, 1.5vw, 19px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.nx-prose {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.nx-prose strong { color: var(--nx-text); font-weight: 600; }
+
+.nx-accent {
+  background: linear-gradient(92deg, var(--nx-purple-ink) 0%, var(--nx-cyan) 55%, var(--nx-signal) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nx-accent-flow 9s ease-in-out infinite alternate;
+}
+
+@keyframes nx-accent-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+.nx-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(var(--nx-cols, 3), minmax(0, 1fr));
+}
+
+.nx-grid--2 { --nx-cols: 2; }
+.nx-grid--3 { --nx-cols: 3; }
+.nx-grid--4 { --nx-cols: 4; }
+
+@media (max-width: 1024px) {
+  .nx-grid--4 { --nx-cols: 2; }
+  .nx-grid--3 { --nx-cols: 2; }
+}
+
+@media (max-width: 640px) {
+  .nx-grid { --nx-cols: 1 !important; }
+}
+
+.nx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.nx-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nx-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  color: var(--nx-muted);
+  font-weight: 600;
+  font-size: 14px;
+  transition: color 200ms ease;
+}
+
+.nx-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--nx-gradient-signal);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 320ms var(--nx-ease);
+}
+
+.nx-link:hover { color: var(--nx-text); }
+.nx-link:hover::after { transform: scaleX(1); }
+
+.nx-link--arrow::before {
+  content: "→";
+  margin-right: 8px;
+  color: var(--nx-signal);
+  transition: transform 260ms var(--nx-ease);
+}
+
+.nx-link--arrow:hover::before { transform: translateX(4px); }
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.nx-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-text);
+  font: 600 14.5px/1 var(--nx-font-sans);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transform: translate3d(var(--nx-magnet-x, 0), var(--nx-magnet-y, 0), 0);
+  transition: transform 260ms var(--nx-ease), background 200ms ease, border-color 200ms ease, box-shadow 260ms var(--nx-ease), color 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nx-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.18) 48%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0s;
+}
+
+.nx-btn:hover::after {
+  transform: translateX(120%);
+  transition: transform 850ms var(--nx-ease);
+}
+
+.nx-btn:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.nx-btn:active {
+  transform: translate3d(var(--nx-magnet-x, 0), calc(var(--nx-magnet-y, 0) + 1px), 0) scale(0.985);
+  transition-duration: 80ms;
+}
+
+.nx-btn--primary {
+  color: #fff;
+  background: linear-gradient(180deg, #a04ae8 0%, var(--nx-purple) 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--nx-shadow-primary), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.nx-btn--primary:hover {
+  background: linear-gradient(180deg, #ad5cf0 0%, #9a40e2 100%);
+  box-shadow: 0 16px 40px rgba(145, 56, 216, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.nx-btn--signal {
+  color: var(--nx-on-signal);
+  background: var(--nx-signal);
+  border-color: transparent;
+  box-shadow: 0 12px 32px rgba(54, 255, 132, 0.25);
+}
+
+.nx-btn--mono {
+  font: 800 12px/1 var(--nx-font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--nx-r-sm);
+}
+
+.nx-btn--sm {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.nx-btn__key {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font: 500 11px/1 var(--nx-font-mono);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.nx-btn[aria-disabled="true"],
+.nx-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Cards
+   -------------------------------------------------------------------------- */
+
+.nx-card {
+  --nx-mx: 50%;
+  --nx-my: 50%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border-radius: var(--nx-r-xl);
+  border: 1px solid var(--nx-border);
+  background:
+    radial-gradient(420px circle at var(--nx-mx) var(--nx-my), rgba(255, 255, 255, 0.07), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  box-shadow: var(--nx-shadow-card);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 320ms var(--nx-ease), border-color 260ms ease, box-shadow 320ms var(--nx-ease);
+}
+
+.nx-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(300px circle at var(--nx-mx) var(--nx-my), rgba(54, 255, 132, 0.55), rgba(145, 56, 216, 0.35) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 320ms ease;
+  pointer-events: none;
+}
+
+.nx-card:hover::before,
+.nx-card:focus-within::before {
+  opacity: 1;
+}
+
+.nx-card--clickable {
+  cursor: pointer;
+  color: inherit;
+}
+
+.nx-card--clickable:hover {
+  transform: translateY(-4px);
+  border-color: var(--nx-border-strong);
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.nx-card--tilt {
+  transform: perspective(1000px) rotateX(var(--nx-rx, 0deg)) rotateY(var(--nx-ry, 0deg)) translateY(var(--nx-lift, 0));
+  transform-style: preserve-3d;
+}
+
+.nx-card__eyebrow {
+  margin: 0;
+  color: var(--nx-signal);
+  font: 800 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nx-card__eyebrow--purple { color: var(--nx-purple-ink); }
+.nx-card__eyebrow--cyan { color: var(--nx-cyan); }
+.nx-card__eyebrow--amber { color: var(--nx-amber); }
+
+.nx-card__title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.nx-card__body {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.nx-card__body code { font-size: 0.9em; }
+
+.nx-card__foot {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.nx-card__num {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  color: rgba(255, 255, 255, 0.12);
+  font: 800 44px/1 var(--nx-font-mono);
+  letter-spacing: -0.04em;
+  pointer-events: none;
+}
+
+.nx-card--feature {
+  padding: clamp(24px, 3vw, 36px);
+  background:
+    radial-gradient(520px circle at var(--nx-mx) var(--nx-my), rgba(145, 56, 216, 0.16), transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+}
+
+.nx-card--signal {
+  border-color: rgba(54, 255, 132, 0.22);
+  box-shadow: var(--nx-glow-signal), var(--nx-shadow-card);
+}
+
+.nx-card--icon .nx-card__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: var(--nx-signal);
+  background: rgba(54, 255, 132, 0.08);
+  border: 1px solid rgba(54, 255, 132, 0.18);
+}
+
+.nx-card__icon svg { width: 22px; height: 22px; }
+
+/* Shelf: a horizontal list of chips/tiles inside a card. */
+.nx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--nx-muted);
+  font: 600 12.5px/1 var(--nx-font-sans);
+  transition: color 200ms ease, border-color 200ms ease, background 200ms ease, transform 200ms var(--nx-ease);
+}
+
+.nx-chip:hover {
+  color: var(--nx-text);
+  border-color: var(--nx-border-strong);
+  transform: translateY(-1px);
+}
+
+.nx-chip--mono {
+  font: 700 11px/1 var(--nx-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nx-chip--live {
+  color: var(--nx-signal);
+  border-color: rgba(54, 255, 132, 0.3);
+  background: rgba(54, 255, 132, 0.08);
+}
+
+.nx-chip--live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.nx-chip--amber { color: var(--nx-amber); border-color: rgba(255, 154, 69, 0.3); background: rgba(255, 154, 69, 0.08); }
+.nx-chip--purple { color: var(--nx-purple-ink); border-color: rgba(176, 108, 240, 0.3); background: rgba(145, 56, 216, 0.1); }
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.nx-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 6fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+  padding: clamp(56px, 9vw, 120px) 0 clamp(48px, 6vw, 80px);
+}
+
+.nx-hero--center {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  text-align: center;
+}
+
+.nx-hero--center .nx-hero__copy { align-items: center; }
+.nx-hero--center .nx-actions { justify-content: center; }
+
+.nx-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+  max-width: 640px;
+}
+
+.nx-hero__copy .nx-lede { max-width: 56ch; }
+
+.nx-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0;
+  color: var(--nx-soft);
+  font: 500 12.5px/1.5 var(--nx-font-mono);
+}
+
+.nx-hero__meta code { font-size: 0.95em; }
+
+.nx-hero__visual {
+  position: relative;
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .nx-hero {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 48px;
+  }
+}
+
+/* Screenshot frame. Keeps the legacy class names the browser checks look for. */
+.nx-screen {
+  position: relative;
+  border-radius: var(--nx-r-2xl);
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--nx-border-strong);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.6);
+  transform: perspective(1400px) rotateX(var(--nx-rx, 0deg)) rotateY(var(--nx-ry, 0deg));
+  transition: transform 500ms var(--nx-ease);
+}
+
+.nx-screen::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: calc(var(--nx-r-2xl) - 8px);
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.nx-screen img {
+  width: 100%;
+  border-radius: calc(var(--nx-r-2xl) - 8px);
+  background: #000;
+}
+
+.nx-screen__chip {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--nx-text);
+  font: 700 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.nx-screen__glow {
+  position: absolute;
+  inset: 10% -10% -20%;
+  z-index: -1;
+  background: radial-gradient(60% 60% at 50% 60%, rgba(145, 56, 216, 0.35), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .nx-screen__glow { inset: 10% 0 -20%; }
+}
+
+.nx-screen--phone {
+  width: min(300px, 70vw);
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 44px;
+}
+
+.nx-screen--phone img { border-radius: 34px; }
+
+.nx-screen--phone::after { border-radius: 34px; inset: 10px; }
+
+/* Floating glass notes around a hero visual. */
+.nx-float {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(10, 11, 16, 0.78);
+  border: 1px solid var(--nx-border-strong);
+  box-shadow: var(--nx-shadow-capsule);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  animation: nx-hover 6s ease-in-out infinite alternate;
+}
+
+.nx-float span {
+  color: var(--nx-signal);
+  font: 800 10px/1 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nx-float strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.nx-float--tl { top: 8%; left: -6%; }
+.nx-float--br { bottom: 10%; right: -6%; animation-delay: -3s; }
+.nx-float--tr { top: 12%; right: -8%; animation-delay: -1.5s; }
+
+@keyframes nx-hover {
+  from { transform: translateY(-4px); }
+  to { transform: translateY(6px); }
+}
+
+@media (max-width: 960px) {
+  .nx-float { position: static; animation: none; }
+  .nx-floats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Stats, status rows, tickers
+   -------------------------------------------------------------------------- */
+
+.nx-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--nx-r-xl);
+  overflow: hidden;
+  border: 1px solid var(--nx-border);
+  background: var(--nx-border);
+}
+
+.nx-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px;
+  background: rgba(8, 9, 14, 0.8);
+}
+
+.nx-stat__value {
+  font: 700 30px/1 var(--nx-font-mono);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.nx-stat__value small {
+  font-size: 14px;
+  color: var(--nx-muted);
+  margin-left: 4px;
+}
+
+.nx-stat__label {
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nx-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nx-status li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nx-muted);
+  font: 500 12px/1 var(--nx-font-mono);
+}
+
+.nx-status li[data-state="online"] { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.3); }
+.nx-status li[data-state="offline"] { color: var(--nx-amber); border-color: rgba(255, 154, 69, 0.3); }
+.nx-status li[data-state="pending"] { color: var(--nx-cyan); }
+
+.nx-ticker {
+  position: relative;
+  overflow: hidden;
+  padding: 14px 0;
+  border-top: 1px solid var(--nx-border);
+  border-bottom: 1px solid var(--nx-border);
+  -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.nx-ticker__track {
+  display: flex;
+  gap: 40px;
+  width: max-content;
+  animation: nx-ticker 48s linear infinite;
+}
+
+.nx-ticker:hover .nx-ticker__track { animation-play-state: paused; }
+
+.nx-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--nx-soft);
+  font: 800 11.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nx-ticker__item::before {
+  content: "✦";
+  color: var(--nx-signal);
+}
+
+@keyframes nx-ticker {
+  to { transform: translateX(-50%); }
+}
+
+/* --------------------------------------------------------------------------
+   Console (commands), keycaps, steps
+   -------------------------------------------------------------------------- */
+
+.nx-console {
+  position: relative;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--nx-border-strong);
+  background: linear-gradient(180deg, #0a0b10, #060709);
+  box-shadow: var(--nx-shadow-card);
+  overflow: hidden;
+}
+
+.nx-console__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--nx-border);
+  color: var(--nx-soft);
+  font: 700 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nx-console__bar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.nx-console__bar i:nth-child(1) { background: #ff5f57; }
+.nx-console__bar i:nth-child(2) { background: #febc2e; }
+.nx-console__bar i:nth-child(3) { background: #28c840; margin-right: 6px; }
+
+.nx-console__body {
+  display: grid;
+  gap: 8px;
+  padding: 18px 18px 20px;
+  font: 500 14px/1.6 var(--nx-font-mono);
+  color: var(--nx-text);
+  overflow-x: auto;
+}
+
+.nx-console__line {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.nx-console__line::before {
+  content: "$";
+  color: var(--nx-signal);
+  flex: none;
+}
+
+.nx-console__line--out::before { content: "›"; color: var(--nx-soft); }
+.nx-console__line--out { color: var(--nx-muted); }
+
+.nx-console__line.is-typing::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  margin-left: 2px;
+  background: var(--nx-signal);
+  vertical-align: text-bottom;
+  animation: nx-caret 1s steps(2) infinite;
+}
+
+@keyframes nx-caret { to { opacity: 0; } }
+
+.nx-console__copy {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+}
+
+.nx-keys {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.nx-key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #1d1e28, #101119);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: var(--nx-text);
+  font: 600 13px/1 var(--nx-font-mono);
+  transition: transform 120ms var(--nx-ease), box-shadow 120ms var(--nx-ease), color 200ms ease, border-color 200ms ease;
+}
+
+.nx-key.is-down,
+.nx-keys:hover .nx-key {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.nx-key.is-down {
+  color: var(--nx-signal);
+  border-color: rgba(54, 255, 132, 0.5);
+}
+
+.nx-steps {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: nx-step;
+}
+
+.nx-steps--row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+@media (max-width: 760px) { .nx-steps--row { grid-template-columns: minmax(0, 1fr); } }
+
+.nx-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 22px 22px 24px;
+  border-radius: var(--nx-r-xl);
+  border: 1px solid var(--nx-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+  counter-increment: nx-step;
+}
+
+.nx-step::before {
+  content: "0" counter(nx-step);
+  color: var(--nx-signal);
+  font: 800 12px/1 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+}
+
+.nx-step::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 0;
+  height: 1px;
+  background: var(--nx-gradient-signal);
+  opacity: 0.6;
+}
+
+.nx-step strong {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.nx-step p {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.nx-step.is-active {
+  border-color: rgba(54, 255, 132, 0.3);
+  box-shadow: var(--nx-glow-signal);
+}
+
+/* --------------------------------------------------------------------------
+   Statement bands, pullquotes, callouts
+   -------------------------------------------------------------------------- */
+
+.nx-band {
+  position: relative;
+  padding: clamp(48px, 7vw, 96px) clamp(20px, 4vw, 48px);
+  border-radius: var(--nx-r-2xl);
+  border: 1px solid var(--nx-border);
+  background:
+    radial-gradient(80% 120% at 50% 120%, rgba(145, 56, 216, 0.22), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  text-align: center;
+  overflow: hidden;
+}
+
+.nx-band .nx-h2 { max-width: 20ch; margin-inline: auto; }
+
+.nx-band__rail {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(60%, 520px);
+  height: 2px;
+  transform: translateX(-50%);
+  background: var(--nx-gradient-signal);
+  filter: drop-shadow(0 0 10px rgba(54, 255, 132, 0.6));
+}
+
+.nx-callout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 16px 18px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid rgba(255, 154, 69, 0.28);
+  background: rgba(255, 154, 69, 0.07);
+  color: var(--nx-muted);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.nx-callout--signal { border-color: rgba(54, 255, 132, 0.28); background: rgba(54, 255, 132, 0.06); }
+.nx-callout--purple { border-color: rgba(176, 108, 240, 0.32); background: rgba(145, 56, 216, 0.09); }
+
+.nx-callout strong { color: var(--nx-text); }
+
+.nx-callout__icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--nx-amber);
+  font: 800 13px/1 var(--nx-font-mono);
+}
+
+.nx-callout--signal .nx-callout__icon { color: var(--nx-signal); }
+.nx-callout--purple .nx-callout__icon { color: var(--nx-purple-ink); }
+
+/* --------------------------------------------------------------------------
+   Footer with the sign-off wordmark
+   -------------------------------------------------------------------------- */
+
+.nx-foot {
+  position: relative;
+  z-index: 1;
+  width: min(var(--nx-max), calc(100% - 2 * var(--nx-gutter)));
+  margin: clamp(48px, 8vw, 96px) auto 0;
+  padding: 0 0 32px;
+}
+
+.nx-foot__mark {
+  position: relative;
+  padding: clamp(24px, 6vw, 64px) 0 clamp(16px, 3vw, 32px);
+  text-align: center;
+  overflow: hidden;
+}
+
+.nx-foot__word {
+  display: block;
+  font-weight: 800;
+  font-size: clamp(64px, 15vw, 210px);
+  line-height: 0.84;
+  letter-spacing: -0.08em;
+  background: linear-gradient(180deg, #d7b4ff 0%, var(--nx-purple) 55%, #2a0f45 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 40px rgba(145, 56, 216, 0.45));
+  user-select: none;
+}
+
+.nx-foot__tag {
+  display: block;
+  margin-top: 14px;
+  color: var(--nx-soft);
+  font: 800 11.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.nx-foot__grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  padding: 32px 0;
+  border-top: 1px solid var(--nx-border);
+  border-bottom: 1px solid var(--nx-border);
+}
+
+@media (max-width: 860px) {
+  .nx-foot__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.nx-foot__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 34ch;
+  color: var(--nx-muted);
+  font-size: 14px;
+}
+
+.nx-foot__brand strong {
+  color: var(--nx-text);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.nx-foot__col h2,
+.nx-foot__col h3 {
+  margin: 0 0 12px;
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nx-foot__col nav,
+.nx-foot__col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nx-foot__col a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  width: fit-content;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--nx-muted);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 200ms ease, transform 200ms var(--nx-ease);
+}
+
+.nx-foot__col a:hover {
+  color: var(--nx-text);
+  transform: translateX(3px);
+}
+
+.nx-foot__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 20px;
+  color: var(--nx-soft);
+  font: 500 12px/1.5 var(--nx-font-mono);
+}
+
+.nx-foot__meta-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.nx-release {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(54, 255, 132, 0.3);
+  background: rgba(54, 255, 132, 0.08);
+  color: var(--nx-signal);
+  font: 700 12px/1 var(--nx-font-mono);
+  transition: box-shadow 200ms ease, transform 200ms var(--nx-ease);
+}
+
+.nx-release::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.nx-release:hover { box-shadow: var(--nx-glow-signal); transform: translateY(-1px); }
+
+.nx-netlify {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  color: var(--nx-soft);
+  opacity: 0.8;
+  transition: opacity 200ms ease;
+}
+
+.nx-netlify:hover { opacity: 1; }
+.nx-netlify img { height: 24px; width: auto; }
+
+/* --------------------------------------------------------------------------
+   Reveal + motion helpers
+   -------------------------------------------------------------------------- */
+
+.nx-reveal,
+html.nx [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+  transition: opacity 780ms var(--nx-ease), transform 780ms var(--nx-ease), filter 780ms var(--nx-ease);
+  transition-delay: calc(var(--i, 0) * 68ms);
+}
+
+.nx-reveal.is-in,
+html.nx [data-reveal].is-in,
+html.nx.nx-no-observer [data-reveal],
+html.nx.nx-no-observer .nx-reveal {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.nx-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 150;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: rgba(8, 9, 14, 0.92);
+  border: 1px solid rgba(54, 255, 132, 0.35);
+  box-shadow: var(--nx-shadow-capsule), var(--nx-glow-signal);
+  color: var(--nx-text);
+  font: 600 13.5px/1 var(--nx-font-sans);
+  transform: translate(-50%, 24px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 320ms var(--nx-spring), opacity 220ms ease;
+}
+
+.nx-toast.is-on { transform: translate(-50%, 0); opacity: 1; }
+
+.nx-toast::before {
+  content: "✓";
+  color: var(--nx-signal);
+  font-weight: 800;
+}
+
+.nx-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 160;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(54, 255, 132, 0.7);
+  pointer-events: none;
+  transform: translate(-50%, -50%) translate3d(var(--nx-cx, -100px), var(--nx-cy, -100px), 0) scale(var(--nx-cs, 1));
+  transition: transform 90ms linear, opacity 200ms ease, border-color 200ms ease;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
+html.nx.nx-cursor-on .nx-cursor { opacity: 0.9; }
+html.nx.nx-cursor-on .nx-cursor.is-hot { --nx-cs: 1.9; border-color: rgba(176, 108, 240, 0.9); }
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .nx-cursor { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion: everything decorative stands down.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html.nx { scroll-behavior: auto; }
+
+  .nx-atmos__blob,
+  .nx-atmos__scan,
+  .nx-float,
+  .nx-ticker__track,
+  .nx-accent,
+  .nx-nav__dot::after,
+  .nx-console__line.is-typing::after {
+    animation: none !important;
+  }
+
+  .nx-reveal,
+  html.nx [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .nx-btn,
+  .nx-card,
+  .nx-screen,
+  .nx-nav__ind,
+  .nx-progress {
+    transition: none;
+    transform: none;
+  }
+
+  .nx-btn::after { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Utilities
+   -------------------------------------------------------------------------- */
+
+.nx-mt-16 { margin-top: 16px; }
+.nx-mt-24 { margin-top: 24px; }
+.nx-mt-32 { margin-top: 32px; }
+.nx-mt-48 { margin-top: 48px; }
+.nx-center { text-align: center; }
+.nx-muted { color: var(--nx-muted); }
+.nx-soft { color: var(--nx-soft); }
+.nx-mono { font-family: var(--nx-font-mono); }
+.nx-wide { width: min(var(--nx-wide), 100%); margin-inline: auto; }
+.nx-content { width: min(var(--nx-content), 100%); margin-inline: auto; }
+.nx-hide-mobile { display: initial; }
+
+@media (max-width: 640px) {
+  .nx-hide-mobile { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Page compositions used by the marketing pages
+   -------------------------------------------------------------------------- */
+
+.nx-actions--center { justify-content: center; }
+
+button.nx-card {
+  appearance: none;
+  width: 100%;
+  margin: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.nx-shots .nx-shot { padding: 12px 12px 22px; }
+.nx-shot .nx-screen { padding: 6px; border-radius: var(--nx-r-lg); }
+.nx-shot .nx-screen img { border-radius: calc(var(--nx-r-lg) - 6px); }
+.nx-shot .nx-screen::after { inset: 6px; border-radius: calc(var(--nx-r-lg) - 6px); }
+.nx-shot__copy { display: flex; flex-direction: column; gap: 8px; padding: 6px 10px 0; }
+.nx-shot--wide { grid-column: 1 / -1; }
+.nx-shot--wide .nx-screen { max-width: 880px; margin-inline: auto; }
+
+@media (min-width: 961px) {
+  .nx-shot--wide {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+  }
+  .nx-shot--wide .nx-shot__copy { padding: 0 12px; }
+}
+
+.nx-downloads .nx-console { align-self: stretch; }
+.nx-downloads .nx-console__body { padding-right: 90px; }
+
+.nx-hero .nx-status { margin-top: -4px; }
+
+/* iOS page: phone stage + phone cards */
+.nx-phone-stage { display: flex; flex-direction: column; align-items: center; }
+.nx-phone-stage .nx-screen--phone { width: min(320px, 72vw); }
+.nx-phone-stage .nx-float--tl { top: 14%; left: 2%; }
+.nx-phone-stage .nx-float--br { bottom: 16%; right: 2%; }
+.nx-phones .nx-phone-card { align-items: flex-start; }
+.nx-phones .nx-phone-card .nx-screen--phone { width: min(240px, 100%); margin: 0 auto 10px; padding: 7px; border-radius: 34px; }
+.nx-phones .nx-phone-card .nx-screen--phone img { border-radius: 27px; }
+.nx-phones .nx-phone-card .nx-screen--phone::after { inset: 7px; border-radius: 27px; }
+
+/* Brew page */
+.nx-console--hero .nx-console__body { padding-right: 90px; }
+.nx-brew-shot { max-width: 520px; margin-inline: auto; }
+
+/* Sitemap */
+.nx-sitemap__list { display: grid; gap: 14px; margin: 6px 0 0; padding: 0; list-style: none; }
+.nx-sitemap__list li { display: grid; gap: 4px; }
+.nx-sitemap__list p { margin: 0; color: var(--nx-muted); font-size: 14px; line-height: 1.5; }
+.nx-sitemap .nx-card__title { font-size: 24px; }
+
+/* 404 */
+.nx-404 { min-height: calc(100vh - 160px); display: grid; place-items: center; text-align: center; padding: 48px 0; }
+.nx-404__code { display: block; font: 800 clamp(96px, 22vw, 240px)/0.9 var(--nx-font-mono); letter-spacing: -0.08em; background: linear-gradient(180deg, #d7b4ff, var(--nx-purple) 60%, #2a0f45); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 40px rgba(145, 56, 216, 0.4)); }
+
+/* Phones: let long commands wrap instead of hiding behind a sideways scroll. */
+@media (max-width: 640px) {
+  .nx-console__line { white-space: normal; overflow-wrap: anywhere; }
+  .nx-downloads .nx-console__body,
+  .nx-console--hero .nx-console__body { padding-right: 18px; }
+}
+```
+
+## nx.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-js" file="nx.js"}
+// RoachNet site system v5 — shared behaviour for the nx chrome.
+// Progressive: every effect checks reduced motion and pointer type first,
+// nothing here is required for the page to work, and nothing runs inline
+// (the CSP has no 'unsafe-inline').
+
+const root = document.documentElement
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+const finePointer = window.matchMedia('(pointer: fine)')
+const motionOK = () => !reduced.matches
+const pointerOK = () => finePointer.matches && motionOK()
+
+function safely(name, fn) {
+  try {
+    fn()
+  } catch (error) {
+    console.warn(`[nx] ${name} skipped:`, error)
+  }
+}
+
+/* Nav: scrolled state, gliding current-pill indicator, mobile menu. */
+function mountNav() {
+  const nav = document.querySelector('.nx-nav')
+  if (!nav) return
+  const links = nav.querySelector('.nx-nav__links')
+  const burger = nav.querySelector('.nx-nav__burger')
+  let ticking = false
+  const onScroll = () => {
+    if (ticking) return
+    ticking = true
+    requestAnimationFrame(() => {
+      nav.classList.toggle('is-scrolled', window.scrollY > 24)
+      ticking = false
+    })
+  }
+  window.addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
+
+  if (burger && links) {
+    const setOpen = (open) => {
+      nav.classList.toggle('is-open', open)
+      burger.setAttribute('aria-expanded', String(open))
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu')
+    }
+    burger.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')))
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && nav.classList.contains('is-open')) {
+        setOpen(false)
+        burger.focus()
+      }
+    })
+    nav.querySelectorAll('.nx-nav__link, .nx-nav__ghost, .nx-nav__cta').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false))
+    })
+  }
+
+  if (!links || !pointerOK()) return
+  const indicator = document.createElement('span')
+  indicator.className = 'nx-nav__ind'
+  indicator.setAttribute('aria-hidden', 'true')
+  links.prepend(indicator)
+  const current = links.querySelector('.nx-nav__link.is-current')
+  const place = (target) => {
+    if (!target) {
+      indicator.style.width = '0'
+      links.classList.remove('has-ind')
+      return
+    }
+    const bounds = links.getBoundingClientRect()
+    const box = target.getBoundingClientRect()
+    indicator.style.width = `${box.width}px`
+    indicator.style.transform = `translateX(${box.left - bounds.left}px)`
+    links.classList.add('has-ind')
+  }
+  place(current)
+  links.querySelectorAll('.nx-nav__link').forEach((link) => {
+    link.addEventListener('pointerenter', () => place(link))
+    link.addEventListener('focus', () => place(link))
+  })
+  links.addEventListener('pointerleave', () => place(current))
+  links.addEventListener('focusout', (event) => {
+    if (!links.contains(event.relatedTarget)) place(current)
+  })
+  window.addEventListener('resize', () => place(current))
+}
+
+/* Scroll progress hairline. */
+function mountProgress() {
+  const bar = document.querySelector('.nx-progress')
+  if (!bar) return
+  let ticking = false
+  const update = () => {
+    const max = root.scrollHeight - window.innerHeight
+    root.style.setProperty('--nx-progress', max > 0 ? String(Math.min(1, window.scrollY / max)) : '0')
+    ticking = false
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      ticking = true
+      requestAnimationFrame(update)
+    }
+  }, { passive: true })
+  update()
+}
+
+/* Pointer light + optional tilt on cards and screenshot frames. */
+function mountPointerLight() {
+  if (!pointerOK()) return
+  const targets = document.querySelectorAll('.nx-card, .nx-screen, .nx-band')
+  targets.forEach((element) => {
+    const tilt = element.classList.contains('nx-card--tilt') || element.classList.contains('nx-screen')
+    element.addEventListener('pointermove', (event) => {
+      const box = element.getBoundingClientRect()
+      const x = (event.clientX - box.left) / box.width
+      const y = (event.clientY - box.top) / box.height
+      element.style.setProperty('--nx-mx', `${(x * 100).toFixed(1)}%`)
+      element.style.setProperty('--nx-my', `${(y * 100).toFixed(1)}%`)
+      if (tilt) {
+        element.style.setProperty('--nx-ry', `${((x - 0.5) * 6).toFixed(2)}deg`)
+        element.style.setProperty('--nx-rx', `${((0.5 - y) * 6).toFixed(2)}deg`)
+      }
+    })
+    element.addEventListener('pointerleave', () => {
+      element.style.setProperty('--nx-mx', '50%')
+      element.style.setProperty('--nx-my', '50%')
+      element.style.setProperty('--nx-rx', '0deg')
+      element.style.setProperty('--nx-ry', '0deg')
+    })
+  })
+}
+
+/* Magnetic primary buttons: the button leans toward the pointer, never more than 6px. */
+function mountMagnets() {
+  if (!pointerOK()) return
+  document.querySelectorAll('.nx-btn--primary, .nx-btn--signal').forEach((button) => {
+    button.addEventListener('pointermove', (event) => {
+      const box = button.getBoundingClientRect()
+      const x = (event.clientX - (box.left + box.width / 2)) / (box.width / 2)
+      const y = (event.clientY - (box.top + box.height / 2)) / (box.height / 2)
+      button.style.setProperty('--nx-magnet-x', `${(x * 6).toFixed(1)}px`)
+      button.style.setProperty('--nx-magnet-y', `${(y * 4).toFixed(1)}px`)
+    })
+    button.addEventListener('pointerleave', () => {
+      button.style.setProperty('--nx-magnet-x', '0px')
+      button.style.setProperty('--nx-magnet-y', '0px')
+    })
+  })
+}
+
+/* Reveal on entry. Elements inside a group stagger via --i. */
+function mountReveals() {
+  const items = document.querySelectorAll('[data-reveal], .nx-reveal')
+  if (!items.length) return
+  if (!('IntersectionObserver' in window) || !motionOK()) {
+    root.classList.add('nx-no-observer')
+    items.forEach((item) => item.classList.add('is-in'))
+    return
+  }
+  document.querySelectorAll('.nx-grid, .nx-steps, .nx-stats').forEach((group) => {
+    ;[...group.children].forEach((child, index) => child.style.setProperty('--i', String(index)))
+  })
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-in')
+        observer.unobserve(entry.target)
+      }
+    })
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
+  items.forEach((item) => observer.observe(item))
+  // Anything already past the fold when the observer starts (restored scroll)
+  // is revealed on the next frame so nothing stays blank.
+  requestAnimationFrame(() => {
+    items.forEach((item) => {
+      const box = item.getBoundingClientRect()
+      if (box.top < window.innerHeight && box.bottom > 0) item.classList.add('is-in')
+    })
+  })
+}
+
+/* Count-up readouts: <span data-count="376" data-suffix=" MB">376 MB</span>. */
+function mountCounters() {
+  const counters = document.querySelectorAll('[data-count]')
+  if (!counters.length || !motionOK() || !('IntersectionObserver' in window)) return
+  const run = (element) => {
+    const target = Number.parseFloat(element.dataset.count)
+    if (!Number.isFinite(target)) return
+    const decimals = (element.dataset.count.split('.')[1] || '').length
+    const suffix = element.dataset.suffix || ''
+    const prefix = element.dataset.prefix || ''
+    const start = performance.now()
+    const duration = 1100
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration)
+      const eased = 1 - Math.pow(1 - t, 3)
+      element.textContent = `${prefix}${(target * eased).toFixed(decimals)}${suffix}`
+      if (t < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        run(entry.target)
+        observer.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.4 })
+  counters.forEach((counter) => observer.observe(counter))
+}
+
+/* Copy buttons: <button data-nx-copy="text">…</button> or data-nx-copy-target="#id". */
+let toast
+function showToast(message) {
+  if (!toast) {
+    toast = document.createElement('div')
+    toast.className = 'nx-toast'
+    toast.setAttribute('role', 'status')
+    toast.setAttribute('aria-live', 'polite')
+    document.body.append(toast)
+  }
+  toast.textContent = message
+  toast.classList.add('is-on')
+  clearTimeout(toast._timer)
+  toast._timer = setTimeout(() => toast.classList.remove('is-on'), 2200)
+}
+
+function mountCopy() {
+  document.querySelectorAll('[data-nx-copy], [data-nx-copy-target]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const target = button.dataset.nxCopyTarget ? document.querySelector(button.dataset.nxCopyTarget) : null
+      const text = target ? target.textContent.trim() : button.dataset.nxCopy
+      if (!text) return
+      try {
+        await navigator.clipboard.writeText(text)
+        showToast(button.dataset.nxCopied || 'Copied to your clipboard')
+      } catch {
+        showToast('Select the text and copy it by hand')
+      }
+    })
+  })
+}
+
+/* Typed console lines: <span class="nx-console__line" data-type>brew install …</span>. */
+function mountTyping() {
+  const lines = document.querySelectorAll('[data-type]')
+  if (!lines.length) return
+  if (!motionOK() || !('IntersectionObserver' in window)) return
+  const type = (line) => {
+    const full = line.textContent
+    line.textContent = ''
+    line.classList.add('is-typing')
+    let index = 0
+    const step = () => {
+      index += 1
+      line.textContent = full.slice(0, index)
+      if (index < full.length) {
+        setTimeout(step, 18 + Math.random() * 30)
+      } else {
+        setTimeout(() => line.classList.remove('is-typing'), 1400)
+      }
+    }
+    setTimeout(step, 240)
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        type(entry.target)
+        observer.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.5 })
+  lines.forEach((line) => observer.observe(line))
+}
+
+/* Ticker: duplicate the track once so the loop is seamless. */
+function mountTicker() {
+  document.querySelectorAll('.nx-ticker__track').forEach((track) => {
+    if (track.dataset.cloned) return
+    track.dataset.cloned = '1'
+    track.append(...[...track.children].map((child) => {
+      const clone = child.cloneNode(true)
+      clone.setAttribute('aria-hidden', 'true')
+      return clone
+    }))
+  })
+}
+
+/* Cursor ring on fine pointers. */
+function mountCursor() {
+  if (!pointerOK()) return
+  const ring = document.createElement('div')
+  ring.className = 'nx-cursor'
+  ring.setAttribute('aria-hidden', 'true')
+  document.body.append(ring)
+  let shown = false
+  document.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'mouse') return
+    root.style.setProperty('--nx-cx', `${event.clientX}px`)
+    root.style.setProperty('--nx-cy', `${event.clientY}px`)
+    if (!shown) {
+      shown = true
+      root.classList.add('nx-cursor-on')
+    }
+    const hot = event.target instanceof Element && event.target.closest('a, button, [role="button"], input, select, textarea, summary')
+    ring.classList.toggle('is-hot', Boolean(hot))
+  }, { passive: true })
+  document.addEventListener('pointerleave', () => root.classList.remove('nx-cursor-on'))
+  document.addEventListener('pointerenter', () => { if (shown) root.classList.add('nx-cursor-on') })
+}
+
+/* Keycap shortcut hints light up when the real keys are held. */
+function mountKeys() {
+  const keys = document.querySelectorAll('.nx-key[data-key]')
+  if (!keys.length) return
+  const sync = (event) => {
+    keys.forEach((key) => {
+      const name = key.dataset.key
+      const down = (name === 'shift' && event.shiftKey) || (name === 'meta' && (event.metaKey || event.ctrlKey)) || (name === event.key?.toLowerCase() && event.type === 'keydown')
+      key.classList.toggle('is-down', Boolean(down))
+    })
+  }
+  document.addEventListener('keydown', sync)
+  document.addEventListener('keyup', (event) => {
+    keys.forEach((key) => {
+      const name = key.dataset.key
+      if ((name === 'shift' && !event.shiftKey) || (name === 'meta' && !(event.metaKey || event.ctrlKey)) || name === event.key?.toLowerCase()) key.classList.remove('is-down')
+    })
+  })
+}
+
+/* Live status chips: time, connectivity. app.js owns the richer telemetry on Home;
+   this only fills chips that nothing else manages. */
+function mountStatusChips() {
+  const chips = document.querySelectorAll('[data-nx-status]')
+  if (!chips.length) return
+  const update = () => {
+    chips.forEach((chip) => {
+      const kind = chip.dataset.nxStatus
+      if (kind === 'time') {
+        chip.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+      } else if (kind === 'net') {
+        const online = navigator.onLine
+        chip.textContent = online ? 'Online now' : 'Offline, and fine'
+        chip.dataset.state = online ? 'online' : 'offline'
+      }
+    })
+  }
+  update()
+  setInterval(update, 30_000)
+  window.addEventListener('online', update)
+  window.addEventListener('offline', update)
+}
+
+function boot() {
+  safely('nav', mountNav)
+  safely('progress', mountProgress)
+  safely('pointer-light', mountPointerLight)
+  safely('magnets', mountMagnets)
+  safely('reveals', mountReveals)
+  safely('counters', mountCounters)
+  safely('copy', mountCopy)
+  safely('typing', mountTyping)
+  safely('ticker', mountTicker)
+  safely('cursor', mountCursor)
+  safely('keys', mountKeys)
+  safely('status', mountStatusChips)
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot, { once: true })
+} else {
+  boot()
+}
+```
+
+## nx-account.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-account-css" file="nx-account.css"}
+/* ==========================================================================
+   RoachNet Account (accounts.roachnet.org) — nx layer.
+   Loaded after nx.css. Uses nx tokens only. Hero with the sign-in card,
+   the "what goes where" ledger, the signed-in dashboard and next stops.
+   The accounts CSP is style-src 'self': no inline styles, no external fonts.
+   Every transition and animation stands down under prefers-reduced-motion.
+   ========================================================================== */
+
+.ac-page {
+  --ac-hazard-ink: #ff8f73;
+  --ac-line: var(--nx-border);
+}
+
+.ac-main [hidden] { display: none !important; }
+
+.ac-main,
+.ac-main *,
+.ac-main *::before,
+.ac-main *::after {
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Hero + sign-in card
+   -------------------------------------------------------------------------- */
+
+.ac-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+  padding: clamp(48px, 8vw, 104px) 0 clamp(48px, 6vw, 80px);
+}
+
+.ac-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+  padding-top: 12px;
+}
+
+.ac-title { font-size: clamp(42px, 6vw, 74px); }
+.ac-hero__copy .nx-lede { max-width: 54ch; }
+
+@media (max-width: 960px) {
+  .ac-hero { grid-template-columns: minmax(0, 1fr); padding-top: 40px; }
+}
+
+.ac-label {
+  margin: 0;
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ac-auth {
+  position: relative;
+  display: grid;
+  gap: 22px;
+  padding: clamp(22px, 3vw, 30px);
+  border-radius: var(--nx-r-2xl);
+  border: 1px solid var(--nx-border-strong);
+  background:
+    radial-gradient(120% 70% at 100% 0%, rgba(145, 56, 216, 0.2), transparent 60%),
+    linear-gradient(180deg, rgba(16, 15, 24, 0.94), rgba(9, 10, 15, 0.94));
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.ac-auth::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 0;
+  height: 1px;
+  background: var(--nx-gradient-signal);
+  opacity: 0.55;
+}
+
+.ac-auth__status {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ac-auth__status-copy { display: grid; gap: 6px; min-width: 0; }
+
+@media (max-width: 520px) {
+  .ac-auth__status { flex-direction: column-reverse; gap: 12px; }
+}
+
+.ac-auth__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.ac-auth__body {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.ac-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border-strong);
+  color: var(--nx-muted);
+  font: 700 11px/1 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ac-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ac-badge[data-state="loading"] { color: var(--nx-cyan); border-color: rgba(72, 230, 255, 0.3); }
+.ac-badge[data-state="loading"]::before { animation: ac-pulse 1.2s ease-in-out infinite; }
+.ac-badge[data-state="ready"] { color: var(--nx-purple-ink); border-color: rgba(176, 108, 240, 0.38); background: rgba(145, 56, 216, 0.1); }
+.ac-badge[data-state="live"] { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.34); background: rgba(54, 255, 132, 0.08); }
+.ac-badge[data-state="live"]::before { box-shadow: 0 0 8px currentColor; }
+.ac-badge[data-state="disabled"] { color: var(--nx-amber); border-color: rgba(255, 154, 69, 0.34); background: rgba(255, 154, 69, 0.08); }
+
+.ac-auth__mini {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--ac-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nx-text);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.ac-auth__mini .nx-link { font-size: 14px; }
+.ac-auth__signed-in .ac-form__note { margin-top: 14px; }
+
+/* Which half of the card shows depends on the session. */
+.ac-auth__signed-in { display: none; }
+.ac-auth[data-auth-state="signed-in"] .ac-auth__signed-in { display: block; }
+.ac-auth[data-auth-state="signed-in"] .ac-auth__signed-out { display: none; }
+.ac-auth[data-auth-state="loading"] .ac-auth__signed-out { opacity: 0.55; pointer-events: none; }
+
+.ac-auth__signed-out { display: grid; gap: 18px; transition: opacity 260ms ease; }
+
+/* Tabs with a gliding indicator */
+
+.ac-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--ac-line);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.ac-tabs__ind {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(160, 74, 232, 0.4), rgba(145, 56, 216, 0.26));
+  border: 1px solid rgba(176, 108, 240, 0.45);
+  box-shadow: 0 8px 24px rgba(145, 56, 216, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: transform 420ms var(--nx-spring);
+  pointer-events: none;
+}
+
+.ac-tabs[data-mode="signup"] .ac-tabs__ind { transform: translateX(100%); }
+
+.ac-tab {
+  position: relative;
+  z-index: 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--nx-muted);
+  font: 700 14px/1 var(--nx-font-sans);
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.ac-tab:hover { color: var(--nx-text); }
+.ac-tab.is-active { color: #fff; }
+.ac-tab:disabled { cursor: not-allowed; }
+html.nx .ac-tab:focus-visible { outline-offset: 1px; }
+
+/* Form */
+
+.ac-form { display: grid; gap: 16px; }
+
+.ac-field { display: grid; gap: 7px; }
+.ac-field[hidden] { display: none; }
+
+.ac-field label {
+  color: var(--nx-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ac-field__opt {
+  margin-left: 6px;
+  color: var(--nx-soft);
+  font: 600 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ac-field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(0, 0, 0, 0.38);
+  color: var(--nx-text);
+  font: 400 16px/1.2 var(--nx-font-sans);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.ac-field input::placeholder { color: var(--nx-soft); }
+.ac-field input:hover { border-color: rgba(255, 255, 255, 0.24); }
+
+.ac-field input:focus-visible {
+  outline: 2px solid var(--nx-purple-ink);
+  outline-offset: 1px;
+  border-color: transparent;
+  box-shadow: 0 0 0 5px rgba(145, 56, 216, 0.2);
+  background: rgba(0, 0, 0, 0.52);
+}
+
+.ac-field input:disabled { opacity: 0.6; cursor: not-allowed; }
+.ac-field.is-invalid input { border-color: rgba(255, 90, 54, 0.72); }
+.ac-field.is-valid input { border-color: rgba(54, 255, 132, 0.45); }
+
+.ac-field__hint {
+  margin: 0;
+  color: var(--nx-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.ac-field__hint:empty { display: none; }
+.ac-field__hint[data-tone="error"] { color: var(--ac-hazard-ink); }
+.ac-field__hint[data-tone="live"] { color: var(--nx-signal); }
+
+.ac-field__hint[data-tone="live"]::before {
+  content: "✓ ";
+  font-weight: 800;
+}
+
+.account-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.account-turnstile[hidden] { display: none; }
+.account-turnstile { display: grid; gap: 8px; }
+
+.ac-submit { width: 100%; min-height: 48px; font-size: 15px; }
+
+.ac-submit.is-loading .ac-submit__label::before,
+.nx-btn.is-loading::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 10px;
+  vertical-align: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: ac-spin 700ms linear infinite;
+}
+
+.ac-form__note {
+  margin: 0;
+  color: var(--nx-soft);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.ac-form__note[data-tone="error"] { color: var(--ac-hazard-ink); }
+.ac-form__note[data-tone="live"] { color: var(--nx-signal); }
+
+.ac-form__feedback {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--ac-line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nx-muted);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.ac-form__feedback:empty { display: none; }
+.ac-form__feedback[data-tone="error"] { color: #ffd0c4; border-color: rgba(255, 90, 54, 0.4); background: rgba(255, 90, 54, 0.08); }
+.ac-form__feedback[data-tone="live"] { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.3); background: rgba(54, 255, 132, 0.06); }
+
+.ac-form__feedback[data-tone="confirm"] {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  color: var(--nx-text);
+  border-color: rgba(54, 255, 132, 0.34);
+  background: rgba(54, 255, 132, 0.07);
+  animation: ac-arrive 520ms var(--nx-ease) both;
+}
+
+.ac-form__feedback[data-tone="confirm"]::before {
+  content: "@";
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(54, 255, 132, 0.14);
+  color: var(--nx-signal);
+  font: 800 14px/1 var(--nx-font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   Ledger: what syncs vs what stays home
+   -------------------------------------------------------------------------- */
+
+.ac-ledger__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 760px) {
+  .ac-ledger__grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.ac-ledger__card { gap: 18px; padding: clamp(22px, 3vw, 32px); }
+.ac-ledger__card--syncs { border-color: rgba(72, 230, 255, 0.2); }
+.ac-ledger__card--home { border-color: rgba(54, 255, 132, 0.22); box-shadow: var(--nx-glow-signal), var(--nx-shadow-card); }
+
+.ac-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ac-list li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 3px;
+  padding: 14px 0;
+  border-top: 1px solid var(--ac-line);
+}
+
+.ac-list li:first-child { border-top: 0; padding-top: 0; }
+
+.ac-list li::before {
+  content: "";
+  grid-row: span 2;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 7px;
+  border: 1px solid currentColor;
+  opacity: 0.8;
+}
+
+.ac-ledger__card--syncs .ac-list li { color: var(--nx-cyan); }
+.ac-ledger__card--home .ac-list li { color: var(--nx-signal); }
+
+.ac-ledger__card--syncs .ac-list li::before {
+  background: rgba(72, 230, 255, 0.08) linear-gradient(transparent 45%, currentColor 45%, currentColor 55%, transparent 55%) center / 10px 10px no-repeat;
+}
+
+.ac-ledger__card--home .ac-list li::before {
+  background: rgba(54, 255, 132, 0.08) radial-gradient(circle, currentColor 0 3px, transparent 3.5px) center / 100% 100% no-repeat;
+}
+
+.ac-list strong { color: var(--nx-text); font-size: 16px; font-weight: 650; letter-spacing: -0.015em; }
+.ac-list span { color: var(--nx-muted); font-size: 15px; line-height: 1.55; }
+
+/* --------------------------------------------------------------------------
+   Dashboard
+   -------------------------------------------------------------------------- */
+
+.ac-dash__head { max-width: var(--nx-content); margin-bottom: 28px; }
+.ac-dash__head > div > * + * { margin-top: 14px; }
+
+.ac-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--nx-r-xl);
+  overflow: hidden;
+  border: 1px solid var(--ac-line);
+  background: var(--ac-line);
+}
+
+@media (max-width: 760px) {
+  .ac-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.ac-metric {
+  display: grid;
+  gap: 8px;
+  padding: 20px 22px;
+  background: rgba(8, 9, 14, 0.86);
+}
+
+.ac-metric strong {
+  font: 700 30px/1 var(--nx-font-mono);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  transition: color 300ms ease;
+}
+
+.ac-metric span {
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ac-dash[data-auth-state="signed-in"] .ac-metric strong { color: var(--nx-text); }
+.ac-dash:not([data-auth-state="signed-in"]) .ac-metric strong { color: var(--nx-soft); }
+
+.ac-dash__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 760px) {
+  .ac-dash__grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.ac-panel { gap: 16px; }
+
+.ac-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ac-panel__meta {
+  margin: 0;
+  color: var(--nx-soft);
+  font: 600 11px/1 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ac-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ac-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--ac-line);
+  background: rgba(255, 255, 255, 0.025);
+  animation: ac-arrive 420ms var(--nx-ease) both;
+}
+
+.ac-row__copy { display: grid; gap: 2px; min-width: 0; }
+.ac-row__copy strong { font-size: 15px; font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ac-row__copy span { color: var(--nx-muted); font-size: 13.5px; }
+
+.ac-row__side {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px 10px;
+  flex: none;
+  max-width: 50%;
+}
+
+.ac-row__tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(54, 255, 132, 0.3);
+  background: rgba(54, 255, 132, 0.08);
+  color: var(--nx-signal);
+  font: 700 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ac-row__meta { color: var(--nx-soft); font: 500 12px/1.3 var(--nx-font-mono); white-space: nowrap; }
+
+.ac-rows__empty {
+  padding: 18px 16px;
+  border-radius: 12px;
+  border: 1px dashed var(--nx-border-strong);
+  color: var(--nx-soft);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.ac-rows__skeleton {
+  height: 58px;
+  border-radius: 12px;
+  border: 1px solid var(--ac-line);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.07) 50%, rgba(255, 255, 255, 0.02) 100%);
+  background-size: 200% 100%;
+  animation: ac-shimmer 1.4s linear infinite;
+}
+
+/* Next stops */
+.ac-next .nx-card { min-height: 100%; }
+
+/* --------------------------------------------------------------------------
+   Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes ac-spin { to { transform: rotate(360deg); } }
+@keyframes ac-pulse { 50% { opacity: 0.25; } }
+@keyframes ac-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes ac-arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ac-badge[data-state="loading"]::before,
+  .ac-rows__skeleton,
+  .ac-row,
+  .ac-form__feedback[data-tone="confirm"] {
+    animation: none !important;
+  }
+
+  .ac-submit.is-loading .ac-submit__label::before,
+  .nx-btn.is-loading::before {
+    animation-duration: 2.4s;
+  }
+
+  .ac-tabs__ind,
+  .ac-tab,
+  .ac-field input,
+  .ac-auth__signed-out,
+  .ac-metric strong {
+    transition: none !important;
+  }
+}
+```
+
+## nx-docs.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-docs-css" file="nx-docs.css"}
+/* ==========================================================================
+   RoachNet docs layer ("nx-docs") — the API reference at /api/.
+   Loaded after nx.css. Uses nx tokens only; adds a three-pane docs layout,
+   method badges, the route list, the sticky detail pane and the phone sheet.
+   Every transition stands down under prefers-reduced-motion.
+   ========================================================================== */
+
+:root {
+  --api-top: 76px;
+  --api-toolbar-h: 64px;
+  --api-get: var(--nx-signal);
+  --api-get-bg: rgba(54, 255, 132, 0.1);
+  --api-get-line: rgba(54, 255, 132, 0.34);
+  --api-post: var(--nx-purple-ink);
+  --api-post-bg: rgba(145, 56, 216, 0.16);
+  --api-post-line: rgba(176, 108, 240, 0.42);
+  --api-put: var(--nx-amber);
+  --api-put-bg: rgba(255, 154, 69, 0.1);
+  --api-put-line: rgba(255, 154, 69, 0.36);
+  --api-delete: var(--nx-hazard);
+  --api-delete-bg: rgba(255, 90, 54, 0.1);
+  --api-delete-line: rgba(255, 90, 54, 0.4);
+}
+
+/* Utility pill marked current in the nav capsule. */
+.nx-nav__ghost.is-current {
+  color: var(--nx-signal);
+  border-color: rgba(54, 255, 132, 0.34);
+  background: rgba(54, 255, 132, 0.1);
+  box-shadow: var(--nx-glow-signal);
+}
+
+.api code {
+  overflow-wrap: anywhere;
+}
+
+/* The footer email link is wider than a 320px column; let it wrap.
+   (Shared fix requested for nx.css; harmless once that lands.) */
+.nx-foot__col a {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.api-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: end;
+  padding: clamp(40px, 6vw, 72px) 0 clamp(28px, 3.5vw, 40px);
+}
+
+.api-hero__copy > * + * {
+  margin-top: 18px;
+}
+
+.api-hero__title {
+  font-size: clamp(40px, 5.6vw, 68px);
+  max-width: 13ch;
+}
+
+.api-hero__copy .nx-lede {
+  max-width: 62ch;
+}
+
+.api-hero__stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.api-hero__stats .nx-stat:first-child .nx-stat__value {
+  color: var(--nx-signal);
+}
+
+/* --------------------------------------------------------------------------
+   Before you call
+   -------------------------------------------------------------------------- */
+
+.api-start {
+  padding: clamp(48px, 7vw, 88px) 0;
+  border-top: 1px solid var(--nx-border);
+  scroll-margin-top: var(--api-top);
+}
+
+.api-start__head > * + * {
+  margin-top: 12px;
+}
+
+.api-start__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.api-start__card--rules {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.api-start__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 22px;
+  border-radius: var(--nx-r-xl);
+  border: 1px solid var(--nx-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+  box-shadow: var(--nx-shadow-card);
+}
+
+.api-console {
+  min-width: 0;
+}
+
+.api-console .nx-console__body {
+  font-size: 13px;
+  padding-right: 18px;
+}
+
+.api-console .nx-console__line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.api-console .nx-console__copy .nx-btn {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.api-rules {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.api-rules li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.api-rules li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--nx-cyan);
+  box-shadow: 0 0 10px rgba(72, 230, 255, 0.5);
+}
+
+.api-rules strong {
+  color: var(--nx-text);
+  font-weight: 650;
+}
+
+/* --------------------------------------------------------------------------
+   Docs layout: rail | work (toolbar over list + detail)
+   -------------------------------------------------------------------------- */
+
+.api-docs {
+  display: grid;
+  grid-template-columns: 228px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding: 8px 0 clamp(56px, 8vw, 96px);
+  border-top: 1px solid var(--nx-border);
+  padding-top: 32px;
+}
+
+.api-rail {
+  position: sticky;
+  top: var(--api-top);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  max-height: calc(100vh - var(--api-top) - 16px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.api-rail__head {
+  margin: 0;
+  padding: 0 10px;
+  color: var(--nx-soft);
+  font: 800 11px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.api-rail__list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.api-rail__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--nx-muted);
+  font: 600 14.5px/1.3 var(--nx-font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.api-rail__label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.api-rail__count {
+  flex: none;
+  min-width: 28px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--nx-muted);
+  font: 700 11.5px/1 var(--nx-font-mono);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.api-rail__item:hover {
+  color: var(--nx-text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.api-rail__item.is-active {
+  color: var(--nx-text);
+  border-color: rgba(54, 255, 132, 0.28);
+  background: rgba(54, 255, 132, 0.07);
+}
+
+.api-rail__item.is-active .api-rail__count {
+  color: var(--nx-on-signal);
+  background: var(--nx-signal);
+}
+
+.api-rail__item.is-empty:not(.is-active) {
+  color: var(--nx-soft);
+}
+
+.api-rail__foot {
+  margin: 6px 0 0;
+  padding: 12px 10px 0;
+  border-top: 1px solid var(--nx-border);
+  color: var(--nx-soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.api-work {
+  min-width: 0;
+}
+
+.api-toolbar {
+  position: sticky;
+  top: var(--api-top);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  min-height: var(--api-toolbar-h);
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--nx-border);
+  background: rgba(8, 9, 14, 0.86);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 -18px 0 -1px rgba(5, 6, 10, 0.94), 0 14px 36px rgba(0, 0, 0, 0.35);
+}
+
+.api-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.api-search__icon {
+  position: absolute;
+  left: 12px;
+  color: var(--nx-soft);
+  pointer-events: none;
+}
+
+.api-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 44px 0 40px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--nx-text);
+  font: 500 16px/1 var(--nx-font-sans);
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 220ms var(--nx-ease);
+}
+
+.api-search input::placeholder {
+  color: var(--nx-soft);
+}
+
+.api-search input:focus {
+  outline: none;
+  border-color: rgba(54, 255, 132, 0.55);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px rgba(54, 255, 132, 0.16);
+}
+
+.api-search input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.api-search__key {
+  position: absolute;
+  right: 10px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, #1d1e28, #101119);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+  color: var(--nx-muted);
+  font: 600 12px/1 var(--nx-font-mono);
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.api-search input:focus + .api-search__key,
+.api-search input:not(:placeholder-shown) + .api-search__key {
+  opacity: 0;
+}
+
+.api-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.api-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nx-muted);
+  font: 800 12px/1 var(--nx-font-mono);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 220ms var(--nx-ease);
+}
+
+.api-chip__count {
+  color: var(--nx-soft);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.api-chip:hover {
+  color: var(--nx-text);
+  border-color: var(--nx-border-strong);
+}
+
+.api-chip.is-active {
+  color: var(--nx-text);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.api-chip.is-active .api-chip__count { color: var(--nx-text); }
+.api-chip--get.is-active { color: var(--api-get); border-color: var(--api-get-line); background: var(--api-get-bg); }
+.api-chip--post.is-active { color: var(--api-post); border-color: var(--api-post-line); background: var(--api-post-bg); }
+.api-chip--put.is-active,
+.api-chip--patch.is-active { color: var(--api-put); border-color: var(--api-put-line); background: var(--api-put-bg); }
+.api-chip--delete.is-active { color: var(--api-delete); border-color: var(--api-delete-line); background: var(--api-delete-bg); }
+
+.api-panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* --------------------------------------------------------------------------
+   Route list
+   -------------------------------------------------------------------------- */
+
+.api-list {
+  min-width: 0;
+}
+
+.api-list__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 4px 0;
+}
+
+.api-list__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.api-list__count {
+  flex: none;
+  margin: 0;
+  color: var(--nx-soft);
+  font: 700 12px/1 var(--nx-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.api-summary {
+  padding: 6px 4px 14px;
+}
+
+.api-summary__text {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.api-summary__meta {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+
+.api-summary__meta div {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.api-summary__meta dt {
+  color: var(--nx-soft);
+  font: 800 10.5px/1.9 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.api-summary__meta dd {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 14px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.api-notice {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid rgba(255, 154, 69, 0.3);
+  background: rgba(255, 154, 69, 0.07);
+  color: var(--nx-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.api-notice[hidden] {
+  display: none;
+}
+
+.api-routes {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.api-route {
+  position: relative;
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  grid-template-areas:
+    "method main"
+    "method group";
+  column-gap: 12px;
+  row-gap: 2px;
+  align-items: start;
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px 11px 12px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.022);
+  color: var(--nx-text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 260ms var(--nx-ease), border-color 200ms ease, background 200ms ease, box-shadow 260ms var(--nx-ease);
+}
+
+.api-route::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--nx-signal);
+  box-shadow: 0 0 12px rgba(54, 255, 132, 0.6);
+  opacity: 0;
+  transform: scaleY(0.4);
+  transition: opacity 200ms ease, transform 320ms var(--nx-spring);
+}
+
+.api-route > .api-method {
+  grid-area: method;
+  margin-top: 1px;
+}
+
+.api-route__main {
+  grid-area: main;
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.api-route__path {
+  color: var(--nx-text);
+  font: 600 14px/1.4 var(--nx-font-mono);
+  overflow-wrap: break-word;
+}
+
+.api-route__title {
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.api-route__group {
+  grid-area: group;
+  color: var(--nx-soft);
+  font: 700 10.5px/1.6 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.api-route mark {
+  padding: 0 1px;
+  border-radius: 3px;
+  background: rgba(72, 230, 255, 0.22);
+  color: var(--nx-text);
+}
+
+.api-route:hover {
+  border-color: var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .api-route:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+  }
+}
+
+.api-routes.is-grouped .api-route__group {
+  display: none;
+}
+
+.api-routes__group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 4px 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--nx-border);
+  color: var(--nx-soft);
+  font: 800 11px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.api-routes__group:first-child {
+  margin-top: 4px;
+}
+
+.api-route.is-active {
+  border-color: rgba(54, 255, 132, 0.36);
+  background: linear-gradient(90deg, rgba(54, 255, 132, 0.08), rgba(54, 255, 132, 0.02) 70%);
+  box-shadow: var(--nx-glow-signal);
+}
+
+.api-route.is-active::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.api-route:focus-visible {
+  outline-offset: 2px;
+}
+
+/* Method badges */
+.api-method {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--nx-border-strong);
+  font: 800 11.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.08em;
+}
+
+.api-method--get { color: var(--api-get); background: var(--api-get-bg); border-color: var(--api-get-line); }
+.api-method--post { color: var(--api-post); background: var(--api-post-bg); border-color: var(--api-post-line); }
+.api-method--put,
+.api-method--patch { color: var(--api-put); background: var(--api-put-bg); border-color: var(--api-put-line); }
+.api-method--delete { color: var(--api-delete); background: var(--api-delete-bg); border-color: var(--api-delete-line); }
+
+/* Empty states */
+.api-empty {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding: 28px 22px;
+  border-radius: var(--nx-r-lg);
+  border: 1px dashed var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.api-empty__title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.api-empty__text {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.api-empty .nx-btn {
+  margin-top: 6px;
+}
+
+.api-empty--detail {
+  border: 0;
+  padding: 6px 0;
+  background: none;
+}
+
+/* --------------------------------------------------------------------------
+   Detail pane (sticky on desktop, a sheet on phones)
+   -------------------------------------------------------------------------- */
+
+.api-detail {
+  position: sticky;
+  top: calc(var(--api-top) + var(--api-toolbar-h) + 16px);
+  min-width: 0;
+  max-height: calc(100vh - var(--api-top) - var(--api-toolbar-h) - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  border-radius: var(--nx-r-xl);
+  border: 1px solid var(--nx-border-strong);
+  background:
+    radial-gradient(600px circle at 100% 0%, rgba(145, 56, 216, 0.1), transparent 55%),
+    linear-gradient(180deg, rgba(15, 16, 23, 0.96), rgba(9, 10, 15, 0.96));
+  box-shadow: var(--nx-shadow-card);
+}
+
+.api-detail__bar {
+  display: none;
+}
+
+.api-detail__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 22px 22px 24px;
+}
+
+.api-detail__body > * {
+  min-width: 0;
+}
+
+.api-detail__body.is-swapping {
+  animation: api-detail-in 360ms var(--nx-ease) both;
+}
+
+@keyframes api-detail-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.api-detail__head {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--nx-border);
+}
+
+.api-detail__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.api-detail__group {
+  color: var(--nx-soft);
+  font: 800 11px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.api-detail__title {
+  margin: 0;
+  font-size: clamp(24px, 2.3vw, 30px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  outline: none;
+}
+
+/* Focus lands on the title when the sheet opens, for screen readers;
+   it is not a control, so it gets no ring. */
+html.nx .api-detail__title:focus,
+html.nx .api-detail__title:focus-visible {
+  outline: none;
+}
+
+.api-detail__path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.api-detail__path code {
+  min-width: 0;
+  padding: 6px 10px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--nx-text);
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.api-detail__summary {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 16.5px;
+  line-height: 1.55;
+}
+
+.api-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: var(--nx-r-sm);
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-muted);
+  font: 800 11px/1 var(--nx-font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 220ms var(--nx-spring);
+}
+
+.api-copy:hover {
+  color: var(--nx-text);
+  border-color: rgba(255, 255, 255, 0.26);
+}
+
+.api-copy:active {
+  transform: scale(0.96);
+}
+
+.api-copy.is-done {
+  color: var(--nx-signal);
+  border-color: rgba(54, 255, 132, 0.45);
+  background: rgba(54, 255, 132, 0.08);
+}
+
+.api-detail__facts {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--nx-border);
+}
+
+.api-detail__facts div {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.api-detail__facts div + div {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.api-detail__facts dt {
+  color: var(--nx-soft);
+  font: 800 10.5px/2 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.api-detail__facts dd {
+  margin: 0;
+  min-width: 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.api-detail__block {
+  padding: 18px 0 0;
+}
+
+.api-detail__block h3 {
+  margin: 0 0 10px;
+  color: var(--nx-cyan);
+  font: 800 11px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.api-detail__block p,
+.api-detail__block li {
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.api-detail__block p {
+  margin: 0;
+}
+
+.api-detail__block ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.api-detail__block li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.api-detail__block li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.7em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--nx-soft);
+}
+
+.api-detail__block code,
+.api-summary code,
+.api-detail__facts code {
+  font-size: 0.86em;
+}
+
+.api-detail__example-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 10px;
+}
+
+.api-detail__example-head h3 {
+  margin: 0;
+  margin-right: auto;
+}
+
+.api-detail__vars {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  color: var(--nx-muted);
+  font-size: 13.5px;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.25);
+  text-underline-offset: 3px;
+}
+
+.api-detail__vars:hover {
+  color: var(--nx-text);
+  text-decoration-color: var(--nx-signal);
+}
+
+.api-hero__hint {
+  margin: 0;
+  color: var(--nx-soft);
+  font-size: 16px;
+}
+
+.api-hero__hint .nx-link {
+  color: var(--nx-text);
+}
+
+.api-curl {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border-radius: var(--nx-r-md);
+  border: 1px solid var(--nx-border-strong);
+  background: linear-gradient(180deg, #0a0b10, #060709);
+  scrollbar-width: thin;
+}
+
+.api-curl code {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--nx-text);
+  font: 500 13.5px/1.65 var(--nx-font-mono);
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+.api-curl:focus-visible {
+  outline-offset: 2px;
+}
+
+.api-scrim {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Not HTTP
+   -------------------------------------------------------------------------- */
+
+.api-outside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  padding: clamp(48px, 7vw, 88px) 0;
+  border-top: 1px solid var(--nx-border);
+}
+
+.api-outside__copy > * + * {
+  margin-top: 14px;
+}
+
+.api-outside__links {
+  display: grid;
+  gap: 10px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.api-outside__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+}
+
+/* --------------------------------------------------------------------------
+   Breakpoints
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1240px) {
+  .api-docs {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .api-rail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .api-rail__head,
+  .api-rail__foot {
+    display: none;
+  }
+
+  .api-rail__list {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px 2px 8px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .api-rail__list li {
+    flex: none;
+  }
+
+  .api-rail__item {
+    width: auto;
+    min-height: 38px;
+    border-color: var(--nx-border);
+    border-radius: 999px;
+    padding: 6px 8px 6px 14px;
+    white-space: nowrap;
+  }
+
+  .api-rail__label {
+    overflow-wrap: normal;
+  }
+}
+
+@media (max-width: 1100px) {
+  .api-hero {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .api-hero__stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .api-start__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .api-start__card--rules {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 960px) {
+  :root {
+    --api-top: 72px;
+  }
+
+  .api-panes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .api-toolbar {
+    padding: 8px;
+  }
+
+  /* Let the sheet and its scrim stack above the nav capsule. */
+  .nx-main.api {
+    z-index: auto;
+  }
+
+  /* The detail pane becomes a bottom sheet. */
+  .api-detail {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 130;
+    max-height: 88vh;
+    max-height: 88dvh;
+    border-radius: 22px 22px 0 0;
+    border-bottom: 0;
+    box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.6);
+    transform: translateY(104%);
+    visibility: hidden;
+    transition: transform 420ms var(--nx-ease), visibility 0s linear 420ms;
+  }
+
+  .api-detail.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 420ms var(--nx-ease), visibility 0s;
+  }
+
+  .api-detail__bar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px 12px 6px;
+    background: linear-gradient(180deg, rgba(15, 16, 23, 0.98) 70%, rgba(15, 16, 23, 0));
+  }
+
+  .api-detail__grab {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 40px;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-50%);
+  }
+
+  .api-detail__close {
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid var(--nx-border-strong);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--nx-text);
+    font: 700 14px/1 var(--nx-font-sans);
+    cursor: pointer;
+  }
+
+  .api-detail__body {
+    padding: 4px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .api-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 125;
+    display: block;
+    background: rgba(2, 3, 6, 0.62);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    animation: api-scrim-in 240ms ease both;
+  }
+
+  .api-scrim[hidden] {
+    display: none;
+  }
+
+  html.api-sheet-open {
+    overflow: hidden;
+  }
+
+  .api-outside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@keyframes api-scrim-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 700px) {
+  .api-hero__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .api-search {
+    flex-basis: 100%;
+  }
+
+  .api-chips {
+    width: 100%;
+  }
+
+  .api-route {
+    grid-template-columns: 58px minmax(0, 1fr);
+    column-gap: 10px;
+    padding: 10px 12px 10px 10px;
+  }
+
+  .api-route > .api-method {
+    min-width: 54px;
+    padding: 0 6px;
+  }
+
+  .api-detail__facts div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .api-summary__meta div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .api-chip {
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .api-detail__body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion: nothing slides, lifts or fades.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .api-route,
+  .api-route::before,
+  .api-rail__item,
+  .api-chip,
+  .api-copy,
+  .api-search input,
+  .api-search__key,
+  .api-detail,
+  .api-detail.is-open {
+    transition: none;
+  }
+
+  .api-route:hover,
+  .api-copy:active {
+    transform: none;
+  }
+
+  .api-detail__body.is-swapping,
+  .api-scrim {
+    animation: none;
+  }
+}
+```
+
+## nx-mission.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-mission-css" file="nx-mission.css"}
+/* ==========================================================================
+   Mission page (roachnet.org/) on the nx system.
+   The words on this page are fixed; this file only decides how they arrive.
+   Hooks set by landing-script.js: --landing-scroll-ratio (root),
+   --hero-scroll-shift / --hero-rail-shift (signal), --hero-core-x/y (core),
+   --why-showcase-progress (showcase), body.is-scrolling / .is-pointer-live,
+   [data-reveal].is-visible, .is-bursting. app.js sets [data-active] on keys.
+   ========================================================================== */
+
+html.nx [data-reveal].is-visible { opacity: 1; transform: none; filter: none; }
+
+.nx-mission body { background: #030306; }
+
+/* Dither field (landing-dither.js) sits under the aurora. */
+.dither-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 600ms var(--nx-ease), filter 600ms var(--nx-ease);
+  -webkit-mask: radial-gradient(120% 80% at 50% 10%, #000 30%, transparent 85%);
+  mask: radial-gradient(120% 80% at 50% 10%, #000 30%, transparent 85%);
+}
+
+.dither-bg canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+body.rn-body.is-scrolling .dither-bg,
+body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) contrast(1.15); }
+
+.nx-atmos--mission .nx-atmos__blob--purple { opacity: 0.45; }
+.nx-atmos--mission .nx-atmos__blob--signal { opacity: 0.3; bottom: auto; top: 60vh; }
+
+.landing-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 120;
+  width: 0;
+  height: 2px;
+  background: var(--nx-gradient-signal);
+  box-shadow: 0 0 12px rgba(54, 255, 132, 0.5);
+  pointer-events: none;
+}
+
+.nx-mission-main {
+  position: relative;
+  z-index: 1;
+  width: min(var(--nx-max), calc(100% - 2 * var(--nx-gutter)));
+  margin: 0 auto;
+  outline: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.why-hero {
+  position: relative;
+  overflow-x: clip;
+  overflow-clip-margin: 16px;
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - 72px);
+  padding: clamp(56px, 10vh, 120px) 0 clamp(40px, 8vh, 96px);
+  text-align: center;
+}
+
+.why-hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(28px, 5vh, 48px);
+  max-width: 980px;
+}
+
+.why-hero__title {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(46px, 8.4vw, 116px);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.why-hero__line,
+.why-hero__sheen {
+  display: block;
+  animation: why-rise 1100ms var(--nx-ease) both;
+}
+
+.why-hero__sheen {
+  animation-delay: 160ms, 1200ms;
+  animation-name: why-rise, why-sheen;
+  animation-duration: 1100ms, 7s;
+  animation-timing-function: var(--nx-ease), cubic-bezier(0.16, 1, 0.3, 1);
+  animation-iteration-count: 1, infinite;
+  animation-fill-mode: both, none;
+  background: linear-gradient(100deg, #f0f0f0 0%, #f0f0f0 36%, #d8b4ff 46%, #8affc1 54%, #f0f0f0 64%, #f0f0f0 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes why-rise {
+  from { opacity: 0; transform: translateY(0.35em); filter: blur(10px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes why-sheen {
+  0%, 60% { background-position: 100% 0; }
+  100% { background-position: 0% 0; }
+}
+
+/* Signal core: three capsule rings, a breathing orb, light rails. */
+.why-hero__signal {
+  position: relative;
+  width: min(420px, 80vw);
+  height: 150px;
+  transform: translateY(var(--hero-scroll-shift, 0));
+  animation: why-rise 1200ms 320ms var(--nx-ease) both;
+}
+
+.why-hero__signal-core {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform: translate3d(var(--hero-core-x, 0), calc(var(--hero-core-y, 0) + var(--hero-scroll-y, 0)), 0);
+  transition: transform 400ms var(--nx-ease);
+}
+
+.why-hero__signal-core-ring {
+  position: absolute;
+  border-radius: 999px;
+  border: 1px solid rgba(176, 108, 240, 0.35);
+  box-shadow: inset 0 0 24px rgba(145, 56, 216, 0.22), 0 0 30px rgba(145, 56, 216, 0.12);
+  pointer-events: none;
+}
+
+.why-hero__signal-core-ring:nth-child(1) { width: 200px; height: 74px; animation: why-ring 5.6s ease-in-out infinite; }
+.why-hero__signal-core-ring:nth-child(2) { width: 150px; height: 50px; border-color: rgba(77, 141, 255, 0.4); animation: why-ring 5.6s 0.7s ease-in-out infinite; }
+.why-hero__signal-core-ring:nth-child(3) { width: 260px; height: 104px; border-color: rgba(54, 255, 132, 0.18); animation: why-ring 5.6s 1.4s ease-in-out infinite; }
+
+.why-hero__signal-core-dot {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f3e6ff, #b06cf0 45%, #6a1cb0 100%);
+  box-shadow: 0 0 22px rgba(176, 108, 240, 0.9), 0 0 70px rgba(145, 56, 216, 0.6);
+  animation: why-breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes why-ring {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+@keyframes why-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+.why-hero__signal-rails {
+  position: absolute;
+  left: -30%;
+  right: -30%;
+  bottom: -6px;
+  display: grid;
+  gap: 5px;
+  transform: translateX(var(--hero-rail-shift, 0));
+}
+
+.why-hero__signal-rails span {
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(145, 56, 216, 0.6) 30%, rgba(77, 141, 255, 0.8) 50%, rgba(54, 255, 132, 0.6) 70%, transparent);
+  background-size: 200% 100%;
+  animation: why-rail 6s linear infinite;
+  opacity: 0.8;
+}
+
+.why-hero__signal-rails span:nth-child(2) { animation-duration: 8s; opacity: 0.5; margin-inline: 12%; }
+.why-hero__signal-rails span:nth-child(3) { animation-duration: 11s; opacity: 0.3; margin-inline: 24%; }
+
+@keyframes why-rail {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.why-hero__signal.is-bursting .why-hero__signal-core-dot { animation: why-glitch 300ms steps(2, end) 1; }
+.why-bottom-mark.is-bursting .why-bottom-wordmark { animation: why-glitch 300ms steps(2, end) 1; }
+
+@keyframes why-glitch {
+  0% { transform: translate(0, 0); filter: hue-rotate(0); }
+  50% { transform: translate(-2px, 1px); filter: hue-rotate(60deg) saturate(1.6); }
+  100% { transform: translate(1px, -1px); filter: none; }
+}
+
+.why-hero__lede {
+  max-width: 660px;
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: clamp(18px, 1.7vw, 21px);
+  line-height: 1.65;
+  text-wrap: pretty;
+  animation: why-rise 1200ms 520ms var(--nx-ease) both;
+}
+
+.why-hero__cue {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border-strong);
+  animation: why-rise 1200ms 800ms var(--nx-ease) both;
+}
+
+.why-hero__cue span {
+  width: 4px;
+  height: 10px;
+  border-radius: 4px;
+  background: var(--nx-signal);
+  box-shadow: 0 0 8px var(--nx-signal);
+  animation: why-cue 1.8s var(--nx-ease) infinite;
+}
+
+@keyframes why-cue {
+  0% { transform: translateY(-10px); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(12px); opacity: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   Editorial flow
+   -------------------------------------------------------------------------- */
+
+.why-section {
+  position: relative;
+  padding: clamp(56px, 10vh, 120px) 0;
+}
+
+.why-section__inner {
+  width: min(760px, 100%);
+  margin-inline: auto;
+  display: grid;
+  gap: 22px;
+}
+
+.why-prose {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: clamp(19px, 1.9vw, 24px);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.why-prose strong { color: var(--nx-text); font-weight: 700; }
+
+.why-prose--lead {
+  color: var(--nx-text);
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.why-heading {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(36px, 5.2vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+/* The pile: tab silhouettes drifting behind the paragraph. */
+.why-pile {
+  position: absolute;
+  inset: 10% 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+}
+
+.why-pile__tab {
+  position: absolute;
+  width: 168px;
+  height: 30px;
+  border-radius: 10px 10px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+  opacity: 0.6;
+  animation: why-pile 26s linear infinite;
+}
+
+.why-pile__tab::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  width: 60%;
+  height: 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.why-pile__tab:nth-child(1) { top: 6%; left: -10%; }
+.why-pile__tab:nth-child(2) { top: 28%; left: 70%; animation-duration: 31s; animation-delay: -8s; }
+.why-pile__tab:nth-child(3) { top: 52%; left: 18%; animation-duration: 23s; animation-delay: -14s; }
+.why-pile__tab:nth-child(4) { top: 74%; left: 52%; animation-duration: 34s; animation-delay: -4s; }
+.why-pile__tab:nth-child(5) { top: 16%; left: 40%; animation-duration: 29s; animation-delay: -19s; }
+.why-pile__tab:nth-child(6) { top: 86%; left: -4%; animation-duration: 27s; animation-delay: -11s; }
+
+@keyframes why-pile {
+  from { transform: translateX(-30vw) rotate(-3deg); }
+  to { transform: translateX(80vw) rotate(4deg); }
+}
+
+/* The turn */
+.why-blockquote {
+  margin: 0;
+  display: grid;
+  gap: 28px;
+  padding: clamp(32px, 5vw, 56px);
+  border-radius: var(--nx-r-2xl);
+  border: 1px solid var(--nx-border);
+  background:
+    radial-gradient(90% 120% at 0% 0%, rgba(145, 56, 216, 0.16), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  box-shadow: var(--nx-shadow-card);
+}
+
+.why-blockquote__intro,
+.why-blockquote__outro {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: clamp(18px, 1.8vw, 22px);
+  line-height: 1.55;
+}
+
+.why-blockquote__outro {
+  color: var(--nx-signal);
+  font: 800 13px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.why-blockquote__lines {
+  display: grid;
+  gap: 10px;
+}
+
+.why-blockquote__lines span {
+  position: relative;
+  display: block;
+  padding-left: 28px;
+  font-weight: 800;
+  font-size: clamp(26px, 3.6vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  opacity: 0;
+  transform: translateX(-14px);
+  transition: opacity 700ms var(--nx-ease), transform 700ms var(--nx-ease);
+}
+
+.why-blockquote__lines span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--nx-signal);
+  box-shadow: 0 0 14px var(--nx-signal);
+}
+
+.why-section--quote.is-visible .why-blockquote__lines span,
+.why-section--quote.is-in .why-blockquote__lines span { opacity: 1; transform: none; }
+.why-blockquote__lines span:nth-child(2) { transition-delay: 160ms; }
+.why-blockquote__lines span:nth-child(3) { transition-delay: 320ms; }
+
+/* Showcase: tilts flat and brightens as it scrolls in. */
+.why-section--showcase { padding-block: clamp(40px, 6vh, 80px); }
+
+.why-showcase {
+  --p: var(--why-showcase-progress, 1);
+  position: relative;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  perspective: 1600px;
+}
+
+.why-showcase__glow {
+  position: absolute;
+  inset: 12% 6% -10%;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(145, 56, 216, 0.45), rgba(77, 141, 255, 0.18) 45%, transparent 70%);
+  filter: blur(60px);
+  opacity: calc(0.35 + var(--p) * 0.65);
+}
+
+.why-showcase__window {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid var(--nx-border-strong);
+  background: #000;
+  box-shadow: 0 50px 140px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.6);
+  transform: rotateX(calc((1 - var(--p)) * 22deg)) scale(calc(0.9 + var(--p) * 0.1));
+  transform-origin: 50% 100%;
+  filter: brightness(calc(0.55 + var(--p) * 0.45));
+  transition: transform 120ms linear, filter 120ms linear;
+}
+
+.why-showcase__bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--nx-border);
+  background: linear-gradient(180deg, #14151d, #0c0d13);
+  color: var(--nx-soft);
+  font: 700 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.why-showcase__bar i { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+.why-showcase__bar i:nth-child(2) { background: #febc2e; }
+.why-showcase__bar i:nth-child(3) { background: #28c840; margin-right: 8px; }
+
+.why-showcase__window img { width: 100%; }
+
+/* Capability cards */
+.why-capabilities {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+@media (max-width: 860px) { .why-capabilities { grid-template-columns: minmax(0, 1fr); } }
+
+.why-cap-card { padding: 28px; gap: 14px; }
+
+.why-cap-card h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.why-cap-card p { margin: 0; color: var(--nx-muted); font-size: 15.5px; line-height: 1.6; }
+
+.why-cap-card__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  color: var(--nx-signal);
+  background: rgba(54, 255, 132, 0.07);
+  border: 1px solid rgba(54, 255, 132, 0.2);
+  box-shadow: 0 0 30px rgba(54, 255, 132, 0.08);
+  transition: transform 400ms var(--nx-spring), box-shadow 300ms ease;
+}
+
+.why-cap-card:hover .why-cap-card__icon { transform: translateY(-3px) rotate(-4deg); box-shadow: 0 0 40px rgba(54, 255, 132, 0.2); }
+
+/* Accent statement */
+.why-accent-line {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(28px, 4.2vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  background: linear-gradient(92deg, var(--nx-text) 0%, #d8b4ff 45%, var(--nx-signal) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.why-list {
+  display: grid;
+  gap: 14px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.why-list li {
+  position: relative;
+  padding: 18px 20px 18px 54px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--nx-text);
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.45;
+  transition: border-color 260ms ease, transform 260ms var(--nx-ease), background 260ms ease;
+}
+
+.why-list li::before {
+  content: "→";
+  position: absolute;
+  left: 20px;
+  top: 18px;
+  color: var(--nx-signal);
+  font-weight: 800;
+}
+
+.why-list li:hover { border-color: rgba(54, 255, 132, 0.3); background: rgba(54, 255, 132, 0.04); transform: translateX(4px); }
+
+.why-final-line {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(30px, 4.6vw, 60px);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   Download CTA with live keycaps
+   -------------------------------------------------------------------------- */
+
+.why-cta {
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: clamp(36px, 6vw, 64px) clamp(20px, 4vw, 48px);
+  border-radius: var(--nx-r-2xl);
+  border: 1px solid var(--nx-border);
+  background:
+    radial-gradient(80% 120% at 50% 120%, rgba(145, 56, 216, 0.28), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  box-shadow: var(--nx-shadow-card);
+  text-align: center;
+}
+
+.why-cta__keys { display: inline-flex; gap: 12px; }
+
+.why-cta__key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 72px;
+  height: 72px;
+  padding: 0 18px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #1e1f2a, #0f1018);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.7), 0 18px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: var(--nx-text);
+  font: 600 22px/1 var(--nx-font-mono);
+  transition: transform 120ms var(--nx-ease), box-shadow 120ms var(--nx-ease), color 160ms ease, border-color 160ms ease;
+}
+
+.why-cta__key[data-active="true"] {
+  transform: translateY(5px);
+  color: var(--nx-signal);
+  border-color: rgba(54, 255, 132, 0.6);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.7), 0 0 30px rgba(54, 255, 132, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.why-cta__text {
+  margin: 0;
+  font-size: clamp(18px, 1.8vw, 22px);
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.why-cta__kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  margin: 0 2px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.06);
+  font: 600 13px/1 var(--nx-font-mono);
+  vertical-align: 2px;
+}
+
+.why-cta__status {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.why-cta__status--fine { color: var(--nx-soft); font: 500 12.5px/1.5 var(--nx-font-mono); }
+
+@media (max-width: 400px) {
+  .why-cta__keys { gap: 8px; }
+  .why-cta__key { min-width: 54px; height: 54px; padding: 0 12px; border-radius: 13px; font-size: 17px; }
+}
+
+.why-cta__buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+
+/* Sign-off wordmark */
+.why-bottom-mark {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: clamp(48px, 10vh, 120px) 0 clamp(24px, 4vh, 48px);
+  overflow: hidden;
+}
+
+.why-bottom-wordmark {
+  font-weight: 800;
+  font-size: clamp(72px, 17vw, 240px);
+  line-height: 0.84;
+  letter-spacing: -0.08em;
+  background: linear-gradient(180deg, #e3c8ff 0%, var(--nx-purple) 55%, #2a0f45 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 50px rgba(145, 56, 216, 0.5));
+  transform: translateY(calc((1 - var(--landing-scroll-ratio, 1)) * 40px));
+  user-select: none;
+}
+
+.why-bottom-tag {
+  color: var(--nx-soft);
+  font: 800 12px/1 var(--nx-font-mono);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.nx-foot--mission { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .why-hero { min-height: auto; padding-top: 48px; }
+  .why-cta__key { min-width: 58px; height: 58px; font-size: 18px; }
+  .why-list li { padding-left: 46px; }
+  .why-list li::before { left: 16px; }
+  .why-pile { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .why-hero__line,
+  .why-hero__sheen,
+  .why-hero__signal,
+  .why-hero__lede,
+  .why-hero__cue,
+  .why-hero__cue span,
+  .why-hero__signal-core-ring,
+  .why-hero__signal-core-dot,
+  .why-hero__signal-rails span,
+  .why-pile__tab { animation: none !important; }
+  .why-hero__sheen { background: none; color: var(--nx-text); }
+  .why-blockquote__lines span { opacity: 1; transform: none; transition: none; }
+  .why-showcase__window { transform: none; filter: none; }
+  .why-bottom-wordmark { transform: none; }
+  .dither-bg { transition: none; }
+}
+```
+
+## nx-store.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="nx-store-css" file="nx-store.css"}
+/* ==========================================================================
+   RoachNet Apps storefront (apps.roachnet.org). Loaded after nx.css.
+   Everything app-store.js renders is styled here by class or data-attribute:
+   the apps CSP is style-src 'self', so markup never carries style="".
+   Decorative motion stands down under prefers-reduced-motion.
+   ========================================================================== */
+
+html.nx {
+  scrollbar-gutter: stable;
+}
+
+body.app-detail-open {
+  overflow: hidden;
+}
+
+/* Per-item accent, as an RGB triplet so it can be used at any alpha. */
+[data-accent] { --st-accent: 77, 141, 255; }
+[data-accent="cyan"] { --st-accent: 72, 230, 255; }
+[data-accent="green"] { --st-accent: 54, 255, 132; }
+[data-accent="violet"] { --st-accent: 176, 108, 240; }
+[data-accent="magenta"] { --st-accent: 228, 91, 208; }
+[data-accent="gold"] { --st-accent: 232, 196, 106; }
+[data-accent="bronze"] { --st-accent: 214, 142, 86; }
+
+.st-main {
+  padding-bottom: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Page head: title + "get RoachNet first" card
+   -------------------------------------------------------------------------- */
+
+.st-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: end;
+  padding: clamp(40px, 6vw, 76px) 0 clamp(28px, 4vw, 48px);
+}
+
+.st-head__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  min-width: 0;
+}
+
+.st-head__count {
+  color: var(--nx-soft);
+  padding-left: 10px;
+  border-left: 1px solid var(--nx-border-strong);
+}
+
+.st-head__title {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(40px, 5.6vw, 70px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.st-head__lede {
+  max-width: 60ch;
+}
+
+.st-get {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border-radius: var(--nx-r-xl);
+  border: 1px solid var(--nx-border);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(145, 56, 216, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  box-shadow: var(--nx-shadow-card);
+}
+
+.st-get__kicker {
+  margin: 0;
+  color: var(--nx-purple-ink);
+  font: 800 11px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.st-get__body {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.st-get__btn {
+  width: 100%;
+  min-height: 48px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.st-get__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin: 0;
+  color: var(--nx-soft);
+  font: 500 12px/1.5 var(--nx-font-mono);
+}
+
+.st-get__alt {
+  justify-self: start;
+}
+
+@media (max-width: 900px) {
+  .st-head {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Layout: rail + content
+   -------------------------------------------------------------------------- */
+
+.st-layout {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: clamp(24px, 3vw, 40px);
+  align-items: start;
+}
+
+.st-content {
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Rail: search, section list with counts, install note
+   -------------------------------------------------------------------------- */
+
+.st-rail {
+  position: sticky;
+  top: 84px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: calc(100vh - 100px);
+  min-width: 0;
+}
+
+.st-search {
+  position: relative;
+  flex: none;
+}
+
+.st-search__icon {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: var(--nx-soft);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  pointer-events: none;
+  transition: stroke 200ms ease;
+}
+
+.st-search__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 40px 0 40px;
+  border-radius: 12px;
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-text);
+  font: 500 15px/1 var(--nx-font-sans);
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 200ms ease, background 200ms ease, box-shadow 260ms var(--nx-ease);
+}
+
+.st-search__input::placeholder {
+  color: var(--nx-soft);
+  opacity: 1;
+}
+
+.st-search__input::-webkit-search-cancel-button,
+.st-search__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.st-search__input:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.st-search__input:focus {
+  outline: none;
+  border-color: rgba(176, 108, 240, 0.7);
+  background: rgba(145, 56, 216, 0.08);
+}
+
+.st-search__input:focus-visible {
+  outline: 2px solid var(--nx-signal);
+  outline-offset: 2px;
+}
+
+.st-search:focus-within .st-search__icon {
+  stroke: var(--nx-purple-ink);
+}
+
+.st-search__key {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, #1d1e28, #101119);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+  color: var(--nx-muted);
+  font: 600 12px/1 var(--nx-font-mono);
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.st-search__input:focus ~ .st-search__key,
+.st-search__input:not(:placeholder-shown) ~ .st-search__key {
+  opacity: 0;
+}
+
+.st-rail__nav {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 -6px;
+  padding: 0 6px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  -webkit-mask: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+  mask: linear-gradient(180deg, #000 calc(100% - 28px), transparent);
+}
+
+.st-rail__group {
+  margin: 16px 10px 6px;
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-rail__group:first-child {
+  margin-top: 4px;
+}
+
+.st-rail__item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 3px 10px 3px 6px;
+  border-radius: 10px;
+  color: var(--nx-muted);
+  font: 600 14px/1.2 var(--nx-font-sans);
+  transition: color 180ms ease, background 180ms ease, box-shadow 220ms var(--nx-ease), opacity 200ms ease;
+}
+
+.st-rail__item:hover {
+  color: var(--nx-text);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.st-rail__item.is-active {
+  color: var(--nx-text);
+  background: rgba(54, 255, 132, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(54, 255, 132, 0.26);
+}
+
+.st-rail__item.is-empty {
+  opacity: 0.42;
+}
+
+.st-rail__code {
+  display: grid;
+  place-items: center;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-soft);
+  font: 800 9.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.04em;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.st-rail__item:hover .st-rail__code {
+  color: var(--nx-muted);
+  border-color: var(--nx-border-strong);
+}
+
+.st-rail__item.is-active .st-rail__code {
+  color: var(--nx-on-signal);
+  background: var(--nx-signal);
+  border-color: transparent;
+}
+
+.st-rail__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-rail__count {
+  color: var(--nx-soft);
+  font: 500 12px/1 var(--nx-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.st-rail__item.is-active .st-rail__count {
+  color: var(--nx-signal);
+}
+
+.st-rail__nav.is-searching .st-rail__count {
+  color: var(--nx-cyan);
+}
+
+.st-rail__skeleton {
+  display: block;
+  flex: none;
+  height: 32px;
+  margin: 2px 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.st-rail__note {
+  flex: none;
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--nx-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.st-rail__note p {
+  margin: 0;
+}
+
+.st-rail__note-title {
+  color: var(--nx-text);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.st-rail__net {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  color: var(--nx-cyan);
+  font: 500 12px/1.45 var(--nx-font-mono);
+}
+
+.st-rail__net::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+  transform: translateY(-1px);
+}
+
+.st-rail__net[data-state="online"] { color: var(--nx-signal); }
+.st-rail__net[data-state="offline"] { color: var(--nx-amber); }
+
+/* Phones and tablets: the rail becomes a sticky glass bar with search on top
+   and the sections as a horizontal chip strip. */
+@media (max-width: 1023px) {
+  .st-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .st-rail {
+    top: 74px;
+    z-index: 40;
+    max-height: none;
+    gap: 10px;
+    padding: 10px;
+    border-radius: var(--nx-r-xl);
+    border: 1px solid var(--nx-border);
+    background: rgba(8, 9, 14, 0.84);
+    box-shadow: var(--nx-shadow-capsule);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  .st-search__input {
+    min-height: 42px;
+    padding-right: 14px;
+  }
+
+  .st-search__key,
+  .st-rail__group,
+  .st-rail__note {
+    display: none;
+  }
+
+  .st-rail__nav {
+    flex-direction: row;
+    gap: 6px;
+    margin: 0 -10px;
+    padding: 0 10px 2px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 10px;
+    scrollbar-width: none;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 28px), transparent);
+    mask: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 28px), transparent);
+  }
+
+  .st-rail__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .st-rail__item {
+    flex: none;
+    grid-template-columns: auto auto;
+    gap: 8px;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--nx-border);
+    background: rgba(255, 255, 255, 0.03);
+    white-space: nowrap;
+    scroll-snap-align: start;
+    font-size: 13.5px;
+  }
+
+  .st-rail__item.is-active {
+    border-color: rgba(54, 255, 132, 0.4);
+  }
+
+  .st-rail__code {
+    display: none;
+  }
+
+  .st-rail__skeleton {
+    width: 88px;
+    height: 34px;
+    margin: 0;
+    border-radius: 999px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Section head (category + search views)
+   -------------------------------------------------------------------------- */
+
+.st-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px 28px;
+  align-items: end;
+  padding: 2px 0 28px;
+}
+
+.st-section-head[hidden] {
+  display: none;
+}
+
+.st-section-head__copy {
+  min-width: 0;
+}
+
+.st-section-head__title {
+  margin: 14px 0 0;
+  font-weight: 800;
+  font-size: clamp(30px, 3.6vw, 46px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.st-section-head__lede {
+  max-width: 62ch;
+  margin: 14px 0 0;
+  color: var(--nx-muted);
+  font-size: 17px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.st-section-head__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.st-section-head__meta .nx-chip {
+  min-height: 32px;
+  cursor: pointer;
+}
+
+.st-stats {
+  justify-self: end;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 1px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--nx-border);
+  background: var(--nx-border);
+  overflow: hidden;
+}
+
+.st-stats li {
+  display: grid;
+  gap: 6px;
+  min-width: 112px;
+  padding: 12px 16px;
+  background: rgba(8, 9, 14, 0.86);
+}
+
+.st-stats strong {
+  font: 700 22px/1 var(--nx-font-mono);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-stats span {
+  color: var(--nx-soft);
+  font: 700 10px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.st-section-head .st-notice {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .st-section-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .st-section-head__meta {
+    justify-content: flex-start;
+  }
+
+  .st-stats {
+    justify-self: start;
+  }
+}
+
+/* Availability / requirement notices */
+.st-notice {
+  --st-tone: 255, 154, 69;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid rgba(var(--st-tone), 0.32);
+  background: rgba(var(--st-tone), 0.07);
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.st-notice[data-state="unsupported"] { --st-tone: 255, 90, 54; }
+.st-notice[data-state="needs"] { --st-tone: 176, 108, 240; }
+
+.st-notice p {
+  margin: 0;
+}
+
+.st-notice strong {
+  color: var(--nx-text);
+}
+
+.st-notice__icon {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: rgba(var(--st-tone), 0.16);
+  color: rgb(var(--st-tone));
+  font: 800 12px/1 var(--nx-font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   Today hero
+   -------------------------------------------------------------------------- */
+
+.st-hero {
+  --nx-mx: 70%;
+  --nx-my: 30%;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+  grid-template-areas:
+    "copy art"
+    "strip strip";
+  gap: 28px clamp(24px, 4vw, 48px);
+  padding: clamp(24px, 3.6vw, 44px);
+  border-radius: var(--nx-r-2xl);
+  border: 1px solid var(--nx-border);
+  background:
+    radial-gradient(520px circle at var(--nx-mx) var(--nx-my), rgba(var(--st-accent), 0.14), transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, rgba(145, 56, 216, 0.14), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  box-shadow: var(--nx-shadow-card);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.st-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1px;
+  background: var(--nx-gradient-signal);
+  opacity: 0.55;
+}
+
+.st-hero__copy {
+  grid-area: copy;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+}
+
+.st-hero__title {
+  margin: 4px 0 0;
+  font-weight: 800;
+  font-size: clamp(40px, 5vw, 66px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.st-hero__lead {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--nx-text);
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.st-hero__body {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.st-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.st-hero__more {
+  min-height: 48px;
+}
+
+.st-hero__art {
+  grid-area: art;
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 22px;
+  min-width: 0;
+}
+
+.st-hero__art::before {
+  content: "";
+  position: absolute;
+  inset: 8% 12% 30%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--st-accent), 0.42), transparent 66%);
+  filter: blur(36px);
+}
+
+.st-hero__topics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.st-hero__topics li {
+  max-width: 100%;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border);
+  background: rgba(8, 9, 14, 0.6);
+  color: var(--nx-muted);
+  font-size: 12.5px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.st-hero__strip {
+  grid-area: strip;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--nx-border);
+  background: var(--nx-border);
+  overflow: hidden;
+}
+
+.st-hero__strip div {
+  min-width: 0;
+  padding: 14px 18px;
+  background: rgba(8, 9, 14, 0.78);
+}
+
+.st-hero__strip dt {
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.st-hero__strip dd {
+  margin: 6px 0 0;
+  color: var(--nx-text);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .st-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "art"
+      "copy"
+      "strip";
+    gap: 22px;
+  }
+
+  .st-hero__art {
+    justify-items: start;
+  }
+
+  .st-hero__art::before {
+    inset: -10% auto auto -10%;
+    width: 200px;
+    height: 200px;
+  }
+
+  .st-hero__topics {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .st-get__body {
+    display: none;
+  }
+
+  .st-head {
+    gap: 24px;
+    padding-top: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .st-hero__strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .st-hero__strip div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .st-hero__strip dd {
+    margin: 0;
+    text-align: right;
+  }
+
+  .st-hero__actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Generated icons (catalog SVG over an accent tile with a monogram fallback)
+   -------------------------------------------------------------------------- */
+
+.st-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  aspect-ratio: 1;
+  border-radius: 23%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(var(--st-accent), 0.55), transparent 62%),
+    linear-gradient(160deg, #10131c, #06070b);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: transform 420ms var(--nx-spring), box-shadow 320ms var(--nx-ease);
+}
+
+.st-icon__mono {
+  color: rgba(255, 255, 255, 0.86);
+  font: 800 15px/1 var(--nx-font-mono);
+  letter-spacing: -0.02em;
+}
+
+.st-icon__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.st-icon--hero {
+  width: clamp(150px, 18vw, 232px);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 60px rgba(var(--st-accent), 0.25);
+  animation: st-float 7s ease-in-out infinite alternate;
+}
+
+.st-icon--hero .st-icon__mono { font-size: 44px; }
+
+.st-icon--detail {
+  width: 112px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 40px rgba(var(--st-accent), 0.22);
+}
+
+.st-icon--detail .st-icon__mono { font-size: 26px; }
+
+@media (max-width: 760px) {
+  .st-icon--hero { width: 120px; }
+}
+
+@keyframes st-float {
+  from { transform: translateY(-5px) rotate(-1deg); }
+  to { transform: translateY(6px) rotate(1deg); }
+}
+
+/* --------------------------------------------------------------------------
+   Shelf rows
+   -------------------------------------------------------------------------- */
+
+.st-row {
+  margin-top: clamp(40px, 5vw, 60px);
+}
+
+.st-row__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.st-row__copy {
+  min-width: 0;
+}
+
+.st-row__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--nx-purple-ink);
+  font: 800 11px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-flag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 154, 69, 0.35);
+  background: rgba(255, 154, 69, 0.1);
+  color: var(--nx-amber);
+  font: 700 10px/1 var(--nx-font-mono);
+  letter-spacing: 0.08em;
+}
+
+.st-row__title {
+  margin: 8px 0 0;
+  font-weight: 800;
+  font-size: clamp(23px, 2.4vw, 30px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.st-row__note {
+  max-width: 64ch;
+  margin: 6px 0 0;
+  color: var(--nx-muted);
+  font-size: 15.5px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.st-row__tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.st-row__all {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border-strong);
+  color: var(--nx-text);
+  font: 600 13px/1 var(--nx-font-sans);
+  white-space: nowrap;
+  transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
+}
+
+.st-row__all:hover {
+  border-color: rgba(176, 108, 240, 0.6);
+  background: rgba(145, 56, 216, 0.12);
+}
+
+.st-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-text);
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, opacity 200ms ease, transform 200ms var(--nx-spring);
+}
+
+.st-arrow svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.st-arrow:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.26);
+}
+
+.st-arrow:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.st-arrow:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.st-row:not(.is-scrollable) .st-arrow {
+  display: none;
+}
+
+.st-row__scroller {
+  display: flex;
+  gap: 16px;
+  margin: 0 -4px;
+  padding: 4px 4px 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  border-radius: var(--nx-r-xl);
+}
+
+.st-row__scroller:focus-visible {
+  outline-offset: -2px;
+}
+
+.st-row__scroller > .st-card {
+  flex: 0 0 min(296px, calc(100% - 36px));
+  scroll-snap-align: start;
+}
+
+@media (max-width: 640px) {
+  .st-arrow {
+    display: none;
+  }
+
+  .st-row__head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Grid + cards
+   -------------------------------------------------------------------------- */
+
+.st-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 264px), 1fr));
+  gap: 16px;
+}
+
+.st-card {
+  --nx-mx: 50%;
+  --nx-my: 0%;
+  --st-light: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  border-radius: var(--nx-r-xl);
+  border: 1px solid var(--nx-border);
+  background:
+    radial-gradient(360px circle at var(--nx-mx) var(--nx-my), rgba(255, 255, 255, calc(var(--st-light) * 0.075)), transparent 46%),
+    radial-gradient(140% 70% at 0% 0%, rgba(var(--st-accent), 0.07), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+  box-shadow: var(--nx-shadow-card);
+  isolation: isolate;
+  transition: transform 340ms var(--nx-ease), border-color 240ms ease, box-shadow 340ms var(--nx-ease);
+}
+
+.st-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(280px circle at var(--nx-mx) var(--nx-my), rgba(54, 255, 132, 0.5), rgba(145, 56, 216, 0.35) 42%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.st-card:hover {
+  --st-light: 1;
+  border-color: var(--nx-border-strong);
+}
+
+.st-card:hover::before,
+.st-card:focus-within::before {
+  opacity: 1;
+}
+
+@media (pointer: fine) {
+  .st-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .st-card:hover .st-icon {
+    transform: scale(1.05) rotate(-2deg);
+  }
+}
+
+.st-card[data-state="unavailable"],
+.st-card[data-state="unsupported"] {
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.012) 0 10px, transparent 10px 20px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+}
+
+.st-card[data-state="unavailable"] .st-icon,
+.st-card[data-state="unsupported"] .st-icon {
+  filter: saturate(0.45) brightness(0.85);
+}
+
+.st-card__top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.st-card__id {
+  min-width: 0;
+}
+
+.st-card__kicker {
+  margin: 0;
+  overflow: hidden;
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-card__title {
+  margin: 4px 0 0;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.st-card__open {
+  display: -webkit-box;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* Stretched target: the whole card opens the detail sheet. */
+.st-card__open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+@supports selector(:has(*)) {
+  .st-card__open:focus-visible {
+    outline: none;
+  }
+
+  .st-card:has(.st-card__open:focus-visible) {
+    outline: 2px solid var(--nx-signal);
+    outline-offset: 3px;
+  }
+}
+
+.st-card__blurb {
+  display: -webkit-box;
+  min-height: calc(1.5em * 3);
+  margin: 0;
+  overflow: hidden;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.st-card__foot {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin-top: auto;
+  padding-top: 4px;
+  pointer-events: none;
+}
+
+.st-card__foot > * {
+  pointer-events: auto;
+}
+
+.st-card .st-install-wrap {
+  pointer-events: none;
+}
+
+.st-card .st-why {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* Badges */
+.st-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.st-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nx-muted);
+  font: 600 11px/1 var(--nx-font-mono);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.st-badge--size {
+  color: var(--nx-text);
+  border-color: var(--nx-border-strong);
+}
+
+.st-badge--needs {
+  color: var(--nx-purple-ink);
+  border-color: rgba(176, 108, 240, 0.4);
+  background: rgba(145, 56, 216, 0.12);
+}
+
+.st-badge--unavailable {
+  color: var(--nx-amber);
+  border-color: rgba(255, 154, 69, 0.38);
+  background: rgba(255, 154, 69, 0.08);
+}
+
+.st-badge--unsupported {
+  color: #ff8a6e;
+  border-color: rgba(255, 90, 54, 0.4);
+  background: rgba(255, 90, 54, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   Install control: press, launch feedback, and honest disabled states
+   -------------------------------------------------------------------------- */
+
+.st-install {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #a04ae8 0%, var(--nx-purple) 100%);
+  box-shadow: 0 10px 26px rgba(145, 56, 216, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font: 700 14px/1 var(--nx-font-sans);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  transition: transform 200ms var(--nx-spring), box-shadow 260ms var(--nx-ease), background 200ms ease, filter 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-install:hover {
+  background: linear-gradient(180deg, #ad5cf0 0%, #9a40e2 100%);
+  box-shadow: 0 14px 34px rgba(145, 56, 216, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.st-install:active {
+  transform: translateY(1px) scale(0.96);
+  transition-duration: 80ms;
+}
+
+.st-install--card {
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: 13.5px;
+}
+
+.st-install--hero,
+.st-install--sheet {
+  min-height: 48px;
+  padding: 0 24px;
+  font-size: 15px;
+}
+
+.st-install__label,
+.st-install__busy {
+  transition: transform 320ms var(--nx-ease), opacity 220ms ease;
+}
+
+.st-install__busy {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.st-install.is-launching .st-install__label {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.st-install.is-launching .st-install__busy {
+  opacity: 1;
+  transform: none;
+}
+
+.st-install.is-launching::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: translateX(-100%);
+  animation: st-sweep 900ms var(--nx-ease) infinite;
+}
+
+@keyframes st-sweep {
+  to { transform: translateX(100%); }
+}
+
+.st-install-wrap {
+  --st-tone: 255, 154, 69;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  max-width: 100%;
+}
+
+.st-install-wrap[data-state="unsupported"] {
+  --st-tone: 255, 90, 54;
+}
+
+.st-install--off,
+.st-install--off:hover {
+  border: 1px dashed rgba(var(--st-tone), 0.5);
+  background: rgba(var(--st-tone), 0.06);
+  box-shadow: none;
+  color: rgb(var(--st-tone));
+  cursor: not-allowed;
+  filter: saturate(0.9);
+}
+
+.st-install--off:active {
+  transform: none;
+}
+
+.st-install-wrap[data-state="unsupported"] .st-install--off {
+  color: #ff8a6e;
+}
+
+.st-why {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   Empty, error, loading
+   -------------------------------------------------------------------------- */
+
+.st-empty {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: clamp(40px, 8vw, 88px) 20px;
+  border-radius: var(--nx-r-2xl);
+  border: 1px dashed var(--nx-border-strong);
+  background: radial-gradient(60% 80% at 50% 0%, rgba(72, 230, 255, 0.07), transparent 70%), rgba(255, 255, 255, 0.015);
+  text-align: center;
+}
+
+.st-empty__art {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 24px;
+  border: 1px solid var(--nx-border-strong);
+  background: linear-gradient(160deg, #13141c, #07080c);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--nx-cyan);
+  font: 800 38px/1 var(--nx-font-mono);
+  animation: st-float 5s ease-in-out infinite alternate;
+}
+
+.st-empty__title {
+  max-width: 28ch;
+  margin: 6px 0 0;
+  font-weight: 800;
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.st-empty__body {
+  max-width: 48ch;
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.st-empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.st-suggest {
+  min-height: 34px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-family: var(--nx-font-mono);
+}
+
+.st-skel {
+  position: relative;
+  display: block;
+  border-radius: var(--nx-r-xl);
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+}
+
+.st-skel::after,
+.st-rail__skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.06) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: st-shimmer 1.6s ease-in-out infinite;
+}
+
+.st-rail__skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes st-shimmer {
+  to { transform: translateX(100%); }
+}
+
+.st-skel--hero {
+  display: grid;
+  align-content: end;
+  gap: 16px;
+  min-height: 360px;
+  padding: clamp(24px, 3.6vw, 44px);
+  border-radius: var(--nx-r-2xl);
+}
+
+.st-skel__icon {
+  position: absolute;
+  top: clamp(24px, 3.6vw, 44px);
+  right: clamp(24px, 3.6vw, 44px);
+  width: clamp(110px, 16vw, 200px);
+  aspect-ratio: 1;
+  border-radius: 23%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.st-skel__line {
+  display: block;
+  width: min(60%, 520px);
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.st-skel__line--title {
+  width: min(45%, 380px);
+  height: 44px;
+  border-radius: 12px;
+}
+
+.st-skel__line--short {
+  width: min(30%, 220px);
+}
+
+.st-skel-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 48px;
+  overflow: hidden;
+}
+
+.st-skel--card {
+  flex: 0 0 min(296px, calc(100% - 36px));
+  height: 236px;
+}
+
+.st-slow {
+  margin: 20px 0 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Cards and heads settle in on view changes (never on search keystrokes). */
+.st-stage--enter .st-hero,
+.st-stage--enter .st-row__head,
+.st-stage--enter .st-card {
+  animation: st-in 560ms var(--nx-ease) both;
+}
+
+.st-stage--enter .st-card:nth-child(2) { animation-delay: 34ms; }
+.st-stage--enter .st-card:nth-child(3) { animation-delay: 68ms; }
+.st-stage--enter .st-card:nth-child(4) { animation-delay: 102ms; }
+.st-stage--enter .st-card:nth-child(5) { animation-delay: 136ms; }
+.st-stage--enter .st-card:nth-child(6) { animation-delay: 170ms; }
+.st-stage--enter .st-card:nth-child(7) { animation-delay: 204ms; }
+.st-stage--enter .st-card:nth-child(8) { animation-delay: 238ms; }
+.st-stage--enter .st-card:nth-child(9) { animation-delay: 272ms; }
+.st-stage--enter .st-card:nth-child(10) { animation-delay: 306ms; }
+.st-stage--enter .st-card:nth-child(11) { animation-delay: 340ms; }
+.st-stage--enter .st-card:nth-child(12) { animation-delay: 374ms; }
+.st-stage--enter .st-card:nth-child(n + 13) { animation-delay: 408ms; }
+
+@keyframes st-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Detail sheet: centred panel on desktop, full-height sheet on phones
+   -------------------------------------------------------------------------- */
+
+.st-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: grid;
+  place-items: center;
+  padding: 32px 24px;
+  background: rgba(2, 3, 6, 0.64);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.st-overlay[hidden] {
+  display: none;
+}
+
+.st-overlay.is-open {
+  opacity: 1;
+}
+
+.st-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(940px, 100%);
+  max-height: min(880px, calc(100dvh - 64px));
+  border-radius: var(--nx-r-2xl);
+  border: 1px solid var(--nx-border-strong);
+  background:
+    radial-gradient(80% 50% at 0% 0%, rgba(145, 56, 216, 0.14), transparent 60%),
+    linear-gradient(180deg, #0f1017, #090a0f);
+  box-shadow: 0 50px 140px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transform: translateY(18px) scale(0.975);
+  transition: transform 420ms var(--nx-ease), opacity 260ms ease;
+  overflow: hidden;
+}
+
+.st-overlay.is-open .st-sheet {
+  opacity: 1;
+  transform: none;
+}
+
+.st-sheet__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px 0 11px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(10, 11, 16, 0.86);
+  color: var(--nx-text);
+  font: 600 13px/1 var(--nx-font-sans);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: background 200ms ease, border-color 200ms ease, transform 200ms var(--nx-spring);
+}
+
+.st-sheet__close svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.st-sheet__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.26);
+}
+
+.st-sheet__close:active {
+  transform: scale(0.94);
+}
+
+.st-sheet__body {
+  min-height: 0;
+  padding: clamp(22px, 3.4vw, 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+@media (max-width: 640px) {
+  .st-overlay {
+    place-items: end stretch;
+    padding: 12px 0 0;
+  }
+
+  .st-sheet {
+    width: 100%;
+    height: calc(100dvh - 12px);
+    max-height: none;
+    border-radius: 22px 22px 0 0;
+    border-bottom: 0;
+    opacity: 1;
+    transform: translateY(100%);
+    transition: transform 440ms var(--nx-ease);
+  }
+
+  .st-sheet__close {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+/* Detail content */
+.st-detail__hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  padding-right: 92px;
+}
+
+.st-detail__id {
+  min-width: 0;
+}
+
+.st-detail__title {
+  margin: 10px 0 6px;
+  font-weight: 800;
+  font-size: clamp(28px, 3.4vw, 42px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.st-detail__sub {
+  margin: 0 0 12px;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.st-detail .st-notice {
+  margin-top: 22px;
+}
+
+.st-detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 22px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--nx-border);
+}
+
+.st-copy {
+  min-height: 48px;
+}
+
+.st-copy.is-done {
+  color: var(--nx-signal);
+  border-color: rgba(54, 255, 132, 0.45);
+  background: rgba(54, 255, 132, 0.08);
+}
+
+.st-detail__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 28px;
+  padding: 26px 0;
+}
+
+.st-detail__h {
+  margin: 0 0 14px;
+  color: var(--nx-soft);
+  font: 700 11px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-detail__story p {
+  margin: 0 0 14px;
+  color: var(--nx-muted);
+  font-size: 16px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.st-ticks {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.st-ticks li {
+  position: relative;
+  padding-left: 26px;
+  color: var(--nx-text);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+.st-ticks li::before {
+  content: "";
+  position: absolute;
+  top: 0.38em;
+  left: 2px;
+  width: 11px;
+  height: 6px;
+  border-left: 2px solid var(--nx-signal);
+  border-bottom: 2px solid var(--nx-signal);
+  transform: rotate(-45deg);
+}
+
+.st-land {
+  align-self: start;
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid rgba(54, 255, 132, 0.2);
+  background: radial-gradient(120% 100% at 100% 0%, rgba(54, 255, 132, 0.08), transparent 60%), rgba(255, 255, 255, 0.02);
+}
+
+.st-land .st-detail__h {
+  margin-bottom: 4px;
+}
+
+.st-land__path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 0;
+  color: var(--nx-soft);
+  font: 600 13px/1.3 var(--nx-font-mono);
+}
+
+.st-land__path strong {
+  color: var(--nx-signal);
+  font: 800 20px/1.2 var(--nx-font-sans);
+  letter-spacing: -0.02em;
+}
+
+.st-land__note {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.st-land__fit {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--nx-border);
+  color: var(--nx-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.st-land__fit span {
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.st-facts {
+  padding-top: 26px;
+  border-top: 1px solid var(--nx-border);
+}
+
+.st-facts dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  border-radius: var(--nx-r-lg);
+  border: 1px solid var(--nx-border);
+  background: var(--nx-border);
+  overflow: hidden;
+}
+
+.st-facts dl > div {
+  min-width: 0;
+  padding: 12px 16px;
+  background: #0c0d13;
+}
+
+.st-facts dt {
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.st-facts dd {
+  margin: 6px 0 0;
+  color: var(--nx-text);
+  font-size: 15px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.st-facts dd.st-mono {
+  font: 500 12.5px/1.55 var(--nx-font-mono);
+  word-break: break-all;
+}
+
+.st-facts__link {
+  color: var(--nx-purple-ink);
+  text-decoration: underline;
+  text-decoration-color: rgba(176, 108, 240, 0.4);
+  text-underline-offset: 3px;
+  transition: color 200ms ease, text-decoration-color 200ms ease;
+}
+
+.st-facts__link:hover {
+  color: var(--nx-text);
+  text-decoration-color: var(--nx-signal);
+}
+
+@media (max-width: 760px) {
+  .st-detail__grid,
+  .st-facts dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .st-detail__hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding-right: 0;
+  }
+
+  .st-icon--detail {
+    width: 84px;
+  }
+
+  .st-detail__actions > .st-install,
+  .st-detail__actions > .st-copy,
+  .st-detail__actions > .st-install-wrap {
+    flex: 1 1 100%;
+  }
+
+  .st-detail__actions .st-install-wrap .st-install {
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion: everything decorative stands down; state changes stay instant.
+   -------------------------------------------------------------------------- */
+
+html.st-tab-hidden .st-icon--hero,
+html.st-tab-hidden .st-empty__art,
+html.st-tab-hidden .st-skel::after,
+html.st-tab-hidden .st-rail__skeleton::after {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-icon--hero,
+  .st-empty__art,
+  .st-skel::after,
+  .st-rail__skeleton::after,
+  .st-install.is-launching::after,
+  .st-stage--enter .st-hero,
+  .st-stage--enter .st-row__head,
+  .st-stage--enter .st-card {
+    animation: none !important;
+  }
+
+  .st-card,
+  .st-icon,
+  .st-install,
+  .st-install__label,
+  .st-install__busy,
+  .st-arrow,
+  .st-overlay,
+  .st-sheet,
+  .st-sheet__close {
+    transition: none !important;
+  }
+
+  .st-card:hover,
+  .st-card:hover .st-icon,
+  .st-install:active,
+  .st-arrow:active,
+  .st-sheet__close:active {
+    transform: none !important;
+  }
+
+  .st-install__busy {
+    transform: none;
+  }
+
+  .st-install.is-launching .st-install__label {
+    transform: none;
+  }
+
+  .st-sheet,
+  .st-overlay.is-open .st-sheet {
+    transform: none;
+  }
+}
+
+/* nx.css leaves box-sizing alone; the store's own components want border-box. */
+.st-main *,
+.st-main *::before,
+.st-main *::after,
+.st-overlay *,
+.st-overlay *::before,
+.st-overlay *::after {
+  box-sizing: border-box;
+}
 ```
 
 ## package-lock.json
@@ -10636,9 +15675,9 @@ This root is reconciled byte-for-byte from the current production source.
       "license": "MIT"
     },
     "node_modules/brace-expansion": {
-      "version": "5.0.9",
-      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.9.tgz",
-      "integrity": "sha512-ScQ4IuvIEF1TMlP7Zt+vjJ//9zlPb2SDcxWxM3bk8s6t6GGdJ7KO1dCcTidOPJKePW30LE/2cT7wCyPho9/Wxg==",
+      "version": "5.0.12",
+      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.12.tgz",
+      "integrity": "sha512-YovQ3rzhaLMIrDjNDMkNS01tea93qhEhG5xy8f6+R0l+dw3Ki+5sCoIoI942iuLZTHWogWktgwVDhU09iNEimQ==",
       "dev": true,
       "license": "MIT",
       "dependencies": {
@@ -10930,9 +15969,9 @@ This root is reconciled byte-for-byte from the current production source.
       "license": "MIT"
     },
     "node_modules/fast-uri": {
-      "version": "3.1.5",
-      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.5.tgz",
-      "integrity": "sha512-gHwA1O9LDIcKunMKhObS/HimwtehO1nPUECKAu5TpKgaO19fcWEl4bliWe1jWxVFvIXztJjjQ4L8XQ1EU9f7Jw==",
+      "version": "3.1.8",
+      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.8.tgz",
+      "integrity": "sha512-GZMtZUTNRpOVIECoXwLNZS5xUGE+mVNbTB8h/7Rwh2TFWcBQiPzTgyZi05BF9UMZKkLJv8XBRJTlU7zg8+ZfMg==",
       "dev": true,
       "funding": [
         {
@@ -11782,6 +16821,2526 @@ This root is reconciled byte-for-byte from the current production source.
 }
 ```
 
+## roachclaw-web.css
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="roachclaw-web-css" file="roachclaw-web.css"}
+/* ==========================================================================
+   RoachClaw on the web (roachnet.org/roachclaw/) — nx layer.
+   Loaded after nx.css. Uses nx tokens only. A calm chat workspace: a
+   conversation rail, a topbar with the relay status, a welcome view with an
+   inline (non-blocking) sign-in panel, message bubbles and the composer.
+   No inline styles anywhere; the composer height is set through CSSOM.
+   Every transition and animation stands down under prefers-reduced-motion.
+   ========================================================================== */
+
+.rc-page {
+  --rc-rail: 296px;
+  --rc-read: 820px;
+  --rc-radius: var(--nx-r-2xl);
+  --rc-line: var(--nx-border);
+  --rc-surface: rgba(9, 10, 15, 0.78);
+  --rc-surface-2: rgba(255, 255, 255, 0.025);
+  --rc-hazard-ink: #ff8f73;
+  --rc-ease: var(--nx-ease);
+}
+
+.rc-atmos .nx-atmos__blob { opacity: 0.32; }
+
+/* "RoachClaw" is a longer sign-off word than "RoachNet"; keep it inside 320px. */
+.rc-page .nx-foot__word { font-size: clamp(40px, 14vw, 200px); }
+
+.rc-app [hidden] { display: none !important; }
+
+.rc-app,
+.rc-app *,
+.rc-app *::before,
+.rc-app *::after {
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Shell
+   -------------------------------------------------------------------------- */
+
+.rc-app {
+  position: relative;
+  z-index: 1;
+  width: min(1440px, calc(100% - 2 * var(--nx-gutter)));
+  margin: 16px auto 0;
+}
+
+.rc-layout {
+  display: grid;
+  grid-template-columns: var(--rc-rail) minmax(0, 1fr);
+  height: clamp(560px, calc(100dvh - 96px), 1100px);
+  border-radius: var(--rc-radius);
+  border: 1px solid var(--rc-line);
+  background: var(--rc-surface);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  backdrop-filter: blur(18px) saturate(130%);
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Conversation rail
+   -------------------------------------------------------------------------- */
+
+.rc-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--rc-line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+}
+
+.rc-sidebar__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 18px 16px 12px;
+}
+
+.rc-sidebar__label,
+.rc-section-label {
+  margin: 0;
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.rc-sidebar__new-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 10px 0 14px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--nx-text);
+  font: 600 14px/1 var(--nx-font-sans);
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, transform 160ms var(--rc-ease);
+}
+
+.rc-sidebar__new-btn svg { color: var(--nx-purple-ink); flex: none; }
+.rc-sidebar__new-btn > span:not(.rc-kbd-group) { flex: 1; text-align: left; }
+
+.rc-sidebar__new-btn:hover {
+  background: rgba(145, 56, 216, 0.14);
+  border-color: rgba(176, 108, 240, 0.4);
+}
+
+.rc-sidebar__new-btn:active { transform: scale(0.985); }
+.rc-sidebar__new-btn:disabled { opacity: 0.55; cursor: progress; }
+
+.rc-kbd-group { display: inline-flex; gap: 3px; }
+
+.rc-kbd,
+.rc-page .nx-key.rc-kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #1b1c26, #101119);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--nx-muted);
+  font: 600 11px/1 var(--nx-font-mono);
+}
+
+.rc-sidebar__threads {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 10px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.rc-thread-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+
+.rc-thread-empty p {
+  margin: 8px 6px;
+  color: var(--nx-soft);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.rc-thread-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px 10px 14px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--nx-text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.rc-thread-item::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--nx-signal);
+  box-shadow: 0 0 8px rgba(54, 255, 132, 0.6);
+  transform: scaleY(0);
+  transition: transform 260ms var(--nx-spring);
+}
+
+.rc-thread-item:hover { background: rgba(255, 255, 255, 0.04); }
+
+.rc-thread-item.is-active {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.rc-thread-item.is-active::before { transform: scaleY(1); }
+
+.rc-thread-item strong,
+.rc-thread-item span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rc-thread-item strong { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.rc-thread-item span { color: var(--nx-muted); font-size: 13px; }
+.rc-thread-item small { color: var(--nx-soft); font: 500 11px/1.3 var(--nx-font-mono); }
+
+.rc-sidebar__foot {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--rc-line);
+}
+
+.rc-lanes {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rc-lane {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--rc-line);
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 260ms ease, background 260ms ease;
+}
+
+.rc-lane__copy { display: grid; gap: 2px; min-width: 0; }
+.rc-lane__copy strong { font-size: 13.5px; font-weight: 600; }
+.rc-lane__copy span { color: var(--nx-soft); font-size: 12.5px; }
+
+.rc-lane__dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--nx-soft);
+}
+
+.rc-lane[data-state="live"] { border-color: rgba(54, 255, 132, 0.28); background: rgba(54, 255, 132, 0.05); }
+.rc-lane[data-state="live"] .rc-lane__copy span { color: var(--nx-signal); }
+.rc-lane[data-state="live"] .rc-lane__dot,
+.rc-lane[data-state="ready"] .rc-lane__dot { background: var(--nx-signal); box-shadow: 0 0 10px rgba(54, 255, 132, 0.7); }
+
+.rc-lane[data-state="live"] .rc-lane__dot::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(54, 255, 132, 0.6);
+  animation: nx-ping 2.4s var(--nx-ease) infinite;
+}
+
+.rc-lane[data-state="off"] .rc-lane__dot { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nx-soft); }
+
+.rc-sidebar__who {
+  margin: 0;
+  color: var(--nx-soft);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.rc-sidebar__who .nx-link { font-size: 13px; }
+
+/* --------------------------------------------------------------------------
+   Main column and topbar
+   -------------------------------------------------------------------------- */
+
+.rc-main {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  outline: 0;
+  container-type: inline-size;
+  container-name: rc-main;
+}
+
+.rc-main__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 60px;
+  padding: 10px clamp(14px, 2.4vw, 22px);
+  border-bottom: 1px solid var(--rc-line);
+}
+
+.rc-main__topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.rc-main__topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.rc-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.rc-title__app {
+  flex: none;
+  color: var(--nx-purple-ink);
+  font: 800 11px/1 var(--nx-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.rc-main__thread-title {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rc-sidebar-toggle {
+  display: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-text);
+  cursor: pointer;
+}
+
+.rc-model-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  margin: 0;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nx-muted);
+  font: 600 12.5px/1 var(--nx-font-sans);
+  white-space: nowrap;
+}
+
+.rc-model-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--nx-soft);
+  transition: background 260ms ease, box-shadow 260ms ease;
+}
+
+.rc-model-badge[data-state="live"] { color: var(--nx-text); border-color: rgba(72, 230, 255, 0.28); }
+.rc-model-badge[data-state="live"] .rc-model-badge__dot { background: var(--nx-cyan); box-shadow: 0 0 10px rgba(72, 230, 255, 0.8); }
+.rc-model-badge[data-relay="mac"][data-state="live"] { border-color: rgba(54, 255, 132, 0.3); }
+.rc-model-badge[data-relay="mac"][data-state="live"] .rc-model-badge__dot { background: var(--nx-signal); box-shadow: 0 0 10px rgba(54, 255, 132, 0.8); }
+
+.rc-account-chip {
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(176, 108, 240, 0.45);
+  background: rgba(145, 56, 216, 0.16);
+  color: #fff;
+  font: 700 12.5px/1 var(--nx-font-sans);
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, transform 160ms var(--rc-ease);
+}
+
+.rc-account-chip:hover { background: rgba(145, 56, 216, 0.28); }
+.rc-account-chip:active { transform: scale(0.97); }
+.rc-account-chip[data-state="live"] { border-color: var(--nx-border-strong); background: rgba(255, 255, 255, 0.04); color: var(--nx-muted); }
+.rc-account-chip[data-state="live"]:hover { color: var(--nx-text); background: rgba(255, 255, 255, 0.08); }
+.rc-account-chip:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* --------------------------------------------------------------------------
+   Chat area
+   -------------------------------------------------------------------------- */
+
+.rc-chat-area {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rc-chat-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(20px, 4cqi, 48px) clamp(16px, 4cqi, 48px) 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.rc-chat-scroll:focus-visible { outline-offset: -3px; }
+
+/* Welcome: intro, inline sign-in, starters, relay explainer. */
+
+.rc-welcome {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "intro" "gate" "starters" "relay";
+  gap: 28px;
+  width: min(var(--rc-read), 100%);
+  margin: 0 auto;
+  animation: rc-rise 620ms var(--rc-ease) both;
+}
+
+.rc-welcome[hidden] { display: none; }
+
+.rc-welcome__intro { grid-area: intro; display: grid; gap: 14px; }
+.rc-auth-gate { grid-area: gate; }
+.rc-starters { grid-area: starters; display: grid; gap: 12px; }
+.rc-relay { grid-area: relay; display: grid; gap: 12px; }
+
+@container rc-main (min-width: 980px) {
+  .is-auth-locked .rc-welcome {
+    width: min(1100px, 100%);
+    grid-template-columns: minmax(0, 1.25fr) minmax(330px, 0.85fr);
+    grid-template-areas: "intro gate" "starters gate" "relay relay";
+    align-items: start;
+    column-gap: 36px;
+  }
+}
+
+.rc-empty-state__heading {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(28px, 4.2cqi, 42px);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.rc-empty-state__sub {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--nx-muted);
+  font-size: 17px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* Inline sign-in panel */
+
+.rc-auth-gate {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: clamp(20px, 3cqi, 26px);
+  border-radius: var(--nx-r-xl);
+  border: 1px solid rgba(176, 108, 240, 0.34);
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(145, 56, 216, 0.2), transparent 60%),
+    linear-gradient(180deg, rgba(20, 14, 32, 0.92), rgba(10, 10, 16, 0.92));
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 320ms var(--rc-ease), transform 420ms var(--rc-ease);
+}
+
+.rc-auth-gate[hidden] { display: none; }
+.rc-auth-gate.is-visible { opacity: 1; transform: none; }
+.rc-auth-gate.is-leaving { opacity: 0; transform: translateY(-6px); }
+.rc-auth-gate.is-nudged { animation: rc-nudge 900ms var(--rc-ease); }
+
+.rc-auth-gate__title {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.rc-auth-gate__copy {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.rc-form { display: grid; gap: 14px; margin-top: 4px; }
+
+.rc-field { display: grid; gap: 6px; }
+
+.rc-field label {
+  color: var(--nx-text);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.rc-field input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: var(--nx-r-md);
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--nx-text);
+  font: 400 16px/1.2 var(--nx-font-sans);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.rc-field input::placeholder { color: var(--nx-soft); }
+.rc-field input:hover { border-color: rgba(255, 255, 255, 0.24); }
+
+.rc-field input:focus-visible {
+  outline: 2px solid var(--nx-purple-ink);
+  outline-offset: 1px;
+  border-color: transparent;
+  box-shadow: 0 0 0 5px rgba(145, 56, 216, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.rc-field input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.rc-field.is-invalid input { border-color: rgba(255, 90, 54, 0.7); }
+.rc-field__hint { margin: 0; min-height: 0; color: var(--rc-hazard-ink); font-size: 13px; }
+.rc-field__hint:empty { display: none; }
+
+.rc-auth-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+}
+
+.rc-submit { min-width: 128px; }
+
+.rc-submit.is-loading .rc-submit__label::before,
+.rc-composer__send.is-busy::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  vertical-align: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: rc-spin 700ms linear infinite;
+}
+
+.rc-form__note { margin: 0; color: var(--nx-soft); font-size: 13.5px; line-height: 1.5; }
+
+.rc-form__feedback {
+  margin: 0;
+  color: var(--nx-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.rc-form__feedback:empty { display: none; }
+.rc-form__feedback[data-tone="error"] { color: var(--rc-hazard-ink); }
+.rc-form__feedback[data-tone="live"] { color: var(--nx-signal); }
+
+/* Starter prompts */
+
+.rc-starter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@container rc-main (max-width: 700px) {
+  .rc-starter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@container rc-main (min-width: 980px) {
+  .is-auth-locked .rc-starter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@container rc-main (max-width: 440px) {
+  .rc-starter-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.rc-page .rc-starter-card {
+  gap: 6px;
+  padding: 16px;
+  border-radius: 14px;
+  min-height: 100%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+}
+
+.rc-page .rc-starter-card.nx-card--clickable:hover { transform: translateY(-2px); }
+.rc-page .rc-starter-card:active { transform: translateY(0) scale(0.985); transition-duration: 80ms; }
+
+.rc-starter-card__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+  border-radius: 9px;
+  color: var(--nx-purple-ink);
+  background: rgba(145, 56, 216, 0.12);
+  border: 1px solid rgba(176, 108, 240, 0.24);
+  transition: color 200ms ease, background 200ms ease;
+}
+
+.rc-starter-card:hover .rc-starter-card__icon { color: var(--nx-signal); background: rgba(54, 255, 132, 0.08); border-color: rgba(54, 255, 132, 0.24); }
+
+.rc-starter-card strong { font-size: 15px; font-weight: 650; letter-spacing: -0.015em; }
+.rc-starter-card > span:last-child { color: var(--nx-muted); font-size: 13.5px; line-height: 1.5; }
+
+/* Relay explainer */
+
+.rc-relay__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@container rc-main (max-width: 620px) {
+  .rc-relay__grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.rc-relay__card {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid var(--rc-line);
+  background: var(--rc-surface-2);
+}
+
+.rc-relay__card[data-state="live"] { border-color: rgba(72, 230, 255, 0.22); background: rgba(72, 230, 255, 0.035); }
+
+.rc-relay__card h3 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.rc-relay__card p { margin: 0; color: var(--nx-muted); font-size: 14.5px; line-height: 1.55; }
+
+.rc-relay__card .rc-relay__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--nx-soft);
+  font: 700 10.5px/1.3 var(--nx-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rc-relay__state span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+.rc-relay__card[data-state="live"] .rc-relay__state { color: var(--nx-cyan); }
+.rc-relay__card[data-state="live"] .rc-relay__state span { background: currentColor; box-shadow: 0 0 8px currentColor; }
+
+.rc-relay__card .nx-link { margin-top: 2px; }
+
+/* --------------------------------------------------------------------------
+   Messages
+   -------------------------------------------------------------------------- */
+
+.rc-log {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: min(var(--rc-read), 100%);
+  margin: 0 auto;
+}
+
+.rc-log[hidden] { display: none; }
+
+.rc-message {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  animation: rc-rise 380ms var(--rc-ease) both;
+}
+
+.rc-message__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--nx-soft);
+  font: 600 11px/1.2 var(--nx-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rc-message__head strong { color: var(--nx-muted); font-weight: 800; }
+.rc-message__head span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-transform: none; letter-spacing: 0.02em; }
+
+.rc-message__avatar {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 40%),
+    linear-gradient(135deg, var(--nx-purple), var(--nx-cyan));
+  box-shadow: 0 0 14px rgba(145, 56, 216, 0.45);
+}
+
+.rc-message--user {
+  justify-items: end;
+  margin-left: clamp(24px, 12cqi, 120px);
+}
+
+.rc-message--user .rc-message__content {
+  max-width: 100%;
+  padding: 12px 16px;
+  border-radius: 18px 18px 6px 18px;
+  border: 1px solid rgba(176, 108, 240, 0.3);
+  background: linear-gradient(180deg, rgba(145, 56, 216, 0.22), rgba(145, 56, 216, 0.12));
+}
+
+.rc-message--assistant .rc-message__content,
+.rc-message--system .rc-message__content {
+  padding-left: 28px;
+}
+
+.rc-message--system .rc-message__content { color: var(--nx-muted); }
+
+.rc-message__content {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--nx-text);
+  font-size: 16px;
+  line-height: 1.68;
+  overflow-wrap: anywhere;
+}
+
+.rc-md-block + .rc-md-block { margin-top: 0.8em; }
+
+.rc-message__content p,
+.rc-message__content ul { margin: 0; }
+.rc-message__content ul { padding-left: 1.25em; }
+.rc-message__content li + li { margin-top: 0.3em; }
+.rc-message__content li::marker { color: var(--nx-purple-ink); }
+.rc-message__content strong { font-weight: 650; }
+
+/* Runtime headings are demoted (h2/h3/h4) but read as one message-level style. */
+.rc-message__content h2,
+.rc-message__content h3,
+.rc-message__content h4 {
+  margin: 0;
+  color: var(--nx-text);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.rc-message__content a {
+  color: var(--nx-purple-ink);
+  text-decoration: underline;
+  text-decoration-color: rgba(176, 108, 240, 0.45);
+  text-underline-offset: 3px;
+}
+
+.rc-message__content a:hover { text-decoration-color: currentColor; }
+
+.rc-code {
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--nx-border-strong);
+  background: #06070b;
+}
+
+.rc-code__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 6px 5px 14px;
+  border-bottom: 1px solid var(--rc-line);
+  color: var(--nx-soft);
+  font: 700 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.rc-code__copy {
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-muted);
+  font: 700 10.5px/1 var(--nx-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.rc-code__copy:hover { color: var(--nx-text); border-color: var(--nx-border-strong); }
+.rc-code__copy.is-done { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.4); }
+
+.rc-code pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font: 500 13.5px/1.6 var(--nx-font-mono);
+  tab-size: 2;
+}
+
+.rc-message__content code { font-size: 0.86em; padding: 0.08em 0.36em; }
+
+html.nx .rc-code pre code {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: inherit;
+  white-space: pre;
+}
+
+.rc-md-block[data-open-fence="true"] .rc-code { border-color: rgba(72, 230, 255, 0.3); }
+
+/* Pending reply: a quiet shimmer on the placeholder plus three dots. */
+.rc-message--assistant.is-pending .rc-message__content {
+  color: transparent;
+  background: linear-gradient(90deg, var(--nx-soft) 0%, var(--nx-text) 45%, var(--nx-soft) 90%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: rc-shimmer 1.6s linear infinite;
+}
+
+.rc-message--user.is-pending .rc-message__content { opacity: 0.75; }
+
+/* --------------------------------------------------------------------------
+   Composer
+   -------------------------------------------------------------------------- */
+
+.rc-composer {
+  padding: 12px clamp(14px, 4cqi, 48px) 14px;
+  border-top: 1px solid var(--rc-line);
+  background: linear-gradient(180deg, rgba(9, 10, 15, 0), rgba(9, 10, 15, 0.6));
+}
+
+.rc-composer__inner,
+.rc-composer__controls,
+.rc-composer__disclaimer {
+  width: min(var(--rc-read), 100%);
+  margin-inline: auto;
+}
+
+.rc-composer__inner {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 7px 7px 7px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--nx-border-strong);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  transition: border-color 200ms ease, box-shadow 220ms ease, background 200ms ease;
+}
+
+.rc-composer__inner:focus-within {
+  border-color: rgba(176, 108, 240, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 4px rgba(145, 56, 216, 0.2), 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.rc-composer__textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  max-height: 220px;
+  padding: 9px 0;
+  border: 0;
+  background: transparent;
+  color: var(--nx-text);
+  font: 400 16px/1.5 var(--nx-font-sans);
+  resize: none;
+  overflow-y: auto;
+}
+
+html.nx .rc-composer__textarea:focus-visible { outline: none; }
+.rc-composer__textarea::placeholder { color: var(--nx-soft); }
+.rc-composer__textarea:disabled { opacity: 0.6; }
+
+.rc-composer__send {
+  display: inline-grid;
+  place-items: center;
+  grid-auto-flow: column;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--nx-muted);
+  cursor: pointer;
+  transition: background 220ms ease, color 220ms ease, box-shadow 260ms ease, transform 160ms var(--rc-ease);
+}
+
+.has-draft .rc-composer__send {
+  color: #fff;
+  background: linear-gradient(180deg, #a04ae8, var(--nx-purple));
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: var(--nx-shadow-primary), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.rc-composer__send:hover { transform: translateY(-1px); }
+.rc-composer__send:active { transform: scale(0.94); }
+.rc-composer__send:disabled { cursor: progress; transform: none; }
+.rc-composer__send.is-busy svg { display: none; }
+.rc-composer__send.is-busy::before { margin: 0; }
+
+.rc-composer__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-top: 8px;
+}
+
+.rc-composer__keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  color: var(--nx-soft);
+  font: 500 12px/1 var(--nx-font-sans);
+}
+
+.rc-composer__keys > span { display: inline-flex; align-items: center; gap: 4px; }
+.rc-page .rc-composer__keys .nx-key.rc-kbd { height: 20px; min-width: 20px; font-size: 10.5px; }
+.rc-page .rc-composer__keys .nx-key.is-down { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.5); transform: translateY(1px); }
+
+.rc-composer__hint {
+  margin: 0;
+  color: var(--nx-soft);
+  font: 600 11px/1.2 var(--nx-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.rc-composer__disclaimer {
+  margin-top: 6px;
+  color: var(--nx-soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rc-composer__disclaimer[data-tone="error"] { color: var(--rc-hazard-ink); }
+.rc-composer__disclaimer[data-tone="live"] { color: var(--nx-signal); }
+
+@container rc-main (max-width: 560px) {
+  .rc-composer__keys { display: none; }
+  .rc-model-badge { padding: 0 10px; }
+}
+
+@container rc-main (max-width: 520px) {
+  .rc-message--assistant .rc-message__content,
+  .rc-message--system .rc-message__content { padding-left: 0; }
+  .rc-message--user { margin-left: 32px; }
+}
+
+@container rc-main (max-width: 430px) {
+  .rc-model-badge { display: none; }
+  .rc-title__app { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Phone and narrow tablet: the rail becomes a drawer.
+   -------------------------------------------------------------------------- */
+
+.rc-sidebar-overlay { display: none; }
+
+@media (max-width: 900px) {
+  .rc-app { width: calc(100% - 2 * clamp(10px, 3vw, 24px)); margin-top: 12px; }
+
+  .rc-layout {
+    grid-template-columns: minmax(0, 1fr);
+    height: clamp(520px, calc(100dvh - 84px), 980px);
+    border-radius: 20px;
+  }
+
+  .rc-sidebar-toggle { display: inline-grid; }
+
+  .rc-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 140;
+    width: min(320px, 86vw);
+    border-right: 1px solid var(--nx-border-strong);
+    background: #0a0b11;
+    box-shadow: 30px 0 80px rgba(0, 0, 0, 0.6);
+    transform: translateX(-104%);
+    visibility: hidden;
+    transition: transform 340ms var(--rc-ease), visibility 0s linear 340ms;
+  }
+
+  .rc-sidebar.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 340ms var(--rc-ease), visibility 0s;
+  }
+
+  .rc-sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 135;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 260ms ease;
+  }
+
+  .rc-sidebar-overlay.is-visible { opacity: 1; pointer-events: auto; }
+
+  .rc-empty-state__sub { font-size: 16px; }
+}
+
+/* --------------------------------------------------------------------------
+   Motion
+   -------------------------------------------------------------------------- */
+
+@keyframes rc-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes rc-nudge {
+  0% { box-shadow: 0 0 0 0 rgba(176, 108, 240, 0.55), 0 24px 64px rgba(0, 0, 0, 0.4); }
+  60% { box-shadow: 0 0 0 10px rgba(176, 108, 240, 0), 0 24px 64px rgba(0, 0, 0, 0.4); }
+  100% { box-shadow: 0 0 0 0 rgba(176, 108, 240, 0), 0 24px 64px rgba(0, 0, 0, 0.4); }
+}
+
+@keyframes rc-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -120% 0; }
+}
+
+@keyframes rc-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-welcome,
+  .rc-message,
+  .rc-auth-gate.is-nudged,
+  .rc-lane[data-state="live"] .rc-lane__dot::after {
+    animation: none !important;
+  }
+
+  .rc-message--assistant.is-pending .rc-message__content {
+    animation: none;
+    color: var(--nx-muted);
+    background: none;
+  }
+
+  .rc-submit.is-loading .rc-submit__label::before,
+  .rc-composer__send.is-busy::before {
+    animation-duration: 2.4s;
+  }
+
+  .rc-auth-gate,
+  .rc-sidebar,
+  .rc-sidebar-overlay,
+  .rc-thread-item,
+  .rc-thread-item::before,
+  .rc-sidebar__new-btn,
+  .rc-account-chip,
+  .rc-composer__inner,
+  .rc-composer__send,
+  .rc-field input,
+  .rc-starter-card__icon {
+    transition: none !important;
+  }
+
+  .rc-auth-gate { opacity: 1; transform: none; }
+  .rc-composer__send:hover,
+  .rc-composer__send:active,
+  .rc-account-chip:active,
+  .rc-sidebar__new-btn:active,
+  .rc-page .rc-starter-card.nx-card--clickable:hover,
+  .rc-page .rc-starter-card:active { transform: none; }
+}
+```
+
+## roachclaw.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="roachclaw-js" file="roachclaw.js"}
+import {
+  clearCachedAuthState,
+  getSiteAuthState,
+  sessionLabel,
+} from './site-account.js'
+
+const root = document.querySelector('#view-roachclaw')
+
+function friendlyAuthError(error, fallback) {
+  const message = String(error?.message || '')
+  if (/failed to fetch|networkerror|load failed|network request failed/i.test(message)) {
+    return 'Could not reach the sign-in service. Check your connection and try again.'
+  }
+  if (/invalid login credentials/i.test(message)) return "That email and password don't match an account."
+  if (/email not confirmed/i.test(message)) return 'Confirm your email first. The link is in your inbox.'
+  return message || fallback
+}
+
+if (root) {
+  const $ = (selector) => root.querySelector(selector)
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+  const threadList = $('#roachclaw-thread-list')
+  const scroller = $('#roachclaw-scroll')
+  const welcome = $('#roachclaw-welcome')
+  const log = $('#roachclaw-log')
+  const input = $('#roachclaw-input')
+  const sendButton = $('#roachclaw-send')
+  const hint = $('#roachclaw-hint')
+  const disclaimer = root.querySelector('.rc-composer__disclaimer')
+  const newThreadButton = $('#roachclaw-new-thread')
+  const sidebar = root.querySelector('.rc-sidebar')
+  const sidebarOverlay = root.querySelector('.rc-sidebar-overlay')
+  const sidebarToggle = $('#rc-sidebar-toggle')
+  const threadTitle = root.querySelector('.rc-main__thread-title')
+  const modelBadge = root.querySelector('.rc-model-badge')
+  const modelBadgeText = root.querySelector('.rc-model-badge span:last-child')
+  const accountChip = $('#roachclaw-account-chip')
+  const whoLine = $('#roachclaw-who')
+  const hostedLane = root.querySelector('[data-lane="hosted"]')
+  const macLane = root.querySelector('[data-lane="mac"]')
+
+  const authGate = $('#roachclaw-auth-gate')
+  const authGateCopy = $('#roachclaw-gate-copy')
+  const authForm = $('#roachclaw-auth-form')
+  const authEmailInput = $('#roachclaw-auth-email')
+  const authPasswordInput = $('#roachclaw-auth-password')
+  const authSubmit = $('#roachclaw-auth-submit')
+  const authSubmitLabel = authSubmit?.querySelector('.rc-submit__label') || authSubmit
+  const authFeedback = $('#roachclaw-auth-feedback')
+  const emailHint = $('[data-hint-for="email"]')
+
+  const isApple = /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent || '')
+  const defaultDisclaimer = disclaimer?.textContent?.trim() || ''
+
+  const starterPrompts = {
+    explain: 'Explain what RoachNet does on the Mac, on iPhone and in the Apps store, in plain language.',
+    draft: 'Help me draft a short message. Ask who it is for, then keep it clear and direct.',
+    debug: 'Help me debug something. Ask only the questions you need, then give me the next practical step.',
+    summarize: 'Summarize what I paste next so it is quick to scan and easy to act on.',
+    cookbook: 'Help me pick a local model for RoachClaw on my Mac. Ask about my chip and memory, then explain the tradeoff plainly.',
+    research: 'Plan a research pass on a topic I name: which sources to check, how to verify them, and what the final brief should hold.',
+  }
+
+  let authState = null
+  let authSubscription = null
+  let authBusy = false
+  let chatBusy = false
+  let threads = []
+  let activeThreadId = null
+  let messages = []
+  let gateTimer = 0
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;')
+  }
+
+  function renderInlineMarkdown(value) {
+    let html = escapeHtml(value)
+    const codeSpans = []
+    html = html.replace(/`([^`]+)`/g, (_match, code) => {
+      const index = codeSpans.push(`<code>${code}</code>`) - 1
+      return `@@CODE_SPAN_${index}@@`
+    })
+    html = html
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" rel="noreferrer" target="_blank">$1</a>')
+    codeSpans.forEach((span, index) => {
+      html = html.replace(`@@CODE_SPAN_${index}@@`, span)
+    })
+    return html
+  }
+
+  const markdownFencePattern = /^ {0,3}(`{3,}|~{3,})(.*)$/
+
+  function findStreamingBoundaries(text, fromOffset = 0) {
+    const boundaries = []
+    let inFence = false
+    let fenceMarker = ''
+    let index = Math.max(0, Math.min(Number(fromOffset) || 0, text.length))
+
+    while (index < text.length) {
+      const newlineIndex = text.indexOf('\n', index)
+      const lineEnd = newlineIndex === -1 ? text.length : newlineIndex
+      const afterNewline = newlineIndex === -1 ? text.length : newlineIndex + 1
+      const line = text.slice(index, lineEnd)
+      const fence = line.match(markdownFencePattern)
+
+      if (fence) {
+        const marker = fence[1]
+        if (!inFence) {
+          inFence = true
+          fenceMarker = marker
+        } else if (marker[0] === fenceMarker[0] && marker.length >= fenceMarker.length && fence[2].trim() === '') {
+          inFence = false
+          fenceMarker = ''
+          boundaries.push({ offset: afterNewline, afterClosedFence: true })
+        }
+        index = afterNewline
+        continue
+      }
+
+      if (!inFence && line.trim() === '') {
+        let nextIndex = afterNewline
+        while (nextIndex < text.length) {
+          const nextNewline = text.indexOf('\n', nextIndex)
+          const nextLineEnd = nextNewline === -1 ? text.length : nextNewline
+          if (text.slice(nextIndex, nextLineEnd).trim() !== '') break
+          if (nextNewline === -1) {
+            nextIndex = text.length
+            break
+          }
+          nextIndex = nextNewline + 1
+        }
+        boundaries.push({ offset: nextIndex, afterClosedFence: false })
+        index = nextIndex
+        continue
+      }
+
+      index = afterNewline
+    }
+
+    return boundaries
+  }
+
+  function splitMarkdownBlocks(value, { forceFinal = false } = {}) {
+    const text = String(value || '')
+    if (!text) return []
+    const lines = text.split('\n')
+    const blocks = []
+    let current = []
+    let inFence = false
+    let fenceMarker = ''
+    let fenceClosed = false
+
+    const pushCurrent = (forceFinal = false) => {
+      if (!current.length) return
+      blocks.push({
+        text: current.join('\n'),
+        closedFence: fenceClosed,
+        forceFinal,
+      })
+      current = []
+      fenceClosed = false
+    }
+
+    lines.forEach((line) => {
+      const fence = line.match(markdownFencePattern)
+      if (fence) {
+        const marker = fence[1]
+        current.push(line)
+        if (!inFence) {
+          inFence = true
+          fenceMarker = marker
+        } else if (marker[0] === fenceMarker[0] && marker.length >= fenceMarker.length && fence[2].trim() === '') {
+          inFence = false
+          fenceMarker = ''
+          fenceClosed = true
+          pushCurrent(true)
+        }
+        return
+      }
+
+      if (!inFence && line.trim() === '') {
+        pushCurrent(false)
+        return
+      }
+
+      current.push(line)
+    })
+
+    pushCurrent(false)
+    return blocks.map((block, index) => ({
+      ...block,
+      finalized: forceFinal || block.forceFinal || index < blocks.length - 1,
+    }))
+  }
+
+  // Code blocks get a small bar with the language and a copy button. The markup is
+  // a pure function of the block text, so finalized-vs-joined render comparisons
+  // in splitFinalizedMarkdown stay stable.
+  function renderCodeBlock(language, code) {
+    const lang = escapeHtml(language)
+    return `<div class="rc-code"><div class="rc-code__bar"><span>${lang || 'code'}</span><button class="rc-code__copy" type="button" data-rc-copy>Copy</button></div><pre><code${lang ? ` class="language-${lang}"` : ''}>${escapeHtml(code)}</code></pre></div>`
+  }
+
+  function renderMarkdownBlock(block) {
+    const text = block.text || ''
+    const fence = text.match(/^ {0,3}(`{3,}|~{3,})([^\n]*)\n([\s\S]*?)(?:\n {0,3}\1\s*)?$/)
+    if (fence && (block.closedFence || text.includes('\n'))) {
+      const language = fence[2].trim().split(/\s+/)[0] || ''
+      return renderCodeBlock(language, fence[3] || '')
+    }
+
+    // Message headings sit below the page h1, so Markdown # becomes h2, ## h3, ### h4.
+    if (/^#{1,3}\s+/.test(text)) {
+      const markdownLevel = Math.min(3, text.match(/^#+/)?.[0]?.length || 1)
+      const documentLevel = markdownLevel + 1
+      return `<h${documentLevel}>${renderInlineMarkdown(text.replace(/^#{1,3}\s+/, ''))}</h${documentLevel}>`
+    }
+
+    const lines = text.split('\n')
+    if (lines.length > 1 && lines.every((line) => /^\s*[-*]\s+/.test(line) || line.trim() === '')) {
+      const items = lines
+        .filter((line) => line.trim())
+        .map((line) => `<li>${renderInlineMarkdown(line.replace(/^\s*[-*]\s+/, ''))}</li>`)
+        .join('')
+      return `<ul>${items}</ul>`
+    }
+
+    return `<p>${lines.map((line) => renderInlineMarkdown(line)).join('<br>')}</p>`
+  }
+
+  function renderMarkdownSource(value, options = {}) {
+    return splitMarkdownBlocks(value, options)
+      .map((block) => `<div class="rc-md-block ${block.finalized ? 'is-finalized' : 'is-live'}">${renderMarkdownBlock(block)}</div>`)
+      .join('')
+  }
+
+  function splitFinalizedMarkdown(text, committedLen = 0) {
+    const safeCommittedLen = Math.max(0, Math.min(Number(committedLen) || 0, text.length))
+    const boundaries = findStreamingBoundaries(text, safeCommittedLen)
+    let best = safeCommittedLen
+    let segmentStart = safeCommittedLen
+
+    boundaries.forEach(({ offset, afterClosedFence }, index) => {
+      if (afterClosedFence) {
+        best = offset
+        segmentStart = offset
+        return
+      }
+
+      const nextOffset = index + 1 < boundaries.length ? boundaries[index + 1].offset : text.length
+      const before = text.slice(segmentStart, offset)
+      const after = text.slice(offset, nextOffset)
+      const separateRender = renderMarkdownSource(before, { forceFinal: true }) + renderMarkdownSource(after)
+      const joinedRender = renderMarkdownSource(before + after)
+
+      if (after.trim() && separateRender === joinedRender) {
+        best = offset
+      }
+      segmentStart = offset
+    })
+
+    return best
+  }
+
+  function describeOpenFence(text) {
+    const open = String(text || '').match(/^( {0,3})(`{3,}|~{3,})([^\n]*)\n/)
+    if (!open) return null
+    const marker = open[2]
+    const contentStart = open[0].length
+
+    for (let index = contentStart; index < text.length;) {
+      const newlineIndex = text.indexOf('\n', index)
+      const line = text.slice(index, newlineIndex === -1 ? text.length : newlineIndex)
+      const close = line.match(/^ {0,3}(`{3,}|~{3,})\s*$/)
+      if (close && close[1][0] === marker[0] && close[1].length >= marker.length) return null
+      if (newlineIndex === -1) break
+      index = newlineIndex + 1
+    }
+
+    return {
+      lang: (open[3] || '').trim().split(/\s+/)[0] || '',
+      contentStart,
+    }
+  }
+
+  function renderStreamingTail(tailText) {
+    const openFence = describeOpenFence(tailText)
+    if (!openFence) return renderMarkdownSource(tailText)
+    const code = tailText.slice(openFence.contentStart)
+    return `<div class="rc-md-block is-live" data-open-fence="true">${renderCodeBlock(openFence.lang, code)}</div>`
+  }
+
+  function renderMessageContent(message) {
+    const isStreamingAssistant = message.role === 'assistant' && message.pending
+    const content = String(message.content || '')
+    if (!content) return '<div class="rc-message__content"></div>'
+    const finalizedLen = isStreamingAssistant ? splitFinalizedMarkdown(content) : content.length
+    const finalized = content.slice(0, finalizedLen)
+    const tail = content.slice(finalizedLen)
+    const body = [
+      finalized ? renderMarkdownSource(finalized, { forceFinal: true }) : '',
+      tail ? renderStreamingTail(tail) : '',
+    ].join('')
+    return `<div class="rc-message__content" data-streaming="${isStreamingAssistant ? 'append-only' : 'settled'}" data-finalized-chars="${finalizedLen}">${body}</div>`
+  }
+
+  function summarizePrompt(value) {
+    const flattened = String(value || '').replace(/\s+/g, ' ').trim()
+    if (!flattened) return 'New conversation'
+    return flattened.length > 68 ? `${flattened.slice(0, 65)}...` : flattened
+  }
+
+  function formatRelativeTime(value) {
+    if (!value) return 'Just now'
+    const date = new Date(value)
+    const diff = date.getTime() - Date.now()
+    if (!Number.isFinite(diff)) return ''
+    const formatter = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+    const minutes = Math.round(diff / 60000)
+    if (Math.abs(minutes) < 60) return formatter.format(minutes, 'minute')
+    const hours = Math.round(minutes / 60)
+    if (Math.abs(hours) < 48) return formatter.format(hours, 'hour')
+    return formatter.format(Math.round(hours / 24), 'day')
+  }
+
+  function activeThread() {
+    return threads.find((thread) => thread.id === activeThreadId) || null
+  }
+
+  function signedIn() {
+    return Boolean(authState?.enabled && authState?.session?.user)
+  }
+
+  let toastElement = null
+  function toast(message) {
+    if (!toastElement) {
+      toastElement = document.createElement('div')
+      toastElement.className = 'nx-toast'
+      toastElement.setAttribute('role', 'status')
+      toastElement.setAttribute('aria-live', 'polite')
+      document.body.append(toastElement)
+    }
+    toastElement.textContent = message
+    toastElement.classList.add('is-on')
+    window.clearTimeout(toastElement.timer)
+    toastElement.timer = window.setTimeout(() => toastElement.classList.remove('is-on'), 2400)
+  }
+
+  function setGateFeedback(message, tone = 'muted') {
+    if (!authFeedback) return
+    authFeedback.textContent = message || ''
+    authFeedback.dataset.tone = tone
+  }
+
+  function setComposerFeedback(message, tone = 'muted') {
+    if (!disclaimer) return
+    disclaimer.textContent = message || defaultDisclaimer
+    disclaimer.dataset.tone = message ? tone : 'muted'
+  }
+
+  function showGate({ nudge = false } = {}) {
+    if (!authGate) return
+    window.clearTimeout(gateTimer)
+    authGate.hidden = false
+    root.classList.add('is-auth-locked')
+    authGate.classList.remove('is-leaving')
+    requestAnimationFrame(() => {
+      authGate.classList.add('is-visible')
+      if (nudge) {
+        authGate.classList.remove('is-nudged')
+        void authGate.offsetWidth
+        authGate.classList.add('is-nudged')
+        authGate.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'auto' : 'smooth' })
+      }
+    })
+  }
+
+  function hideGate() {
+    if (!authGate || authGate.hidden) {
+      root.classList.remove('is-auth-locked')
+      return
+    }
+    authGate.classList.add('is-leaving')
+    authGate.classList.remove('is-visible', 'is-nudged')
+    root.classList.remove('is-auth-locked')
+    gateTimer = window.setTimeout(() => {
+      authGate.hidden = true
+      authGate.classList.remove('is-leaving')
+    }, reducedMotion.matches ? 0 : 280)
+  }
+
+  function setAuthBusy(nextBusy, label) {
+    authBusy = nextBusy
+    const disabled = Boolean(nextBusy)
+    ;[authEmailInput, authPasswordInput, authSubmit, accountChip].forEach((element) => {
+      if (element) element.disabled = disabled
+    })
+    if (authSubmit) {
+      authSubmit.classList.toggle('is-loading', disabled && Boolean(label))
+      authSubmit.setAttribute('aria-busy', disabled && label ? 'true' : 'false')
+    }
+    if (authSubmitLabel) authSubmitLabel.textContent = label || 'Sign in'
+  }
+
+  function setChatBusy(nextBusy) {
+    chatBusy = nextBusy
+    if (input) input.disabled = Boolean(nextBusy)
+    if (sendButton) {
+      sendButton.disabled = Boolean(nextBusy)
+      sendButton.classList.toggle('is-busy', Boolean(nextBusy))
+    }
+    if (newThreadButton) newThreadButton.disabled = Boolean(nextBusy)
+    root.classList.toggle('is-chat-busy', Boolean(nextBusy))
+  }
+
+  const mobileDrawer = window.matchMedia('(max-width: 900px)')
+
+  function openSidebar() {
+    sidebar?.classList.add('is-open')
+    sidebarOverlay?.classList.add('is-visible')
+    sidebarToggle?.setAttribute('aria-expanded', 'true')
+    if (mobileDrawer.matches) {
+      window.setTimeout(() => newThreadButton?.focus({ preventScroll: true }), 30)
+    }
+  }
+
+  function closeSidebar({ restoreFocus = false } = {}) {
+    const wasOpen = sidebar?.classList.contains('is-open')
+    sidebar?.classList.remove('is-open')
+    sidebarOverlay?.classList.remove('is-visible')
+    sidebarToggle?.setAttribute('aria-expanded', 'false')
+    if (wasOpen && restoreFocus && mobileDrawer.matches) sidebarToggle?.focus()
+  }
+
+  function syncInputHeight() {
+    if (!input) return
+    input.style.height = '0px'
+    input.style.height = `${Math.min(input.scrollHeight, 220)}px`
+    root.classList.toggle('has-draft', Boolean(input.value.trim()))
+  }
+
+  function currentRelay() {
+    const lastReply = [...messages].reverse().find((message) => message.role === 'assistant' && !message.pending)
+    return /relay|local/i.test(String(lastReply?.provider || '')) ? 'mac' : 'hosted'
+  }
+
+  function renderRelay() {
+    const relay = currentRelay()
+    const live = signedIn()
+    if (modelBadge) {
+      modelBadge.dataset.relay = relay
+      modelBadge.dataset.state = live ? 'live' : 'idle'
+    }
+    if (modelBadgeText) {
+      modelBadgeText.textContent = relay === 'mac' ? 'Your Mac via RoachTail' : 'Hosted model'
+    }
+    if (hostedLane) {
+      hostedLane.dataset.state = live ? (relay === 'hosted' ? 'live' : 'ready') : 'idle'
+      const status = hostedLane.querySelector('[data-lane-status]')
+      if (status) status.textContent = live ? (relay === 'hosted' ? 'Answering this thread' : 'Ready') : 'Sign in to use it'
+    }
+    if (macLane) {
+      macLane.dataset.state = relay === 'mac' ? 'live' : 'off'
+      const status = macLane.querySelector('[data-lane-status]')
+      if (status) status.textContent = relay === 'mac' ? 'Answered the last reply' : 'Not connected'
+    }
+  }
+
+  function renderChrome() {
+    const session = authState?.session
+    const email = session?.user ? sessionLabel(session) : ''
+    if (accountChip) {
+      accountChip.textContent = session?.user ? 'Sign out' : 'Sign in'
+      accountChip.dataset.state = session?.user ? 'live' : 'ready'
+      accountChip.setAttribute('aria-label', session?.user ? `Sign out of ${email}` : 'Sign in to RoachClaw')
+      accountChip.title = session?.user ? `Signed in as ${email}` : 'Sign in to send messages'
+    }
+
+    if (whoLine) {
+      whoLine.textContent = session?.user ? `Signed in as ${email}. ` : 'Not signed in. '
+      const link = document.createElement('a')
+      link.className = 'nx-link'
+      link.href = 'https://accounts.roachnet.org/'
+      link.textContent = 'Account'
+      whoLine.append(link)
+    }
+
+    if (hint) {
+      hint.textContent = !authState?.enabled
+        ? 'Sign-in is off on this deploy'
+        : session?.user
+          ? 'Hosted model'
+          : 'Sign in to send'
+    }
+
+    if (threadTitle) {
+      threadTitle.textContent = activeThread()?.title || 'New conversation'
+    }
+
+    renderRelay()
+  }
+
+  function renderThreadList() {
+    if (!threadList) return
+
+    if (!authState?.enabled) {
+      threadList.innerHTML = '<div class="rc-thread-empty"><p>Sign-in is not switched on for this site yet, so there is nothing to list.</p></div>'
+      return
+    }
+
+    if (!authState?.session?.user) {
+      threadList.innerHTML = '<div class="rc-thread-empty"><p>Your saved conversations show up here once you sign in.</p></div>'
+      return
+    }
+
+    if (!threads.length) {
+      threadList.innerHTML = '<div class="rc-thread-empty"><p>Nothing saved yet. Your first message starts a thread.</p></div>'
+      return
+    }
+
+    threadList.innerHTML = threads
+      .map((thread) => {
+        const isActive = thread.id === activeThreadId
+        return `
+          <button class="rc-thread-item${isActive ? ' is-active' : ''}" type="button" data-thread-id="${escapeHtml(thread.id)}"${isActive ? ' aria-current="true"' : ''}>
+            <strong>${escapeHtml(thread.title || 'New conversation')}</strong>
+            <span>${escapeHtml(thread.summary || 'Saved to your account')}</span>
+            <small>${escapeHtml(formatRelativeTime(thread.last_message_at || thread.created_at))}</small>
+          </button>
+        `
+      })
+      .join('')
+  }
+
+  function renderMessages() {
+    if (!log) return
+
+    if (!messages.length) {
+      log.innerHTML = ''
+      log.hidden = true
+      if (welcome) welcome.hidden = false
+      root.classList.add('is-empty')
+      if (scroller) scroller.scrollTop = 0
+      renderChrome()
+      return
+    }
+
+    if (welcome) welcome.hidden = true
+    log.hidden = false
+    root.classList.remove('is-empty')
+
+    log.innerHTML = messages
+      .map((message) => {
+        const roleClass =
+          message.role === 'user'
+            ? 'rc-message--user'
+            : message.role === 'assistant'
+              ? 'rc-message--assistant'
+              : 'rc-message--system'
+        const label =
+          message.role === 'user'
+            ? 'You'
+            : message.role === 'assistant'
+              ? 'RoachClaw'
+              : 'System'
+        const meta = message.pending
+          ? message.role === 'assistant' ? 'Thinking' : 'Sending'
+          : [message.model, message.provider].filter(Boolean).join(' · ') || formatRelativeTime(message.created_at)
+
+        return `
+          <article class="rc-message ${roleClass}${message.pending ? ' is-pending' : ''}">
+            <header class="rc-message__head">
+              ${message.role === 'assistant' ? '<span class="rc-message__avatar" aria-hidden="true"></span>' : ''}
+              <strong>${escapeHtml(label)}</strong>
+              <span>${escapeHtml(meta)}</span>
+            </header>
+            ${renderMessageContent(message)}
+          </article>
+        `
+      })
+      .join('')
+
+    if (scroller) scroller.scrollTop = scroller.scrollHeight
+    renderChrome()
+  }
+
+  function resetThreadState() {
+    threads = []
+    activeThreadId = null
+    messages = []
+    renderThreadList()
+    renderMessages()
+  }
+
+  async function loadMessages(threadId) {
+    if (!authState?.client || !authState?.session?.user || !threadId) {
+      messages = []
+      renderMessages()
+      return
+    }
+
+    root.classList.add('is-loading-thread')
+    const { data, error } = await authState.client
+      .from('chat_messages')
+      .select('id, role, content, created_at, provider, model')
+      .eq('thread_id', threadId)
+      .order('created_at', { ascending: true })
+    root.classList.remove('is-loading-thread')
+
+    if (error) {
+      setComposerFeedback(error.message || 'That conversation would not load. Try again.', 'error')
+      return
+    }
+
+    messages = data || []
+    renderMessages()
+  }
+
+  async function loadThreads(preferredThreadId = activeThreadId) {
+    if (!authState?.client || !authState?.session?.user) {
+      resetThreadState()
+      return
+    }
+
+    const { data, error } = await authState.client
+      .from('chat_threads')
+      .select('id, title, summary, last_message_at, created_at')
+      .order('last_message_at', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(40)
+
+    if (error) {
+      setComposerFeedback(error.message || 'Your conversations would not load. Try again.', 'error')
+      return
+    }
+
+    threads = data || []
+    activeThreadId =
+      (preferredThreadId && threads.some((thread) => thread.id === preferredThreadId) && preferredThreadId) ||
+      threads[0]?.id ||
+      null
+
+    renderThreadList()
+
+    if (activeThreadId) {
+      await loadMessages(activeThreadId)
+    } else {
+      messages = []
+      renderMessages()
+    }
+  }
+
+  async function createThreadForPrompt(message) {
+    const { data, error } = await authState.client
+      .from('chat_threads')
+      .insert({
+        user_id: authState.session.user.id,
+        title: summarizePrompt(message),
+        summary: null,
+        lane: 'roachclaw-web',
+        source: window.location.origin + window.location.pathname,
+      })
+      .select('id, title, summary, last_message_at, created_at')
+      .single()
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Could not start a new conversation.')
+    }
+
+    threads = [data, ...threads]
+    activeThreadId = data.id
+    renderThreadList()
+    renderChrome()
+    return data
+  }
+
+  function validateEmail({ quiet = false } = {}) {
+    const value = String(authEmailInput?.value || '').trim()
+    const valid = Boolean(value) && authEmailInput?.checkValidity() !== false
+    const field = authEmailInput?.closest('.rc-field')
+    if (!quiet || value) {
+      field?.classList.toggle('is-invalid', !valid)
+      authEmailInput?.setAttribute('aria-invalid', valid ? 'false' : 'true')
+      if (emailHint) emailHint.textContent = valid ? '' : value ? 'That email looks incomplete.' : 'Enter your email.'
+    }
+    return valid
+  }
+
+  async function handleAuthSubmit(event) {
+    event.preventDefault()
+
+    if (!authState?.enabled || !authState?.client) {
+      setGateFeedback('Sign-in is not switched on for this site yet.', 'error')
+      return
+    }
+
+    const email = String(authEmailInput?.value || '').trim()
+    const password = String(authPasswordInput?.value || '')
+
+    if (!validateEmail() || !password) {
+      setGateFeedback(!password && email ? 'Enter your password too.' : 'Enter your email and password to continue.', 'error')
+      ;(!email ? authEmailInput : authPasswordInput)?.focus()
+      return
+    }
+
+    setAuthBusy(true, 'Signing in…')
+    setGateFeedback('')
+
+    try {
+      const result = await authState.client.auth.signInWithPassword({ email, password })
+      if (result.error) {
+        throw result.error
+      }
+
+      authState = {
+        ...authState,
+        session: result.data?.session || authState.session,
+      }
+
+      authForm?.reset()
+      setGateFeedback('')
+      hideGate()
+      renderChrome()
+      toast(`Signed in as ${sessionLabel(authState.session)}`)
+      await loadThreads()
+      input?.focus()
+    } catch (error) {
+      setGateFeedback(friendlyAuthError(error, 'Sign-in did not go through. Try again.'), 'error')
+      authPasswordInput?.select?.()
+    } finally {
+      setAuthBusy(false)
+    }
+  }
+
+  async function handleSignOut() {
+    if (!authState?.client || authBusy) return
+    setAuthBusy(true)
+    await authState.client.auth.signOut()
+    clearCachedAuthState()
+    authState = {
+      ...authState,
+      session: null,
+    }
+    setAuthBusy(false)
+    renderAuthState()
+    resetThreadState()
+    toast('Signed out')
+  }
+
+  async function handleSend() {
+    if (chatBusy) return
+    const message = String(input?.value || '').trim()
+
+    if (!signedIn()) {
+      showGate({ nudge: true })
+      setGateFeedback(
+        authState?.enabled === false
+          ? 'Sign-in is not switched on for this site yet.'
+          : message
+            ? 'Sign in to send that. Your draft stays put.'
+            : 'Sign in to start a conversation.',
+        authState?.enabled === false ? 'error' : 'muted'
+      )
+      if (authState?.enabled !== false) authEmailInput?.focus({ preventScroll: true })
+      return
+    }
+
+    if (!message) {
+      setComposerFeedback('Type a message first.', 'error')
+      input?.focus()
+      return
+    }
+
+    const accessToken = authState.session.access_token
+    if (!accessToken) {
+      setComposerFeedback('Your session expired. Sign in again to keep going.', 'error')
+      return
+    }
+
+    const previousMessages = [...messages]
+    const previousThreadId = activeThreadId
+    const optimisticTimestamp = new Date().toISOString()
+
+    setChatBusy(true)
+    setComposerFeedback('Sending…')
+
+    try {
+      if (!activeThreadId) {
+        await createThreadForPrompt(message)
+      }
+
+      messages = [
+        ...previousMessages,
+        {
+          id: `local-user-${crypto.randomUUID()}`,
+          role: 'user',
+          content: message,
+          created_at: optimisticTimestamp,
+          pending: true,
+        },
+        {
+          id: `local-assistant-${crypto.randomUUID()}`,
+          role: 'assistant',
+          content: 'RoachClaw is thinking…',
+          created_at: optimisticTimestamp,
+          pending: true,
+        },
+      ]
+
+      if (input) {
+        input.value = ''
+        syncInputHeight()
+      }
+      renderMessages()
+
+      const response = await fetch(authState.config?.webChat?.endpoint || '/.netlify/functions/roachclaw-chat', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          threadId: activeThreadId,
+          message,
+        }),
+      })
+
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok || payload?.ok !== true) {
+        throw new Error(payload?.message || 'RoachClaw could not finish the request.')
+      }
+
+      activeThreadId = payload.thread?.id || activeThreadId
+      if (payload.assistantMessage?.content) {
+        messages = messages.map((entry) => {
+          if (entry.role === 'assistant' && entry.pending) {
+            return {
+              ...payload.assistantMessage,
+              pending: false,
+            }
+          }
+          if (entry.role === 'user' && entry.pending && payload.userMessage) {
+            return {
+              ...payload.userMessage,
+              pending: false,
+            }
+          }
+          return entry
+        })
+        renderMessages()
+      }
+      setComposerFeedback(
+        `Reply from ${payload.provider || 'RoachBrain Cloud'} · ${payload.model || authState.config?.webChat?.modelLabel || 'Hosted model'}`,
+        'live'
+      )
+      await loadThreads(activeThreadId)
+    } catch (error) {
+      messages = previousMessages
+      activeThreadId = previousThreadId || activeThreadId
+      renderMessages()
+      if (input) {
+        input.value = message
+        syncInputHeight()
+      }
+      const reason = String(error?.message || '')
+      setComposerFeedback(
+        /failed to fetch|networkerror|load failed/i.test(reason)
+          ? 'Could not reach RoachClaw. Your message is back in the box, so try again in a moment.'
+          : reason || 'RoachClaw could not finish that one. Try again.',
+        'error'
+      )
+    } finally {
+      setChatBusy(false)
+      input?.focus({ preventScroll: true })
+    }
+  }
+
+  function renderAuthState() {
+    const enabled = authState?.enabled === true
+    const session = authState?.session
+
+    if (!enabled) {
+      if (authGateCopy) {
+        authGateCopy.textContent = authState?.reason || 'Sign-in is not switched on for this site yet.'
+      }
+      setGateFeedback('Sign-in is not available here yet.', 'error')
+      showGate()
+      setAuthBusy(true)
+      setComposerFeedback('Sign-in is not switched on for this site yet, so messages cannot be sent.', 'error')
+      renderChrome()
+      return
+    }
+
+    setAuthBusy(false)
+    renderChrome()
+
+    if (session?.user) {
+      hideGate()
+      setComposerFeedback('')
+      return
+    }
+
+    if (authGateCopy) {
+      authGateCopy.textContent =
+        'Sign in to send messages and pick up old threads from any browser. Your models and files stay on your Mac either way.'
+    }
+    showGate()
+    setComposerFeedback('')
+  }
+
+  async function initializeAuthState() {
+    authSubscription?.unsubscribe?.()
+    authSubscription = null
+
+    try {
+      authState = await getSiteAuthState()
+    } catch (error) {
+      authState = { enabled: false, client: null, session: null, reason: error?.message || 'The sign-in library did not load.' }
+    }
+    root.classList.remove('is-booting')
+    renderAuthState()
+
+    if (authState?.enabled && authState?.client) {
+      const { data } = authState.client.auth.onAuthStateChange(async (_event, session) => {
+        const changedUser = (session?.user?.id || '') !== (authState?.session?.user?.id || '')
+        authState = {
+          ...authState,
+          session,
+        }
+        renderAuthState()
+
+        if (!changedUser) return
+        if (session?.user) {
+          await loadThreads(activeThreadId)
+        } else {
+          resetThreadState()
+        }
+      })
+      authSubscription = data?.subscription || null
+    }
+
+    if (authState?.session?.user) {
+      await loadThreads()
+    } else {
+      resetThreadState()
+    }
+  }
+
+  function startNewConversation() {
+    if (chatBusy) return
+    activeThreadId = null
+    messages = []
+    renderThreadList()
+    renderMessages()
+    setComposerFeedback(signedIn() ? 'New conversation. Say something.' : '')
+    closeSidebar()
+    input?.focus()
+  }
+
+  // ---- Event wiring --------------------------------------------------------
+
+  authForm?.addEventListener('submit', handleAuthSubmit)
+  authEmailInput?.addEventListener('blur', () => validateEmail({ quiet: true }))
+  authEmailInput?.addEventListener('input', () => {
+    if (authEmailInput.closest('.rc-field')?.classList.contains('is-invalid')) validateEmail({ quiet: true })
+  })
+
+  accountChip?.addEventListener('click', async () => {
+    if (authState?.session?.user) {
+      await handleSignOut()
+      return
+    }
+    showGate({ nudge: true })
+    authEmailInput?.focus({ preventScroll: true })
+  })
+
+  newThreadButton?.addEventListener('click', startNewConversation)
+  sendButton?.addEventListener('click', () => void handleSend())
+
+  welcome?.addEventListener('click', (event) => {
+    const button = event.target instanceof Element ? event.target.closest('.rc-starter-card') : null
+    if (!button || !input) return
+    const prompt = starterPrompts[button.dataset.starter || ''] || button.querySelector('strong')?.textContent?.trim() || ''
+    if (!prompt) return
+    input.value = prompt
+    syncInputHeight()
+    input.focus()
+    input.setSelectionRange(input.value.length, input.value.length)
+  })
+
+  threadList?.addEventListener('click', async (event) => {
+    const button = event.target instanceof Element ? event.target.closest('[data-thread-id]') : null
+    if (!button) return
+    const threadId = button.dataset.threadId || ''
+    closeSidebar()
+    if (!threadId || threadId === activeThreadId) return
+    activeThreadId = threadId
+    renderThreadList()
+    renderChrome()
+    await loadMessages(threadId)
+  })
+
+  log?.addEventListener('click', async (event) => {
+    const button = event.target instanceof Element ? event.target.closest('[data-rc-copy]') : null
+    if (!button) return
+    const code = button.closest('.rc-code')?.querySelector('pre code')?.textContent || ''
+    try {
+      await navigator.clipboard.writeText(code)
+      button.textContent = 'Copied'
+      button.classList.add('is-done')
+      toast('Code copied')
+    } catch {
+      button.textContent = 'Select to copy'
+    }
+    window.setTimeout(() => {
+      button.textContent = 'Copy'
+      button.classList.remove('is-done')
+    }, 1600)
+  })
+
+  input?.addEventListener('input', syncInputHeight)
+  input?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      event.preventDefault()
+      void handleSend()
+    }
+  })
+
+  sidebarToggle?.addEventListener('click', () => {
+    if (sidebar?.classList.contains('is-open')) closeSidebar({ restoreFocus: true })
+    else openSidebar()
+  })
+  sidebarOverlay?.addEventListener('click', () => closeSidebar({ restoreFocus: true }))
+  mobileDrawer.addEventListener?.('change', () => closeSidebar())
+
+  document.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k') {
+      event.preventDefault()
+      startNewConversation()
+      return
+    }
+    if (event.key === 'Escape' && sidebar?.classList.contains('is-open')) {
+      closeSidebar({ restoreFocus: true })
+    }
+  })
+
+  if (!isApple) {
+    root.querySelectorAll('[data-rc-mod]').forEach((key) => {
+      key.textContent = 'Ctrl'
+    })
+  }
+
+  window.addEventListener('beforeunload', () => {
+    authSubscription?.unsubscribe?.()
+  })
+
+  root.classList.add('is-booting', 'is-empty')
+  if (log) log.hidden = true
+  syncInputHeight()
+  void initializeAuthState()
+}
+```
+
+## roachclaw/index.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="roachclaw-index-html" file="roachclaw/index.html"}
+<!doctype html>
+<html lang="en" class="nx rc-page">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachClaw on the web</title>
+    <meta
+      name="description"
+      content="RoachClaw in your browser: drafts, debugging, summaries and plain answers from a hosted model, saved to your RoachNet account. Private questions belong in the RoachNet app on your Mac."
+    />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://roachnet.org/roachclaw/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachClaw on the web" />
+    <meta
+      property="og:description"
+      content="Ask RoachClaw for drafts, fixes and summaries from any browser. Your conversations follow your account; your files stay on your Mac."
+    />
+    <meta property="og:url" content="https://roachnet.org/roachclaw/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachClaw on the web" />
+    <meta
+      name="twitter:description"
+      content="Ask RoachClaw for drafts, fixes and summaries from any browser. Your conversations follow your account; your files stay on your Mac."
+    />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="../nx.css" />
+    <link rel="stylesheet" href="../roachclaw-web.css" />
+  </head>
+  <body data-page="roachclaw">
+    <a class="rn-skip-link" href="#roachclaw-main">Skip to main content</a>
+    <div class="nx-atmos rc-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">RoachClaw · web</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link is-current" href="#roachclaw-main" aria-current="page">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="rc-app" id="view-roachclaw">
+      <div class="rc-sidebar-overlay" aria-hidden="true"></div>
+      <div class="rc-layout">
+        <aside class="rc-sidebar" id="rc-sidebar" aria-label="Conversations">
+          <div class="rc-sidebar__head">
+            <p class="rc-sidebar__label">Conversations</p>
+            <button class="rc-sidebar__new-btn" id="roachclaw-new-thread" type="button">
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span>New chat</span>
+              <span class="rc-kbd-group" aria-hidden="true"><kbd class="rc-kbd" data-rc-mod>⌘</kbd><kbd class="rc-kbd">K</kbd></span>
+            </button>
+          </div>
+
+          <div class="rc-sidebar__threads">
+            <div class="rc-thread-list" id="roachclaw-thread-list">
+              <div class="rc-thread-empty">
+                <p>Your saved conversations show up here once you sign in.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rc-sidebar__foot">
+            <p class="rc-sidebar__label">Answering from</p>
+            <ul class="rc-lanes" aria-label="Where RoachClaw answers from">
+              <li class="rc-lane" data-lane="hosted" data-state="live">
+                <span class="rc-lane__dot" aria-hidden="true"></span>
+                <span class="rc-lane__copy">
+                  <strong>Hosted model</strong>
+                  <span data-lane-status>Ready in this browser</span>
+                </span>
+              </li>
+              <li class="rc-lane" data-lane="mac" data-state="off">
+                <span class="rc-lane__dot" aria-hidden="true"></span>
+                <span class="rc-lane__copy">
+                  <strong>Your Mac via RoachTail</strong>
+                  <span data-lane-status>Not connected</span>
+                </span>
+              </li>
+            </ul>
+            <p class="rc-sidebar__who" id="roachclaw-who">Not signed in. <a class="nx-link" href="https://accounts.roachnet.org/">Account</a></p>
+          </div>
+        </aside>
+
+        <main class="rc-main" id="roachclaw-main" tabindex="-1">
+          <header class="rc-main__topbar">
+            <div class="rc-main__topbar-left">
+              <button class="rc-sidebar-toggle" id="rc-sidebar-toggle" type="button" aria-label="Show conversations" aria-controls="rc-sidebar" aria-expanded="false">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5h14M3 10h10M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              </button>
+              <h1 class="rc-title">
+                <span class="rc-title__app">RoachClaw</span><span class="nx-sr">: </span>
+                <span class="rc-main__thread-title">New conversation</span>
+              </h1>
+            </div>
+            <div class="rc-main__topbar-right">
+              <p class="rc-model-badge" data-relay="hosted" title="Where this conversation is answered">
+                <span class="rc-model-badge__dot" aria-hidden="true"></span>
+                <span>Hosted model</span>
+              </p>
+              <button class="rc-account-chip" id="roachclaw-account-chip" type="button">Sign in</button>
+            </div>
+          </header>
+
+          <div class="rc-chat-area">
+            <div class="rc-chat-scroll" id="roachclaw-scroll">
+              <section class="rc-welcome" id="roachclaw-welcome" aria-labelledby="roachclaw-welcome-title">
+                <div class="rc-welcome__intro">
+                  <p class="nx-overline nx-overline--cyan">RoachClaw on the web</p>
+                  <h2 class="rc-empty-state__heading" id="roachclaw-welcome-title">What are we fixing, building or untangling today?</h2>
+                  <p class="rc-empty-state__sub">Ask for a draft, a fix or a summary. Conversations save to your account, so you can pick them up in any browser.</p>
+                </div>
+
+                <section class="rc-auth-gate" id="roachclaw-auth-gate" aria-labelledby="roachclaw-gate-title" hidden>
+                  <p class="nx-overline">Sign in to chat</p>
+                  <h2 class="rc-auth-gate__title" id="roachclaw-gate-title">Your conversations live in your account.</h2>
+                  <p class="rc-auth-gate__copy" id="roachclaw-gate-copy">Sign in to send messages and pick up old threads from any browser. Your models and files stay on your Mac either way.</p>
+
+                  <form class="rc-form" id="roachclaw-auth-form" novalidate>
+                    <div class="rc-field">
+                      <label for="roachclaw-auth-email">Email</label>
+                      <input id="roachclaw-auth-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-describedby="roachclaw-auth-email-hint" required />
+                      <p class="rc-field__hint" id="roachclaw-auth-email-hint" data-hint-for="email"></p>
+                    </div>
+
+                    <div class="rc-field">
+                      <label for="roachclaw-auth-password">Password</label>
+                      <input id="roachclaw-auth-password" name="password" type="password" autocomplete="current-password" placeholder="Your account password" required />
+                    </div>
+
+                    <div class="rc-auth-gate__actions">
+                      <button class="nx-btn nx-btn--primary rc-submit" id="roachclaw-auth-submit" type="submit"><span class="rc-submit__label">Sign in</span></button>
+                      <a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/?mode=signup">Create an account</a>
+                    </div>
+                    <p class="rc-form__note" id="roachclaw-auth-note">Same email and password as your RoachNet account. New accounts start on the Account page, where you confirm your email.</p>
+                    <p class="rc-form__feedback" id="roachclaw-auth-feedback" role="status" aria-live="polite"></p>
+                  </form>
+                </section>
+
+                <div class="rc-starters">
+                  <p class="rc-section-label" id="roachclaw-starters-label">Start with</p>
+                  <div class="rc-starter-grid" role="group" aria-labelledby="roachclaw-starters-label">
+                    <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="explain">
+                      <span class="rc-starter-card__icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 13.5V9.5M10 6.6v.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                      </span>
+                      <strong>Explain something</strong>
+                      <span>A tool, an idea, a workflow. Short, not a lecture.</span>
+                    </button>
+                    <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="draft">
+                      <span class="rc-starter-card__icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 14.5V16h1.5L14 7.5 12.5 6 4 14.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 5l3 3" stroke="currentColor" stroke-width="1.4"/></svg>
+                      </span>
+                      <strong>Draft a message</strong>
+                      <span>An email, a commit message or a reply that sounds like a person wrote it.</span>
+                    </button>
+                    <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="debug">
+                      <span class="rc-starter-card__icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="5.5" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </span>
+                      <strong>Debug a problem</strong>
+                      <span>Errors, configs, surprise behaviour. Nobody blames the chair.</span>
+                    </button>
+                    <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="summarize">
+                      <span class="rc-starter-card__icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 5h12M4 8.5h9M4 12h10M4 15.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                      </span>
+                      <strong>Summarize a page</strong>
+                      <span>Paste a doc or a thread. Keep the parts worth keeping.</span>
+                    </button>
+                    <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="cookbook">
+                      <span class="rc-starter-card__icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="5" y="5" width="10" height="10" rx="2.2" stroke="currentColor" stroke-width="1.4"/><path d="M8 2.8v2.2M12 2.8v2.2M8 15v2.2M12 15v2.2M2.8 8h2.2M2.8 12h2.2M15 8h2.2M15 12h2.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                      </span>
+                      <strong>Pick a local model</strong>
+                      <span>Match a model to your Mac's memory before you download gigabytes.</span>
+                    </button>
+                    <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="research">
+                      <span class="rc-starter-card__icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4.5 3.5h7l4 4v9h-11v-13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M11.5 3.5v4h4M7 11h6M7 14h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </span>
+                      <strong>Plan some research</strong>
+                      <span>Sources to check, a way to verify them, and a brief you can keep.</span>
+                    </button>
+                  </div>
+                </div>
+
+                <section class="rc-relay" aria-labelledby="roachclaw-relay-title">
+                  <p class="rc-section-label" id="roachclaw-relay-title">Where your words go</p>
+                  <div class="rc-relay__grid">
+                    <article class="rc-relay__card" data-state="live">
+                      <p class="rc-relay__state"><span aria-hidden="true"></span>In use here</p>
+                      <h3>Hosted model</h3>
+                      <p>In the browser, RoachClaw answers with a hosted model. Each message and reply is saved to your account, so the thread is still there next time.</p>
+                    </article>
+                    <article class="rc-relay__card" data-state="off">
+                      <p class="rc-relay__state"><span aria-hidden="true"></span>Not connected</p>
+                      <h3>Your Mac via RoachTail</h3>
+                      <p>This page can't reach your Mac yet. For questions about your own files, open RoachClaw in the RoachNet app, where it runs on models on your machine.</p>
+                      <a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Get RoachNet for macOS</a>
+                    </article>
+                  </div>
+                </section>
+              </section>
+
+              <div class="rc-log" id="roachclaw-log" aria-live="polite" aria-relevant="additions"></div>
+            </div>
+
+            <div class="rc-composer">
+              <div class="rc-composer__inner">
+                <label class="nx-sr" for="roachclaw-input">Message RoachClaw</label>
+                <textarea id="roachclaw-input" class="rc-composer__textarea" placeholder="Message RoachClaw" rows="1" aria-describedby="roachclaw-hint"></textarea>
+                <button class="rc-composer__send" id="roachclaw-send" type="button" aria-label="Send message">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 14.5v-11M4.5 8L9 3.5 13.5 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="rc-composer__controls">
+                <p class="rc-composer__keys" aria-hidden="true">
+                  <span><kbd class="nx-key rc-kbd" data-key="enter">Enter</kbd> send</span>
+                  <span><kbd class="nx-key rc-kbd" data-key="shift">Shift</kbd><kbd class="nx-key rc-kbd" data-key="enter">Enter</kbd> new line</span>
+                  <span class="rc-composer__keys-k"><kbd class="nx-key rc-kbd" data-key="meta" data-rc-mod>⌘</kbd><kbd class="nx-key rc-kbd" data-key="k">K</kbd> new chat</span>
+                </p>
+                <p class="rc-composer__hint" id="roachclaw-hint">Hosted model</p>
+              </div>
+              <p class="rc-composer__disclaimer" role="status" aria-live="polite">In the browser RoachClaw uses a hosted model. For private files, ask it in the RoachNet app on your Mac.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachClaw</span>
+        <span class="nx-foot__tag">One shortcut away</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachClaw</strong>
+          <span>Drafts, fixes and summaries in any browser. The private stuff stays in the RoachNet app on your Mac.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="#roachclaw-main">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
+
+    <script src="../site-config.js"></script>
+    <script src="../roachclaw.js" type="module"></script>
+    <script src="../nx.js" type="module"></script>
+  </body>
+</html>
+```
+
 ## robots-accounts.txt
 
 This root is reconciled byte-for-byte from the current production source.
@@ -11800,6 +19359,432 @@ User-agent: *
 Allow: /
 
 Sitemap: https://apps.roachnet.org/sitemap.xml
+```
+
+## site-account.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="site-account-js" file="site-account.js"}
+const defaultSiteConfig = {
+  releaseVersion: '1.0.6',
+  auth: {
+    enabled: false,
+    provider: 'supabase',
+    supabaseUrl: '',
+    supabaseAnonKey: '',
+    redirectUrl: 'https://accounts.roachnet.org/',
+    registerUrl: 'https://roachnet.org/.netlify/functions/register-account',
+    remoteConfigUrl: 'https://accounts.roachnet.org/site-config.js',
+  },
+  webChat: {
+    enabled: false,
+    mode: 'planned',
+    accountRequired: true,
+    endpoint: 'https://roachnet.org/.netlify/functions/roachclaw-chat',
+    providerLabel: 'Your device or RoachBrain Cloud',
+    modelLabel: 'Local relay or cloud model',
+  },
+  turnstile: {
+    enabled: false,
+    siteKey: '',
+  },
+}
+
+let cachedAuthState = null
+let pendingAuthState = null
+let remoteConfigPromise = null
+
+// supabase-js is self-hosted (pinned, MIT) so the account pages need no CDN:
+// the CSP on accounts.roachnet.org allows scripts from 'self' only, and a
+// privacy-first site should not ask a third party to serve its sign-in code.
+const SUPABASE_JS_PATH = '/vendor/supabase-js/2.117.2/supabase.js'
+let supabaseLoading = null
+function loadSupabase() {
+  if (window.supabase?.createClient) return Promise.resolve(window.supabase)
+  if (!supabaseLoading) {
+    supabaseLoading = new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = SUPABASE_JS_PATH
+      script.async = true
+      script.onload = () => (window.supabase?.createClient ? resolve(window.supabase) : reject(new Error('supabase-js loaded without createClient')))
+      script.onerror = () => {
+        supabaseLoading = null
+        reject(new Error('Could not load the sign-in library.'))
+      }
+      document.head.append(script)
+    })
+  }
+  return supabaseLoading
+}
+
+const authClientGlobalKey = '__ROACHNET_SUPABASE_AUTH_CLIENT__'
+
+function mergeSiteConfig(...configs) {
+  return configs.reduce(
+    (merged, configured = {}) => ({
+      ...merged,
+      ...configured,
+      auth: {
+        ...merged.auth,
+        ...(configured.auth || {}),
+      },
+      webChat: {
+        ...merged.webChat,
+        ...(configured.webChat || {}),
+      },
+      turnstile: {
+        ...merged.turnstile,
+        ...(configured.turnstile || {}),
+      },
+    }),
+    structuredClone(defaultSiteConfig)
+  )
+}
+
+function currentGlobalConfig() {
+  return window.__ROACHNET_SITE_CONFIG__ || {}
+}
+
+function currentRemoteConfig() {
+  return window.__ROACHNET_REMOTE_SITE_CONFIG__ || {}
+}
+
+async function loadRemoteSiteConfig() {
+  if (window.__ROACHNET_REMOTE_SITE_CONFIG__) {
+    return window.__ROACHNET_REMOTE_SITE_CONFIG__
+  }
+
+  if (window.location.hostname === 'accounts.roachnet.org') {
+    return {}
+  }
+
+  if (remoteConfigPromise) {
+    return remoteConfigPromise
+  }
+
+  const remoteConfigUrl =
+    currentGlobalConfig()?.auth?.remoteConfigUrl || defaultSiteConfig.auth.remoteConfigUrl
+
+  remoteConfigPromise = new Promise((resolve) => {
+    const priorConfig = currentGlobalConfig()
+    const script = document.createElement('script')
+    script.src = `${remoteConfigUrl}?t=${Date.now()}`
+    script.async = true
+
+    script.onload = () => {
+      window.__ROACHNET_REMOTE_SITE_CONFIG__ = window.__ROACHNET_SITE_CONFIG__ || {}
+      window.__ROACHNET_SITE_CONFIG__ = priorConfig
+      resolve(window.__ROACHNET_REMOTE_SITE_CONFIG__)
+    }
+
+    script.onerror = () => {
+      window.__ROACHNET_SITE_CONFIG__ = priorConfig
+      resolve({})
+    }
+
+    document.head.append(script)
+  })
+
+  return remoteConfigPromise
+}
+
+export function getSiteConfig() {
+  return mergeSiteConfig(currentGlobalConfig(), currentRemoteConfig())
+}
+
+export async function getSiteAuthState() {
+  if (cachedAuthState) {
+    return cachedAuthState
+  }
+
+  if (pendingAuthState) {
+    return pendingAuthState
+  }
+
+  pendingAuthState = resolveSiteAuthState()
+  try {
+    cachedAuthState = await pendingAuthState
+    return cachedAuthState
+  } finally {
+    pendingAuthState = null
+  }
+}
+
+async function resolveSiteAuthState() {
+  let config = getSiteConfig()
+  if ((!config.auth.enabled || !config.webChat.enabled) && window.location.hostname !== 'accounts.roachnet.org') {
+    await loadRemoteSiteConfig()
+    config = getSiteConfig()
+  }
+
+  const auth = config.auth || {}
+  const enabled =
+    auth.enabled === true &&
+    auth.provider === 'supabase' &&
+    typeof auth.supabaseUrl === 'string' &&
+    auth.supabaseUrl.length > 0 &&
+    typeof auth.supabaseAnonKey === 'string' &&
+    auth.supabaseAnonKey.length > 0
+
+  if (!enabled) {
+    return {
+      enabled: false,
+      client: null,
+      session: null,
+      reason:
+        'Site accounts are not armed on this deploy yet. RoachTail, RoachSync, and the native runtime still stay on your own devices until this is live.',
+      config,
+    }
+  }
+
+  const { createClient } = await loadSupabase()
+  const globalClient = window[authClientGlobalKey]
+  const client =
+    globalClient?.supabaseUrl === auth.supabaseUrl &&
+    globalClient?.supabaseAnonKey === auth.supabaseAnonKey
+      ? globalClient.client
+      : createClient(auth.supabaseUrl, auth.supabaseAnonKey, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            flowType: 'pkce',
+          },
+        })
+
+  window[authClientGlobalKey] = {
+    supabaseUrl: auth.supabaseUrl,
+    supabaseAnonKey: auth.supabaseAnonKey,
+    client,
+  }
+
+  const { data, error } = await client.auth.getSession()
+  return {
+    enabled: true,
+    client,
+    session: error ? null : data.session,
+    reason: error ? error.message : '',
+    config,
+  }
+}
+
+export function sessionLabel(session) {
+  const email = session?.user?.email
+  return email && email.trim() ? email.trim() : 'Signed in'
+}
+
+export async function refreshSiteSession() {
+  if (!cachedAuthState?.client) {
+    return null
+  }
+
+  const { data } = await cachedAuthState.client.auth.getSession()
+  cachedAuthState = {
+    ...cachedAuthState,
+    session: data.session,
+  }
+  return cachedAuthState.session
+}
+
+export function clearCachedAuthState() {
+  cachedAuthState = null
+  pendingAuthState = null
+}
+```
+
+## sitemap/index.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="sitemap-index-html" file="sitemap/index.html"}
+<!doctype html>
+<html lang="en" class="nx">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoachNet Sitemap</title>
+    <meta name="description" content="Every RoachNet page, download, doc and release note on one page." />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href="https://roachnet.org/sitemap/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoachNet Sitemap" />
+    <meta property="og:description" content="Every RoachNet page, download, doc and release note on one page." />
+    <meta property="og:url" content="https://roachnet.org/sitemap/" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoachNet Sitemap" />
+    <meta name="twitter:description" content="Every RoachNet page, download, doc and release note on one page." />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="../nx.css" />
+  </head>
+  <body data-page="sitemap">
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__scan"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
+
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Sitemap</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top" class="nx-main" tabindex="-1">
+      <section class="nx-hero nx-hero--center nx-section--tight" aria-labelledby="hero-title">
+        <div class="nx-hero__copy">
+          <p class="nx-overline">Sitemap</p>
+          <h1 class="nx-display" id="hero-title">Everything, <span class="nx-accent">one page.</span></h1>
+          <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
+          <ul class="nx-status" aria-label="Current versions">
+            <li data-state="online">Desktop v1.0.6</li>
+            <li data-state="online">iOS v0.2.0</li>
+            <li data-state="pending">1.1 in the workshop</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="nx-section nx-section--tight" aria-label="RoachNet pages">
+        <div class="nx-grid nx-grid--2 nx-sitemap">
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">Core product</p>
+            <h2 class="nx-card__title">RoachNet</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/">Mission</a><p>Why this whole thing exists.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Home</a><p>The desktop tour: screenshots, downloads, and the quick read on what RoachNet does.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://apps.roachnet.org/">Apps</a><p>Libraries, courses, field guides, voice packs and models that land straight in the app.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/roachclaw/">RoachClaw</a><p>AI chat in the browser, or on your own machine when the question is nobody else's business.</p></li>
+            </ul>
+          </article>
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">Downloads</p>
+            <h2 class="nx-card__title">Get the app</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">macOS installer</a><p>Start here. Built for Apple Silicon.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Homebrew</a><p>Same app, same <code>~/RoachNet</code> folder, one command in Terminal.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet iOS</a><p>SideStore and AltStore for iPhone and iPad.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Shared iOS source</a><p>The AltSource feed used by SideStore and AltStore.</p></li>
+            </ul>
+          </article>
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">On the web</p>
+            <h2 class="nx-card__title">Accounts and services</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Sign-in and sync settings. Everything heavy stays on your machine.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
+            </ul>
+          </article>
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">Out in the open</p>
+            <h2 class="nx-card__title">Source and docs</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">Source code and releases</a><p>Code, checksums, releases and docs, all readable before you trust any of it.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Latest release</a><p>What shipped, and when.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/wiki" target="_blank" rel="noreferrer">Wiki</a><p>Install notes, fixes for when things go sideways, and setup docs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Homebrew tap</a><p>The cask, if you'd rather read it than run it.</p></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
+        </a>
+      </div>
+    </footer>
+
+    <script src="../site-config.js"></script>
+    <script src="../app.js" type="module"></script>
+    <script src="../nx.js" type="module"></script>
+  </body>
+</html>
 ```
 
 ## scripts/build-accounts-site.mjs
@@ -11823,17 +19808,15 @@ async function main() {
   await mkdir(outputRoot, { recursive: true })
 
   const copyTargets = [
-    'app.css',
-    'app-polish.css',
     'account.js',
-    'roachclaw.js',
-    'roachclaw-web.css',
     'router.js',
     'site-account.js',
-    'site-polish.js',
     'site-config.js',
-    'assets/roachnet-logo.webp',
-    'assets/roachclaw-logo.webp',
+    'nx.css',
+    'nx-account.css',
+    'nx.js',
+    'fonts',
+    'vendor/supabase-js',
     'favicon.ico',
     'favicon-16x16.png',
     'favicon-32x32.png',
@@ -12009,13 +19992,13 @@ async function main() {
   await mkdir(outputRoot, { recursive: true })
 
   const copyTargets = [
-    'app.css',
-    'app-polish.css',
-    'app.js',
     'app-store.js',
     'app-store-catalog.json',
-    'site-polish.js',
     'site-config.js',
+    'nx.css',
+    'nx-store.css',
+    'nx.js',
+    'fonts',
     'collections',
     'downloads',
     'assets/app-icons',
@@ -12062,7 +20045,7 @@ async function main() {
     path.join(outputRoot, '_headers'),
     [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.github.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
       '  X-Frame-Options: DENY',
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',
@@ -12186,11 +20169,8 @@ async function promote(stagedDirectory) {
   }
 }
 
-// The Mission landing shares the site shell (app.css, app.js, motion layer), so the build
-// keeps its resources and only pins the Netlify badge size to avoid layout shift.
 function optimizeLandingDocument(document) {
-  // The Mission page shares the site shell (nav, motion layer), so it keeps every
-  // stylesheet and script it links. The build only sizes the Netlify badge.
+  // The build only pins the Netlify badge size on the Mission page to avoid layout shift.
   return document.replace(
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"',
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" width="114" height="32"'
@@ -12200,24 +20180,22 @@ function optimizeLandingDocument(document) {
 const copyList = [
   "index.html",
   "404.html",
-  "app.css",
-  "app-polish.css",
   "app.js",
   "api.js",
-  "app-store.html",
-  "app-store.js",
   "app-store-catalog.json",
-  "landing.css",
   "landing-script.js",
   "landing-dither.js",
-  "motion-layer.css",
-  "motion-layer.js",
+  "nx.css",
+  "nx.js",
+  "nx-mission.css",
+  "nx-docs.css",
+  "vendor/supabase-js",
+  "fonts",
   "roachclaw.js",
   "roachclaw-web.css",
   "router.js",
   "site-account.js",
   "site-config.js",
-  "site-polish.js",
   "robots.txt",
   "sitemap.xml",
   "apple-touch-icon.png",
@@ -12887,7 +20865,8 @@ function expand(name, chunks, stack = []) {
 }
 
 const sourceFiles = [
-  '404.html', 'account.js', 'account/index.html', 'app-store.js', 'html-validate.json', 'index.html', 'landing.css', 'landing-script.js', 'landing-dither.js', 'motion-layer.css', 'motion-layer.js', 'netlify.toml', 'package-lock.json', 'package.json', 'robots-accounts.txt', 'robots-apps.txt',
+  '404.html', 'account.js', 'account/index.html', 'api.js', 'api/index.html', 'app-store.html', 'app-store.js', 'brew/index.html', 'home/index.html', 'html-validate.json', 'index.html', 'ios/index.html', 'landing-script.js', 'landing-dither.js', 'netlify.toml',
+  'nx.css', 'nx.js', 'nx-account.css', 'nx-docs.css', 'nx-mission.css', 'nx-store.css', 'package-lock.json', 'package.json', 'roachclaw-web.css', 'roachclaw.js', 'roachclaw/index.html', 'robots-accounts.txt', 'robots-apps.txt', 'site-account.js', 'sitemap/index.html',
   'scripts/build-accounts-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-main-site.mjs', 'scripts/check-links.mjs',
   'scripts/site-browser-outcomes.mjs', 'scripts/snapshot-live-sites.mjs', 'scripts/tangle.mjs', 'scripts/validate-html.mjs',
   'sitemap-accounts.xml', 'sitemap-apps.xml', 'test/register-account.test.mjs', 'test/site-outcomes.mjs', 'netlify/functions/register-account.mjs', 'netlify/functions/roachclaw-chat.mjs',
@@ -13235,7 +21214,8 @@ assert.match(netlify, /Strict-Transport-Security/)
 assert.match(netlify, /Permissions-Policy/)
 assert.match(netlify, /Content-Security-Policy/)
 assert.match(netlify, /frame-ancestors 'none'/)
-assert.match(netlify, /script-src[^"\n]*https:\/\/cdn\.jsdelivr\.net/)
+assert.doesNotMatch(netlify, /cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com/, 'every script, style and font is self-hosted')
+assert.match(netlify, /style-src 'self';/, 'no page needs inline styles')
 assert.doesNotMatch(netlify, /script-src [^;"\n]*(?:'unsafe-inline'|sha256-)/, 'no page needs inline scripts, so the CSP allows none')
 assert.match(netlify, /script-src-attr 'none'/)
 assert.doesNotMatch(await source('sitemap.xml'), /https:\/\/(apps|accounts)\.roachnet\.org|https:\/\/www\.roachwares\.org/)
@@ -13266,11 +21246,11 @@ assert.equal(
   'build:main must stage canonical 404.html byte-for-byte'
 )
 const mainHtml = await source('website-main-dist/index.html')
-assert.match(mainHtml, /<link rel="stylesheet" href="\.\/landing\.css" \/>/)
-assert.match(mainHtml, /<link rel="stylesheet" href="\.\/motion-layer\.css" \/>/)
+assert.match(mainHtml, /<link rel="stylesheet" href="\.\/nx\.css" \/>/)
+assert.match(mainHtml, /<link rel="stylesheet" href="\.\/nx-mission\.css" \/>/)
 assert.match(mainHtml, /<script src="\.\/landing-script\.js"><\/script>/)
 assert.match(mainHtml, /<script src="\.\/landing-dither\.js"><\/script>/)
-assert.match(mainHtml, /<script src="\.\/motion-layer\.js" type="module"><\/script>/)
+assert.match(mainHtml, /<script src="\.\/nx\.js" type="module"><\/script>/)
 assert.match(mainHtml, /<img[^>]+src="https:\/\/www\.netlify\.com\/assets\/badges\/netlify-badge-color-accent\.svg"[^>]+width="[^"]+"[^>]+height="[^"]+"/)
 
 // Motion policy: the Mission page may animate, but every decorative effect has to
@@ -13278,14 +21258,15 @@ assert.match(mainHtml, /<img[^>]+src="https:\/\/www\.netlify\.com\/assets\/badge
 // and stop looping while the tab is hidden. No inline scripts (the CSP has no
 // 'unsafe-inline').
 const landingHtml = await source('index.html')
-const landingCss = await source('landing.css')
+const nxCss = await source('nx.css')
+const missionCss = await source('nx-mission.css')
 const landingScript = await source('landing-script.js')
 const landingDither = await source('landing-dither.js')
-const motionLayer = await source('motion-layer.js')
+const nxScript = await source('nx.js')
 assert.doesNotMatch(landingHtml, /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/, 'landing must not ship inline executable scripts')
 assert.doesNotMatch(landingHtml, /\/\.netlify\/scripts\/|cdn-cgi/, 'landing must not carry edge-injected scripts')
 assert.match(landingHtml, /<div class="dither-bg" aria-hidden="true">/, 'decorative canvas must be hidden from assistive tech')
-for (const [name, script] of [['landing-script.js', landingScript], ['landing-dither.js', landingDither], ['motion-layer.js', motionLayer]]) {
+for (const [name, script] of [['landing-script.js', landingScript], ['landing-dither.js', landingDither], ['nx.js', nxScript]]) {
   assert.match(script, /prefers-reduced-motion: reduce/, `${name} must honor reduced motion`)
 }
 assert.match(landingScript, /pointer: fine/, 'pointer-following effects must skip coarse pointers')
@@ -13295,13 +21276,16 @@ assert.match(landingScript, /document\.hidden/, 'glitch bursts must pause in a h
 assert.match(landingDither, /visibilityState === 'hidden'/, 'dither loop must pause in a hidden tab')
 assert.match(landingScript, /setAttribute\('aria-label', `Latest RoachNet release \$\{d\.tag_name\}`\)/, 'release chip accessible name must follow the live tag')
 assert.doesNotMatch(landingHtml, /why-cap-card__icon" aria-hidden="true">&#xe2;/, 'capability icons must render (no mojibake glyphs)')
-assert.match(landingCss, /body\.rn-body \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*background:\s*#000;/s, 'landing skip link needs an explicit high-contrast default style')
+assert.match(nxCss, /html\.nx \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*background:\s*#000;/s, 'skip link needs an explicit high-contrast default style')
+assert.match(nxCss, /@media \(prefers-reduced-motion: reduce\)/, 'nx.css must stand decorative motion down')
+assert.match(missionCss, /@media \(prefers-reduced-motion: reduce\)/, 'Mission styles must stand decorative motion down')
+assert.doesNotMatch(landingHtml, /why-blockquote__lines" aria-hidden/, 'the three blockquote lines are content, not decoration')
 assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.6"/, 'release accessible name must include its visible version')
-assert.match(landingHtml, /<img class="rn-logo-img" src="\.\/favicon-32x32\.png" width="26" height="26"/, 'landing must request a local icon sized for its rendered logo')
+assert.match(landingHtml, /<a class="nx-nav__link is-current" href="#top" aria-current="page">Mission<\/a>/, 'Mission is the current page in the nav')
 const landingLogo = await readFile(path.join(root, 'favicon-32x32.png'))
-assert.equal(landingLogo.readUInt32BE(16), 32, 'landing logo width budget')
-assert.equal(landingLogo.readUInt32BE(20), 32, 'landing logo height budget')
-assert.ok((await stat(path.join(root, 'favicon-32x32.png'))).size <= 1024, 'landing logo byte budget')
+assert.equal(landingLogo.readUInt32BE(16), 32, 'favicon width budget')
+assert.equal(landingLogo.readUInt32BE(20), 32, 'favicon height budget')
+assert.ok((await stat(path.join(root, 'favicon-32x32.png'))).size <= 1024, 'favicon byte budget')
 
 await run(process.execPath, ['scripts/build-accounts-site.mjs'], { cwd: root })
 const accountsHtml = await source('website-accounts-dist/index.html')

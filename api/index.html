@@ -1,145 +1,273 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachNet API: The blueprint, labeled</title>
+    <title>RoachNet API: every route in 1.0.6</title>
     <meta
       name="description"
-      content="Explore RoachNet API routes for setup, runtime, companion pairing, RoachClaw, app installs, and local context. Calls, inputs, and boundaries are labeled."
+      content="Reference for the RoachNet 1.0.6 native runtime: the loopback API, the companion bridge your phone uses, the setup service, and the two roachnet.org functions. Methods, bodies, responses and source lines."
     />
-    <meta name="theme-color" content="#0a1016" />
+    <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/api/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="RoachNet API: The blueprint, labeled" />
+    <meta property="og:title" content="RoachNet API: every route in 1.0.6" />
     <meta
       property="og:description"
-      content="Setup, runtime, iOS, RoachClaw, and app-install routes, with inputs and callers labelled."
+      content="Every route the RoachNet 1.0.6 runtime answers, with bodies, responses, source lines and a curl you can paste."
     />
     <meta property="og:url" content="https://roachnet.org/api/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RoachNet API: The blueprint, labeled" />
+    <meta name="twitter:title" content="RoachNet API: every route in 1.0.6" />
     <meta
       name="twitter:description"
-      content="Setup, runtime, iOS, RoachClaw, and app-install routes, with inputs and callers labelled."
+      content="Every route the RoachNet 1.0.6 runtime answers, with bodies, responses, source lines and a curl you can paste."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
-    <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css" />
-    <link rel="stylesheet" href="../motion-layer.css" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="../nx.css" />
+    <link rel="stylesheet" href="../nx-docs.css" />
   </head>
   <body data-page="api">
-    <a class="rn-skip-link" href="#api-main">Skip to main content</a>
-    <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
-    <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
-
-    <div class="api-docs-shell">
-      <aside class="api-docs-sidebar" aria-label="API groups" data-reveal>
-        <a class="api-docs-brand" href="https://roachnet.org/" aria-label="Back to RoachNet">
-          <img class="api-docs-brand__mark" src="../assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
-          <div class="api-docs-brand__copy">
-            <span>RoachNet API</span>
-            <strong>v1.0.6 routes, inputs, and boundaries.</strong>
-          </div>
-        </a>
-
-        <section class="api-docs-sidebar__intro">
-          <span class="api-docs-kicker">Reference</span>
-          <h2>The blueprint, labeled.</h2>
-          <p>Setup, runtime, Homebrew, iOS, RoachClaw, RoachTail, local context, and model installs. Every call and input is labelled, so nobody has to guess which wire is live.</p>
-        </section>
-
-        <div class="api-docs-sidebar__stats" id="api-stats"></div>
-        <nav class="api-docs-sidebar__nav" id="api-group-nav"></nav>
-
-        <div class="api-docs-sidebar__links">
-          <a class="cta cta--ghost" href="https://roachnet.org/home/">Home</a>
-          <a class="cta cta--ghost" href="https://roachnet.org/roachclaw/">RoachClaw</a>
-          <a class="cta cta--ghost" href="https://accounts.roachnet.org/">Account</a>
-          <a class="cta cta--ghost" href="https://roachnet.org/brew/">Homebrew</a>
-          <a class="cta cta--ghost" href="https://roachnet.org/ios/">RoachNet iOS</a>
-          <a class="cta cta--ghost" href="https://apps.roachnet.org/">Browse Apps</a>
-        </div>
-      </aside>
-
-      <main class="api-docs-main" id="api-main" tabindex="-1">
-        <h1 class="sr-only">RoachNet API reference</h1>
-        <header class="api-docs-topbar">
-          <div class="api-docs-topbar__title">
-            <span class="api-docs-kicker">API</span>
-            <strong id="api-view-title">v1.0.6 routes, grouped by job</strong>
-          </div>
-
-          <label class="api-docs-search" for="api-search">
-            <span class="sr-only">Search RoachNet API routes</span>
-            <input id="api-search" type="search" autocomplete="off" placeholder="Search routes, services, or callers" />
-          </label>
-
-          <div class="api-docs-topbar__links">
-            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
-            <a href="https://github.com/RoachWares/RoachNet/releases/tag/v1.0.6" target="_blank" rel="noreferrer">v1.0.6</a>
-          </div>
-        </header>
-
-        <section class="api-docs-hero" id="api-group-summary" data-reveal></section>
-
-        <div class="api-docs-methods" id="api-method-filter" aria-label="HTTP method filters"></div>
-
-        <div class="api-docs-workspace">
-          <section class="api-route-pane" data-reveal>
-            <div class="api-route-pane__toolbar">
-              <span class="api-docs-kicker">Routes</span>
-              <strong id="api-route-count">0</strong>
-            </div>
-            <div class="api-route-list" id="api-route-list" aria-live="polite"></div>
-          </section>
-
-          <aside class="api-detail-pane" id="api-detail-pane" aria-live="polite" data-reveal></aside>
-        </div>
-      </main>
+    <a class="rn-skip-link" href="#top">Skip to main content</a>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
     </div>
+    <div class="nx-progress" aria-hidden="true"></div>
 
-    <footer class="site-footer">
-      <div class="site-footer__copy">
-        <strong>RoachNet API</strong>
-        <span>RoachNet v1.0.6 &mdash; setup, runtime, iOS, RoachClaw, RoachTail, local context, and app installs. Compact docs for the parts that move.</span>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">API · v1.0.6</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost is-current" href="#top" aria-current="page">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
       </div>
-      <nav class="site-footer__nav" aria-label="Footer">
-        <a href="https://roachnet.org/home/">Home</a>
-        <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
-        <a href="https://accounts.roachnet.org/">Account</a>
-        <a href="https://roachnet.org/brew/">Brew</a>
-        <a href="https://roachnet.org/ios/">iOS</a>
-        <a href="https://roachnet.org/sitemap/">Sitemap</a>
-        <a href="https://www.roachwares.org/">RoachWares</a>
-        <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
-      </nav>
-      <div class="site-footer__meta">
-        <a
-          class="netlify-badge"
-          href="https://www.netlify.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Proudly powered by Netlify"
-        >
-          <span>Proudly powered by Netlify</span>
-          <img
-            src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-            alt="Netlify"
-            loading="lazy"
-          />
+    </header>
+
+    <main id="top" class="nx-main api" tabindex="-1">
+      <section class="api-hero" aria-labelledby="api-title">
+        <div class="api-hero__copy">
+          <p class="nx-overline">API reference · RoachNet 1.0.6</p>
+          <h1 class="nx-display api-hero__title" id="api-title">Every route your Mac answers.</h1>
+          <p class="nx-lede">
+            RoachNet 1.0.6 runs one native Swift helper, <code>roachnet-runtime</code>. It gives the app a loopback API, your phone a token-gated bridge, and the installer a setup service. All three listen on 127.0.0.1 and nowhere else. Below is every route they answer, plus the two functions roachnet.org runs.
+          </p>
+          <p class="api-hero__hint">Examples use <code>$ROACHNET</code> and <code>$BRIDGE</code>. <a class="nx-link" href="#before-you-call">Here is where they come from.</a></p>
+        </div>
+        <ul class="nx-stats api-hero__stats" id="api-stats" aria-label="Route counts">
+          <li class="nx-stat"><span class="nx-stat__value">106</span><span class="nx-stat__label">Routes in 1.0.6</span></li>
+        </ul>
+      </section>
+
+      <section class="api-docs" aria-label="Route reference">
+        <nav class="api-rail" aria-label="Route groups">
+          <p class="api-rail__head">Groups</p>
+          <ul class="api-rail__list" id="api-group-nav"></ul>
+          <p class="api-rail__foot">Checked against <code>Router.swift</code> at tag v1.0.6.</p>
+        </nav>
+
+        <div class="api-work">
+          <div class="api-toolbar">
+            <label class="api-search" for="api-search">
+              <span class="nx-sr">Search routes</span>
+              <svg class="api-search__icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2" /><path d="m13.5 13.5 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+              <input id="api-search" type="search" autocomplete="off" spellcheck="false" placeholder="Search paths, handlers, notes" aria-describedby="api-search-hint" />
+              <kbd class="api-search__key" aria-hidden="true">/</kbd>
+            </label>
+            <span class="nx-sr" id="api-search-hint">Press slash to search from anywhere, Escape to clear.</span>
+            <div class="api-chips" id="api-method-filter" role="group" aria-label="Filter by HTTP method"></div>
+          </div>
+
+          <div class="api-panes">
+            <section class="api-list" aria-labelledby="api-view-title">
+              <header class="api-list__head">
+                <h2 class="api-list__title" id="api-view-title">All routes</h2>
+                <p class="api-list__count" id="api-route-count" aria-live="polite">0 routes</p>
+              </header>
+              <div class="api-summary" id="api-group-summary"></div>
+              <p class="api-notice" id="api-notice" role="status" hidden></p>
+              <ul class="api-routes" id="api-route-list"></ul>
+            </section>
+
+            <div class="api-scrim" id="api-detail-scrim" hidden></div>
+            <aside class="api-detail" id="api-detail-pane" aria-label="Route detail">
+              <div class="api-detail__bar">
+                <span class="api-detail__grab" aria-hidden="true"></span>
+                <button class="api-detail__close" id="api-detail-close" type="button">Close</button>
+              </div>
+              <div class="api-detail__body" id="api-detail-body">
+                <noscript><p class="api-empty__text">The route browser needs JavaScript. The routes themselves do not.</p></noscript>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="api-start" id="before-you-call" aria-labelledby="api-start-title">
+        <div class="api-start__head">
+          <p class="nx-overline nx-overline--cyan">Before you call</p>
+          <h2 class="nx-h2" id="api-start-title">Find the port. Bring JSON.</h2>
+        </div>
+        <div class="api-start__grid">
+          <article class="api-start__card">
+            <h3 class="nx-h3">Loopback API</h3>
+            <p class="nx-prose">It takes a fresh port on every launch and writes it down for you. This sets <code>$ROACHNET</code> for every example on this page.</p>
+            <div class="nx-console api-console">
+              <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
+              <div class="nx-console__body">
+                <span class="nx-console__line">ROACHNET=$(sed -n 's/.*"baseUrl" *: *"\([^"]*\)".*/\1/p' ~/RoachNet/storage/.runtime/roachnet-native-api-state.json)</span>
+                <span class="nx-console__line">curl -s "$ROACHNET/api/health"</span>
+                <span class="nx-console__line nx-console__line--out">{"status":"ok"}</span>
+              </div>
+              <div class="nx-console__copy">
+                <button class="nx-btn nx-btn--sm nx-btn--mono" type="button" data-api-copy="ROACHNET=$(sed -n 's/.*&quot;baseUrl&quot; *: *&quot;\([^&quot;]*\)&quot;.*/\1/p' ~/RoachNet/storage/.runtime/roachnet-native-api-state.json)&#10;curl -s &quot;$ROACHNET/api/health&quot;" data-api-copied="Commands copied">Copy</button>
+              </div>
+            </div>
+          </article>
+          <article class="api-start__card">
+            <h3 class="nx-h3">Companion bridge</h3>
+            <p class="nx-prose">Port 38111 unless you changed it. It wants the companion token from your installer config. Treat that token like a password, because it is one.</p>
+            <div class="nx-console api-console">
+              <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
+              <div class="nx-console__body">
+                <span class="nx-console__line">BRIDGE=http://127.0.0.1:38111</span>
+                <span class="nx-console__line">TOKEN=$(sed -n 's/.*"companionToken" *: *"\([^"]*\)".*/\1/p' ~/Library/Application\ Support/roachnet/roachnet-installer.json)</span>
+                <span class="nx-console__line">curl -s "$BRIDGE/api/companion/runtime" -H "authorization: Bearer $TOKEN"</span>
+              </div>
+              <div class="nx-console__copy">
+                <button class="nx-btn nx-btn--sm nx-btn--mono" type="button" data-api-copy="BRIDGE=http://127.0.0.1:38111&#10;TOKEN=$(sed -n 's/.*&quot;companionToken&quot; *: *&quot;\([^&quot;]*\)&quot;.*/\1/p' ~/Library/Application\ Support/roachnet/roachnet-installer.json)&#10;curl -s &quot;$BRIDGE/api/companion/runtime&quot; -H &quot;authorization: Bearer $TOKEN&quot;" data-api-copied="Commands copied">Copy</button>
+              </div>
+            </div>
+          </article>
+          <article class="api-start__card api-start__card--rules">
+            <h3 class="nx-h3">House rules</h3>
+            <ul class="api-rules">
+              <li><strong>JSON means JSON.</strong> Bodies must say <code>content-type: application/json</code>. Anything else gets a 415. That is CSRF protection, not pedantry.</li>
+              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a rebinding web page can’t read your Mac.</li>
+              <li><strong>Errors are boring.</strong> <code>{ "error": "…" }</code> with a real status code.</li>
+              <li><strong>Small bodies.</strong> 1 MB on the loopback API, 2 MB through the bridge.</li>
+              <li><strong>Setup keeps to itself.</strong> Its service runs only while Setup is open, on a port only Setup knows. To try it by hand, start <code>roachnet-runtime --setup</code> with <code>ROACHNET_SETUP_PORT=38080</code> and set <code>SETUP=http://127.0.0.1:38080</code>.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="api-outside" aria-labelledby="api-outside-title">
+        <div class="api-outside__copy">
+          <p class="nx-overline nx-overline--purple">Not HTTP, still useful</p>
+          <h2 class="nx-h2" id="api-outside-title">The helper has a command line too.</h2>
+          <p class="nx-prose">
+            <code>roachnet-runtime</code> lives inside the app at <code>~/RoachNet/app/RoachNet.app/Contents/Helpers/</code>. The Homebrew cask and the Setup app run the same install workflow it does. The iPhone app is not an API either: it is an IPA you sideload, and it talks to the bridge above.
+          </p>
+          <ul class="api-outside__links">
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Install with Homebrew</a></li>
+            <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet for iPhone and iPad</a></li>
+            <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/tag/v1.0.6" target="_blank" rel="noreferrer">Release notes for v1.0.6</a></li>
+          </ul>
+        </div>
+        <div class="nx-console api-console api-console--cli">
+          <div class="nx-console__bar"><i></i><i></i><i></i> roachnet-runtime</div>
+          <div class="nx-console__body">
+            <span class="nx-console__line">roachnet-runtime --version</span>
+            <span class="nx-console__line">roachnet-runtime --stop</span>
+            <span class="nx-console__line">roachnet-runtime --setup</span>
+            <span class="nx-console__line">roachnet-runtime --install --install-path ~/RoachNet --no-roachclaw</span>
+            <span class="nx-console__line">roachnet-runtime --provision-alias --print-command</span>
+            <span class="nx-console__line nx-console__line--out">--stop ends the runtime that owns ROACHNET_STORAGE_PATH</span>
+            <span class="nx-console__line nx-console__line--out">--setup serves the setup routes on 127.0.0.1</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
+      </div>
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="#top" aria-current="page">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
         </a>
       </div>
     </footer>
 
-    <script src="../app.js"></script>
+    <script src="../nx.js" type="module"></script>
     <script src="../api.js" type="module"></script>
-    <script src="../site-polish.js" type="module"></script>
-    <script src="../motion-layer.js" type="module"></script>
-</body>
+  </body>
 </html>

@@ -14,17 +14,15 @@ async function main() {
   await mkdir(outputRoot, { recursive: true })
 
   const copyTargets = [
-    'app.css',
-    'app-polish.css',
     'account.js',
-    'roachclaw.js',
-    'roachclaw-web.css',
     'router.js',
     'site-account.js',
-    'site-polish.js',
     'site-config.js',
-    'assets/roachnet-logo.webp',
-    'assets/roachclaw-logo.webp',
+    'nx.css',
+    'nx-account.css',
+    'nx.js',
+    'fonts',
+    'vendor/supabase-js',
     'favicon.ico',
     'favicon-16x16.png',
     'favicon-32x32.png',

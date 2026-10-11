@@ -1,162 +1,228 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachNet Apps: Apps and packs worth installing</title>
+    <title>RoachNet Apps: Pick the pack. Know where it lands.</title>
     <meta
       name="description"
-      content="Browse maps, model packs, docs, courses, and useful shelves that install into RoachNet with labels, checksums, and a clear place to land."
+      content="Maps, local models, offline libraries, voice packs and feature packs that install straight into RoachNet on your Mac, each with its size, its source and the place it lands."
     />
-    <meta name="theme-color" content="#0a0f14" />
+    <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://apps.roachnet.org/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="RoachNet Apps: Apps and packs worth installing" />
+    <meta property="og:title" content="RoachNet Apps: Pick the pack. Know where it lands." />
     <meta
       property="og:description"
-      content="Maps, docs, model packs, and field shelves for RoachNet. Pick the pack. Know where it lands."
+      content="Maps, local models, offline libraries and voice packs for RoachNet. Every install says how big it is and where it goes."
     />
     <meta property="og:url" content="https://apps.roachnet.org/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RoachNet Apps: Apps and packs worth installing" />
+    <meta name="twitter:title" content="RoachNet Apps: Pick the pack. Know where it lands." />
     <meta
       name="twitter:description"
-      content="Maps, docs, model packs, and field shelves for RoachNet. Pick the pack. Know where it lands."
+      content="Maps, local models, offline libraries and voice packs for RoachNet. Every install says how big it is and where it goes."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-dev.webp" />
-    <link rel="stylesheet" href="./app.css" />
-    <link rel="stylesheet" href="./app-polish.css?v=20260609-overflow" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="preload" as="fetch" href="./app-store-catalog.json" crossorigin />
+    <link rel="stylesheet" href="./nx.css" />
+    <link rel="stylesheet" href="./nx-store.css" />
   </head>
   <body data-page="apps">
     <a class="rn-skip-link" href="#apps-main">Skip to main content</a>
-    <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
-    <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
 
-    <div class="apps-store-shell">
-      <aside class="apps-store-sidebar" aria-label="Store navigation">
-        <a class="apps-store-brand" href="https://roachnet.org/home/" aria-label="Back to RoachNet Home">
-          <img class="apps-store-brand__mark" src="./assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
-          <div class="apps-store-brand__copy">
-            <span>RoachNet Apps</span>
-            <strong>Apps and packs worth installing.</strong>
-          </div>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Apps</span>
         </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link is-current" href="#apps-main" aria-current="page">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
+        </nav>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </header>
 
-        <a class="apps-store-back" data-return-home href="https://roachnet.org/home/">Back to RoachNet</a>
-
-        <nav class="apps-store-sidebar__nav" id="apps-sidebar-nav" aria-label="Sections"></nav>
-
-        <section class="apps-store-sidebar__card">
-          <span class="apps-store-sidebar__eyebrow">Native install path</span>
-          <h2>Pick the pack. Know where it lands.</h2>
-          <p>Maps, shelves, courses, voice packs, and model packs land inside the part of RoachNet that can actually use them. No scavenger hunt through Downloads.</p>
-          <div class="apps-artifact-lane" aria-label="Download artifact lane">
-            <span>Install lane</span>
-            <strong>apps.roachnet.org/downloads</strong>
-            <em>This page carries descriptors and checksums. Big files ride public rails with receipts you can inspect before trusting them.</em>
-          </div>
-          <button class="cta cta--primary apps-store-sidebar__download" id="apps-primary-download" type="button">
-            Download RoachNet 1.0.6 for macOS
-          </button>
-          <p class="apps-store-sidebar__meta" id="apps-download-meta">
-            Starts with RoachNet Setup v1.0.6, which is not Apple-notarized · installs resolve through the latest public release lane.
+    <main class="nx-main st-main" id="apps-main" tabindex="-1">
+      <section class="st-head" aria-labelledby="apps-title">
+        <div class="st-head__copy">
+          <p class="nx-overline">RoachNet Apps <span class="st-head__count" data-store-total>323 installs</span></p>
+          <h1 class="st-head__title" id="apps-title">Pick the pack. <span class="nx-accent">Know where it lands.</span></h1>
+          <p class="nx-lede st-head__lede">
+            Maps, local models, offline libraries and voice packs that hand straight to RoachNet on your Mac. Every one says how big it is, where it comes from and which part of the app it lands in. Nothing to unzip. Nothing lost in Downloads.
           </p>
-          <div class="apps-store-sidebar__quick" aria-label="Quick store links">
-            <a href="#models" data-apps-section-jump="Model Packs">Model packs</a>
-            <a href="#voice" data-apps-section-jump="Voice Packs">Voice packs</a>
-            <a href="https://roachnet.org/api/">API handoff</a>
-          </div>
-        </section>
-      </aside>
+        </div>
+        <aside class="st-get" aria-labelledby="apps-get-title">
+          <p class="st-get__kicker" id="apps-get-title">Installs open RoachNet</p>
+          <p class="st-get__body">The buttons here hand off to the Mac app. No RoachNet yet? Get it first, then come back for the packs.</p>
+          <a class="nx-btn nx-btn--primary st-get__btn" id="apps-primary-download" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">
+            Download RoachNet 1.0.6 for macOS
+          </a>
+          <p class="st-get__meta" id="apps-download-meta">
+            <span>376 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>ad-hoc signed, not Apple-notarized</span>
+          </p>
+          <a class="nx-link nx-link--arrow st-get__alt" href="https://roachnet.org/brew/">Or install it with Homebrew</a>
+        </aside>
+      </section>
 
-      <main class="apps-store-main" id="apps-main" tabindex="-1">
-        <h1 class="sr-only">RoachNet Apps catalog</h1>
-        <header class="apps-store-topbar">
-          <div class="apps-store-topbar__title">
-            <span class="apps-store-topbar__eyebrow">RoachNet Apps</span>
-            <strong id="apps-view-kicker">Contained installs</strong>
-          </div>
-
-          <label class="apps-store-search" for="apps-search">
-            <span class="sr-only">Search the RoachNet Apps catalog</span>
+      <div class="st-layout">
+        <aside class="st-rail" aria-label="Store">
+          <div class="st-search" role="search">
+            <label class="nx-sr" for="apps-search">Search the RoachNet Apps catalog</label>
+            <svg class="st-search__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg>
             <input
               id="apps-search"
+              class="st-search__input"
               type="search"
               autocomplete="off"
-              placeholder="Search maps, medicine, courses, models, audio, ROMs, docs"
+              spellcheck="false"
+              enterkeyhint="search"
+              placeholder="Search maps, models, docs"
+              aria-describedby="apps-search-hint"
             />
-          </label>
-
-          <div class="apps-store-topbar__status" aria-label="Store status">
-            <span class="apps-store-status-chip">Native handoff</span>
-            <span data-store-time>--:-- --</span>
-            <span class="apps-store-status-chip" data-store-connectivity data-state="pending">Checking link</span>
-            <span data-store-storage>Storage estimate pending</span>
+            <kbd class="st-search__key" aria-hidden="true">/</kbd>
+            <span class="nx-sr" id="apps-search-hint">Press slash to jump here from anywhere on the page. Results update as you type.</span>
           </div>
-        </header>
 
-        <div class="apps-store-content">
-          <section class="apps-store-section-head" id="apps-section-head" aria-live="polite"></section>
-          <section class="apps-store-stage" id="apps-store-stage" aria-live="polite">
-            <section class="apps-empty-state apps-empty-state--loading">
-              <strong>Loading the shelves...</strong>
-              <p>Pulling the current RoachNet catalog. The shelves may rattle. Your files stay put.</p>
-            </section>
-          </section>
+          <nav class="st-rail__nav" id="apps-sidebar-nav" aria-label="Store sections">
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+            <span class="st-rail__skeleton" aria-hidden="true"></span>
+          </nav>
+
+          <div class="st-rail__note">
+            <p class="st-rail__note-title">How installs work</p>
+            <p>Install opens RoachNet with the pack already picked. RoachNet downloads it, checks it, and files it under <code>~/RoachNet</code>.</p>
+            <p class="st-rail__net" data-store-connectivity data-state="pending">Checking connection</p>
+          </div>
+        </aside>
+
+        <div class="st-content">
+          <p class="nx-sr" id="apps-live" role="status" aria-live="polite"></p>
+          <section class="st-section-head" id="apps-section-head" hidden></section>
+          <div class="st-stage" id="apps-store-stage" aria-busy="true">
+            <p class="nx-sr">Loading the catalog.</p>
+            <div class="st-skel st-skel--hero" aria-hidden="true">
+              <span class="st-skel__icon"></span>
+              <span class="st-skel__line st-skel__line--title"></span>
+              <span class="st-skel__line"></span>
+              <span class="st-skel__line st-skel__line--short"></span>
+            </div>
+            <div class="st-skel-row" aria-hidden="true">
+              <span class="st-skel st-skel--card"></span>
+              <span class="st-skel st-skel--card"></span>
+              <span class="st-skel st-skel--card"></span>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
 
-    <div class="app-detail-overlay" id="apps-detail-overlay" hidden>
-      <div class="app-detail-sheet apps-detail-sheet--store" role="dialog" aria-modal="true" aria-labelledby="apps-detail-title">
-        <button class="app-detail-sheet__close" id="apps-detail-close" type="button" aria-label="Close app preview">
-          Close preview
+    <div class="app-detail-overlay st-overlay" id="apps-detail-overlay" hidden>
+      <div class="app-detail-sheet st-sheet" role="dialog" aria-modal="true" aria-labelledby="apps-detail-title">
+        <span class="st-sheet__grip" aria-hidden="true"></span>
+        <button class="app-detail-sheet__close st-sheet__close" id="apps-detail-close" type="button" aria-label="Close details">
+          <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m5 5 10 10M15 5 5 15"></path></svg>
+          <span class="st-sheet__close-label">Close</span>
         </button>
-        <div id="apps-detail-content"></div>
+        <div class="st-sheet__body" id="apps-detail-content"></div>
       </div>
     </div>
 
-    <footer class="site-footer">
-      <div class="site-footer__copy">
-        <strong>RoachNet Apps</strong>
-        <span>Apps, models, maps, and docs that land where RoachNet can use them.</span>
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
       </div>
-      <nav class="site-footer__nav" aria-label="Footer">
-        <a href="https://roachnet.org/home/">Home</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-        <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
-        <a href="https://roachnet.org/api/">API</a>
-        <a href="https://roachnet.org/brew/">Brew</a>
-        <a href="https://roachnet.org/ios/">iOS</a>
-        <a href="https://roachnet.org/sitemap/">Sitemap</a>
-        <a href="https://www.roachwares.org/">RoachWares</a>
-        <a href="https://github.com/RoachWares/roachnet-org" target="_blank" rel="noreferrer">GitHub</a>
-      </nav>
-      <div class="site-footer__meta">
-        <a
-          class="netlify-badge"
-          href="https://www.netlify.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Proudly powered by Netlify"
-        >
-          <span>Proudly powered by Netlify</span>
-          <img
-            src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-            alt="Netlify"
-            loading="lazy"
-          />
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="#apps-main" aria-current="page">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
         </a>
       </div>
     </footer>
 
     <script src="./site-config.js"></script>
     <script src="./app-store.js" type="module"></script>
-    <script src="./site-polish.js" type="module"></script>
+    <script src="./nx.js" type="module"></script>
   </body>
 </html>

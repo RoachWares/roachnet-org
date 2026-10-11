@@ -1,14 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RoachNet Sitemap</title>
-    <meta
-      name="description"
-      content="Every RoachNet page in one place: Mission, Home, Apps, RoachClaw, API, Homebrew, iOS, Account, RoachWares, releases, docs, and wiki."
-    />
-    <meta name="theme-color" content="#0b1016" />
+    <meta name="description" content="Every RoachNet page, download, doc and release note on one page." />
+    <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/sitemap/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -16,156 +13,175 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="RoachNet Sitemap" />
-    <meta
-      property="og:description"
-      content="Find the right RoachNet page without another lap around the nav."
-    />
+    <meta property="og:description" content="Every RoachNet page, download, doc and release note on one page." />
     <meta property="og:url" content="https://roachnet.org/sitemap/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="RoachNet Sitemap" />
-    <meta
-      name="twitter:description"
-      content="Mission, Home, Apps, RoachClaw, API, Brew, iOS, Account, RoachWares, releases, docs, and wiki. One page, no maze."
-    />
+    <meta name="twitter:description" content="Every RoachNet page, download, doc and release note on one page." />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
-    <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css" />
-    <link rel="stylesheet" href="../motion-layer.css" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="../nx.css" />
   </head>
   <body data-page="sitemap">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
-    <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
-    <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__scan"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
 
-    <header class="site-header">
-      <a class="brand-lockup" href="https://roachnet.org/" aria-label="RoachNet mission">
-        <img class="brand-mark" src="../assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
-        <div class="brand-copy">
-          <span class="brand-kicker">pages · downloads · docs</span>
-          <strong>RoachNet Sitemap</strong>
-        </div>
-        <span class="site-header__status">v1.0.6</span>
-      </a>
-
-      <div class="site-header__panel">
-        <nav class="site-nav site-nav--primary" aria-label="Primary">
-          <a href="https://roachnet.org/">Mission</a>
-          <a href="https://roachnet.org/home/">Home</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-          <a href="https://roachnet.org/roachclaw/">Claw</a>
-          <a href="https://roachnet.org/brew/">Brew</a>
-          <a href="https://roachnet.org/ios/">iOS</a>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Sitemap</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
         </nav>
-
-        <div class="site-header__actions" aria-label="Utility links">
-          <a class="site-action-pill" href="https://accounts.roachnet.org/">Account</a>
-          <a class="site-action-pill site-action-pill--ghost" href="https://roachnet.org/api/">API</a>
-          <a class="site-action-pill site-action-pill--ghost" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
     </header>
 
-    <main id="top" class="page-shell sitemap-page" tabindex="-1">
-      <section class="sitemap-hero" data-reveal>
-        <div>
-          <p class="eyebrow">Sitemap</p>
-          <h1>Everything, one page.</h1>
-          <p>
-            Pages, downloads, docs, release notes &mdash; all of it, laid out flat. Nobody needs another little maze dressed up as navigation.
-          </p>
+    <main id="top" class="nx-main" tabindex="-1">
+      <section class="nx-hero nx-hero--center nx-section--tight" aria-labelledby="hero-title">
+        <div class="nx-hero__copy">
+          <p class="nx-overline">Sitemap</p>
+          <h1 class="nx-display" id="hero-title">Everything, <span class="nx-accent">one page.</span></h1>
+          <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
+          <ul class="nx-status" aria-label="Current versions">
+            <li data-state="online">Desktop v1.0.6</li>
+            <li data-state="online">iOS v0.2.0</li>
+            <li data-state="pending">1.1 in the workshop</li>
+          </ul>
         </div>
-        <aside class="sitemap-hero__card" aria-label="Current versions">
-          <span>Out now</span>
-          <strong>Desktop v1.0.6</strong>
-          <strong>iOS v0.2.0</strong>
-          <em>Desktop, iOS, apps, docs, and release notes &mdash; all visible from here.</em>
-        </aside>
       </section>
 
-      <section class="sitemap-grid" aria-label="RoachNet pages">
-        <article class="sitemap-card" data-reveal>
-          <span class="feature-card__eyebrow">Core product</span>
-          <h2>RoachNet</h2>
-          <ul>
-            <li><a href="https://roachnet.org/">Mission</a><p>Why this whole thing exists.</p></li>
-            <li><a href="https://roachnet.org/home/">Home</a><p>The desktop tour: screenshots, downloads, and the quick read on what RoachNet does.</p></li>
-            <li><a href="https://apps.roachnet.org/">Apps</a><p>Maps, libraries, courses, field guides, voice packs, and models that land straight in the app.</p></li>
-            <li><a href="https://roachnet.org/roachclaw/">RoachClaw</a><p>AI chat in the browser, or on your own machine when the question is nobody else's business.</p></li>
-          </ul>
-        </article>
-
-        <article class="sitemap-card" data-reveal>
-          <span class="feature-card__eyebrow">Downloads</span>
-          <h2>Get the app</h2>
-          <ul>
-            <li><a href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">macOS installer</a><p>Start here. Built for Apple Silicon.</p></li>
-            <li><a href="https://roachnet.org/brew/">Homebrew</a><p>Same app, same <code>~/RoachNet</code> folder, one command in Terminal.</p></li>
-            <li><a href="https://roachnet.org/ios/">RoachNet iOS</a><p>SideStore and AltStore for iPhone and iPad.</p></li>
-            <li><a href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Shared iOS source</a><p>The AltSource feed used by SideStore and AltStore.</p></li>
-          </ul>
-        </article>
-
-        <article class="sitemap-card" data-reveal>
-          <span class="feature-card__eyebrow">On the web</span>
-          <h2>Accounts and services</h2>
-          <ul>
-            <li><a href="https://accounts.roachnet.org/">Account</a><p>Sign-in and sync settings. Everything heavy stays on your machine.</p></li>
-            <li><a href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw, and model packs.</p></li>
-            <li><a href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
-          </ul>
-        </article>
-
-        <article class="sitemap-card" data-reveal>
-          <span class="feature-card__eyebrow">Out in the open</span>
-          <h2>Source and docs</h2>
-          <ul>
-            <li><a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">Source code and releases</a><p>Code, checksums, releases, and docs &mdash; all readable before you trust any of it.</p></li>
-            <li><a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Latest release</a><p>What shipped, and when.</p></li>
-            <li><a href="https://github.com/RoachWares/RoachNet/wiki" target="_blank" rel="noreferrer">Wiki</a><p>Install notes, fixes for when things go sideways, and setup docs.</p></li>
-            <li><a href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Homebrew tap</a><p>The cask, if you'd rather read it than run it.</p></li>
-          </ul>
-        </article>
+      <section class="nx-section nx-section--tight" aria-label="RoachNet pages">
+        <div class="nx-grid nx-grid--2 nx-sitemap">
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">Core product</p>
+            <h2 class="nx-card__title">RoachNet</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/">Mission</a><p>Why this whole thing exists.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Home</a><p>The desktop tour: screenshots, downloads, and the quick read on what RoachNet does.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://apps.roachnet.org/">Apps</a><p>Libraries, courses, field guides, voice packs and models that land straight in the app.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/roachclaw/">RoachClaw</a><p>AI chat in the browser, or on your own machine when the question is nobody else's business.</p></li>
+            </ul>
+          </article>
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">Downloads</p>
+            <h2 class="nx-card__title">Get the app</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">macOS installer</a><p>Start here. Built for Apple Silicon.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Homebrew</a><p>Same app, same <code>~/RoachNet</code> folder, one command in Terminal.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet iOS</a><p>SideStore and AltStore for iPhone and iPad.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Shared iOS source</a><p>The AltSource feed used by SideStore and AltStore.</p></li>
+            </ul>
+          </article>
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">On the web</p>
+            <h2 class="nx-card__title">Accounts and services</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Sign-in and sync settings. Everything heavy stays on your machine.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
+            </ul>
+          </article>
+          <article class="nx-card nx-reveal">
+            <p class="nx-card__eyebrow">Out in the open</p>
+            <h2 class="nx-card__title">Source and docs</h2>
+            <ul class="nx-sitemap__list">
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">Source code and releases</a><p>Code, checksums, releases and docs, all readable before you trust any of it.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Latest release</a><p>What shipped, and when.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/wiki" target="_blank" rel="noreferrer">Wiki</a><p>Install notes, fixes for when things go sideways, and setup docs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Homebrew tap</a><p>The cask, if you'd rather read it than run it.</p></li>
+            </ul>
+          </article>
+        </div>
       </section>
     </main>
-
-    <footer class="site-footer">
-      <div class="site-footer__copy">
-        <strong>RoachNet Sitemap</strong>
-        <span>Every page, download, app, doc, and release note in one place.</span>
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
       </div>
-      <nav class="site-footer__nav" aria-label="Footer">
-        <a href="https://roachnet.org/">Mission</a>
-        <a href="https://roachnet.org/home/">Home</a>
-        <a href="https://apps.roachnet.org/">Apps</a>
-        <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
-        <a href="https://roachnet.org/api/">API</a>
-        <a href="https://roachnet.org/brew/">Brew</a>
-        <a href="https://roachnet.org/ios/">iOS</a>
-        <a href="https://accounts.roachnet.org/">Account</a>
-        <a href="https://roachnet.org/sitemap/">Sitemap</a>
-      </nav>
-      <div class="site-footer__meta">
-        <a
-          class="netlify-badge"
-          href="https://www.netlify.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Proudly powered by Netlify"
-        >
-          <span>Proudly powered by Netlify</span>
-          <img
-            src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-            alt="Netlify"
-            loading="lazy"
-          />
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
         </a>
       </div>
     </footer>
 
     <script src="../site-config.js"></script>
     <script src="../app.js" type="module"></script>
-    <script src="../site-polish.js" type="module"></script>
-    <script src="../motion-layer.js" type="module"></script>
-</body>
+    <script src="../nx.js" type="module"></script>
+  </body>
 </html>

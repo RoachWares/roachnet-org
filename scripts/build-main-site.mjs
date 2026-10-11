@@ -98,11 +98,8 @@ async function promote(stagedDirectory) {
   }
 }
 
-// The Mission landing shares the site shell (app.css, app.js, motion layer), so the build
-// keeps its resources and only pins the Netlify badge size to avoid layout shift.
 function optimizeLandingDocument(document) {
-  // The Mission page shares the site shell (nav, motion layer), so it keeps every
-  // stylesheet and script it links. The build only sizes the Netlify badge.
+  // The build only pins the Netlify badge size on the Mission page to avoid layout shift.
   return document.replace(
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"',
     'src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" width="114" height="32"'
@@ -112,24 +109,22 @@ function optimizeLandingDocument(document) {
 const copyList = [
   "index.html",
   "404.html",
-  "app.css",
-  "app-polish.css",
   "app.js",
   "api.js",
-  "app-store.html",
-  "app-store.js",
   "app-store-catalog.json",
-  "landing.css",
   "landing-script.js",
   "landing-dither.js",
-  "motion-layer.css",
-  "motion-layer.js",
+  "nx.css",
+  "nx.js",
+  "nx-mission.css",
+  "nx-docs.css",
+  "vendor/supabase-js",
+  "fonts",
   "roachclaw.js",
   "roachclaw-web.css",
   "router.js",
   "site-account.js",
   "site-config.js",
-  "site-polish.js",
   "robots.txt",
   "sitemap.xml",
   "apple-touch-icon.png",

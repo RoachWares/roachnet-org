@@ -1,14 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RoachNet iOS: RoachNet in your pocket</title>
-    <meta
-      name="description"
-      content="RoachNet iOS puts RoachClaw, your vault, app installs, and RoachAtlas GPS in your pocket. A companion for your Mac, not a second desktop."
-    />
-    <meta name="theme-color" content="#0b1016" />
+    <meta name="description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/ios/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -16,409 +13,352 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="RoachNet iOS: RoachNet in your pocket" />
-    <meta
-      property="og:description"
-      content="Chat, read your vault, queue up installs, check on your Mac, and share GPS with RoachAtlas — from your phone or iPad."
-    />
+    <meta property="og:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
     <meta property="og:url" content="https://roachnet.org/ios/" />
-    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.webp" />
+    <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="RoachNet iOS: RoachNet in your pocket" />
-    <meta
-      name="twitter:description"
-      content="Chat, read your vault, queue up installs, check on your Mac, and share GPS with RoachAtlas — from your phone or iPad."
-    />
-    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-companion-chat-v015.webp" />
-    <link rel="preload" as="image" href="../assets/screens/roachnet-ios-companion-chat-v015.webp" imagesrcset="../assets/screens/roachnet-ios-companion-chat-v015.webp" />
-    <link rel="stylesheet" href="../app.css" />
-    <link rel="stylesheet" href="../app-polish.css" />
-    <link rel="stylesheet" href="../motion-layer.css" />
+    <meta name="twitter:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="preload" as="image" href="../assets/screens/roachnet-ios-020-home.webp" />
+    <link rel="stylesheet" href="../nx.css" />
   </head>
   <body data-page="ios">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
-    <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
-    <div class="bg-glow bg-glow--green" aria-hidden="true"></div>
+    <div class="nx-atmos" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--blue"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__scan"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="nx-progress" aria-hidden="true"></div>
 
-    <header class="site-header">
-      <a class="brand-lockup" href="https://roachnet.org/" aria-label="RoachNet home">
-        <img class="brand-mark" src="../assets/roachnet-logo.webp" width="2400" height="2400" alt="RoachNet logo" decoding="async" />
-        <div class="brand-copy">
-          <span class="brand-kicker">iPhone &amp; iPad · SideStore + AltStore</span>
-          <strong>RoachNet iOS</strong>
-        </div>
-        <span class="site-header__status">iOS v0.2.0</span>
-      </a>
-
-      <div class="site-header__panel">
-        <nav class="site-nav site-nav--primary" aria-label="Primary">
-          <a href="https://roachnet.org/">Mission</a>
-          <a href="https://roachnet.org/home/">Home</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-          <a href="https://roachnet.org/roachclaw/">Claw</a>
-          <a href="https://roachnet.org/brew/">Brew</a>
-          <a class="is-current" href="#top">iOS</a>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">iOS · v0.2.0</span>
+        </a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link" href="https://roachnet.org/">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link is-current" href="#top" aria-current="page">iOS</a>
         </nav>
-
-        <div class="site-header__actions" aria-label="Utility links">
-          <a class="site-action-pill" href="https://accounts.roachnet.org/">Account</a>
-          <a class="site-action-pill site-action-pill--ghost" href="https://roachnet.org/api/">API</a>
-          <a class="site-action-pill site-action-pill--ghost" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
     </header>
 
-    <main id="top" class="page-shell" tabindex="-1">
-      <section class="hero hero--ios">
-        <div class="hero-copy">
-          <p class="eyebrow">RoachNet iOS 0.2.0</p>
-          <h1>RoachNet in your pocket.</h1>
-          <p class="hero-body">
-            Your Mac's RoachClaw, library, vault and agent company, on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
+    <main id="top" class="nx-main" tabindex="-1">
+      <section class="nx-hero" aria-labelledby="hero-title">
+        <div class="nx-hero__copy">
+          <p class="nx-overline">RoachNet iOS 0.2.0 · iPhone &amp; iPad</p>
+          <h1 class="nx-display nx-display--xl" id="hero-title">RoachNet <span class="nx-accent">in your pocket.</span></h1>
+          <p class="nx-lede">
+            Your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
           </p>
-
-          <div class="hero-actions">
-            <a class="cta cta--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download RoachNet iOS 0.2.0</a>
-            <a class="cta cta--ghost" href="#install">Install with SideStore or AltStore</a>
+          <div class="nx-actions">
+            <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download RoachNet iOS 0.2.0</a>
+            <a class="nx-btn" href="#install">Install with SideStore or AltStore</a>
           </div>
-
-          <p class="hero-footnote">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store account, no RoachNet account.</p>
-          <p class="download-meta">v0.2.0 · iPhone and iPad · iOS 17 or later · pairs with RoachNet 1.0.6 for Mac</p>
+          <p class="nx-hero__meta">
+            <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.6 for Mac</span>
+          </p>
+          <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store account, no RoachNet account, nobody in the middle.</p>
+          <ul class="nx-chips" aria-label="What's in the app">
+            <li class="nx-chip nx-chip--mono">Home</li>
+            <li class="nx-chip nx-chip--mono">RoachClaw</li>
+            <li class="nx-chip nx-chip--mono">Org</li>
+            <li class="nx-chip nx-chip--mono">Apps</li>
+            <li class="nx-chip nx-chip--mono">Vault</li>
+            <li class="nx-chip nx-chip--mono">Runtime</li>
+          </ul>
         </div>
 
-        <div class="hero-visual ios-hero-visual" aria-hidden="true">
-          <div class="app-screen-shot app-screen-shot--dark ios-hero-shot">
+        <div class="nx-hero__visual nx-phone-stage" aria-hidden="true">
+          <div class="nx-screen nx-screen--phone ios-hero-shot app-screen-shot">
+            <span class="nx-screen__glow"></span>
             <img src="../assets/screens/roachnet-ios-020-home.webp" width="1206" height="2622" alt="RoachNet iOS Home screen" fetchpriority="high" decoding="async" />
-            <span class="screen-version-chip">v0.2.0</span>
           </div>
-          <div class="screen-chip-row">
-            <span class="screen-chip">Home</span>
-            <span class="screen-chip">RoachClaw</span>
-            <span class="screen-chip">Org</span>
-            <span class="screen-chip">Apps</span>
-            <span class="screen-chip">Vault</span>
-            <span class="screen-chip">Runtime</span>
+          <div class="nx-floats">
+            <div class="nx-float nx-float--tl"><span>Paired</span><strong>Over your own RoachTail link</strong></div>
+            <div class="nx-float nx-float--br"><span>Thinks on the Mac</span><strong>Your models, your replies</strong></div>
           </div>
         </div>
       </section>
 
-      <section class="content-section" id="screens">
-        <div class="section-head">
-          <p class="eyebrow">Screens</p>
-          <h2>Everything the Mac knows, one thumb away.</h2>
-          <p>Six tabs and one sheet, each doing one job. Pocket-sized, not toy-sized.</p>
+      <div class="nx-ticker" aria-hidden="true">
+        <div class="nx-ticker__track">
+          <span class="nx-ticker__item">Pairs in one tap</span>
+          <span class="nx-ticker__item">Every phone gets its own key</span>
+          <span class="nx-ticker__item">No RoachNet server</span>
+          <span class="nx-ticker__item">Useful when the Mac is asleep</span>
+          <span class="nx-ticker__item">SideStore and AltStore</span>
+          <span class="nx-ticker__item">Approve agents from the couch</span>
         </div>
+      </div>
 
-        <div class="ios-shot-wall ios-shot-wall--editorial">
-          <article class="ios-shot-card ios-shot-card--feature" data-reveal>
-            <div class="app-screen-shot app-screen-shot--dark">
+      <section class="nx-section" id="screens" aria-labelledby="screens-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Screens</p>
+          <h2 class="nx-h2" id="screens-title">Everything the Mac knows, one thumb away.</h2>
+          <p class="nx-lede">Six tabs and one sheet, each doing one job. Pocket-sized, not toy-sized.</p>
+        </div>
+        <div class="nx-grid nx-grid--3 nx-phones" role="list">
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
               <img src="../assets/screens/roachnet-ios-020-home.webp" width="1206" height="2622" alt="RoachNet iOS Home: vital signs for the paired Mac" loading="lazy" decoding="async" />
-              <span class="screen-version-chip">v0.2.0</span>
             </div>
-            <div class="ios-shot-card__copy">
-              <span class="feature-card__eyebrow">Home · new</span>
-              <h3>Your Mac's vital signs at a glance.</h3>
-              <p>Which brain is loaded, what's on the shelves, whether RoachTail is up, and what your agents are waiting on. One look before you put the phone back.</p>
-            </div>
+            <p class="nx-card__eyebrow">Home · new</p>
+            <h3 class="nx-card__title">Your Mac's vital signs at a glance.</h3>
+            <p class="nx-card__body">Which brain is loaded, what's on the shelves, whether RoachTail is up, and what your agents are waiting on. One look before you put the phone back.</p>
           </article>
-
-          <article class="ios-shot-card ios-shot-card--compact" data-reveal>
-            <div class="app-screen-shot app-screen-shot--dark">
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
               <img src="../assets/screens/roachnet-ios-020-roachclaw.webp" width="1206" height="2622" alt="RoachNet iOS RoachClaw chat" loading="lazy" decoding="async" />
-              <span class="screen-version-chip">v0.2.0</span>
             </div>
-            <div class="ios-shot-card__copy">
-              <span class="feature-card__eyebrow">RoachClaw</span>
-              <h3>Ask from here. It thinks on the Mac.</h3>
-              <p>Type, dictate or attach a photo. The reply comes from the model on your Mac, and the thread is there next time you open the laptop.</p>
-            </div>
+            <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachClaw</p>
+            <h3 class="nx-card__title">Ask from here. It thinks on the Mac.</h3>
+            <p class="nx-card__body">Type, dictate or attach a photo. The reply comes from the model on your Mac, and the thread is there next time you open the laptop.</p>
           </article>
-
-          <article class="ios-shot-card ios-shot-card--compact" data-reveal>
-            <div class="app-screen-shot app-screen-shot--dark">
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
               <img src="../assets/screens/roachnet-ios-020-org.webp" width="1206" height="2622" alt="RoachNet iOS Org approvals" loading="lazy" decoding="async" />
-              <span class="screen-version-chip">v0.2.0</span>
             </div>
-            <div class="ios-shot-card__copy">
-              <span class="feature-card__eyebrow">Org · with RoachNet 1.1</span>
-              <h3>Sign off on your agents from the couch.</h3>
-              <p>RoachClaw Org asks before it hires an agent or changes the plan. Approve, send it back with a note, or say no. Pause an agent that's wandering.</p>
-            </div>
+            <p class="nx-card__eyebrow nx-card__eyebrow--purple">Org · with RoachNet 1.1</p>
+            <h3 class="nx-card__title">Sign off on your agents from the couch.</h3>
+            <p class="nx-card__body">RoachClaw Org asks before it hires an agent or changes the plan. Approve, send it back with a note, or say no. Pause an agent that's wandering.</p>
           </article>
-
-          <article class="ios-shot-card ios-shot-card--compact" data-reveal>
-            <div class="app-screen-shot app-screen-shot--dark">
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
               <img src="../assets/screens/roachnet-ios-020-apps.webp" width="1206" height="2622" alt="RoachNet iOS Apps" loading="lazy" decoding="async" />
-              <span class="screen-version-chip">v0.2.0</span>
             </div>
-            <div class="ios-shot-card__copy">
-              <span class="feature-card__eyebrow">Apps</span>
-              <h3>Queue installs from anywhere.</h3>
-              <p>Pick maps, courses, models and packs; they install on the Mac as soon as it's reachable. If the web catalog is offline, the shelf you last loaded stays put.</p>
-            </div>
+            <p class="nx-card__eyebrow">Apps</p>
+            <h3 class="nx-card__title">Queue installs from anywhere.</h3>
+            <p class="nx-card__body">Pick maps, courses, models and packs; they install on the Mac as soon as it's reachable. If the web catalog is offline, the shelf you last loaded stays put.</p>
           </article>
-
-          <article class="ios-shot-card ios-shot-card--compact" data-reveal>
-            <div class="app-screen-shot app-screen-shot--dark">
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
               <img src="../assets/screens/roachnet-ios-020-vault.webp" width="1206" height="2622" alt="RoachNet iOS Vault" loading="lazy" decoding="async" />
-              <span class="screen-version-chip">v0.2.0</span>
             </div>
-            <div class="ios-shot-card__copy">
-              <span class="feature-card__eyebrow">Vault</span>
-              <h3>Your library, without the laptop.</h3>
-              <p>Maps, courses, saved pages, media and documents, readable on the phone and still there after the Mac drops off.</p>
-            </div>
+            <p class="nx-card__eyebrow">Vault</p>
+            <h3 class="nx-card__title">Your library, without the laptop.</h3>
+            <p class="nx-card__body">Maps, courses, saved pages, media and documents, readable on the phone and still there after the Mac drops off.</p>
           </article>
-
-          <article class="ios-shot-card ios-shot-card--wide" data-reveal>
-            <div class="app-screen-shot app-screen-shot--dark">
+          <article class="nx-card nx-phone-card nx-reveal" role="listitem">
+            <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
               <img src="../assets/screens/roachnet-ios-020-runtime.webp" width="1206" height="2622" alt="RoachNet iOS Runtime" loading="lazy" decoding="async" />
-              <span class="screen-version-chip">v0.2.0</span>
             </div>
-            <div class="ios-shot-card__copy">
-              <span class="feature-card__eyebrow">Runtime</span>
-              <h3>See what the Mac is up to.</h3>
-              <p>Services, downloads, RoachTail, RoachSync and RoachAtlas GPS, with the controls to start, stop or retry right there.</p>
-            </div>
+            <p class="nx-card__eyebrow nx-card__eyebrow--amber">Runtime</p>
+            <h3 class="nx-card__title">See what the Mac is up to.</h3>
+            <p class="nx-card__body">Services, downloads, RoachTail, RoachSync and RoachAtlas GPS, with the controls to start, stop or retry right there.</p>
           </article>
         </div>
       </section>
 
-      <section class="content-section" id="features">
-        <div class="section-head">
-          <p class="eyebrow">What's new in 0.2.0</p>
-          <h2>A new look, a Home tab, and your agents on call.</h2>
-          <p>0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for the agent company coming in 1.1.</p>
+      <section class="nx-section" id="features" aria-labelledby="features-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">What's new in 0.2.0</p>
+          <h2 class="nx-h2" id="features-title">A new look, a Home tab, and your agents on call.</h2>
+          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for the agent company coming in 1.1.</p>
         </div>
-
-        <div class="ios-feature-shell">
-          <article class="ios-story-card ios-story-card--feature" data-reveal>
-            <span class="feature-card__eyebrow">The app</span>
-            <h3>Made for the moments you're away from the desk.</h3>
-            <p>It looks and talks like RoachNet on the Mac, so there's nothing to relearn. It opens on what you last saw and stays useful when the Mac goes quiet.</p>
-            <div class="hero-signal-board hero-signal-board--compact">
-              <article class="hero-signal-card">
-                <span>Pairs in one tap</span>
-                <strong>Scan the code on your Mac or open its pair link, then press Pair with RoachTail.</strong>
-              </article>
-              <article class="hero-signal-card">
-                <span>Useful offline</span>
-                <strong>Answers from what it already has when the Mac is out of reach.</strong>
-              </article>
-              <article class="hero-signal-card">
-                <span>Nobody in the middle</span>
-                <strong>Phone and Mac talk over your own network. No RoachNet server, no account.</strong>
-              </article>
-            </div>
+        <div class="nx-grid nx-grid--3" role="list">
+          <article class="nx-card nx-card--feature nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">The app</p>
+            <h3 class="nx-card__title">Made for the moments you're away from the desk.</h3>
+            <p class="nx-card__body">It looks and talks like RoachNet on the Mac, so there's nothing to relearn. It opens on what you last saw and stays useful when the Mac goes quiet.</p>
           </article>
-
-          <div class="card-grid card-grid--three ios-feature-grid" role="list">
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">Home tab</span>
-              <h3>Brains, shelves, archives and the Mac's health on one screen.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">RoachClaw Org</span>
-              <h3>Approve, send back or reject with a note. Pause and resume agents. Join an Org from an invite link. (Mac 1.1 and later.)</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">RoachTail</span>
-              <h3>Each phone gets its own key, so you can cut one off without touching the rest. Works with the 1.0.6 pairing flow.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">New look</span>
-              <h3>Inter and JetBrains Mono, a floating tab bar, purple for actions and green for what's live.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">Steadier chat</span>
-              <h3>The composer stays above the keyboard, and a paired phone never slips back into sample data.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">RoachAtlas GPS</span>
-              <h3>Share your location with RoachAtlas on your own Mac, only while the app is open and only when you say so.</h3>
-            </article>
-          </div>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Home tab</p>
+            <h3 class="nx-card__title">Brains, shelves, archives and the Mac's health on one screen.</h3>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow nx-card__eyebrow--purple">RoachClaw Org</p>
+            <h3 class="nx-card__title">Approve, send back or reject with a note.</h3>
+            <p class="nx-card__body">Pause and resume agents. Join an Org from an invite link. Needs RoachNet 1.1 on the Mac.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">RoachTail</p>
+            <h3 class="nx-card__title">Each phone gets its own key.</h3>
+            <p class="nx-card__body">Cut one off without touching the rest. Works with the 1.0.6 pairing flow.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">New look</p>
+            <h3 class="nx-card__title">Inter, JetBrains Mono and a floating tab bar.</h3>
+            <p class="nx-card__body">Purple for actions, green for what's live. The same language as the Mac and this site.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Steadier chat</p>
+            <h3 class="nx-card__title">The composer stays above the keyboard.</h3>
+            <p class="nx-card__body">And a paired phone never slips back into sample data.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachAtlas GPS</p>
+            <h3 class="nx-card__title">Share your location with RoachAtlas on your own Mac.</h3>
+            <p class="nx-card__body">Only while the app is open, and only when you say so.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Useful offline</p>
+            <h3 class="nx-card__title">Answers from what it already has.</h3>
+            <p class="nx-card__body">When the Mac is out of reach, recent chats, files and status stay on the phone until it comes back.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Nobody in the middle</p>
+            <h3 class="nx-card__title">Phone and Mac talk over your own network.</h3>
+            <p class="nx-card__body">No RoachNet server, no account, no relay.</p>
+          </article>
         </div>
       </section>
 
-      <section class="content-section" id="install">
-        <div class="section-head">
-          <p class="eyebrow">Install</p>
-          <h2>SideStore and AltStore, with the routes labeled.</h2>
-          <p>Add the RoachNet source once and updates show up on their own, or grab the IPA directly. Same build either way.</p>
+      <section class="nx-section" id="install" aria-labelledby="install-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Install</p>
+          <h2 class="nx-h2" id="install-title">SideStore and AltStore, with the routes labeled.</h2>
+          <p class="nx-lede">Add the RoachNet source once and updates show up on their own, or grab the IPA directly. Same build either way.</p>
         </div>
-
-        <div class="ios-install-shell">
-          <article class="ios-story-card ios-story-card--install" data-reveal>
-            <span class="feature-card__eyebrow">SideStore</span>
-            <h3>Add the source, or hand SideStore the IPA directly.</h3>
-            <p>The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
-            <div class="section-actions">
-              <a
-                class="cta cta--primary"
-                data-sidestore-source
-                href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json"
-              >
-                Add Source to SideStore
-              </a>
-              <a
-                class="cta cta--ghost"
-                data-ipa-download
-                href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa"
-              >
-                Download IPA
-              </a>
-              <a class="cta cta--ghost" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
+        <div class="nx-grid nx-grid--2">
+          <article class="nx-card nx-card--feature nx-reveal">
+            <p class="nx-card__eyebrow">SideStore</p>
+            <h3 class="nx-card__title">Add the source, or hand SideStore the IPA directly.</h3>
+            <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
+            <div class="nx-actions nx-mt-16">
+              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to SideStore</a>
+              <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
             </div>
-            <p class="ios-install-note" data-sidestore-note>Add the RoachNet source in SideStore, or download the IPA and share it to SideStore to install.</p>
-            <p class="ios-install-note ios-install-note--desktop" data-sidestore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
+            <p class="nx-card__body" data-sidestore-note>Add the RoachNet source in SideStore, or download the IPA and share it to SideStore to install.</p>
+            <p class="nx-card__body" data-sidestore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
+            <ol class="nx-steps nx-mt-16">
+              <li class="nx-step"><strong>Add the RoachNet source to SideStore.</strong></li>
+              <li class="nx-step"><strong>Install RoachNetiOS from the source, or fall back to the IPA.</strong></li>
+              <li class="nx-step"><strong>Sign and install. Open RoachNetiOS and pair your Mac.</strong></li>
+            </ol>
           </article>
-
-          <div class="card-grid card-grid--three ios-install-grid" role="list">
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">1</span>
-              <h3>Add the RoachNet source to SideStore.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">2</span>
-              <h3>Install RoachNetiOS from the source or fall back to the IPA.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">3</span>
-              <h3>Sign and install. Open RoachNetiOS and pair your Mac.</h3>
-            </article>
-          </div>
-
-          <article class="ios-story-card ios-story-card--install" data-reveal>
-            <span class="feature-card__eyebrow">AltStore</span>
-            <h3>Use the same RoachNet source in AltStore.</h3>
-            <p>The same source works in AltStore and always points at the current IPA.</p>
-            <div class="section-actions">
-              <a
-                class="cta cta--primary"
-                data-altstore-source
-                href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json"
-              >
-                Add Source to AltStore
-              </a>
-              <a
-                class="cta cta--ghost"
-                href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa"
-              >
-                Download IPA
-              </a>
-              <a class="cta cta--ghost" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
+          <article class="nx-card nx-card--feature nx-reveal">
+            <p class="nx-card__eyebrow">AltStore</p>
+            <h3 class="nx-card__title">Use the same RoachNet source in AltStore.</h3>
+            <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
+            <div class="nx-actions nx-mt-16">
+              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to AltStore</a>
+              <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
             </div>
-            <p class="ios-install-note" data-altstore-note>Add the same RoachNet source in AltStore, or download the IPA and import it from Files.</p>
-            <p class="ios-install-note ios-install-note--desktop" data-altstore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
+            <p class="nx-card__body" data-altstore-note>Add the same RoachNet source in AltStore, or download the IPA and import it from Files.</p>
+            <p class="nx-card__body" data-altstore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
+            <ol class="nx-steps nx-mt-16">
+              <li class="nx-step"><strong>Install AltStore and keep AltServer available on your Mac.</strong></li>
+              <li class="nx-step"><strong>Add the RoachNet source URL, then install RoachNetiOS from AltStore.</strong></li>
+              <li class="nx-step"><strong>Refresh before the 7-day signature runs out, then pair your Mac on first launch.</strong></li>
+            </ol>
           </article>
-
-          <div class="card-grid card-grid--three ios-install-grid" role="list">
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">1</span>
-              <h3>Install AltStore and keep AltServer available on your Mac.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">2</span>
-              <h3>Add the RoachNet source URL, then install RoachNetiOS from AltStore.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">3</span>
-              <h3>Refresh before the 7-day signature runs out, then pair your Mac on first launch.</h3>
-            </article>
-          </div>
         </div>
       </section>
 
-      <section class="content-section" id="pairing">
-        <div class="section-head">
-          <p class="eyebrow">Pairing</p>
-          <h2>Pair once. The phone stays useful.</h2>
-          <p>Your Mac keeps the models, the vault, and the installs. The phone stays fast because it isn't trying to be a second desktop.</p>
+      <section class="nx-section" id="pairing" aria-labelledby="pairing-title">
+        <div class="nx-section__head">
+          <p class="nx-overline">Pairing</p>
+          <h2 class="nx-h2" id="pairing-title">Pair once. The phone stays useful.</h2>
+          <p class="nx-lede">Your Mac keeps the models, the vault and the installs. The phone stays fast because it isn't trying to be a second desktop.</p>
         </div>
-
-        <div class="ios-pair-shell">
-          <article class="ios-story-card ios-story-card--pair" data-reveal>
-            <span class="feature-card__eyebrow">Connecting</span>
-            <h3>Scan the code on your Mac, or open its pair link.</h3>
-            <p>RoachNet on the Mac shows a QR code and a pair link. Either one fills in the details; press Pair with RoachTail and the phone gets its own key.</p>
-            <div class="hero-signal-board hero-signal-board--compact">
-              <article class="hero-signal-card">
-                <span>Alias</span>
-                <strong><code>https://roachnet.roachtail</code> is the front door.</strong>
-              </article>
-              <article class="hero-signal-card">
-                <span>Fallback</span>
-                <strong>What you already loaded keeps working until the Mac reappears.</strong>
-              </article>
-            </div>
-            <div class="section-actions">
-              <a class="cta cta--ghost" href="https://roachnet.org/api/">Read the API</a>
-            </div>
+        <div class="nx-grid nx-grid--3" role="list">
+          <article class="nx-card nx-card--signal nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Connecting</p>
+            <h3 class="nx-card__title">Scan the code on your Mac, or open its pair link.</h3>
+            <p class="nx-card__body">RoachNet on the Mac shows a QR code and a pair link. Either one fills in the details; press Pair with RoachTail and the phone gets its own key.</p>
           </article>
-
-          <div class="card-grid card-grid--three ios-pair-grid" role="list">
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">RoachTail alias</span>
-              <h3><code>https://roachnet.roachtail</code>, or just scan the code on your Mac.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">Pair code</span>
-              <h3>Scan the code on your Mac or type the join code. Either way this device gets its own key.</h3>
-            </article>
-
-            <article class="support-card" role="listitem" data-reveal>
-              <span class="feature-card__eyebrow">Fallback</span>
-              <h3>Mac offline? Your recent chats, files, and status are still there until it comes back.</h3>
-            </article>
-          </div>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Alias</p>
+            <h3 class="nx-card__title"><code>https://roachnet.roachtail</code> is the front door.</h3>
+            <p class="nx-card__body">Or just scan the code on your Mac. Either way this device gets its own key.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Fallback</p>
+            <h3 class="nx-card__title">Mac offline? What you already loaded keeps working.</h3>
+            <p class="nx-card__body">Recent chats, files and status stay on the phone until the Mac reappears.</p>
+          </article>
+        </div>
+        <div class="nx-actions nx-mt-32">
+          <a class="nx-btn" href="https://roachnet.org/api/">Read the API</a>
+          <a class="nx-btn" href="https://roachnet.org/home/">RoachNet for Mac</a>
         </div>
       </section>
     </main>
-
-    <footer class="site-footer">
-      <div class="site-footer__copy">
-        <strong>RoachNet iOS</strong>
-        <span>RoachNet for iPhone and iPad. Chat, files, installs, status, and GPS &mdash; without opening the laptop.</span>
+    <footer class="nx-foot">
+      <div class="nx-foot__mark" aria-hidden="true">
+        <span class="nx-foot__word">RoachNet</span>
+        <span class="nx-foot__tag">Offline on purpose</span>
       </div>
-      <nav class="site-footer__nav" aria-label="Footer">
-        <a href="https://roachnet.org/home/">Home</a>
-        <a href="#install">Install</a>
-        <a href="#pairing">Pairing</a>
-        <a href="https://apps.roachnet.org/">Apps</a>
-        <a href="https://roachnet.org/api/">API</a>
-        <a href="https://roachnet.org/sitemap/">Sitemap</a>
-        <a href="https://github.com/RoachWares/RoachNet-iOS" target="_blank" rel="noreferrer">GitHub</a>
-      </nav>
-      <div class="site-footer__meta">
-        <a
-          class="netlify-badge"
-          href="https://www.netlify.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Proudly powered by Netlify"
-        >
-          <span>Proudly powered by Netlify</span>
-          <img
-            src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-            alt="Netlify"
-            loading="lazy"
-          />
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
+          <strong>RoachNet</strong>
+          <span>Your hardware. Your intelligence. Your data. Your network. Your control.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="https://roachnet.org/">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/home/#support">Support</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
+          <a
+            class="nx-release"
+            id="footer-release-badge"
+            href="https://github.com/RoachWares/RoachNet/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Latest RoachNet release v1.0.6"
+          >v1.0.6</a>
+          <span>© 2026 RoachWares LLC</span>
+        </div>
+        <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Hosted on</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" width="114" height="51" loading="lazy" />
         </a>
       </div>
     </footer>
+
     <script src="../app.js" type="module"></script>
-    <script src="../site-polish.js" type="module"></script>
-    <script src="../motion-layer.js" type="module"></script>
+    <script src="../nx.js" type="module"></script>
     <script src="./ios-install.js"></script>
-</body>
+  </body>
 </html>

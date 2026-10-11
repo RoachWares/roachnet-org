@@ -101,13 +101,13 @@ async function main() {
   await mkdir(outputRoot, { recursive: true })
 
   const copyTargets = [
-    'app.css',
-    'app-polish.css',
-    'app.js',
     'app-store.js',
     'app-store-catalog.json',
-    'site-polish.js',
     'site-config.js',
+    'nx.css',
+    'nx-store.css',
+    'nx.js',
+    'fonts',
     'collections',
     'downloads',
     'assets/app-icons',
@@ -154,7 +154,7 @@ async function main() {
     path.join(outputRoot, '_headers'),
     [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.github.com https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
       '  X-Frame-Options: DENY',
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',

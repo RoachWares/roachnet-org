@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nx nx-mission">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoachNet – Offline-first AI, Archiving & Dev Stack</title>
+    <title>RoachNet – Offline-first AI, Archiving &amp; Dev Stack</title>
     <meta
       name="description"
       content="You weren't crazy. The cloud got loud. RoachNet brings your AI, code, maps, and archive back to one place: your own machine."
@@ -29,60 +29,61 @@
       content="Bring the important stuff home. RoachNet keeps your AI, code, maps, and archive on the machine in front of you."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
-    />
-    <link rel="stylesheet" href="./app.css" />
-    <link rel="stylesheet" href="./app-polish.css" />
-    <link rel="stylesheet" href="./motion-layer.css" />
-    <link rel="stylesheet" href="./landing.css" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
+    <link rel="stylesheet" href="./nx.css" />
+    <link rel="stylesheet" href="./nx-mission.css" />
   </head>
   <body class="rn-body" data-page="landing">
     <a class="rn-skip-link" href="#top">Skip to main content</a>
 
-    <!-- Dithered parallax background -->
     <div class="dither-bg" aria-hidden="true">
       <canvas id="dither-canvas"></canvas>
     </div>
+    <div class="nx-atmos nx-atmos--mission" aria-hidden="true">
+      <span class="nx-atmos__blob nx-atmos__blob--purple"></span>
+      <span class="nx-atmos__blob nx-atmos__blob--signal"></span>
+      <span class="nx-atmos__grain"></span>
+      <span class="nx-atmos__vignette"></span>
+    </div>
+    <div class="landing-scroll-progress" aria-hidden="true"></div>
 
-    <!-- Navigation -->
-    <header class="rn-nav">
-      <div class="rn-nav-inner">
-        <a href="https://roachnet.org/" class="rn-logo" aria-label="RoachNet landing page">
-          <img class="rn-logo-img" src="./favicon-32x32.png" width="26" height="26" alt="RoachNet logo" decoding="async" />
-          <span class="rn-logo-text">RoachNet</span>
+    <header class="nx-nav">
+      <div class="nx-nav__bar">
+        <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
+          <span class="nx-nav__dot" aria-hidden="true"></span>
+          <span>RoachNet</span>
+          <span class="nx-nav__sub">Mission</span>
         </a>
-        <nav class="rn-nav-links" aria-label="Primary">
-          <a href="#top" class="rn-nav-link is-current">Mission</a>
-          <a href="https://roachnet.org/home/" class="rn-nav-link">Home</a>
-          <a href="https://apps.roachnet.org" class="rn-nav-link">Apps</a>
-          <a href="https://roachnet.org/roachclaw/" class="rn-nav-link">Claw</a>
-          <a href="https://roachnet.org/brew/" class="rn-nav-link">Brew</a>
-          <a href="https://roachnet.org/ios/" class="rn-nav-link">iOS</a>
+        <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nx-nav__links" id="nx-primary-nav" aria-label="Primary">
+          <a class="nx-nav__link is-current" href="#top" aria-current="page">Mission</a>
+          <a class="nx-nav__link" href="https://roachnet.org/home/">Home</a>
+          <a class="nx-nav__link" href="https://apps.roachnet.org/">Apps</a>
+          <a class="nx-nav__link" href="https://roachnet.org/roachclaw/">Claw</a>
+          <a class="nx-nav__link" href="https://roachnet.org/brew/">Brew</a>
+          <a class="nx-nav__link" href="https://roachnet.org/ios/">iOS</a>
         </nav>
-        <div class="rn-nav-cta">
-          <a class="rn-nav-ghost" href="https://accounts.roachnet.org/">Account</a>
-          <a class="rn-nav-ghost" href="https://roachnet.org/api/">API</a>
-          <a class="rn-nav-primary" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+        <div class="nx-nav__actions" aria-label="Utility links">
+          <a class="nx-nav__ghost" href="https://accounts.roachnet.org/">Account</a>
+          <a class="nx-nav__ghost" href="https://roachnet.org/api/">API</a>
+          <a class="nx-nav__cta" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
     </header>
 
-    <div class="landing-scroll-progress" aria-hidden="true"></div>
+    <main id="top" class="rn-main nx-mission-main" tabindex="-1">
 
-    <!-- Main content -->
-    <main id="top" class="rn-main" tabindex="-1">
-
-      <!-- Hero: single-column, centered, editorial -->
-      <section class="why-hero">
+      <section class="why-hero" aria-labelledby="why-title">
         <div class="why-hero__inner">
-          <h1 class="why-hero__title">
-            You weren't crazy.<br />
+          <h1 class="why-hero__title" id="why-title">
+            <span class="why-hero__line">You weren't crazy.</span>
             <span class="why-hero__sheen">The&nbsp;cloud got&nbsp;loud.</span>
           </h1>
           <div class="why-hero__signal" aria-hidden="true">
             <div class="why-hero__signal-core">
+              <span class="why-hero__signal-core-ring"></span>
               <span class="why-hero__signal-core-ring"></span>
               <span class="why-hero__signal-core-ring"></span>
               <span class="why-hero__signal-core-dot"></span>
@@ -99,22 +100,31 @@
             setup, chasing logins, or nursing along some &ldquo;smart&rdquo; cloud tool
             that keeps trying to help by getting in your way.
           </p>
+          <a class="why-hero__cue" href="#why-pile" aria-label="Keep reading">
+            <span aria-hidden="true"></span>
+          </a>
         </div>
       </section>
 
-      <!-- Flow: the problem -->
-      <section class="why-section" data-reveal>
+      <section class="why-section why-section--pile" id="why-pile" data-reveal>
         <div class="why-section__inner">
-          <p class="why-prose">
+          <p class="why-prose why-prose--lead">
             Now your work lives in a dozen tabs, three different logins, and
             however many dashboards decided to redesign themselves this
             quarter. Your setup stopped feeling like a system and started
             feeling like a pile.
           </p>
         </div>
+        <div class="why-pile" aria-hidden="true">
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+          <span class="why-pile__tab"></span>
+        </div>
       </section>
 
-      <!-- Blockquote: the turn -->
       <section class="why-section why-section--quote" data-reveal>
         <div class="why-section__inner">
           <blockquote class="why-blockquote">
@@ -122,7 +132,7 @@
               And yet, for the work that actually matters, you still crave
               something simple:
             </p>
-            <div class="why-blockquote__lines" aria-hidden="true">
+            <div class="why-blockquote__lines">
               <span>A machine that&rsquo;s yours.</span>
               <span>Tools that don&rsquo;t move.</span>
               <span>A setup that keeps working, even when the internet doesn&rsquo;t.</span>
@@ -132,8 +142,7 @@
         </div>
       </section>
 
-      <!-- What RoachNet is -->
-      <section class="why-section" data-reveal>
+      <section class="why-section why-section--meet" data-reveal>
         <div class="why-section__inner">
           <h2 class="why-heading">Meet RoachNet.</h2>
           <p class="why-prose">
@@ -153,17 +162,16 @@
         </div>
       </section>
 
-      <!-- App showcase: the real app, tilting flat as it scrolls in -->
       <section class="why-section why-section--showcase" data-reveal aria-label="RoachNet on macOS">
         <figure class="why-showcase" data-why-showcase>
           <div class="why-showcase__glow" aria-hidden="true"></div>
           <div class="why-showcase__window">
+            <div class="why-showcase__bar" aria-hidden="true"><i></i><i></i><i></i><span>RoachNet 1.0.6</span></div>
             <img src="./assets/screens/roachnet-native-home.webp" width="1568" height="1032" alt="RoachNet on macOS: the Home screen with RoachClaw, the vault and the runtime" loading="lazy" decoding="async" />
           </div>
         </figure>
       </section>
 
-      <!-- What you can do -->
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <h2 class="why-heading">Bring the important stuff home.</h2>
@@ -176,20 +184,19 @@
         </div>
       </section>
 
-      <!-- Capability cards -->
-      <section class="why-section" data-reveal>
+      <section class="why-section why-section--caps" data-reveal>
         <div class="why-capabilities">
-          <article class="why-cap-card" data-reveal>
+          <article class="why-cap-card nx-card nx-card--tilt" data-reveal>
             <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9.5 9.5h5v5h-5z"/><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3"/></svg></span>
             <h3>Local AI</h3>
             <p>Real models, running on your own Mac. No API keys, no monthly meter, no asking anyone's permission.</p>
           </article>
-          <article class="why-cap-card" data-reveal>
+          <article class="why-cap-card nx-card nx-card--tilt" data-reveal>
             <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9"/><path d="M10 13h4"/></svg></span>
             <h3>Your own archive</h3>
             <p>Park the pages, docs, playlists, and projects you care about somewhere they'll still be in five years.</p>
           </article>
-          <article class="why-cap-card" data-reveal>
+          <article class="why-cap-card nx-card nx-card--tilt" data-reveal>
             <span class="why-cap-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9.5l3 2.5-3 2.5"/><path d="M12.5 15h4.5"/></svg></span>
             <h3>A place to build</h3>
             <p>The same setup on your desktop, your laptop, and that machine in the closet. No browser required.</p>
@@ -197,7 +204,6 @@
         </div>
       </section>
 
-      <!-- Accent statement -->
       <section class="why-section why-section--accent" data-reveal>
         <div class="why-section__inner">
           <p class="why-accent-line">
@@ -207,7 +213,6 @@
         </div>
       </section>
 
-      <!-- A different relationship -->
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <h2 class="why-heading">A different relationship with computing</h2>
@@ -223,7 +228,6 @@
         </div>
       </section>
 
-      <!-- Closing -->
       <section class="why-section" data-reveal>
         <div class="why-section__inner">
           <p class="why-prose">
@@ -238,7 +242,6 @@
         </div>
       </section>
 
-      <!-- The choice -->
       <section class="why-section why-section--final" data-reveal>
         <div class="why-section__inner">
           <p class="why-final-line">
@@ -248,7 +251,6 @@
         </div>
       </section>
 
-      <!-- Download CTA -->
       <section class="why-section why-section--cta" id="download-section" data-reveal>
         <div class="why-cta">
           <div class="why-cta__keys" data-landing-shortcut aria-label="Download shortcut">
@@ -264,72 +266,77 @@
           </p>
           <p class="why-cta__status why-cta__status--fine">RoachNet v1.0.6 is not Apple-notarized; macOS may ask you to approve it on first launch.</p>
           <div class="why-cta__buttons">
-            <button class="rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
-            <a class="rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
+            <button class="nx-btn nx-btn--primary rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
+            <a class="nx-btn rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
           </div>
         </div>
       </section>
 
-      <!-- Bottom wordmark -->
       <div class="why-bottom-mark" aria-hidden="true">
         <span class="why-bottom-wordmark">RoachNet</span>
         <span class="why-bottom-tag">offline on purpose</span>
       </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="rn-footer">
-      <div class="rn-footer-inner">
-        <div class="rn-footer-copy">
+    <footer class="nx-foot nx-foot--mission">
+      <div class="nx-foot__grid">
+        <div class="nx-foot__brand">
           <strong>RoachNet</strong>
           <span>RoachNet &middot; offline on purpose.</span>
+          <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
         </div>
-        <nav class="rn-footer-nav" aria-label="Footer">
-          <a href="#top">Mission</a>
-          <a href="https://roachnet.org/home/">Home</a>
-          <a href="https://apps.roachnet.org/">Apps</a>
-          <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
-          <a href="https://roachnet.org/ios/">iOS</a>
-          <a href="https://roachnet.org/api/">API</a>
-          <a href="https://roachnet.org/sitemap/">Sitemap</a>
-          <a href="https://www.roachwares.org/">RoachWares</a>
-          <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
-        <div class="rn-footer-meta">
-          <div class="rn-footer-brand" aria-hidden="true">
-            <span>RoachNet</span>
-          </div>
+        <div class="nx-foot__col">
+          <h2>Product</h2>
+          <nav aria-label="Footer: product">
+            <a href="#top">Mission</a>
+            <a href="https://roachnet.org/home/">Home</a>
+            <a href="https://apps.roachnet.org/">Apps</a>
+            <a href="https://roachnet.org/roachclaw/">RoachClaw</a>
+            <a href="https://roachnet.org/ios/">iOS</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Install</h2>
+          <nav aria-label="Footer: install">
+            <a href="https://roachnet.org/home/#downloads">Downloads</a>
+            <a href="https://roachnet.org/brew/">Homebrew</a>
+            <a href="https://roachnet.org/api/">API</a>
+            <a href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div class="nx-foot__col">
+          <h2>Company</h2>
+          <nav aria-label="Footer: company">
+            <a href="https://www.roachwares.org/">RoachWares</a>
+            <a href="https://accounts.roachnet.org/">Account</a>
+            <a href="https://roachnet.org/sitemap/">Sitemap</a>
+            <a href="mailto:contact@roachwares.org">contact<wbr>@roachwares.org</a>
+          </nav>
+        </div>
+      </div>
+      <div class="nx-foot__meta">
+        <div class="nx-foot__meta-group">
           <a
-            class="rn-release-chip"
+            class="nx-release rn-release-chip"
             id="footer-release-badge"
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
             aria-label="Latest RoachNet release v1.0.6"
           >v1.0.6</a>
-          <a
-            class="rn-netlify-badge"
-            href="https://www.netlify.com"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Proudly powered by Netlify"
-          >
-            <span>Proudly powered by Netlify</span>
-            <img
-              src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg"
-              alt="Netlify"
-              loading="lazy"
-            />
-          </a>
+          <span>© 2026 RoachWares LLC</span>
         </div>
+        <a class="nx-netlify rn-netlify-badge" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
+          <span>Proudly powered by Netlify</span>
+          <img src="https://www.netlify.com/assets/badges/netlify-badge-color-accent.svg" alt="Netlify" loading="lazy" />
+        </a>
       </div>
     </footer>
 
     <script src="./site-config.js"></script>
     <script src="./app.js" type="module"></script>
     <script src="./landing-script.js"></script>
-    <script src="./site-polish.js" type="module"></script>
-    <script src="./motion-layer.js" type="module"></script>
+    <script src="./nx.js" type="module"></script>
     <script src="./landing-dither.js"></script>
-</body>
+  </body>
 </html>

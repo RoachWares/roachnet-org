@@ -27,6 +27,29 @@ let cachedAuthState = null
 let pendingAuthState = null
 let remoteConfigPromise = null
 
+// supabase-js is self-hosted (pinned, MIT) so the account pages need no CDN:
+// the CSP on accounts.roachnet.org allows scripts from 'self' only, and a
+// privacy-first site should not ask a third party to serve its sign-in code.
+const SUPABASE_JS_PATH = '/vendor/supabase-js/2.117.2/supabase.js'
+let supabaseLoading = null
+function loadSupabase() {
+  if (window.supabase?.createClient) return Promise.resolve(window.supabase)
+  if (!supabaseLoading) {
+    supabaseLoading = new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = SUPABASE_JS_PATH
+      script.async = true
+      script.onload = () => (window.supabase?.createClient ? resolve(window.supabase) : reject(new Error('supabase-js loaded without createClient')))
+      script.onerror = () => {
+        supabaseLoading = null
+        reject(new Error('Could not load the sign-in library.'))
+      }
+      document.head.append(script)
+    })
+  }
+  return supabaseLoading
+}
+
 const authClientGlobalKey = '__ROACHNET_SUPABASE_AUTH_CLIENT__'
 
 function mergeSiteConfig(...configs) {
@@ -147,7 +170,7 @@ async function resolveSiteAuthState() {
     }
   }
 
-  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')
+  const { createClient } = await loadSupabase()
   const globalClient = window[authClientGlobalKey]
   const client =
     globalClient?.supabaseUrl === auth.supabaseUrl &&

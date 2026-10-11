@@ -1,1343 +1,152 @@
+// RoachNet API reference (roachnet.org/api/).
+// The route data below is reconciled against the RoachNet 1.0.6 Mac release
+// (tag v1.0.6): native/macos/Sources/RoachNetRuntime/Router.swift and friends.
+// `source` on each route points at the line that answers it.
+// Text fields support `code` spans written with backticks; everything else is
+// escaped before it reaches innerHTML.
+
+const surfaces = {
+  setup: {
+    label: 'Setup service',
+    base: '$SETUP',
+    where: '127.0.0.1, ephemeral port (set ROACHNET_SETUP_PORT to pin it)',
+    auth: 'No token. Loopback Host header only; JSON bodies must be sent as `application/json`.',
+  },
+  runtime: {
+    label: 'Loopback API',
+    base: '$ROACHNET',
+    where: '127.0.0.1, ephemeral port (read `baseUrl` from the runtime state file)',
+    auth: 'No token. Loopback Host header only; JSON bodies must be sent as `application/json`, or you get a 415.',
+  },
+  companion: {
+    label: 'Companion bridge',
+    base: '$BRIDGE',
+    where: '127.0.0.1:38111 by default, or your RoachTail relay host',
+    auth: '`authorization: Bearer <companion token>` or a paired device’s `rtp_` token. The same routes also answer on the loopback API without one.',
+  },
+  web: {
+    label: 'roachnet.org',
+    base: 'https://roachnet.org',
+    where: 'Netlify functions on roachnet.org',
+    auth: 'Origin must be roachnet.org or accounts.roachnet.org. Chat needs a Supabase session token.',
+  },
+}
+
 const apiGroups = [
   {
     id: 'setup',
-    label: 'Setup API',
+    label: 'Setup service',
     scope: 'setup',
-    basePath: '/api',
-    summary: 'Prepares a self-contained install before the full runtime exists.',
-    stack: 'Setup server -> run-roachnet-setup.mjs -> staged install + portable embedded Node runtime + bundled runtime helpers',
-    callers: ['RoachNet Setup.app'],
+    summary: 'The installer backend RoachNet Setup.app talks to before anything is installed.',
+    stack: 'RoachNet Setup.app → roachnet-runtime --setup → SetupEngine.handle',
+    callers: ['RoachNet Setup.app (RoachNetSetup/main.swift)'],
     endpoints: [
       {
         id: 'setup-state',
         method: 'GET',
-        path: '/state',
+        path: '/api/state',
         title: 'Installer state',
-        summary: 'Returns machine state, saved setup choices, optional Docker preference, and active task state.',
-        handler: 'getInstallerState',
+        summary: 'Machine checks, saved choices and the current or last install task, in one read.',
+        handler: 'SetupEngine.state',
+        source: 'SetupEngine.swift:915',
         request: [
-          'Query: installPath, installedAppPath, sourceMode, sourceRepoUrl, sourceRef',
-          'Flags: installRoachClaw, useDockerContainerization, autoLaunch, autoCheckUpdates, launchAtLogin, dryRun',
-          'Options: roachClawDefaultModel, releaseChannel, updateBaseUrl, installPath, storagePath',
+          'Query, all optional: `installPath`, `installedAppPath`, `storagePath`, `installProfile`, `roachClawDefaultModel`, `releaseChannel`, `updateBaseUrl` and the companion settings.',
+          'Boolean flags count as true only when the value is the string `true`: `installRoachClaw`, `companionEnabled`, `autoLaunch`, `autoCheckUpdates`, `launchAtLogin`, `dryRun`.',
         ],
         response: [
-          'system, config, installPath, nativeApp, installLooksReady',
-          'containerRuntime, dependencies, activeTask, lastCompletedTask, sourceModes',
+          '`system`: chip, macOS version, memory, recommended starter model, `runtime: "native-swift"`.',
+          '`config`: saved choices merged with any query overrides.',
+          '`dependencies`: preflight checks for Apple Silicon, macOS 14 or later, free space, a writable install folder and memory.',
+          '`nativeApp`, `installLooksReady`, `activeTask`, `lastCompletedTask`, `sourceModes`.',
+          '`containerRuntime` is always unavailable. RoachNet does not use containers.',
         ],
         implementation:
-          'Normalizes installer config, probes bundled-vs-host dependency state, checks the optional Docker runtime path, and merges persisted installer settings before the setup UI paints. The setup app now boots this state route through a self-contained embedded Node runtime so the first screen does not depend on Homebrew-provided dylibs being present on the host Mac.',
-        usedBy: ['Setup overview screen', 'Install-path editor', 'Dependency readiness cards', 'Docker opt-in toggle'],
-      },
-      {
-        id: 'setup-install',
-        method: 'POST',
-        path: '/install',
-        title: 'Start install workflow',
-        summary: 'Starts the install and hands off to the native app.',
-        handler: 'handleInstallRequest',
-        request: [
-          'Body: installer config payload from the setup UI',
-          'Supports dryRun preview mode for non-executing install previews',
-        ],
-        response: ['JSON: { ok: true } or { ok: true, task } in dryRun mode', '409 if a setup task is already running'],
-        implementation:
-          'Validates that no other setup task is active, stages the install in the user-selected RoachNet install path, copies the bundled source tree, links or stages contained OpenClaw and Ollama into that same RoachNet root, installs the bundled native app from InstallerAssets, smoke-tests /api/health, then promotes the staged tree or removes it on failure. The embedded setup runtime is packaged from the official portable Node build instead of a Homebrew-linked host binary, so the installer can boot on a clean Apple Silicon Mac without reaching into /opt/homebrew. Heavy AI payload hydration is deferred when needed so the installer can finish the real app handoff instead of stalling on a giant first-run model job.',
-        usedBy: ['Primary install button in Setup.app'],
-      },
-      {
-        id: 'setup-container-runtime-start',
-        method: 'POST',
-        path: '/container-runtime/start',
-        title: 'Start container runtime',
-        summary: 'Boots the optional Docker-backed runtime path for setup.',
-        handler: 'handleContainerRuntimeStartRequest',
-        request: ['No body required'],
-        response: ['JSON: { ok: true, runtime }', '400 on runtime bootstrap failure'],
-        implementation:
-          'Calls the runtime starter used by setup when the user opts into Docker-backed support services instead of the default contained local runtime.',
-        usedBy: ['Setup dependency/runtime stage'],
+          'Query overrides are previewed, not saved. The install needs 2 GiB free, or 5 GiB with RoachClaw. The reply carries the saved config, companion token included, which is one reason the service only answers a loopback Host.',
+        usedBy: ['Setup overview and preflight cards', 'Install-path and storage choosers'],
       },
       {
         id: 'setup-config',
         method: 'POST',
-        path: '/config',
-        title: 'Persist installer config',
-        summary: 'Writes setup choices without starting the install.',
-        handler: 'handleConfigRequest',
-        request: ['Body: partial installer config payload'],
-        response: ['JSON: { ok: true, config }'],
+        path: '/api/config',
+        title: 'Save installer choices',
+        summary: 'Normalizes and saves setup choices without installing anything.',
+        handler: 'SetupEngine.defaultConfig + saveConfig',
+        source: 'SetupEngine.swift:917',
+        body: { installPath: '~/RoachNet', installRoachClaw: true, autoLaunch: true },
+        request: [
+          'JSON body: any subset of the installer config, for example `installPath`, `storagePath`, `installRoachClaw`, `roachClawDefaultModel`, `autoLaunch`, `releaseChannel` (`stable`, `beta` or `alpha`).',
+        ],
+        response: ['`{ ok: true, config }` with every default filled in.'],
         implementation:
-          'Runs the same config normalization as install, then persists the result so setup can resume cleanly across install path, storage path, Docker, and RoachClaw choices.',
-        usedBy: ['Install-path chooser', 'Storage-path chooser', 'RoachClaw toggles', 'Docker toggle'],
+          'Saved to `~/Library/Application Support/roachnet/roachnet-installer.json`. Two fields are pinned whatever you send: `sourceMode` is always `bundled` and `useDockerContainerization` is always false.',
+        usedBy: ['Install-path chooser', 'Storage-path chooser', 'RoachClaw toggle'],
+      },
+      {
+        id: 'setup-install',
+        method: 'POST',
+        path: '/api/install',
+        title: 'Start the install',
+        summary: 'Starts the staged install and returns at once. Poll /api/state for progress.',
+        handler: 'SetupEngine.startInstall → runInstall',
+        source: 'SetupEngine.swift:921 (workflow at :467)',
+        body: { installPath: '~/RoachNet', installRoachClaw: true, dryRun: true },
+        request: [
+          'JSON body: the installer config, same fields as /api/config.',
+          '`dryRun: true` returns a finished preview task and changes nothing.',
+        ],
+        response: [
+          '`{ ok: true }` once the task starts.',
+          '`{ ok: true, task }` in dry-run mode.',
+          '409 if an install is already running.',
+        ],
+        implementation:
+          'Phases, with the progress each starts at: inspect (5), validate (12), stage beside the target (24), contained Ollama (38, skipped without RoachClaw), manifest (52), copy RoachNet.app (64), boot the staged runtime until /api/health answers (76), swap the root and carry `storage/` across (88), point the `RoachNet` hostname at loopback (94), launch (98). A failure removes the staging folder and leaves the previous install alone.',
+        usedBy: ['Install button in RoachNet Setup.app', 'roachnet-runtime --install runs the same workflow without HTTP'],
       },
       {
         id: 'setup-launch',
         method: 'POST',
-        path: '/launch',
-        title: 'Launch RoachNet after setup',
-        summary: 'Opens the native app or falls back to the installed runtime launcher.',
-        handler: 'handleLaunchRequest',
-        request: ['Body: installPath and optional installedAppPath'],
-        response: ['JSON: { ok: true, launched: "native-app", installedAppPath } or { ok: true }'],
-        implementation:
-          'Prefers the native installed app when present, otherwise launches the installed RoachNet runtime entry script and records the last-opened mode.',
-        usedBy: ['Finish / launch step in Setup.app'],
-      },
-    ],
-  },
-  {
-    id: 'homebrew-install',
-    label: 'Homebrew Install',
-    scope: 'packaging',
-    basePath: '/brew',
-    summary: 'Direct Apple Silicon cask install that skips Setup.app but lands in the same RoachNet folder after boot.',
-    stack: 'homebrew-roachnet cask -> postflight config writer -> ~/RoachNet/app/RoachNet.app -> run-roachnet.mjs contained runtime bootstrap',
-    callers: ['brew update && brew tap --force RoachWares/roachnet && brew install --cask roachnet', 'RoachNet-Homebrew.command', 'RoachNet.app first launch after cask install'],
-    endpoints: [
-      {
-        id: 'brew-install-contract',
-        method: 'GET',
-        path: '/install',
-        title: 'Homebrew install contract',
-        summary: 'Documents what the cask writes before the native shell opens.',
-        handler: 'homebrew-roachnet Cask postflight',
-        request: ['No HTTP body. This is a packaging/bootstrap contract, not a live runtime route.'],
+        path: '/api/launch',
+        title: 'Open RoachNet',
+        summary: 'Opens the installed native app.',
+        handler: 'SetupEngine.launch',
+        source: 'SetupEngine.swift:923 (launch at :877)',
+        body: { installPath: '~/RoachNet' },
+        request: ['JSON body: `installPath`, optional `installedAppPath`.'],
         response: [
-          'App target: ~/RoachNet/app/RoachNet.app',
-          'Storage root: ~/RoachNet/storage',
-          'Local tools root: ~/RoachNet/bin',
-          'Config writes: ~/Library/Application Support/roachnet/roachnet-installer.json and ~/.roachnet-setup.json',
+          '`{ ok: true, launched: "native-app", installedAppPath }`.',
+          '400 if the app is not at that path yet.',
         ],
         implementation:
-          'The cask copies the bundled native app out of the DMG, clears the launch-blocking quarantine and provenance flags on the app boundary and executable path without recursively walking the embedded runtime, creates the contained storage/bin roots, and writes the same installer config the native shell expects so the Homebrew install can skip Setup.app completely.',
-        usedBy: ['Homebrew postflight hook', 'roachnet.org/brew docs page'],
+          'Records `lastOpenedMode: "app"` and `preferredShell: "native"`. There is no fallback launcher any more: no app, no launch.',
+        usedBy: ['Finish step in RoachNet Setup.app'],
       },
       {
-        id: 'brew-first-boot-defaults',
-        method: 'GET',
-        path: '/defaults',
-        title: 'Homebrew first-boot defaults',
-        summary: 'Describes the safer first-launch settings used by the cask install.',
-        handler: 'Cask config payload',
-        request: ['No HTTP body. Static documentation for the Homebrew bootstrap payload.'],
-        response: [
-          'useDockerContainerization: false',
-          'installProfile: "homebrew-cask"',
-          'bootstrapPending: true',
-          'bootstrapFailureCount: 0',
-          'companionEnabled: false',
-          'pendingLaunchIntro: false',
-          'pendingRoachClawSetup: true',
-          'lastRuntimeHealthAt: null',
-        ],
-        implementation:
-          'The direct cask install comes up with an explicit Homebrew install profile, marks the first launch as pending bootstrap, keeps the companion bridge off, and skips the launch-intro sheet so a fresh Mac can reach a stable runtime before pairing or extra bridge services are enabled.',
-        usedBy: ['RoachNet.app first boot after Homebrew install', 'Homebrew troubleshooting docs'],
-      },
-      {
-        id: 'brew-runtime-layout',
-        method: 'GET',
-        path: '/runtime',
-        title: 'Self-contained Homebrew runtime',
-        summary: 'Explains where the compiled runtime is staged and how it differs from the standard setup path.',
-        handler: 'run-roachnet.mjs build-runtime bootstrap',
-        request: ['No HTTP body. Static documentation for the contained runtime layout.'],
-        response: [
-          'Compiled runtime cache: ~/RoachNet/storage/state/runtime-cache/<fingerprint>',
-          'Handshake file: ~/RoachNet/storage/state/runtime-cache/roachnet-runtime-handshake.json',
-          'Launcher log: ~/RoachNet/storage/logs/roachnet-launcher-debug.log',
-          'Server log: ~/RoachNet/storage/logs/roachnet-server.log',
-          'Runtime process state: ~/RoachNet/storage/logs/roachnet-runtime-processes.json',
-          'Health route after boot: /api/health',
-          'Runtime API surface: same as the standard native app once the shell is live',
-        ],
-        implementation:
-          'The Homebrew install now stages the compiled runtime inside the contained RoachNet storage root instead of /tmp. On macOS, native Node addons and dylibs in that cache are stripped of inherited xattrs and re-signed ad hoc before launch so clean Apple Silicon installs do not depend on host Homebrew dylibs or transient staging paths. If a first-boot Homebrew launch comes up dirty, the native bridge clears the contained runtime cache and process state once, retries, and only then records a bootstrap failure.',
-        usedBy: ['RoachNet.app runtime boot after Homebrew install', 'roachnet.org/api Homebrew section'],
-      },
-    ],
-  },
-  {
-    id: 'ios-distribution',
-    label: 'RoachNetiOS Distribution',
-    scope: 'packaging',
-    basePath: '/iOS',
-    summary: 'Unsigned IPA plus the shared SideStore and AltStore source used to install RoachNet iOS.',
-    stack: 'RoachNet-iOS release assets -> RoachNet-SideStore AltSource -> SideStore / AltStore signing flow -> RoachNetiOS first launch + RoachTail pairing',
-    callers: ['roachnet.org/iOS', 'RoachNet-SideStore apps.json', 'SideStore source flow', 'AltStore source flow', 'RoachNetiOS first launch'],
-    endpoints: [
-      {
-        id: 'ios-alt-source',
-        method: 'GET',
-        path: '/sidestore-source',
-        title: 'SideStore source contract',
-        summary: 'Documents the shared AltSource feed used to add RoachNetiOS to SideStore.',
-        handler: 'RoachNet-SideStore/apps.json',
-        request: ['No HTTP body. Static source metadata consumed by SideStore.'],
-        response: [
-          'Source URL: https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json',
-          'Source repo: https://github.com/RoachWares/RoachNet-SideStore',
-          'App: RoachNetiOS',
-          'Bundle identifier: com.roachwares.RoachNetCompanion',
-          'Use the raw source URL in SideStore when adding the feed manually.',
-        ],
-        implementation:
-          'The shared source publishes the RoachNetiOS IPA metadata, icon, screenshots, supported iOS floor, and the privacy permission strings for QR pairing, local-network access, Bluetooth, and foreground location. The website ships the raw source URL, the public source repo, and the IPA lane so the install path does not depend on undocumented SideStore deep links.',
-        usedBy: ['roachnet.org/iOS install section', 'RoachNet SideStore repo', 'SideStore add-source flow'],
-      },
-      {
-        id: 'ios-altstore-source',
-        method: 'GET',
-        path: '/altstore-source',
-        title: 'AltStore source contract',
-        summary: 'Documents the same AltSource feed used to add RoachNetiOS to AltStore.',
-        handler: 'RoachNet-SideStore/apps.json',
-        request: ['No HTTP body. Static source metadata consumed by AltStore.'],
-        response: [
-          'Source URL: https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json',
-          'Source repo: https://github.com/RoachWares/RoachNet-SideStore',
-          'App: RoachNetiOS',
-          'Bundle identifier: com.roachwares.RoachNetCompanion',
-          'Use the same raw source URL in AltStore when adding the feed manually.',
-        ],
-        implementation:
-          'AltStore uses the same RoachNet AltSource JSON as SideStore. Keeping both on RoachNet-SideStore avoids duplicate metadata, stale IPA URLs, and mismatched permission copy between sideload clients.',
-        usedBy: ['roachnet.org/iOS AltStore instructions', 'RoachNet SideStore repo', 'AltStore add-source flow'],
-      },
-      {
-        id: 'ios-direct-ipa',
-        method: 'GET',
-        path: '/ipa',
-        title: 'Direct IPA install contract',
-        summary: 'Documents the direct IPA download for SideStore or AltStore when the shared source is not used.',
-        handler: 'RoachNet-iOS release asset',
-        request: ['No HTTP body. Static packaging contract for sideload tooling.'],
-        response: [
-          'Release asset: https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa',
-          'Download the IPA and import it through SideStore or AltStore on-device.',
-          'Version: 0.2.0',
-          'Display name: RoachNetiOS',
-        ],
-        implementation:
-          'The direct download keeps the current unsigned build available for manual SideStore or AltStore import. On-device, the user downloads the IPA and imports it through the sideload client instead of relying on an undocumented install deep link. RoachNetiOS still lands in the same pairing, foreground RoachAtlas GPS bridge, and offline-capable RoachBrain flow after signing.',
-        usedBy: ['roachnet.org/iOS install CTA', 'manual SideStore / AltStore import flow'],
-      },
-    ],
-  },
-  {
-    id: 'account-web',
-    label: 'Account + Web Chat',
-    scope: 'website',
-    basePath: '/.netlify/functions',
-    summary: 'Website identity for the small stuff that should travel: threads, app picks, device links, and settings.',
-    stack: 'accounts.roachnet.org auth surface -> Supabase Auth + RLS tables -> Netlify functions -> paired-device RoachClaw relay or RoachBrain Cloud fallback',
-    callers: ['accounts.roachnet.org', 'roachnet.org/roachclaw'],
-    endpoints: [
-      {
-        id: 'account-register',
+        id: 'setup-container-runtime-start',
         method: 'POST',
-        path: '/register-account',
-        title: 'Create one website account',
-        summary: 'Creates a Supabase-backed RoachNet account for the website.',
-        handler: 'netlify/functions/register-account.mjs',
-        request: [
-          'Body: { email, password, displayName?, startedAt?, company?, captchaToken? }',
-          'Turnstile token when the challenge is armed on the deploy',
-        ],
-        response: ['JSON: { ok, message, userId? }', '409 when the email already exists'],
+        path: '/api/container-runtime/start',
+        title: 'Container runtime (retired)',
+        summary: 'Still routed so a client that asks gets a clear no. Always a 400.',
+        handler: 'SetupEngine.handle',
+        source: 'SetupEngine.swift:925',
+        request: ['No body needed.'],
+        response: ['400 `{ ok: false, error: "RoachNet runs natively and does not use a container runtime." }`'],
         implementation:
-          'Runs server-side validation, optional Turnstile verification, then creates the user through the Supabase admin users API so sign-up can stay on the website without exposing the service-role key to the browser.',
-        usedBy: ['accounts.roachnet.org create-account flow'],
+          'Docker support left with the Node runtime. The route stays so older setup flows get an answer instead of a 404.',
+        usedBy: ['RoachNet Setup.app keeps the call for compatibility'],
       },
       {
-        id: 'roachclaw-web-chat',
-        method: 'POST',
-        path: '/roachclaw-chat',
-        title: 'Send one hosted RoachClaw prompt',
-        summary: 'Verifies the signed-in account, checks thread ownership, stores the prompt, and answers through the paired device or hosted RoachBrain Cloud.',
-        handler: 'netlify/functions/roachclaw-chat.mjs',
-        request: [
-          'Authorization: Bearer <Supabase access token>',
-          'Body: { threadId?, message, bridgeUrl?, bridgeToken?, bridgeLabel? }',
-        ],
-        response: [
-          'JSON: { ok, thread, userMessage, assistantMessage, provider, model }',
-          '401 for missing or invalid account session',
-          '404 for threads outside the caller account',
-          '500 only when neither the paired-device path nor the hosted cloud path can finish the request',
-        ],
-        implementation:
-          'The function verifies the bearer token against Supabase Auth, scopes every thread/message lookup to that user id, stores the prompt, and either forwards the request to the user’s paired RoachClaw device or answers through hosted RoachBrain Cloud. The browser-local RoachBrain path stays available as a last-resort client fallback, but the normal no-device route now stays account-scoped on the server.',
-        usedBy: ['roachnet.org/roachclaw hosted chat workspace'],
-      },
-    ],
-  },
-  {
-    id: 'roachclaw-local-context',
-    label: 'RoachClaw Local Context',
-    scope: 'native',
-    basePath: 'local://roachnet',
-    summary: 'Permissioned local context for RoachClaw, the command bar, voice prompts, and Dev inline assist.',
-    stack: 'RoachNet native shell -> WorkspaceModel -> RoachBrainStore -> RoachBrainWikiStore -> RoachClaw prompt builder',
-    callers: ['RoachClaw workspace', 'Global RoachClaw panel', 'Command bar', 'Dev workspace inline assist', 'Voice prompt composer'],
-    endpoints: [
-      {
-        id: 'local-roachbrain-wiki',
-        method: 'LOCAL',
-        path: 'vault/roachbrain/wiki',
-        title: 'Compiled local RoachBrain wiki',
-        summary: 'Exports saved RoachBrain memory into Obsidian-readable Markdown pages and a manifest inside the selected RoachNet storage root.',
-        handler: 'RoachBrainWikiStore.rebuild',
-        request: [
-          'Input: saved RoachBrain memories',
-          'Input: selected RoachNet storage root',
-          'No cloud request is made by this export path',
-        ],
-        response: [
-          'raw/memories.json',
-          'pages/*.md',
-          'index.md',
-          'log.md',
-          'AGENTS.md',
-          'manifest.json',
-        ],
-        implementation:
-          'Every RoachBrain save can rebuild a local Markdown wiki under the user-selected RoachNet storage root. RoachClaw then receives a bounded context block from direct memory plus the compiled wiki so normal chat, agent tasks, and research prompts can ground themselves without pretending to have invisible access.',
-        usedBy: ['RoachClaw prompt context', 'Dev assistant prompt context', 'Obsidian-compatible vault reads'],
-      },
-      {
-        id: 'global-roachclaw-command',
-        method: 'LOCAL',
-        path: 'command-bar/open-global-roachclaw',
-        title: 'Open RoachClaw anywhere',
-        summary: 'Summons the floating RoachClaw panel from any native surface or command-bar invocation.',
-        handler: 'CommandBarTarget.openGlobalRoachClaw',
-        request: [
-          'Input: command palette selection or global shell button',
-          'Optional: staged prompt text',
-        ],
-        response: [
-          'Floating RoachClaw panel opens over the current surface',
-          'Existing prompt draft and context permissions stay intact',
-        ],
-        implementation:
-          'The command bar no longer has to switch the whole app into the full RoachClaw pane. It can open the floating panel over the current work surface, preserving the user’s active context and letting the same send, save, speak, and voice controls work everywhere.',
-        usedBy: ['Global command bar', 'Top chrome RoachClaw action', 'Collapsed sidebar action'],
-      },
-      {
-        id: 'voice-prompt-command',
-        method: 'LOCAL',
-        path: 'command-bar/start-voice-prompt',
-        title: 'Start voice prompt',
-        summary: 'Starts voice capture through the global RoachClaw panel and sends the transcript through the normal permissioned prompt path.',
-        handler: 'CommandBarTarget.togglePromptDictation',
-        request: [
-          'Input: command palette selection or RoachClaw microphone control',
-          'Requires microphone permission from macOS',
-        ],
-        response: [
-          'Dictation toggles in the active RoachClaw composer',
-          'Transcript remains editable before send',
-        ],
-        implementation:
-          'Voice requests use the same prompt draft, context permission toggles, selected model, and RoachBrain context as typed requests. This keeps RoachClaw usable as a normal chat assistant while still letting the user escalate into task work when they ask for it.',
-        usedBy: ['RoachClaw workspace', 'Global RoachClaw panel', 'Command bar voice action'],
-      },
-      {
-        id: 'dev-inline-agent-context',
-        method: 'LOCAL',
-        path: 'dev/inline-assist',
-        title: 'Dev inline assist context',
-        summary: 'Feeds open-file, shell, RoachBrain memory, compiled wiki, and app-state context into inline coding assistance.',
-        handler: 'DevWorkspaceView.requestInlineSuggestion',
-        request: [
-          'Input: active file and selection',
-          'Input: terminal transcript summary',
-          'Input: permissioned app context and compiled RoachBrain wiki summary',
-        ],
-        response: [
-          'Inline suggestion text',
-          'Task-mode prompt when the user asks the assistant to inspect, act, verify, and record',
-        ],
-        implementation:
-          'The Dev surface now treats RoachClaw as an IDE assistant instead of a preset-command sidebar. It keeps normal direct asks simple, and only enters the inspect-act-verify loop when the user asks for real task work.',
-        usedBy: ['Dev workspace inline assistant', 'Dev assistant panel', 'RoachClaw-backed code suggestions'],
-      },
-    ],
-  },
-  {
-    id: 'bootstrap',
-    label: 'Bootstrap',
-    scope: 'runtime',
-    basePath: '',
-    summary: 'Small bootstrap routes used by health checks and first-run setup.',
-    stack: 'Adonis routes -> EasySetupController / inline handlers',
-    callers: ['ManagedAppRuntime', 'Easy Setup flow', 'health probes'],
-    endpoints: [
-      {
-        id: 'health',
+        id: 'setup-health',
         method: 'GET',
         path: '/api/health',
-        title: 'Health check',
-        summary: 'Minimal runtime readiness check.',
-        handler: 'inline handler',
-        request: ['No body required'],
-        response: ['JSON: { status: "ok" }'],
-        implementation: 'Used as the fast liveness route for the setup smoke test, native runtime boot checks, and container health probes.',
-        usedBy: ['ManagedAppRuntime', 'scripts/run-roachnet.mjs', 'run-roachnet-setup.mjs', 'container health checks'],
-      },
-      {
-        id: 'easy-setup-curated-categories',
-        method: 'GET',
-        path: '/api/easy-setup/curated-categories',
-        title: 'Easy setup curated categories',
-        summary: 'Returns the curated ZIM categories shown during easy setup.',
-        handler: 'EasySetupController.listCuratedCategories',
-        request: ['No body required'],
-        response: ['Category and tier catalog from ZimService'],
-        implementation: 'Bridges the setup UI to the curated ZIM catalog used for first-run content recommendations.',
-        usedBy: ['Easy Setup content selection'],
-      },
-      {
-        id: 'manifests-refresh',
-        method: 'POST',
-        path: '/api/manifests/refresh',
-        title: 'Refresh manifests',
-        summary: 'Refreshes cached ZIM, maps, and Wikipedia manifest specs.',
-        handler: 'EasySetupController.refreshManifests',
-        request: ['No body required'],
-        response: ['JSON: { success, changed: { zim_categories, maps, wikipedia } }'],
-        implementation: 'Fetches and caches the manifest specs that power content catalogs inside setup and the runtime.',
-        usedBy: ['Easy Setup refresh action', 'content admin workflows'],
-      },
-    ],
-  },
-  {
-    id: 'content-updates',
-    label: 'Content Updates',
-    scope: 'runtime',
-    basePath: '/api/content-updates',
-    summary: 'Checks and applies upstream collection updates.',
-    stack: 'CollectionUpdatesController -> CollectionUpdateService',
-    callers: ['Settings update surfaces', 'content maintenance flows'],
-    endpoints: [
-      {
-        id: 'content-updates-check',
-        method: 'POST',
-        path: '/check',
-        title: 'Check updates',
-        summary: 'Scans mirrored collections for newer upstream versions.',
-        handler: 'checkForUpdates',
-        request: ['No body required'],
-        response: ['Array of update candidates with download metadata'],
-        implementation: 'Builds a content-update list by comparing mirrored manifest data with upstream versions.',
-        usedBy: ['Content update checker'],
-      },
-      {
-        id: 'content-updates-apply',
-        method: 'POST',
-        path: '/apply',
-        title: 'Apply one update',
-        summary: 'Applies a single collection update.',
-        handler: 'applyUpdate',
-        request: ['Body: validated update payload including download_url'],
-        response: ['Service result for the applied update'],
-        implementation: 'Validates the update payload, blocks private URLs, then runs the single-update flow through CollectionUpdateService.',
-        usedBy: ['Per-item apply action'],
-      },
-      {
-        id: 'content-updates-apply-all',
-        method: 'POST',
-        path: '/apply-all',
-        title: 'Apply all updates',
-        summary: 'Applies a batch of collection updates.',
-        handler: 'applyAllUpdates',
-        request: ['Body: { updates: [...] }'],
-        response: ['Batch result from CollectionUpdateService'],
-        implementation: 'Validates every update, blocks private URLs, then processes the whole queue through the batch updater.',
-        usedBy: ['Apply all content updates'],
-      },
-    ],
-  },
-  {
-    id: 'companion',
-    label: 'Companion',
-    scope: 'runtime',
-    basePath: '/api/companion',
-    summary: 'Desktop companion token plus per-device RoachTail peer tokens for iPhone and iPad.',
-    stack: 'roachnet-companion-server.mjs -> peer-aware token gate -> CompanionController -> ChatService / OllamaService / runtime relays -> RoachTail/RoachSync state in contained storage',
-    callers: ['RoachNet iOS companion', 'future iPad surfaces'],
-    endpoints: [
-      {
-        id: 'companion-bootstrap',
-        method: 'GET',
-        path: '/bootstrap',
-        title: 'Companion bootstrap',
-        summary: 'Returns the first mobile payload: runtime, vault, catalog URL, and recent sessions.',
-        handler: 'CompanionController.bootstrap',
-        request: [
-          'Primary companion token or paired RoachTail peer token at the sidecar layer',
-          'No body required',
-        ],
-        response: ['appName, machineName (friendly desktop label), appsCatalogUrl, runtime, vault, sessions'],
-        implementation:
-          'The public sidecar listens on the companion port, verifies either the long-lived desktop token or a hashed per-peer RoachTail token, and proxies into the desktop runtime. The controller then fans out to runtimePayload, vaultPayload, and ChatService.getAllSessions() so the phone app can paint in one round-trip.',
-        usedBy: ['RoachNet iOS first launch', 'manual refresh after saving connection settings'],
-      },
-      {
-        id: 'companion-runtime',
-        method: 'GET',
-        path: '/runtime',
-        title: 'Runtime snapshot',
-        summary: 'Returns desktop runtime, RoachClaw, service, and download state for the phone.',
-        handler: 'CompanionController.runtime',
-        request: ['Token-gated request, no body required'],
-        response: ['systemInfo, providers, roachClaw, roachTail, roachSync, services, downloads, installedModels, issues'],
-        implementation:
-          'CompanionController.runtimePayload relays into the existing system, AI-provider, RoachClaw, downloads, installed-model, RoachTail, and RoachSync state surfaces, then coalesces failures into an issues array so the mobile UI can stay live even when one service is still warming up. Paired peer tokens only get this full payload while RoachTail is armed.',
-        usedBy: ['Runtime tab', 'RoachTail status panel', 'RoachSync status panel', 'post-service-action refreshes', 'bootstrap payload'],
-      },
-      {
-        id: 'companion-roachtail',
-        method: 'GET',
-        path: '/roachtail',
-        title: 'RoachTail status',
-        summary: 'Returns the private device-to-device connection the iOS app uses.',
-        handler: 'CompanionController.roachtail',
-        request: ['Token-gated request, no body required'],
-        response: ['enabled, networkName, deviceName, deviceId, status, relayHost, advertisedUrl, runtimeOrigin?, runtimeTunnelUrl?, joinCode?, joinCodeIssuedAt?, joinCodeExpiresAt?, pairingPayload?, pairingIssuedAt?, notes, peers'],
-        implementation:
-          'Reads a RoachTail state snapshot from contained RoachNet storage when one exists, then falls back to the current companion env/config so the iPhone and iPad surfaces can still show bridge readiness before a full mesh config has been written. Peer-token requests still get this route while RoachTail is off so the phone can re-arm the bridge, but the one-time join code is redacted from paired peers. Desktop callers also receive the QR-friendly pairing payload that wraps bridge URL, join code, and transport hints.',
-        usedBy: ['Runtime tab status cards', 'RoachTail toggle state', 'desktop QR pairing panel', 'Connection debugging'],
-      },
-      {
-        id: 'companion-roachtail-pair',
-        method: 'POST',
-        path: '/roachtail/pair',
-        title: 'Pair one device with RoachTail',
-        summary: 'Validates a one-time join code, creates or updates the peer record, and mints a per-device bridge token.',
-        handler: 'CompanionController.pairRoachTail',
-        request: [
-          'Body: { joinCode, peerId?, peerName?, platform?, endpoint?, appVersion?, allowsExitNode?, tags? }',
-          'The sidecar leaves this route open specifically so a new device can pair before it has a token.',
-        ],
-        response: ['success, message, token, peerId, bridgeUrl, state'],
-        implementation:
-          'The controller checks that RoachTail is enabled, validates the one-time join code against the contained state record and its short expiry window, mints a private peer token, stores only its SHA-256 hash, and returns the plaintext token once so the phone can save it into its secure local settings. RoachNetiOS now keeps that token in the iOS Keychain instead of plain user defaults.',
-        usedBy: ['RoachNet iOS connection sheet', 'first-time phone pairing flow'],
-      },
-      {
-        id: 'companion-roachtail-affect',
-        method: 'POST',
-        path: '/roachtail/affect',
-        title: 'Mutate RoachTail state',
-        summary: 'Turns the overlay on or off, refreshes join codes, and clears or edits peers.',
-        handler: 'CompanionController.affectRoachTail',
-        request: [
-          'Body: { action, relayHost?, peerId?, peerName?, platform?, endpoint?, allowsExitNode?, tags? }',
-          'Supported actions: enable, disable, refresh-join-code, clear-peers, set-relay-host, register-peer, remove-peer',
-        ],
-        response: ['success, message, state'],
-        implementation:
-          'Writes RoachTail state back into contained storage instead of keeping it in transient process memory, so the desktop shell, setup app, and mobile runtime all read the same source of truth. Peer tokens can toggle enable/disable and self-link or self-unlink, while refresh-code, relay-host, and full-peer edits stay restricted to the desktop companion token.',
-        usedBy: ['RoachNet iOS runtime toggle', 'RoachNet macOS runtime panel', 'future relay-host editing'],
-      },
-      {
-        id: 'companion-roachsync',
-        method: 'GET',
-        path: '/roachsync',
-        title: 'RoachSync status',
-        summary: 'Returns the sync snapshot the desktop and phone share for vault state.',
-        handler: 'CompanionController.roachsync',
-        request: ['Token-gated request, no body required'],
-        response: ['enabled, provider, networkName, deviceName, deviceId, status, folderId, folderPath, guiUrl?, apiUrl?, notes, peers'],
-        implementation:
-          'Reads the RoachSync state record from contained storage and falls back to the local vault path plus Syncthing-flavored defaults when sync has not been armed yet. This keeps the iPhone and desktop runtime panes aligned around the same sync root.',
-        usedBy: ['RoachNet iOS runtime tab', 'RoachNet macOS runtime panel'],
-      },
-      {
-        id: 'companion-roachsync-affect',
-        method: 'POST',
-        path: '/roachsync/affect',
-        title: 'Mutate RoachSync state',
-        summary: 'Turns sync on or off, refreshes its state, and clears paired-device metadata.',
-        handler: 'CompanionController.affectRoachSync',
-        request: [
-          'Body: { action, folderPath? }',
-          'Supported actions: enable, disable, refresh, set-folder-path, clear-peers',
-        ],
-        response: ['success, message, state'],
-        implementation:
-          'Writes the RoachSync state record back into contained storage so the desktop shell, the phone runtime view, and future account-backed sync surfaces all reflect the same vault-sync source of truth.',
-        usedBy: ['RoachNet iOS runtime toggle', 'RoachNet macOS runtime panel'],
-      },
-      {
-        id: 'companion-vault',
-        method: 'GET',
-        path: '/vault',
-        title: 'Vault snapshot',
-        summary: 'Returns RoachBrain memory summaries, knowledge files, and site archive stubs.',
-        handler: 'CompanionController.vault',
-        request: ['Token-gated request, no body required'],
-        response: ['knowledgeFiles, siteArchives, roachBrain, issues'],
-        implementation:
-          'Builds a mobile-safe vault summary instead of exposing raw local filesystem roots. The controller trims the payload down to note summaries, file labels, archive metadata, and issue records.',
-        usedBy: ['Vault tab', 'bootstrap payload'],
-      },
-      {
-        id: 'companion-sessions-index',
-        method: 'GET',
-        path: '/chat/sessions',
-        title: 'List chat sessions',
-        summary: 'Returns the chat session index visible to the companion app.',
-        handler: 'CompanionController.sessionsIndex',
-        request: ['Token-gated request, no body required'],
-        response: ['Array of chat session summaries'],
-        implementation:
-          'Passes through ChatService.getAllSessions() so the phone can render session history and reopen the current desktop chat.',
-        usedBy: ['Chat history sheet', 'bootstrap payload'],
-      },
-      {
-        id: 'companion-sessions-show',
-        method: 'GET',
-        path: '/chat/sessions/:id',
-        title: 'Load one session',
-        summary: 'Returns the full message list for a specific session.',
-        handler: 'CompanionController.sessionsShow',
-        request: ['Path param: id'],
-        response: ['Full chat session with message history', '404 if the session is missing'],
-        implementation:
-          'Coerces the session id to a number and resolves the chat session through ChatService. Missing or synthetic local-only ids resolve to a 404.',
-        usedBy: ['Opening a prior chat from the mobile history sheet'],
-      },
-      {
-        id: 'companion-sessions-store',
-        method: 'POST',
-        path: '/chat/sessions',
-        title: 'Create mobile session',
-        summary: 'Creates a new chat session, with a synthetic fallback when the desktop chat DB is unavailable.',
-        handler: 'CompanionController.sessionsStore',
-        request: ['Body: { title?, model? }'],
-        response: ['201 with a persisted chat session or a synthetic local session summary'],
-        implementation:
-          'The controller first tries ChatService.createSession(). If that fails, it still returns a local companion-safe session summary so the phone UI can keep moving instead of hard failing at boot.',
-        usedBy: ['New Chat action in RoachNet iOS'],
-      },
-      {
-        id: 'companion-chat-send',
-        method: 'POST',
-        path: '/chat/send',
-        title: 'Send one message',
-        summary: 'Sends a mobile prompt through RoachClaw and returns both user and assistant messages.',
-        handler: 'CompanionController.sendMessage',
-        request: ['Body: { sessionId?, content, model?, messages? }'],
-        response: ['session, userMessage, assistantMessage', '500 with a readable AI/runtime error when Ollama is unreachable'],
-        implementation:
-          'If a persisted session exists, the message flows through ChatService and OllamaService. If the desktop chat DB is unavailable, the controller falls back to a stateless ephemeral send path that uses the provided mobile history and still talks to the real AI runtime.',
-        usedBy: ['Chat composer in RoachNet iOS', 'RoachBrain carryover after pairing'],
-      },
-      {
-        id: 'companion-install',
-        method: 'POST',
-        path: '/install',
-        title: 'Forward one install intent',
-        summary: 'Accepts the same install-intent payloads used by apps.roachnet.org and queues the matching native install.',
-        handler: 'CompanionController.install',
-        request: ['Body: install intent payload from the Apps catalog, including action, slug, category, model, url, pack, and filetype metadata'],
-        response: ['JSON: { ok, action, message, jobId?, jobIds?, queued? }'],
-        implementation:
-          'The native runtime now resolves Apps descriptors directly, verifies checksums when present, and routes each action into the same map, ZIM, Wikipedia, RoachClaw, and RoachSpeech install lanes used by the macOS roachnet://install-content handoff. The iOS app keeps a local pending-install queue when this bridge is unavailable, then flushes the queue through this route on reconnect.',
-        usedBy: ['Apps tab install buttons in RoachNet iOS', 'roachnet://install-content handoff into RoachNet on macOS and iOS', 'Reconnect flush for queued mobile installs'],
-      },
-      {
-        id: 'companion-services-affect',
-        method: 'POST',
-        path: '/services/affect',
-        title: 'Affect one service',
-        summary: 'Starts, stops, or restarts a named desktop service from the phone.',
-        handler: 'CompanionController.affectService',
-        request: ['Body: { serviceName, action } where action is start | stop | restart'],
-        response: ['JSON: { ok, serviceName, action, result }', '400 for missing service name or invalid action'],
-        implementation:
-          'Relays directly into /api/system/services/affect after input validation, so the mobile surface does not need a separate service-control implementation.',
-        usedBy: ['Runtime tab service controls in RoachNet iOS'],
-      },
-    ],
-  },
-  {
-    id: 'maps',
-    label: 'Maps',
-    scope: 'runtime',
-    basePath: '/api/maps',
-    summary: 'Map catalog, style generation, and download orchestration.',
-    stack: 'MapsController -> MapService',
-    callers: ['Maps surface', 'ManagedAppRuntime', 'Apps install handoff'],
-    endpoints: [
-      {
-        id: 'maps-regions',
-        method: 'GET',
-        path: '/regions',
-        title: 'List installed regions',
-        summary: 'Returns installed map region files.',
-        handler: 'listRegions',
-        request: ['No body required'],
-        response: ['Installed region file listing'],
-        implementation: 'Reads the local map storage state from MapService.',
-        usedBy: ['Maps browser', 'native runtime snapshot'],
-      },
-      {
-        id: 'maps-styles',
-        method: 'GET',
-        path: '/styles',
-        title: 'Generate styles JSON',
-        summary: 'Returns the live style bundle used by the map renderer.',
-        handler: 'styles',
-        request: ['Host and protocol are derived from the incoming request'],
-        response: ['MapLibre style JSON'],
-        implementation: 'Ensures base assets exist first, then generates style JSON with the current host and protocol wired in.',
-        usedBy: ['Map renderer bootstrap'],
-      },
-      {
-        id: 'maps-curated-collections',
-        method: 'GET',
-        path: '/curated-collections',
-        title: 'Curated collections',
-        summary: 'Returns the install-ready map collections catalog.',
-        handler: 'listCuratedCollections',
-        request: ['No body required'],
-        response: ['Curated collections manifest'],
-        implementation: 'Reads the curated map collection spec exposed to the native app and the Apps handoff flow.',
-        usedBy: ['Apps install flow', 'ManagedAppRuntime'],
-      },
-      {
-        id: 'maps-fetch-latest-collections',
-        method: 'POST',
-        path: '/fetch-latest-collections',
-        title: 'Refresh map collections',
-        summary: 'Refreshes the remote map collections manifest.',
-        handler: 'fetchLatestCollections',
-        request: ['No body required'],
-        response: ['JSON: { success }'],
-        implementation: 'Fetches the newest collection spec and updates the cached manifest used by Maps.',
-        usedBy: ['Maps admin refresh'],
-      },
-      {
-        id: 'maps-download-base-assets',
-        method: 'POST',
-        path: '/download-base-assets',
-        title: 'Download base assets',
-        summary: 'Downloads the shared basemap assets used by all region packs.',
-        handler: 'downloadBaseAssets',
-        request: ['Body: optional { url } override'],
-        response: ['JSON: { success: true }'],
-        implementation: 'Optionally accepts a mirror URL, blocks private URLs, then downloads the shared atlas assets through MapService.',
-        usedBy: ['Base atlas install', 'Maps first-run prep'],
-      },
-      {
-        id: 'maps-download-remote',
-        method: 'POST',
-        path: '/download-remote',
-        title: 'Download one remote map file',
-        summary: 'Queues a direct remote map-file download.',
-        handler: 'downloadRemote',
-        request: ['Body: { url }'],
-        response: ['JSON: { message, filename, url }'],
-        implementation: 'Validates the remote URL, blocks private targets, and starts a background region download.',
-        usedBy: ['Manual map import'],
-      },
-      {
-        id: 'maps-download-remote-preflight',
-        method: 'POST',
-        path: '/download-remote-preflight',
-        title: 'Map download preflight',
-        summary: 'Returns metadata before a map download starts.',
-        handler: 'downloadRemotePreflight',
-        request: ['Body: { url }'],
-        response: ['Remote file metadata / preflight info'],
-        implementation: 'Runs a safe metadata pass before the background download begins so the UI can warn or confirm.',
-        usedBy: ['Manual import confirmation UI'],
-      },
-      {
-        id: 'maps-download-collection',
-        method: 'POST',
-        path: '/download-collection',
-        title: 'Download collection',
-        summary: 'Queues every resource in a named map collection.',
-        handler: 'downloadCollection',
-        request: ['Body: { slug }'],
-        response: ['JSON: { message, slug, resources }'],
-        implementation: 'Looks up the named curated collection and dispatches every resource in that bundle.',
-        usedBy: ['Apps install handoff', 'ManagedAppRuntime.downloadMapCollection'],
-      },
-      {
-        id: 'maps-delete',
-        method: 'DELETE',
-        path: '/:filename',
-        title: 'Delete map file',
-        summary: 'Deletes one installed map asset.',
-        handler: 'delete',
-        request: ['Path param: filename'],
-        response: ['JSON: { message }', '404 if the file key is missing'],
-        implementation: 'Validates the filename param, removes the file from map storage, and translates missing files to a 404.',
-        usedBy: ['Map cleanup actions'],
-      },
-    ],
-  },
-  {
-    id: 'docs',
-    label: 'Docs',
-    scope: 'runtime',
-    basePath: '/api/docs',
-    summary: 'Internal document listing used by the docs surface.',
-    stack: 'DocsController -> DocsService',
-    callers: ['Docs browser'],
-    endpoints: [
-      {
-        id: 'docs-list',
-        method: 'GET',
-        path: '/list',
-        title: 'List docs',
-        summary: 'Returns available RoachNet docs entries.',
-        handler: 'DocsController.list',
-        request: ['No body required'],
-        response: ['Docs list'],
-        implementation: 'Reads the docs inventory used by the internal docs browser.',
-        usedBy: ['Docs index'],
-      },
-    ],
-  },
-  {
-    id: 'downloads',
-    label: 'Downloads',
-    scope: 'runtime',
-    basePath: '/api/downloads',
-    summary: 'Background download job inspection and cleanup.',
-    stack: 'DownloadsController -> DownloadService',
-    callers: ['ManagedAppRuntime', 'download status widgets'],
-    endpoints: [
-      {
-        id: 'downloads-jobs',
-        method: 'GET',
-        path: '/jobs',
-        title: 'List download jobs',
-        summary: 'Returns all tracked download jobs.',
-        handler: 'index',
-        request: ['No body required'],
-        response: ['Full download job list'],
-        implementation:
-          'Reads current download job state from DownloadService and the shared queue registry so contained-mode model pulls and App Store content installs stay visible across requests.',
-        usedBy: ['ManagedAppRuntime', 'download dashboard'],
-      },
-      {
-        id: 'downloads-jobs-filetype',
-        method: 'GET',
-        path: '/jobs/:filetype',
-        title: 'List download jobs by filetype',
-        summary: 'Returns jobs filtered to one filetype.',
-        handler: 'filetype',
-        request: ['Path param: filetype'],
-        response: ['Filtered download job list'],
-        implementation: 'Validates the filetype param and filters the job view inside DownloadService.',
-        usedBy: ['Scoped download panes'],
-      },
-      {
-        id: 'downloads-remove-job',
-        method: 'DELETE',
-        path: '/jobs/:jobId',
-        title: 'Remove failed job',
-        summary: 'Removes a failed or stale download job from the queue state.',
-        handler: 'removeJob',
-        request: ['Path param: jobId'],
-        response: ['JSON: { success: true }'],
-        implementation: 'Clears failed-job state without touching completed local files.',
-        usedBy: ['Download error recovery'],
-      },
-    ],
-  },
-  {
-    id: 'roachspeech',
-    label: 'RoachSpeech',
-    scope: 'runtime',
-    basePath: '/api/roachspeech',
-    summary: 'Finds and installs Core ML speech model packs.',
-    stack: 'run-roachnet-native-api.mjs -> RoachSpeechPack manifest validation -> ~/RoachNet/storage/RoachSpeech/ModelPacks',
-    callers: ['RoachClaw voice controls', 'Vault transcript actions', 'Apps.RoachNet.org model-pack installs', 'ManagedAppRuntime.downloadRoachSpeechPack'],
-    endpoints: [
-      {
-        id: 'roachspeech-model-packs-list',
-        method: 'GET',
-        path: '/model-packs',
-        title: 'List installed speech packs',
-        summary: 'Returns installed RoachSpeech packs, manifests, registry state, and the active model-pack root.',
-        handler: 'run-roachnet-native-api.mjs modelPacksRootPath/readRoachSpeechPackRegistry',
-        request: ['No body required'],
-        response: [
-          'JSON: { success, ok, modelPacksRoot, packs, registry }',
-          'packs include packID, root, installed, and parsed RoachSpeechPack manifest',
-        ],
-        implementation:
-          'Reads the local RoachSpeech folder under ~/RoachNet/storage/RoachSpeech/ModelPacks and returns only manifest-backed packs. Hidden staging, backup, extraction, and download folders stay out of the installed-pack list.',
-        usedBy: ['RoachSpeech settings/status', 'Apps install confirmation', 'support diagnostics'],
-      },
-      {
-        id: 'roachspeech-model-packs-download',
-        method: 'POST',
-        path: '/model-packs/download',
-        title: 'Download and install speech pack',
-        summary: 'Downloads a first-party RoachSpeech archive and installs it into the local model folder in one atomic step.',
-        handler: 'queueDownload + installRoachSpeechPackArchive',
-        request: [
-          'Body: { url, packID, kind }',
-          'kind is roachVoice or roachWhisper',
-          'url should point at a same-origin Apps descriptor such as https://apps.roachnet.org/downloads/model-packs/roachvoice-chatterbox-coreml.json',
-        ],
-        response: [
-          'JSON: { success, ok, message, packID, kind, jobId }',
-          'Download progress appears in /api/downloads/jobs',
-        ],
-        implementation:
-          'Downloads to a .downloads staging folder, unpacks with the macOS native archive tool, validates RoachSpeechPack.json, rejects non-Core-ML/non-native packs, and atomically swaps the pack into ~/RoachNet/storage/RoachSpeech/ModelPacks. A bad archive does not erase a working voice shelf.',
-        usedBy: ['Apps.RoachNet.org RoachVoice/RoachWhisper install buttons', 'ManagedAppRuntime.downloadRoachSpeechPack'],
-      },
-      {
-        id: 'roachspeech-pack-contract',
-        method: 'GET',
-        path: '/pack-contract',
-        title: 'Model-pack contract',
-        summary: 'Documents the manifest shape required before RoachNet treats a speech pack as native and release-ready.',
-        handler: 'docs/ROACHSPEECH_RUNTIME.md',
-        request: ['No HTTP body. Static release contract.'],
-        response: [
-          'Required manifest keys: packID, displayName, version, kind, nativeFormat, features',
-          'Required native flags: noNetwork=true, noPackagedBinary=true, nativeFormat=coreML',
-          'Release-ready packs require RoachWares/RoachNet provenance and non-empty .mlmodelc payloads',
-        ],
-        implementation:
-          'The public v1.0.6 bundle ships RoachWhisper plus the small Kokoro narrator by default, while Chatterbox voice cloning installs as an optional first-party pack surfaced by Apps.RoachNet.org. The App Store hosts the descriptor and checksum contract; the large archive resolves from public source rails so the setup app stays lean without losing the feature.',
-        usedBy: ['RoachSpeech release gate', 'RoachNet Apps catalog', 'public model-pack docs'],
-      },
-    ],
-  },
-  {
-    id: 'ollama',
-    label: 'Ollama',
-    scope: 'runtime',
-    basePath: '/api/ollama',
-    summary: 'Local model catalog, local and cloud chat, and model lifecycle operations.',
-    stack: 'OllamaController -> OllamaService / RagService / ChatService',
-    callers: ['RoachClaw', 'AI chat', 'model store', 'ManagedAppRuntime'],
-    endpoints: [
-      {
-        id: 'ollama-chat',
-        method: 'POST',
-        path: '/chat',
-        title: 'Chat',
-        summary: 'Runs chat requests, optional SSE streaming, and RAG context injection.',
-        handler: 'chat',
-        request: [
-          'Body: validated chat payload from chatSchema',
-          'Core keys include model, messages, stream, think, and optional sessionId',
-        ],
-        response: [
-          'JSON chat result for non-streaming requests',
-          'SSE stream with status, chunk, done, and error events when stream=true',
-        ],
-        implementation:
-          'Injects default system prompts, rewrites search queries for RAG when needed, optionally pulls relevant documents, saves chat history, and streams or returns the final model response through OllamaService.',
-        usedBy: ['RoachClaw chat pane', 'native AI chat surface'],
-      },
-      {
-        id: 'ollama-models-list',
-        method: 'GET',
-        path: '/models',
-        title: 'Available models',
-        summary: 'Returns the model catalog filtered for search, sort, and recommendations.',
-        handler: 'availableModels',
-        request: ['Query: sort, recommendedOnly, query, limit, force'],
-        response: ['Available model catalog'],
-        implementation: 'Validates the request, then asks OllamaService for the curated or searched model list.',
-        usedBy: ['Model store', 'AI settings'],
-      },
-      {
-        id: 'ollama-models-download',
-        method: 'POST',
-        path: '/models',
-        title: 'Queue model download',
-        summary: 'Dispatches a model download job.',
-        handler: 'dispatchModelDownload',
-        request: ['Body: { model }'],
-        response: ['JSON: { success, message }'],
-        implementation:
-          'Validates the model name and dispatches the download through OllamaService. In contained queue-disabled mode the inline worker retries until the local Ollama runtime is ready, so first-boot model pulls stay alive on clean installs.',
-        usedBy: ['Model store install actions', 'first-launch RoachClaw bootstrap'],
-      },
-      {
-        id: 'ollama-models-delete',
-        method: 'DELETE',
-        path: '/models',
-        title: 'Delete model',
-        summary: 'Deletes one installed model.',
-        handler: 'deleteModel',
-        request: ['Body: { model }'],
-        response: ['JSON: { success, message }'],
-        implementation: 'Validates the model name, then removes it through OllamaService.',
-        usedBy: ['Model cleanup actions'],
-      },
-      {
-        id: 'ollama-installed-models',
-        method: 'GET',
-        path: '/installed-models',
-        title: 'Installed models',
-        summary: 'Returns installed local models with a safe empty fallback.',
-        handler: 'installedModels',
-        request: ['No body required'],
-        response: ['Installed model array'],
-        implementation: 'Reads the installed-model list from the active Ollama runtime and falls back to an empty array if the runtime is unavailable or still warming up.',
-        usedBy: ['ManagedAppRuntime', 'RoachClaw status', 'model picker', 'model store'],
-      },
-    ],
-  },
-  {
-    id: 'openclaw',
-    label: 'OpenClaw',
-    scope: 'runtime',
-    basePath: '/api/openclaw',
-    summary: 'Skill discovery and install endpoints for OpenClaw.',
-    stack: 'OpenClawController -> OpenClawService',
-    callers: ['RoachClaw setup', 'skills browser'],
-    endpoints: [
-      {
-        id: 'openclaw-skills-status',
-        method: 'GET',
-        path: '/skills/status',
-        title: 'Skill CLI status',
-        summary: 'Returns status for the OpenClaw skill CLI.',
-        handler: 'getSkillCliStatus',
-        request: ['No body required'],
-        response: ['CLI status object'],
-        implementation: 'Checks the underlying OpenClaw skill CLI so the native shell can show install readiness.',
-        usedBy: ['RoachClaw status UI'],
-      },
-      {
-        id: 'openclaw-skills-search',
-        method: 'GET',
-        path: '/skills/search',
-        title: 'Search skills',
-        summary: 'Searches ClawHub skills by query.',
-        handler: 'searchSkills',
-        request: ['Query: query, limit'],
-        response: ['Search result list'],
-        implementation: 'Normalizes the query, bounds the limit, then sends the search through OpenClawService.',
-        usedBy: ['Skill search UI'],
-      },
-      {
-        id: 'openclaw-skills-installed',
-        method: 'GET',
-        path: '/skills/installed',
-        title: 'Installed skills',
-        summary: 'Returns installed OpenClaw skills.',
-        handler: 'listInstalledSkills',
-        request: ['No body required'],
-        response: ['Installed skills array'],
-        implementation: 'Reads installed skills from OpenClawService.',
-        usedBy: ['ManagedAppRuntime', 'skills status cards'],
-      },
-      {
-        id: 'openclaw-skills-install',
-        method: 'POST',
-        path: '/skills/install',
-        title: 'Install skill',
-        summary: 'Installs one ClawHub skill.',
-        handler: 'installSkill',
-        request: ['Body: { slug, version? }'],
-        response: ['Install result or 422 / 400 error'],
-        implementation: 'Requires a skill slug, then delegates the install to OpenClawService with an optional version pin.',
-        usedBy: ['Skill install action'],
-      },
-    ],
-  },
-  {
-    id: 'roachclaw',
-    label: 'RoachClaw',
-    scope: 'runtime',
-    basePath: '/api/roachclaw',
-    summary: 'RoachClaw status, onboarding application, and portable profile export.',
-    stack: 'RoachClawController -> RoachClawService -> contained workspace profile writer',
-    callers: ['RoachClaw pane', 'ManagedAppRuntime'],
-    endpoints: [
-      {
-        id: 'roachclaw-status',
-        method: 'GET',
-        path: '/status',
-        title: 'RoachClaw status',
-        summary: 'Returns the current RoachClaw runtime state.',
-        handler: 'getStatus',
-        request: ['No body required'],
-        response: ['RoachClaw status object'],
-        implementation: 'Returns the resolved contained/local/cloud RoachClaw status, configured model, and service reachability from RoachClawService.',
-        usedBy: ['RoachClaw status card', 'ManagedAppRuntime', 'setup post-install checks'],
-      },
-      {
-        id: 'roachclaw-profile',
-        method: 'GET',
-        path: '/profile',
-        title: 'Portable RoachClaw profile',
-        summary: 'Returns the portable RoachClaw profile used by the desktop app and, later, the web.',
-        handler: 'getProfile',
-        request: ['No body required'],
-        response: ['Portable RoachClaw profile object with portableRoot, workspacePath, stateDir, defaultModel, provider URLs, and launch hints'],
-        implementation:
-          'Asks RoachClawService for the current portable profile, which captures the contained workspace root plus the default model and provider URLs in one machine-local contract the desktop runtime and future RoachClaw web chat surface can both read.',
-        usedBy: ['ManagedAppRuntime', 'future RoachClaw web chat surface', 'portable profile inspection'],
-      },
-      {
-        id: 'roachclaw-apply',
-        method: 'POST',
-        path: '/apply',
-        title: 'Apply onboarding',
-        summary: 'Writes model and endpoint choices into RoachClaw.',
-        handler: 'apply',
-        request: ['Body: { model, workspacePath, ollamaBaseUrl, openclawBaseUrl }'],
-        response: ['Onboarding apply result or 400 error'],
-        implementation: 'Accepts the onboarding payload directly, then asks RoachClawService to persist and apply it.',
-        usedBy: ['RoachClaw first-run flow'],
-      },
-    ],
-  },
-  {
-    id: 'site-archives',
-    label: 'Site Archives',
-    scope: 'runtime',
-    basePath: '/api/site-archives',
-    summary: 'Creates and deletes local static site archives.',
-    stack: 'SiteArchivesController -> SiteArchiveService',
-    callers: ['Site archive screen'],
-    endpoints: [
-      {
-        id: 'site-archives-list',
-        method: 'GET',
-        path: '/',
-        title: 'List archives',
-        summary: 'Returns every local site archive.',
-        handler: 'list',
-        request: ['No body required'],
-        response: ['JSON: { archives }'],
-        implementation: 'Reads archive metadata from SiteArchiveService.',
-        usedBy: ['Site archive index'],
-      },
-      {
-        id: 'site-archives-create',
-        method: 'POST',
-        path: '/',
-        title: 'Create archive',
-        summary: 'Creates a new website archive.',
-        handler: 'create',
-        request: ['Body: { url, title }'],
-        response: ['Archive creation result or 400 error'],
-        implementation: 'Passes the user-supplied URL and title into SiteArchiveService, which captures and stores the archive bundle.',
-        usedBy: ['Archive capture form'],
-      },
-      {
-        id: 'site-archives-destroy',
-        method: 'DELETE',
-        path: '/:slug',
-        title: 'Delete archive',
-        summary: 'Deletes one stored archive.',
-        handler: 'destroy',
-        request: ['Path param: slug'],
-        response: ['JSON: { success: true }'],
-        implementation: 'Deletes the named archive bundle and its metadata.',
-        usedBy: ['Archive delete action'],
-      },
-    ],
-  },
-  {
-    id: 'chat',
-    label: 'Chat Sessions',
-    scope: 'runtime',
-    basePath: '/api/chat',
-    summary: 'Session CRUD and suggestion endpoints for the native chat surface.',
-    stack: 'ChatsController -> ChatService / AIRuntimeService',
-    callers: ['Native chat UI', 'RoachClaw chat surface'],
-    endpoints: [
-      {
-        id: 'chat-sessions-index',
-        method: 'GET',
-        path: '/sessions/',
-        title: 'List sessions',
-        summary: 'Returns all saved chat sessions.',
-        handler: 'index',
-        request: ['No body required'],
-        response: ['Session array'],
-        implementation: 'Reads every session from ChatService.',
-        usedBy: ['Chat sidebar'],
-      },
-      {
-        id: 'chat-sessions-create',
-        method: 'POST',
-        path: '/sessions/',
-        title: 'Create session',
-        summary: 'Creates a new chat session.',
-        handler: 'store',
-        request: ['Body: { title, model }'],
-        response: ['201 with created session'],
-        implementation: 'Validates the payload and creates a new session row through ChatService.',
-        usedBy: ['New chat action'],
-      },
-      {
-        id: 'chat-sessions-destroy-all',
-        method: 'DELETE',
-        path: '/sessions/all',
-        title: 'Delete all sessions',
-        summary: 'Clears every stored chat session.',
-        handler: 'destroyAll',
-        request: ['No body required'],
-        response: ['JSON result from deleteAllSessions'],
-        implementation: 'Runs the bulk-delete path in ChatService.',
-        usedBy: ['Danger-zone cleanup action'],
-      },
-      {
-        id: 'chat-sessions-show',
-        method: 'GET',
-        path: '/sessions/:id',
-        title: 'Show session',
-        summary: 'Returns one chat session.',
-        handler: 'show',
-        request: ['Path param: id'],
-        response: ['Session object or 404'],
-        implementation: 'Parses the numeric session id and returns the full thread from ChatService.',
-        usedBy: ['Chat thread loader'],
-      },
-      {
-        id: 'chat-sessions-update',
-        method: 'PUT',
-        path: '/sessions/:id',
-        title: 'Update session',
-        summary: 'Updates one chat session.',
-        handler: 'update',
-        request: ['Path param: id', 'Body: validated updateSessionSchema payload'],
-        response: ['Updated session object'],
-        implementation: 'Validates the incoming update and applies it through ChatService.',
-        usedBy: ['Rename / model change actions'],
-      },
-      {
-        id: 'chat-sessions-delete',
-        method: 'DELETE',
-        path: '/sessions/:id',
-        title: 'Delete session',
-        summary: 'Deletes one chat session.',
-        handler: 'destroy',
-        request: ['Path param: id'],
-        response: ['204 on success'],
-        implementation: 'Deletes one session row and its messages through ChatService.',
-        usedBy: ['Per-thread delete action'],
-      },
-      {
-        id: 'chat-sessions-add-message',
-        method: 'POST',
-        path: '/sessions/:id/messages',
-        title: 'Add message',
-        summary: 'Adds a message to a saved chat session.',
-        handler: 'addMessage',
-        request: ['Path param: id', 'Body: { role, content }'],
-        response: ['201 with created message'],
-        implementation: 'Validates the message payload and appends it to the session in ChatService.',
-        usedBy: ['Message persistence flows'],
-      },
-      {
-        id: 'chat-suggestions',
-        method: 'GET',
-        path: '/suggestions',
-        title: 'Chat suggestions',
-        summary: 'Returns starter prompts with a fallback set.',
-        handler: 'suggestions',
-        request: ['No body required'],
-        response: ['JSON: { suggestions }'],
-        implementation: 'Fetches live chat suggestions and falls back to a built-in set if generation fails or returns nothing.',
-        usedBy: ['Chat empty state'],
-      },
-    ],
-  },
-  {
-    id: 'rag',
-    label: 'RAG',
-    scope: 'runtime',
-    basePath: '/api/rag',
-    summary: 'File upload, embedding jobs, and vector-store sync.',
-    stack: 'RagController -> RagService / EmbedFileJob',
-    callers: ['Knowledge/RAG workflows', 'AI chat context'],
-    endpoints: [
-      {
-        id: 'rag-upload',
-        method: 'POST',
-        path: '/upload',
-        title: 'Upload file',
-        summary: 'Uploads a file and queues embedding.',
-        handler: 'upload',
-        request: ['Multipart form-data with file field'],
-        response: ['202 with { message, jobId, fileName, filePath, alreadyProcessing }'],
-        implementation: 'Stores the uploaded file in RAG storage, generates a unique name, and dispatches the embedding background job.',
-        usedBy: ['Knowledge file upload'],
-      },
-      {
-        id: 'rag-files',
-        method: 'GET',
-        path: '/files',
-        title: 'Stored files',
-        summary: 'Returns stored RAG files.',
-        handler: 'getStoredFiles',
-        request: ['No body required'],
-        response: ['JSON: { files }'],
-        implementation: 'Reads the stored-file list from RagService.',
-        usedBy: ['Knowledge file inventory'],
-      },
-      {
-        id: 'rag-files-delete',
-        method: 'DELETE',
-        path: '/files',
-        title: 'Delete stored file',
-        summary: 'Deletes a stored RAG file by source.',
-        handler: 'deleteFile',
-        request: ['Body / validated payload: { source }'],
-        response: ['JSON: { message } or 500 error'],
-        implementation: 'Deletes the file and its vectorized representation by source identifier.',
-        usedBy: ['Knowledge cleanup'],
-      },
-      {
-        id: 'rag-active-jobs',
-        method: 'GET',
-        path: '/active-jobs',
-        title: 'Active jobs',
-        summary: 'Returns active embedding jobs.',
-        handler: 'getActiveJobs',
-        request: ['No body required'],
-        response: ['Active job array'],
-        implementation: 'Lists active EmbedFileJob entries.',
-        usedBy: ['Knowledge job status widgets'],
-      },
-      {
-        id: 'rag-job-status',
-        method: 'GET',
-        path: '/job-status',
-        title: 'Job status',
-        summary: 'Returns embedding status for one uploaded file.',
-        handler: 'getJobStatus',
-        request: ['Query / validated payload: filePath'],
-        response: ['Status object or 404'],
-        implementation: 'Maps the file path back into upload storage and asks EmbedFileJob for the current status.',
-        usedBy: ['Post-upload progress polling'],
-      },
-      {
-        id: 'rag-sync',
-        method: 'POST',
-        path: '/sync',
-        title: 'Scan and sync',
-        summary: 'Scans storage and syncs vector references.',
-        handler: 'scanAndSync',
-        request: ['No body required'],
-        response: ['Sync result or 500 error'],
-        implementation: 'Runs the storage scan and vector-store reconciliation path in RagService.',
-        usedBy: ['Knowledge maintenance'],
+        title: 'Setup health',
+        summary: 'Liveness for the setup service. `/health` answers too.',
+        handler: 'SetupEngine.handle',
+        source: 'SetupEngine.swift:927',
+        request: ['None.'],
+        response: ['`{ status: "ok", runtime: "native-swift", mode: "setup" }`'],
+        implementation: 'Same answer on `/health` and `/api/health`.',
+        usedBy: ['RoachNet Setup.app while it waits for its backend'],
       },
     ],
   },
@@ -1345,541 +154,1476 @@ const apiGroups = [
     id: 'system',
     label: 'System',
     scope: 'runtime',
-    basePath: '/api/system',
-    summary: 'Status, services, updates, sync, and key-value settings.',
-    stack:
-      'SystemController -> SystemService / DockerService / AIRuntimeService / SystemUpdateService / UpstreamSyncService / NativeRuntimeSnapshotService / ContainerRegistryService',
-    callers: ['ManagedAppRuntime', 'Settings pages', 'service controls', 'update flows'],
+    summary: 'Health, hardware, services and updates for the Mac you are on.',
+    stack: 'RoachNet.app → roachnet-runtime (loopback) → NativeRuntime.route',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
     endpoints: [
       {
-        id: 'system-debug-info',
+        id: 'health',
         method: 'GET',
-        path: '/debug-info',
-        title: 'Debug info',
-        summary: 'Returns debug information gathered from SystemService.',
-        handler: 'getDebugInfo',
-        request: ['No body required'],
-        response: ['JSON: { debugInfo }'],
-        implementation: 'Wraps the lower-level debug snapshot in a single response object for the native debug sheet.',
-        usedBy: ['Debug info modal'],
-      },
-      {
-        id: 'system-info',
-        method: 'GET',
-        path: '/info',
-        title: 'System info',
-        summary: 'Returns host and environment information.',
-        handler: 'getSystemInfo',
-        request: ['No body required'],
-        response: ['System info object'],
-        implementation: 'Passes through SystemService host/environment details.',
-        usedBy: ['ManagedAppRuntime snapshot', 'system settings'],
+        path: '/api/health',
+        title: 'Runtime health',
+        summary: 'The cheapest call on the Mac.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:100',
+        request: ['None.'],
+        response: ['`{ status: "ok" }`'],
+        implementation:
+          'The runtime writes this URL as `healthUrl` in its server-info file. Setup polls it to verify a fresh install; the app polls it before trusting the runtime.',
+        usedBy: ['RoachNet.app runtime supervisor', 'Setup verification phase'],
       },
       {
         id: 'system-internet-status',
         method: 'GET',
-        path: '/internet-status',
-        title: 'Internet status',
-        summary: 'Returns current connectivity state.',
-        handler: 'getInternetStatus',
-        request: ['No body required'],
-        response: ['Connectivity status object'],
-        implementation: 'Delegates to SystemService for internet reachability checks.',
-        usedBy: ['ManagedAppRuntime', 'status cards'],
+        path: '/api/system/internet-status',
+        title: 'Internet check',
+        summary: 'A bare boolean: does github.com resolve.',
+        handler: 'DNS.resolves',
+        source: 'Router.swift:101',
+        request: ['None.'],
+        response: ['`true` or `false`, not wrapped in an object.'],
+        implementation: 'A DNS lookup with a three-second timeout. No request is sent to GitHub.',
+      },
+      {
+        id: 'system-info',
+        method: 'GET',
+        path: '/api/system/info',
+        title: 'Hardware profile',
+        summary: 'CPU, memory, OS and the model size this Mac can carry.',
+        handler: 'NativeRuntime.systemInfo',
+        source: 'Router.swift:102 (RoachClawStatus.swift:111)',
+        request: ['None.'],
+        response: [
+          '`cpu`: brand and core counts.',
+          '`mem`: total and available bytes.',
+          '`os`: hostname, arch, kernel.',
+          '`hardwareProfile`: `memoryTier` (`compact` under 16 GB, `balanced`, `creator` from 32 GB) and `recommendedModelClass` (`1.5b`, `7b`, `14b`).',
+        ],
+        implementation: 'Read from the OS on every call. Nothing is cached or sent anywhere.',
       },
       {
         id: 'system-services',
         method: 'GET',
-        path: '/services',
-        title: 'Services',
-        summary: 'Returns managed service status across the runtime.',
-        handler: 'getServices',
-        request: ['No body required'],
-        response: ['Service list including installed and available services'],
-        implementation: 'Queries SystemService for the full managed service list with installedOnly=false.',
-        usedBy: ['ManagedAppRuntime', 'system settings services page'],
-      },
-      {
-        id: 'system-ai-providers',
-        method: 'GET',
-        path: '/ai/providers',
-        title: 'AI providers',
-        summary: 'Returns detected AI runtime providers.',
-        handler: 'getAIRuntimeProviders',
-        request: ['No body required'],
-        response: ['Provider array'],
-        implementation: 'Reads provider availability from AIRuntimeService.',
-        usedBy: ['AI settings', 'ManagedAppRuntime'],
-      },
-      {
-        id: 'system-native-snapshot',
-        method: 'GET',
-        path: '/native-snapshot',
-        title: 'Native snapshot',
-        summary: 'Returns a compact native-shell snapshot for the macOS client.',
-        handler: 'getNativeSnapshot',
-        request: ['No body required'],
-        response: ['Native runtime snapshot'],
-        implementation: 'Packages the small native-facing snapshot from NativeRuntimeSnapshotService.',
-        usedBy: ['Native shell overview'],
-      },
-      {
-        id: 'system-services-affect',
-        method: 'POST',
-        path: '/services/affect',
-        title: 'Affect service',
-        summary: 'Starts, stops, restarts, or otherwise affects a managed service.',
-        handler: 'affectService',
-        request: ['Body: validated { service_name, action }'],
-        response: ['JSON: { success, message }'],
-        implementation: 'Validates the requested action and sends it into DockerService.affectContainer.',
-        usedBy: ['Service action buttons'],
+        path: '/api/system/services',
+        title: 'Service list',
+        summary: 'The six services the command grid shows, with install state.',
+        handler: 'NativeRuntime.systemServices',
+        source: 'Router.swift:103 (RoachClawStatus.swift:905)',
+        request: ['None.'],
+        response: [
+          'Array of services: Library (Kiwix), Academy (Kolibri), Chat (Ollama), RoachSync, Notes, Data Lab.',
+          'Each has `service_name`, `friendly_name`, `description`, `installed`, `installation_status`, `status`, `ui_location`.',
+        ],
+        implementation:
+          'Only Chat reflects a live probe (is Ollama answering). Notes and Data Lab are built in and always report `running`. The rest report `available`.',
       },
       {
         id: 'system-services-install',
         method: 'POST',
-        path: '/services/install',
-        title: 'Install service',
-        summary: 'Runs a preflight install for one managed service.',
-        handler: 'installService',
-        request: ['Body: validated { service_name }'],
-        response: ['JSON: { success, message }'],
-        implementation: 'Runs the container preflight installer path in DockerService and returns the result.',
-        usedBy: ['Install service controls'],
+        path: '/api/system/services/install',
+        title: 'Install a service',
+        summary: 'Starts Ollama for `roachnet_ollama`. Acknowledges everything else.',
+        handler: 'NativeRuntime.ensureOllama',
+        source: 'Router.swift:151',
+        body: { service_name: 'roachnet_ollama' },
+        request: ['JSON body: `service_name`.'],
+        response: ['`{ success: true, ok: true, message }`'],
+        implementation:
+          'Native services have nothing to install, so any name other than `roachnet_ollama` gets a polite reply and no action.',
       },
       {
-        id: 'system-services-force-reinstall',
+        id: 'system-services-affect',
         method: 'POST',
-        path: '/services/force-reinstall',
-        title: 'Force reinstall service',
-        summary: 'Forces a service reinstall.',
-        handler: 'forceReinstallService',
-        request: ['Body: validated { service_name }'],
-        response: ['JSON: { success, message }'],
-        implementation: 'Calls DockerService.forceReinstall after validation.',
-        usedBy: ['Repair / reset service actions'],
+        path: '/api/system/services/affect',
+        title: 'Start or stop a service',
+        summary: 'Only `roachnet_ollama` with `start` does anything.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:158',
+        body: { service_name: 'roachnet_ollama', action: 'start' },
+        request: ['JSON body: `service_name`, `action`.'],
+        response: ['`{ success: true, ok: true, message: "<action> request recorded." }`'],
+        implementation:
+          'Starting Ollama launches the contained runner with `OLLAMA_MODELS` pointed at `storage/models/ollama` and none of RoachNet’s own credentials in its environment. Other combinations are answered and otherwise left alone.',
       },
       {
-        id: 'system-services-check-updates',
-        method: 'POST',
-        path: '/services/check-updates',
-        title: 'Check service updates',
-        summary: 'Dispatches the background service-update check.',
-        handler: 'checkServiceUpdates',
-        request: ['No body required'],
-        response: ['JSON: { success: true, message }'],
-        implementation: 'Dispatches CheckServiceUpdatesJob and returns immediately.',
-        usedBy: ['Service updates page'],
-      },
-      {
-        id: 'system-services-available-versions',
+        id: 'system-ai-providers',
         method: 'GET',
-        path: '/services/:name/available-versions',
-        title: 'Available service versions',
-        summary: 'Returns installable versions for one service.',
-        handler: 'getAvailableVersions',
-        request: ['Path param: name'],
-        response: ['JSON: { versions } or 404 / 500 error'],
-        implementation: 'Looks up the installed service record, detects host architecture, then asks ContainerRegistryService for matching tags.',
-        usedBy: ['Version picker in updates UI'],
-      },
-      {
-        id: 'system-services-update',
-        method: 'POST',
-        path: '/services/update',
-        title: 'Update service',
-        summary: 'Moves a service to a target version.',
-        handler: 'updateService',
-        request: ['Body: validated { service_name, target_version }'],
-        response: ['JSON: { success, message } or 400 error'],
-        implementation: 'Calls DockerService.updateContainer with the requested target version.',
-        usedBy: ['Pinned service update action'],
-      },
-      {
-        id: 'system-subscribe-release-notes',
-        method: 'POST',
-        path: '/subscribe-release-notes',
-        title: 'Subscribe to release notes',
-        summary: 'Subscribes an email to release notes.',
-        handler: 'subscribeToReleaseNotes',
-        request: ['Body: validated { email }'],
-        response: ['Subscription result'],
-        implementation: 'Validates the email and forwards it to SystemService.',
-        usedBy: ['Support / update forms'],
+        path: '/api/system/ai/providers',
+        title: 'AI providers',
+        summary: 'Is the local model server up, and which cloud keys exist.',
+        handler: 'NativeRuntime.providerStatus',
+        source: 'Router.swift:104',
+        request: ['None.'],
+        response: [
+          '`providers.ollama` and `providers.openclaw`: `available`, `source`, `baseUrl`, `error`.',
+          '`cloudProviders`: OpenAI, Anthropic and OpenRouter key status. Never the keys.',
+        ],
+        implementation:
+          'Ollama is probed at `127.0.0.1:36434/api/version`, OpenClaw at `127.0.0.1:13001/health`. Probe results are cached for one second.',
       },
       {
         id: 'system-latest-version',
         method: 'GET',
-        path: '/latest-version',
-        title: 'Latest version',
-        summary: 'Checks the latest available RoachNet version.',
-        handler: 'checkLatestVersion',
-        request: ['Query: force'],
-        response: ['Version status payload'],
-        implementation: 'Validates the force flag and asks SystemService for the latest-version check result.',
-        usedBy: ['Update page'],
+        path: '/api/system/latest-version',
+        title: 'Check for an update',
+        summary: 'Compares this build with the newest GitHub release.',
+        handler: 'NativeRuntime.latestVersionResponse',
+        source: 'Router.swift:112 (RoachClawStatus.swift:1187)',
+        query: 'force=1',
+        request: ['Query: `force=1` skips the ten-minute cache.'],
+        response: [
+          '`{ success, updateAvailable, currentVersion, latestVersion, message, releaseUrl, assetUrl }`',
+          'On failure: `success: false`, and `latestVersion` equals the current version.',
+        ],
+        implementation:
+          'Reads the RoachWares/RoachNet releases list, skips drafts, and on the stable channel skips pre-releases. This and the update download are the only calls here that reach the internet on their own.',
       },
       {
         id: 'system-update',
         method: 'POST',
-        path: '/update',
-        title: 'Request system update',
-        summary: 'Starts a system update if the updater sidecar is present.',
-        handler: 'requestSystemUpdate',
-        request: ['No body required'],
-        response: ['JSON success/error with note about status polling'],
-        implementation: 'Guards on sidecar availability, then asks SystemUpdateService to request the update.',
-        usedBy: ['Update button'],
+        path: '/api/system/update',
+        title: 'Download the update',
+        summary: 'Queues the verified installer DMG. Returns 202.',
+        handler: 'NativeRuntime.requestUpdateDownload',
+        source: 'Router.swift:114 (Downloads.swift:343)',
+        request: ['No body needed.'],
+        response: [
+          '202 with `{ success, message, note }`.',
+          '`success: false` when the release has no installer asset or no `.sha256` sidecar.',
+        ],
+        implementation:
+          'Fetches the release’s `.sha256` sidecar first; the download refuses to finish unless the bytes match. The DMG lands in `storage/updates` and is opened for you. It does not install itself: run Setup over the existing install.',
       },
       {
         id: 'system-update-status',
         method: 'GET',
-        path: '/update/status',
-        title: 'Update status',
-        summary: 'Returns current system update status.',
-        handler: 'getSystemUpdateStatus',
-        request: ['No body required'],
-        response: ['Update status object or 500 error'],
-        implementation: 'Returns the in-memory/system update status snapshot.',
-        usedBy: ['Update progress UI'],
-      },
-      {
-        id: 'system-update-logs',
-        method: 'GET',
-        path: '/update/logs',
-        title: 'Update logs',
-        summary: 'Returns current system update logs.',
-        handler: 'getSystemUpdateLogs',
-        request: ['No body required'],
-        response: ['JSON: { logs }'],
-        implementation: 'Passes through update logs from SystemUpdateService.',
-        usedBy: ['Update troubleshooting UI'],
-      },
-      {
-        id: 'system-upstream-sync-status',
-        method: 'GET',
-        path: '/upstream-sync/status',
-        title: 'Upstream sync status',
-        summary: 'Returns upstream mirror sync status.',
-        handler: 'getUpstreamSyncStatus',
-        request: ['Query: force'],
-        response: ['Upstream sync status payload'],
-        implementation: 'Supports a force refresh flag and returns the sync state from UpstreamSyncService.',
-        usedBy: ['Mirror/sync status UI'],
-      },
-      {
-        id: 'system-upstream-sync',
-        method: 'POST',
-        path: '/upstream-sync',
-        title: 'Request upstream sync',
-        summary: 'Starts the upstream sync run.',
-        handler: 'requestUpstreamSync',
-        request: ['No body required'],
-        response: ['Sync result or 409 error'],
-        implementation: 'Asks UpstreamSyncService to start a sync and exposes the conflict state if one is already active.',
-        usedBy: ['Mirror sync action'],
-      },
-      {
-        id: 'system-upstream-sync-logs',
-        method: 'GET',
-        path: '/upstream-sync/logs',
-        title: 'Upstream sync logs',
-        summary: 'Returns sync logs from the current or last run.',
-        handler: 'getUpstreamSyncLogs',
-        request: ['No body required'],
-        response: ['JSON: { logs }'],
-        implementation: 'Returns logs captured by UpstreamSyncService.',
-        usedBy: ['Mirror sync diagnostics'],
-      },
-      {
-        id: 'system-settings-get',
-        method: 'GET',
-        path: '/settings',
-        title: 'Get setting',
-        summary: 'Returns one persisted key-value setting.',
-        handler: 'getSetting',
-        request: ['Query: key'],
-        response: ['JSON: { key, value }'],
-        implementation: 'Reads the requested key from KVStore.',
-        usedBy: ['Settings page loaders'],
-      },
-      {
-        id: 'system-settings-update',
-        method: 'PATCH',
-        path: '/settings',
-        title: 'Update setting',
-        summary: 'Updates one persisted key-value setting.',
-        handler: 'updateSetting',
-        request: ['Body: validated { key, value }'],
-        response: ['JSON: { success: true, message }'],
-        implementation: 'Validates the key/value payload and persists it through SystemService.',
-        usedBy: ['Settings toggles and forms'],
+        path: '/api/system/update/status',
+        title: 'Update progress',
+        summary: 'Where the update download is.',
+        handler: 'NativeRuntime.systemUpdateStatus',
+        source: 'Router.swift:113',
+        request: ['None.'],
+        response: ['`{ stage, progress, message, timestamp }` where `stage` is `idle`, `checking`, `downloading`, `ready` or `error`.'],
+        implementation: 'Mirrors the download job every 750 ms. In memory only.',
       },
     ],
   },
   {
-    id: 'zim',
-    label: 'ZIM',
+    id: 'models',
+    label: 'Models and chat',
     scope: 'runtime',
-    basePath: '/api/zim',
-    summary: 'ZIM library inventory, remote catalogs, curated tiers, and Wikipedia selection.',
-    stack: 'ZimController -> ZimService',
-    callers: ['Education surfaces', 'Apps install handoff', 'ManagedAppRuntime'],
+    summary: 'Local model inventory, chat and pulls through the bundled Ollama.',
+    stack: 'RoachNet.app → roachnet-runtime → Ollama on 127.0.0.1:36434',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
     endpoints: [
       {
-        id: 'zim-list',
+        id: 'ollama-installed-models',
         method: 'GET',
-        path: '/list',
-        title: 'List local ZIM files',
-        summary: 'Returns local ZIM inventory.',
-        handler: 'list',
-        request: ['No body required'],
-        response: ['Local ZIM inventory'],
-        implementation: 'Reads the current local ZIM state from ZimService.',
-        usedBy: ['ZIM settings page'],
+        path: '/api/ollama/installed-models',
+        title: 'Installed models',
+        summary: 'What Ollama has on disk.',
+        handler: 'NativeRuntime.installedModels',
+        source: 'Router.swift:162 (RoachClawStatus.swift:55)',
+        request: ['None.'],
+        response: ['Array of `{ name, size }` from Ollama `/api/tags`. Empty when Ollama cannot answer.'],
+        implementation: 'Starts the contained Ollama first if it is not running. Cached for about a second.',
       },
       {
-        id: 'zim-list-remote',
+        id: 'ollama-chat',
+        method: 'POST',
+        path: '/api/ollama/chat',
+        title: 'Chat with a local model',
+        summary: 'Passes your body to Ollama /api/chat and returns its answer.',
+        handler: 'NativeRuntime.handleChat',
+        source: 'Router.swift:163 (Downloads.swift:697)',
+        body: { model: 'qwen2.5-coder:1.5b', messages: [{ role: 'user', content: 'Say hello in five words.' }], stream: false },
+        request: ['JSON body, forwarded as is: `model`, `messages`, `stream`, and any other Ollama chat option.'],
+        response: [
+          'Ollama’s chat response.',
+          'If Ollama is unreachable: still a 200, with `message.content` starting “Local model route is not ready”.',
+        ],
+        implementation:
+          'Two-minute timeout. Streaming is not relayed, so send `stream: false` and get one JSON body back.',
+      },
+      {
+        id: 'roachclaw-apply',
+        method: 'POST',
+        path: '/api/roachclaw/apply',
+        title: 'Pull a model',
+        summary: 'Queues an Ollama pull and returns before it finishes.',
+        handler: 'NativeRuntime.pullModel',
+        source: 'Router.swift:147 (Downloads.swift:706)',
+        body: { model: 'qwen2.5-coder:7b' },
+        request: ['JSON body: `model`. Defaults to `qwen2.5-coder:1.5b`.'],
+        response: ['`{ success: true, ok: true, message: "Local model pull queued." }`'],
+        implementation:
+          'The pull runs in the background against Ollama `/api/pull` with a ten-minute timeout. The reply does not wait for it; a failed pull only shows up in the runtime log.',
+      },
+      {
+        id: 'openclaw-skills-installed',
         method: 'GET',
-        path: '/list-remote',
-        title: 'List remote ZIM files',
-        summary: 'Searches the remote ZIM catalog.',
-        handler: 'listRemote',
-        request: ['Query: start, count, query'],
-        response: ['Remote ZIM search results'],
-        implementation: 'Validates pagination/search params, then asks ZimService for the remote catalog window.',
-        usedBy: ['Remote explorer'],
+        path: '/api/openclaw/skills/installed',
+        title: 'OpenClaw skills',
+        summary: 'Always an empty list in 1.0.6.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:164',
+        request: ['None.'],
+        response: ['`{ workspacePath, skills: [] }`'],
+        implementation:
+          'OpenClaw is a migration reference in 1.0.6, not a bundled runtime (RoachClawAgent.swift:110). The workspace path defaults to `storage/RoachClaw`.',
+      },
+    ],
+  },
+  {
+    id: 'roachclaw',
+    label: 'RoachClaw agent',
+    scope: 'runtime',
+    summary: 'Status, readiness, the plan-only agent and the guardrails around it.',
+    stack: 'Loopback API → NativeRuntime (RoachClawStatus, RoachClawAgent, RoachClawStores)',
+    callers: ['RoachNet.app reads status; the rest is open to local tools on this Mac'],
+    endpoints: [
+      {
+        id: 'roachclaw-status',
+        method: 'GET',
+        path: '/api/roachclaw/status',
+        title: 'RoachClaw status',
+        summary: 'Everything RoachClaw knows about itself, in one heavy read.',
+        handler: 'NativeRuntime.roachClawStatus',
+        source: 'Router.swift:115 (RoachClawStatus.swift:151)',
+        request: ['None.'],
+        response: [
+          '`ready` (true when Ollama answers), `defaultModel`, `resolvedDefaultModel`, `installedModels`, `modelRecords`.',
+          '`ollama`, `openclaw`, `agent`, `operations`, `playbook`, `workspacePath`.',
+        ],
+        implementation:
+          'Probes Ollama, OpenClaw and the model list in parallel, then summarizes every store. Good for a status screen, heavy for a loop.',
+        usedBy: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
+      },
+      {
+        id: 'roachclaw-readiness',
+        method: 'GET',
+        path: '/api/roachclaw/readiness',
+        title: 'Readiness',
+        summary: 'Can RoachClaw write where it needs to.',
+        handler: 'NativeRuntime.roachClawReadinessState',
+        source: 'Router.swift:142',
+        request: ['None.'],
+        response: ['`{ ready, localFirst, version, checks, timestamp }`'],
+        implementation:
+          'Writes and deletes a probe file in the storage root, the runtime state root and `storage/Vault`. `localFirst` is false only if storage is a URL or a relative path.',
+      },
+      {
+        id: 'roachclaw-agent-status',
+        method: 'GET',
+        path: '/api/roachclaw/agent/status',
+        title: 'Agent status',
+        summary: 'The agent block: skills, policy, budgets, memory location.',
+        handler: 'RoachClawAgent.status',
+        source: 'Router.swift:143',
+        request: ['None.'],
+        response: [
+          '`runtime: "roachclaw-native-agent"`, `skills`, `policy.defaultExecutionMode: "plan-only"`, `budgets`, `memory`.',
+        ],
+        implementation:
+          'Its `ready` flag is always false in 1.0.6, because the status is built without model state (RoachClawStatus.swift:171). Read `ready` from /api/roachclaw/status instead.',
+      },
+      {
+        id: 'roachclaw-agent-run',
+        method: 'POST',
+        path: '/api/roachclaw/agent/run',
+        title: 'Plan an agent run',
+        summary: 'Builds the permissioned prompt packet and a plan. Runs nothing.',
+        handler: 'RoachClawAgent.createRun',
+        source: 'Router.swift:144 (RoachClawAgent.swift:163)',
+        body: { prompt: 'List what changed in my vault this week', enabledScopes: ['vault'], context: { vault: 'notes/2026-10-08.md was edited' } },
+        request: [
+          '`prompt` (required).',
+          '`enabledScopes`: any of `roachnet`, `dev`, `vault`, `archives`, `arcade`, `maps`, `media`, `settings`, `runtime`. Defaults to `roachnet`.',
+          '`context`: an object keyed by scope. Only enabled scopes are read.',
+          '`contextBudget`: 1,000 to 64,000 characters, default 12,000. Also `model`, `activeSurface`, `execute`.',
+        ],
+        response: [
+          '`executed: false`, always.',
+          '`executionMode`: `plan-only`, or `approval-required` when you send `execute: true`.',
+          '`prompt`: the system and user messages it would send. Also `plan`, `toolPolicy`, `budgets`.',
+          '500 when `prompt` is empty.',
+        ],
+        implementation:
+          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so instead of pretending.',
+      },
+      {
+        id: 'roachclaw-operations',
+        method: 'GET',
+        path: '/api/roachclaw/operations',
+        title: 'Operations snapshot',
+        summary: 'Every store and lane summarized. Add a section name for one part.',
+        handler: 'NativeRuntime.roachClawOperationsState',
+        source: 'Router.swift:278',
+        request: [
+          'Optional last segment selects one section: `/api/roachclaw/operations/jobs`. An unknown section returns the whole object.',
+        ],
+        response: [
+          'Sections include `diagnostics`, `serviceHealth`, `jobs`, `contacts`, `calendar`, `mail`, `apiTokens`, `cloudProviders`, `readiness`, `toolPolicy`, `backups` and `models`.',
+        ],
+        implementation: 'Computed on every call, same cost as /api/roachclaw/status.',
+      },
+      {
+        id: 'roachclaw-diagnostics-services',
+        method: 'GET',
+        path: '/api/roachclaw/diagnostics/services',
+        title: 'Service health report',
+        summary: 'Per-lane health for models, agent, memory, embeddings and limits.',
+        handler: 'NativeRuntime.roachClawServiceHealthState',
+        source: 'Router.swift:116',
+        request: ['None.'],
+        response: ['The `operations.serviceHealth.report` block from /api/roachclaw/status.'],
+        implementation: 'A slice of the status call, so it costs the same.',
+      },
+      {
+        id: 'roachclaw-scoped-tools',
+        method: 'GET',
+        path: '/api/roachclaw/scoped-tools/capabilities',
+        title: 'Scoped tool bridge',
+        summary: 'The scopes and endpoints a scoped tool is meant to use.',
+        handler: 'NativeRuntime.roachClawScopedToolBridgeState',
+        source: 'Router.swift:123 (RoachClawStores.swift:1000)',
+        request: ['None.'],
+        response: ['`localOnly: true`, `approvalRequired: true`, the scope list (`todos:write`, `email:send` and so on) and six endpoints.'],
+        implementation: 'A declaration, not a gate: the loopback API checks no scopes in 1.0.6.',
+      },
+      {
+        id: 'roachclaw-workspace-browse',
+        method: 'GET',
+        path: '/api/roachclaw/workspace/browse',
+        title: 'Browse folders',
+        summary: 'Lists the subfolders of a folder on this Mac.',
+        handler: 'NativeRuntime.browseRoachClawWorkspace',
+        source: 'Router.swift:117 (RoachClawStores.swift:830)',
+        query: 'path=$HOME/Projects',
+        request: ['Query: `path`. Missing or not a folder means your home folder (or `ROACHNET_WORKSPACE_BROWSE_ROOT`).'],
+        response: ['`{ path, parent, dirs: [{ name, path, modifiedAt }], count }`'],
+        implementation: 'Folders only, no files. Hidden folders and symlinks are skipped.',
+      },
+      {
+        id: 'roachclaw-tool-policy',
+        method: 'GET',
+        path: '/api/roachclaw/tool-policy',
+        title: 'Tool policy',
+        summary: 'Which tools are disabled, and whether this turn is guide-only.',
+        handler: 'NativeRuntime.roachClawToolPolicyState',
+        source: 'Router.swift:134',
+        request: ['None.'],
+        response: ['`mode` (`normal` or `guide_only`), `disabledTools`, `hiddenTools`, `reasons`, `knownToolCount`, `enforcement`.'],
+        implementation: 'Known tools are the built-in list plus anything in the tool index.',
+      },
+      {
+        id: 'roachclaw-tool-policy-save',
+        method: 'POST',
+        path: '/api/roachclaw/tool-policy',
+        title: 'Save disabled tools',
+        summary: 'Replaces the saved list of disabled tools.',
+        handler: 'NativeRuntime.upsertRoachClawToolPolicy',
+        source: 'Router.swift:135',
+        body: { disabledTools: ['bash', 'send_email'] },
+        request: ['JSON body: `disabledTools` (up to 200 names). `lastUserMessage` is evaluated too, but not saved.'],
+        response: ['The evaluated policy.'],
+        implementation: 'The list is replaced, not merged. Send the full list every time.',
+      },
+      {
+        id: 'roachclaw-tool-policy-evaluate',
+        method: 'POST',
+        path: '/api/roachclaw/tool-policy/evaluate',
+        title: 'Evaluate a turn',
+        summary: 'Applies the policy to one message without saving anything.',
+        handler: 'NativeRuntime.roachClawToolPolicyState',
+        source: 'Router.swift:136',
+        body: { lastUserMessage: 'Do not use any tools, just explain it.' },
+        request: ['JSON body: `lastUserMessage` (or `message`), optional extra `disabledTools`.'],
+        response: ['The policy for that turn: `blockAllToolCalls`, `guideOnlyReason`, `hiddenTools`.'],
+        implementation:
+          'If the message asks for no tools (“guide-only mode”, “do not use tools”, “ask before using tools”), every known tool is disabled and hidden and `blockAllToolCalls` is true.',
+      },
+      {
+        id: 'roachclaw-context-budget',
+        method: 'GET',
+        path: '/api/roachclaw/context-budget',
+        title: 'Context budget',
+        summary: 'How much context RoachClaw may spend per prompt.',
+        handler: 'NativeRuntime.roachClawContextBudgetState',
+        source: 'Router.swift:137',
+        request: ['None.'],
+        response: ['`configuredBudget` (default 6,000), `modelContextLength`, `headroom` (default 0.85), `hardMax` (default 200,000), `effectiveBudget`.'],
+        implementation: 'Without a saved profile you get the defaults.',
+      },
+      {
+        id: 'roachclaw-context-budget-save',
+        method: 'POST',
+        path: '/api/roachclaw/context-budget',
+        title: 'Set the context budget',
+        summary: 'Saves one budget profile and returns the result.',
+        handler: 'NativeRuntime.upsertRoachClawContextBudget',
+        source: 'Router.swift:138',
+        body: { modelContextLength: 32768, headroom: 0.85 },
+        request: ['JSON body: `configuredBudget`, `modelContextLength`, `explicit`, `headroom` (0.1 to 0.95), `hardMax` (1,024 to 1,000,000).'],
+        response: ['The computed budget.'],
+        implementation:
+          'With a model context length, the effective budget is length × headroom, capped at `hardMax`. With `explicit: true` your configured number wins, capped at the model length.',
+      },
+      {
+        id: 'roachclaw-url-safety',
+        method: 'POST',
+        path: '/api/roachclaw/url-safety/check',
+        title: 'Check an outbound URL',
+        summary: 'Would RoachNet fetch this URL? Resolves it and says why not.',
+        handler: 'NativeRuntime.checkRoachClawOutboundUrl',
+        source: 'Router.swift:139 (RoachClawStores.swift:1563)',
+        body: { url: 'https://example.com/file.zim', blockPrivate: true },
+        request: ['JSON body: `url`, optional `blockPrivate`.'],
+        response: ['`{ ok, reason }`'],
+        implementation:
+          'Rejects non-HTTP schemes, hosts that do not resolve, link-local addresses (169.254/16 and fe80::, where cloud metadata lives), multicast and unspecified addresses. `blockPrivate` also rejects loopback and private ranges. Paired phones get this check automatically on /api/companion/install.',
+      },
+      {
+        id: 'roachclaw-user-time',
+        method: 'GET',
+        path: '/api/roachclaw/user-time',
+        title: 'User time',
+        summary: 'Your time zone, plus a sentence ready to drop into a prompt.',
+        handler: 'NativeRuntime.roachClawUserTimeState',
+        source: 'Router.swift:118',
+        request: ['None.'],
+        response: ['`timeZoneName`, `utcOffset`, `localDateTime`, `promptContext`, `configured`.'],
+        implementation: 'Defaults to the Mac’s own time zone until you save one.',
+      },
+      {
+        id: 'roachclaw-user-time-save',
+        method: 'POST',
+        path: '/api/roachclaw/user-time',
+        title: 'Set user time',
+        summary: 'Saves the time zone RoachClaw should assume.',
+        handler: 'NativeRuntime.upsertRoachClawUserTime',
+        source: 'Router.swift:119',
+        body: { timeZoneName: 'America/Chicago' },
+        request: ['JSON body: `timeZoneName` (or `timezone`), optional `utcOffsetMinutes`.'],
+        response: ['The new user-time state.'],
+        implementation: 'Offsets are clamped to ±14 hours.',
+      },
+    ],
+  },
+  {
+    id: 'roachclaw-settings',
+    label: 'RoachClaw keys and lanes',
+    scope: 'runtime',
+    summary: 'Provider keys, API tokens, memory, OAuth, embeddings, TLS and upload limits.',
+    stack: 'Loopback API → NativeRuntime (RoachClawStores) → storage/.runtime/roachclaw',
+    callers: ['Local tools on this Mac (RoachNet.app shows the summaries from /api/roachclaw/status)'],
+    endpoints: [
+      {
+        id: 'roachclaw-cloud-providers',
+        method: 'GET',
+        path: '/api/roachclaw/cloud-providers',
+        title: 'Cloud provider keys',
+        summary: 'Which optional cloud lanes have a key. Never the key.',
+        handler: 'NativeRuntime.roachClawPublicCloudProviderKeysState',
+        source: 'Router.swift:218',
+        request: ['None.'],
+        response: [
+          'OpenAI, Anthropic and OpenRouter, each with `configured`, `configuredVia` (`environment`, `local-secret-file` or `none`), `isActive`, `baseUrl`, `envVar`.',
+        ],
+        implementation: 'Cloud lanes are opt-in. A key in `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` or `OPENROUTER_API_KEY` counts as configured.',
+      },
+      {
+        id: 'roachclaw-cloud-providers-save',
+        method: 'POST',
+        path: '/api/roachclaw/cloud-providers',
+        title: 'Save a provider key',
+        summary: 'Stores one cloud key on this Mac, readable only by you.',
+        handler: 'NativeRuntime.upsertRoachClawCloudProviderKey',
+        source: 'Router.swift:219',
+        body: { provider: 'openrouter', key: 'sk-or-REPLACE-ME' },
+        request: ['JSON body: `provider` (`openai`, `anthropic`, `openrouter`), `key`, optional `baseUrl`, `scopes`, `isActive`.'],
+        response: ['`{ success, ok, provider, state }` with the key left out.'],
+        implementation:
+          'The key goes into a 0600 file under the runtime state folder; the index keeps only its SHA-256. Keys over 8 KB are refused, and a custom `baseUrl` must be a public host. Missing key: 500.',
+      },
+      {
+        id: 'roachclaw-cloud-providers-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/cloud-providers/:provider',
+        examplePath: '/api/roachclaw/cloud-providers/openrouter',
+        title: 'Remove a provider key',
+        summary: 'Deletes the index entry and the key file.',
+        handler: 'NativeRuntime.deleteRoachClawCloudProviderKey',
+        source: 'Router.swift:297',
+        request: ['Path: the provider id.'],
+        response: ['`{ success, ok, deleted, provider, state }`'],
+        implementation: 'Only the runtime’s own copy is deleted. A legacy copy under `storage/vault` is left where it is.',
+      },
+      {
+        id: 'roachclaw-tokens',
+        method: 'GET',
+        path: '/api/roachclaw/tokens',
+        title: 'API tokens',
+        summary: 'Tokens you have issued, without their hashes.',
+        handler: 'NativeRuntime.roachClawPublicApiTokensState',
+        source: 'Router.swift:216',
+        request: ['None.'],
+        response: ['`tokens`: `id`, `name`, `owner`, `scopes`, `isActive`, `lastUsedAt`.'],
+        implementation: 'Hashes are stripped before they leave the runtime.',
+      },
+      {
+        id: 'roachclaw-tokens-create',
+        method: 'POST',
+        path: '/api/roachclaw/tokens',
+        title: 'Issue an API token',
+        summary: 'Mints an `rn_` token and shows it once.',
+        handler: 'NativeRuntime.createRoachClawApiToken',
+        source: 'Router.swift:217',
+        body: { name: 'Shortcuts', scopes: ['chat'] },
+        request: ['JSON body: `name`, `owner`, `scopes` (default `["chat"]`), `isActive`.'],
+        response: ['`token`: the raw value. Copy it now; it is never returned again. Also `record` and `state`.'],
+        implementation:
+          'Only the SHA-256 is kept. In 1.0.6 tokens are stored for integrations to check; the loopback API itself does not ask for one.',
+      },
+      {
+        id: 'roachclaw-tokens-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/tokens/:id',
+        examplePath: '/api/roachclaw/tokens/token_0123456789ab',
+        title: 'Revoke an API token',
+        summary: 'Deletes one token record.',
+        handler: 'NativeRuntime.deleteRoachClawApiToken',
+        source: 'Router.swift:296',
+        request: ['Path: the token `id` (not the token).'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: '`deleted: false` means nothing had that id.',
+      },
+      {
+        id: 'roachclaw-memory-provider',
+        method: 'GET',
+        path: '/api/roachclaw/memory-provider',
+        title: 'Memory providers',
+        summary: 'RoachBrain native memory, plus any external providers you added.',
+        handler: 'NativeRuntime.roachClawMemoryProviderState',
+        source: 'Router.swift:128',
+        request: ['None.'],
+        response: ['`providers`: `roachbrain-native` first (always enabled, local), then yours.'],
+        implementation: 'The native provider keeps its records in `memories.json` in the RoachClaw state folder.',
+      },
+      {
+        id: 'roachclaw-memory-provider-save',
+        method: 'POST',
+        path: '/api/roachclaw/memory-provider',
+        title: 'Add a memory provider',
+        summary: 'Records an external provider. Off unless you say otherwise.',
+        handler: 'NativeRuntime.upsertRoachClawMemoryProvider',
+        source: 'Router.swift:129',
+        body: { id: 'notes-index', displayName: 'Notes index', enabled: false },
+        request: ['JSON body: `id`, `providerId`, `displayName`, `enabled`, `localFirst`, `tools`.'],
+        response: ['The updated provider list.'],
+        implementation: 'External providers default to `enabled: false`. The native provider cannot be replaced.',
+      },
+      {
+        id: 'roachclaw-provider-oauth',
+        method: 'GET',
+        path: '/api/roachclaw/provider-oauth',
+        title: 'Provider OAuth flows',
+        summary: 'Pending and active OAuth flows for remote tools, minus the tokens.',
+        handler: 'NativeRuntime.roachClawProviderOAuthState',
+        source: 'Router.swift:130',
+        request: ['None.'],
+        response: ['`redirectBase: "roachnet://provider-oauth/callback"`, `authWaitSeconds: 300`, `flows`.'],
+        implementation: 'Token fields are stripped from every flow before it is returned.',
+      },
+      {
+        id: 'roachclaw-provider-oauth-save',
+        method: 'POST',
+        path: '/api/roachclaw/provider-oauth',
+        title: 'Record an OAuth flow',
+        summary: 'Adds or updates one flow record.',
+        handler: 'NativeRuntime.upsertRoachClawProviderOAuthFlow',
+        source: 'Router.swift:131',
+        body: { provider: 'mcp-server', serverUrl: 'https://mcp.example.com', scopes: ['read'] },
+        request: ['JSON body: `id`, `provider`, `serverUrl` (public hosts only), `scopes`, `status`, `isActive`.'],
+        response: ['The updated flow list.'],
+        implementation: 'An `authUrl` is stored as `[redacted-user-auth-url]`. This records a flow; it does not open a browser.',
+      },
+      {
+        id: 'roachclaw-embedding-lanes',
+        method: 'GET',
+        path: '/api/roachclaw/embedding-lanes',
+        title: 'Embedding lanes',
+        summary: 'The local RoachBrain lane and the optional custom one.',
+        handler: 'NativeRuntime.roachClawEmbeddingLanesState',
+        source: 'Router.swift:132',
+        request: ['None.'],
+        response: ['Lanes with endpoint, model, dimension (384 by default locally), indexed counts, fingerprints and health.'],
+        implementation: 'The local lane is `local://roachbrain`. An incomplete custom lane is reported and never promoted.',
+      },
+      {
+        id: 'roachclaw-embedding-lanes-save',
+        method: 'POST',
+        path: '/api/roachclaw/embedding-lanes',
+        title: 'Configure the custom lane',
+        summary: 'Points the custom embedding lane at an endpoint and model.',
+        handler: 'NativeRuntime.upsertRoachClawEmbeddingLane',
+        source: 'Router.swift:133',
+        body: { id: 'custom', endpointUrl: 'http://127.0.0.1:8081/embed', model: 'nomic-embed-text', dimension: 768 },
+        request: ['JSON body: `endpointUrl`, `model`, `dimension`, `enabled`, optional `reset: true`.'],
+        response: ['The updated lanes.'],
+        implementation: 'Only the `custom` lane can be set here; any other id is a 400. `reset: true` records a reset time.',
+      },
+      {
+        id: 'roachclaw-tls-overrides',
+        method: 'GET',
+        path: '/api/roachclaw/security/tls-overrides',
+        title: 'TLS CA bundle',
+        summary: 'Whether a custom CA bundle is set for model provider probes.',
+        handler: 'NativeRuntime.roachClawTlsOverridesState',
+        source: 'Router.swift:124',
+        request: ['None.'],
+        response: ['`configured`, `valid`, `bundleLabel`. The path itself comes back as `[local-path-redacted]`.'],
+        implementation: '`insecureDisableAllowed` is false. There is no switch to turn verification off.',
+      },
+      {
+        id: 'roachclaw-tls-overrides-save',
+        method: 'POST',
+        path: '/api/roachclaw/security/tls-overrides',
+        title: 'Set a CA bundle',
+        summary: 'Adds a PEM bundle on top of system trust, for provider probes only.',
+        handler: 'NativeRuntime.upsertRoachClawTlsOverride',
+        source: 'Router.swift:125',
+        body: { bundlePath: '~/certs/office-ca.pem' },
+        request: ['JSON body: `bundlePath`. Empty clears it.'],
+        response: ['The new TLS state.', '400 if the path is not a local file.'],
+        implementation: 'System trust stays in place; the bundle is added to it.',
+      },
+      {
+        id: 'roachclaw-upload-limits',
+        method: 'GET',
+        path: '/api/roachclaw/security/upload-limits',
+        title: 'Upload limits',
+        summary: 'Every hard cap, with the env var that tunes it.',
+        handler: 'NativeRuntime.roachClawUploadLimitsState',
+        source: 'Router.swift:126',
+        request: ['None.'],
+        response: ['`limits`: chat uploads 10 MB, gallery 100 MB, gallery transforms 25 MB, vault imports 25 MB, memory imports 10 MB, JSON bodies 1 MB, and the rest.'],
+        implementation: 'Defaults shown; each is overridable with its `ROACHNET_*` variable.',
+      },
+      {
+        id: 'roachclaw-migration-document-tools',
+        method: 'GET',
+        path: '/api/roachclaw/migration-document-tools',
+        title: 'Migration and document tools',
+        summary: 'Formats and sources RoachClaw can import from.',
+        handler: 'NativeRuntime.roachClawMigrationDocumentToolsState',
+        source: 'Router.swift:127',
+        request: ['None.'],
+        response: ['Office formats (`docx`, `pptx`, `xlsx`…), document languages, migration sources (ChatGPT exports, Claude projects, Codex sessions, memory JSON, Markdown trees) and validators.'],
+        implementation: 'A capability description. The import itself happens in the app.',
+      },
+    ],
+  },
+  {
+    id: 'roachclaw-stores',
+    label: 'RoachClaw stores',
+    scope: 'runtime',
+    summary: 'Contacts, tasks, calendar, mail and the rest: local JSON stores with list, upsert and delete.',
+    stack: 'Loopback API → NativeRuntime (RoachClawStores) → JSON files in storage/.runtime/roachclaw',
+    callers: ['Local tools on this Mac (RoachNet.app shows the summaries from /api/roachclaw/status)'],
+    endpoints: [
+      {
+        id: 'roachclaw-store-list',
+        method: 'GET',
+        path: '/api/roachclaw/:collection',
+        examplePath: '/api/roachclaw/tasks',
+        title: 'List a store',
+        summary: 'Reads one of sixteen local stores.',
+        handler: 'NativeRuntime.roachClaw…State',
+        source: 'Router.swift:305 (table at :80)',
+        request: [
+          '`:collection` is one of `contacts`, `tasks`, `calendar`, `reports`, `memories`, `skills`, `editor-drafts`, `search-cache`, `gallery`, `webhooks`, `agent-runs`, `context-compactions`, `tool-index`, `events`, `presets`, `signatures`.',
+        ],
+        response: [
+          '`{ schema, updatedAt, <key>: [...] }`.',
+          'The array key usually matches the path. Exceptions: `events` (calendar), `drafts` (editor-drafts), `entries` (search-cache), `assets` (gallery), `runs` (agent-runs), `compactions`, `tools` (tool-index), `templates` (presets).',
+        ],
+        implementation:
+          'Each store is a JSON file under `storage/.runtime/roachclaw/`. The older `storage/vault/roachclaw/` copy is read as a fallback, never written.',
+      },
+      {
+        id: 'roachclaw-store-upsert',
+        method: 'POST',
+        path: '/api/roachclaw/:collection',
+        examplePath: '/api/roachclaw/tasks',
+        title: 'Create or update an item',
+        summary: 'Send an `id` to update, leave it out to create.',
+        handler: 'NativeRuntime.roachClawUpsertCollectionItem',
+        source: 'Router.swift:307 (RoachClawStores.swift:38)',
+        body: { title: 'Renew passport', status: 'open' },
+        request: ['JSON body: the item. Same sixteen collections as the list route.'],
+        response: ['The whole store, with the new item first.'],
+        implementation:
+          'New ids look like `task_<hex>`. Fields merge into the existing item and are trimmed per store (a contact name stops at 120 characters, for example). Webhook records get a `/api/roachclaw/hooks/:id` path, but 1.0.6 has no route behind it yet.',
+      },
+      {
+        id: 'roachclaw-store-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/:collection/:id',
+        examplePath: '/api/roachclaw/tasks/task_0123456789abcdef',
+        title: 'Delete an item',
+        summary: 'Removes one item from a store.',
+        handler: 'NativeRuntime.deleteRoachClawCollectionItem',
+        source: 'Router.swift:291',
+        request: ['Path: the collection and the item `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`. `deleted` is false if nothing matched.'],
+        implementation: 'No soft delete. Gone is gone; take a backup first if you care.',
+      },
+      {
+        id: 'roachclaw-mail',
+        method: 'GET',
+        path: '/api/roachclaw/mail',
+        title: 'Mail store',
+        summary: 'Local mail records: accounts, messages and drafts.',
+        handler: 'NativeRuntime.roachClawMailState',
+        source: 'Router.swift:213',
+        request: ['None.'],
+        response: ['`{ schema, updatedAt, accounts, messages, drafts }`'],
+        implementation: 'Records only. Nothing here sends or fetches mail.',
+      },
+      {
+        id: 'roachclaw-mail-message',
+        method: 'POST',
+        path: '/api/roachclaw/mail/messages',
+        title: 'Save a message',
+        summary: 'Adds or updates one message record.',
+        handler: 'NativeRuntime.upsertRoachClawMailMessage',
+        source: 'Router.swift:214',
+        body: { from: 'field@example.com', subject: 'Supply list', preview: 'Water, batteries, the good tape.' },
+        request: ['JSON body: `id`, `account`, `folder`, `from`, `to`, `subject`, `preview` (or `body`), `tags`, `read`, `receivedAt`.'],
+        response: ['The whole mail store.'],
+        implementation: 'Defaults: account `local`, folder `Inbox`. Previews stop at 1,200 characters.',
+      },
+      {
+        id: 'roachclaw-mail-draft',
+        method: 'POST',
+        path: '/api/roachclaw/mail/drafts',
+        title: 'Save a draft',
+        summary: 'Adds or updates one draft.',
+        handler: 'NativeRuntime.upsertRoachClawMailDraft',
+        source: 'Router.swift:215',
+        body: { to: ['field@example.com'], subject: 'Re: Supply list', body: 'Adding matches.' },
+        request: ['JSON body: `id`, `account`, `to`, `cc`, `subject`, `body`, `status`, `tags`.'],
+        response: ['The whole mail store.'],
+        implementation: 'Bodies stop at 8,000 characters. Saving a draft does not send it.',
+      },
+      {
+        id: 'roachclaw-mail-message-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/mail/messages/:id',
+        examplePath: '/api/roachclaw/mail/messages/message_0123456789abcdef',
+        title: 'Delete a message',
+        summary: 'Removes one message record.',
+        handler: 'NativeRuntime.deleteRoachClawMailItem',
+        source: 'Router.swift:294',
+        request: ['Path: the message `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Local record only.',
+      },
+      {
+        id: 'roachclaw-mail-draft-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/mail/drafts/:id',
+        examplePath: '/api/roachclaw/mail/drafts/draft_0123456789abcdef',
+        title: 'Delete a draft',
+        summary: 'Removes one draft.',
+        handler: 'NativeRuntime.deleteRoachClawMailItem',
+        source: 'Router.swift:295',
+        request: ['Path: the draft `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Local record only.',
+      },
+      {
+        id: 'roachclaw-cookbook-schedules',
+        method: 'GET',
+        path: '/api/roachclaw/cookbook/schedules',
+        title: 'Model serve schedules',
+        summary: 'Saved windows for serving a model, with what is active now.',
+        handler: 'NativeRuntime.roachClawCookbookServeState',
+        source: 'Router.swift:120',
+        request: ['None.'],
+        response: ['`schedules` (each with `active` and `expired` worked out), plus `active`, `pending` and `expired` counts.'],
+        implementation: 'Scheduler state only; the runtime does not start or stop a model from it.',
+      },
+      {
+        id: 'roachclaw-cookbook-schedules-save',
+        method: 'POST',
+        path: '/api/roachclaw/cookbook/schedules',
+        title: 'Save a serve schedule',
+        summary: 'Adds or updates one schedule.',
+        handler: 'NativeRuntime.upsertRoachClawCookbookServeSchedule',
+        source: 'Router.swift:121',
+        body: { model: 'qwen2.5-coder:7b', durationMinutes: 90 },
+        request: ['JSON body: `id`, `model`, `repoId`, `days`, `startTime`, `endTime`, `durationMinutes` (1 to 1,440, default 60), `mirrorToCalendar`.'],
+        response: ['The schedule list.'],
+        implementation: 'Without `scheduledStopAtMs`, the stop time is now plus the duration.',
+      },
+      {
+        id: 'roachclaw-cookbook-schedules-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/cookbook/schedules/:id',
+        examplePath: '/api/roachclaw/cookbook/schedules/serve_0123456789ab',
+        title: 'Delete a serve schedule',
+        summary: 'Removes one schedule.',
+        handler: 'NativeRuntime.deleteRoachClawCollectionItem',
+        source: 'Router.swift:288',
+        request: ['Path: the schedule `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Nothing is running because of it, so nothing stops.',
+      },
+      {
+        id: 'roachclaw-cookbook-progress',
+        method: 'POST',
+        path: '/api/roachclaw/cookbook/progress-signal',
+        title: 'Progress signal',
+        summary: 'Turns download output into a comparable signal string.',
+        handler: 'NativeRuntime.computeRoachClawCookbookProgressSignal',
+        source: 'Router.swift:122',
+        body: { lastPercent: 42, snapshot: 'pulling manifest… 42%' },
+        request: ['JSON body: `bytes`, or `downloadAggregate` / `lastPercent` plus `snapshot`.'],
+        response: ['`{ schema, signal, mode }`: `bytes:<n>` when bytes are given, otherwise the percent and the last 300 characters of the snapshot.'],
+        implementation: 'Pure function. Stores nothing. Callers compare signals to tell a stalled download from a slow one.',
+      },
+      {
+        id: 'roachclaw-backups',
+        method: 'GET',
+        path: '/api/roachclaw/backups',
+        title: 'Backup snapshots',
+        summary: 'The list of snapshots you have taken.',
+        handler: 'NativeRuntime.roachClawBackupsState',
+        source: 'Router.swift:220',
+        request: ['None.'],
+        response: ['`snapshots`: `id`, `title`, `summary`, `sections`, `createdAt`.'],
+        implementation: 'Metadata only. See the next route for where the data goes.',
+      },
+      {
+        id: 'roachclaw-backups-create',
+        method: 'POST',
+        path: '/api/roachclaw/backups',
+        title: 'Take a backup',
+        summary: 'Builds a full export, records a snapshot, and hands you the export.',
+        handler: 'NativeRuntime.createRoachClawBackup',
+        source: 'Router.swift:221',
+        body: { title: 'Before cleanup' },
+        request: ['JSON body: optional `title`.'],
+        response: ['`{ success, ok, export, snapshots }`'],
+        implementation:
+          'The export is in the response and nowhere else: the runtime records the snapshot entry but does not write the export to disk. Save the reply if you want the backup.',
+      },
+      {
+        id: 'roachclaw-backups-delete',
+        method: 'DELETE',
+        path: '/api/roachclaw/backups/:id',
+        examplePath: '/api/roachclaw/backups/snapshot_0123456789abcdef',
+        title: 'Delete a snapshot record',
+        summary: 'Removes one snapshot entry.',
+        handler: 'NativeRuntime.deleteRoachClawCollectionItem',
+        source: 'Router.swift:298',
+        request: ['Path: the snapshot `id`.'],
+        response: ['`{ success, ok, deleted, id, state }`'],
+        implementation: 'Only the record goes. Any export you saved yourself is yours to keep.',
+      },
+      {
+        id: 'roachclaw-export',
+        method: 'GET',
+        path: '/api/roachclaw/export',
+        title: 'Export everything',
+        summary: 'Every RoachClaw store and setting in one JSON document.',
+        handler: 'NativeRuntime.roachClawExportPayload',
+        source: 'Router.swift:222 (RoachClawStores.swift:1598)',
+        request: ['None.'],
+        response: ['`org.roachnet.roachclaw.export.v1`: contacts, tasks, calendar, mail, memories, skills, presets, tokens, providers, policies and the rest.'],
+        implementation:
+          'Secrets stay out: token hashes are stripped, provider keys never appear, and signature images are replaced with a placeholder.',
+      },
+    ],
+  },
+  {
+    id: 'content',
+    label: 'Maps, library and speech',
+    scope: 'runtime',
+    summary: 'Catalogs and downloads for offline maps, ZIM libraries, Wikipedia, saved sites and RoachSpeech packs.',
+    stack: 'RoachNet.app → loopback API → download queue → storage/maps, storage/zim, storage/RoachSpeech',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
+    endpoints: [
+      {
+        id: 'maps-curated-collections',
+        method: 'GET',
+        path: '/api/maps/curated-collections',
+        title: 'Map collections',
+        summary: 'The offline map catalog, with what is already installed.',
+        handler: 'NativeRuntime.mapCollections',
+        source: 'Router.swift:168 (RoachClawStatus.swift:1053)',
+        request: ['None.'],
+        response: ['Array of `{ slug, name, description, installed_count, total_count, resources }`. Each resource has a `url` and a `descriptorUrl` on apps.roachnet.org.'],
+        implementation: 'Read from the bundled `collections/maps.json`. Installed counts come from `storage/maps/pmtiles`.',
+      },
+      {
+        id: 'maps-download-base-assets',
+        method: 'POST',
+        path: '/api/maps/download-base-assets',
+        title: 'Prepare map folders',
+        summary: 'Creates the map folders. Despite the name, nothing downloads.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:169',
+        request: ['No body needed.'],
+        response: ['`{ success: true, ok: true, message: "Base atlas folders are ready." }`'],
+        implementation: 'Creates `storage/maps/pmtiles` and `storage/maps/basemaps-assets`.',
+      },
+      {
+        id: 'maps-download-collection',
+        method: 'POST',
+        path: '/api/maps/download-collection',
+        title: 'Download a map collection',
+        summary: 'Queues every map in one collection.',
+        handler: 'NativeRuntime.queueResources',
+        source: 'Router.swift:173',
+        body: { slug: 'REPLACE-WITH-A-SLUG' },
+        request: ['JSON body: `slug` from /api/maps/curated-collections.'],
+        response: ['`{ success, ok, message: "<n> map downloads queued." }`'],
+        implementation: 'An unknown slug queues zero downloads and says so, politely, with a 200.',
+      },
+      {
+        id: 'maps-download-remote',
+        method: 'POST',
+        path: '/api/maps/download-remote',
+        title: 'Download a map by URL',
+        summary: 'Queues one PMTiles file, or resolves a download descriptor first.',
+        handler: 'NativeRuntime.queueResolvedDownload',
+        source: 'Router.swift:177 (Downloads.swift:120)',
+        body: { url: 'https://example.com/region.pmtiles' },
+        request: ['JSON body: `url` (HTTP or HTTPS).'],
+        response: ['`{ success, ok, message }`. `success: false` without a usable URL.'],
+        implementation:
+          'A URL ending in `.json` is read as a download descriptor: the runtime picks a usable source and checks the SHA-256 the descriptor names.',
       },
       {
         id: 'zim-curated-categories',
         method: 'GET',
-        path: '/curated-categories',
-        title: 'Curated categories',
-        summary: 'Returns the curated ZIM category/tier catalog.',
-        handler: 'listCuratedCategories',
-        request: ['No body required'],
-        response: ['Curated category tree'],
-        implementation: 'Returns the curated education/reference catalog used by setup, apps, and managed runtime surfaces.',
-        usedBy: ['ManagedAppRuntime', 'Apps install flow', 'Easy Setup'],
-      },
-      {
-        id: 'zim-download-remote',
-        method: 'POST',
-        path: '/download-remote',
-        title: 'Download remote ZIM',
-        summary: 'Queues a remote ZIM download.',
-        handler: 'downloadRemote',
-        request: ['Body: validated { url, metadata? }'],
-        response: ['JSON: { message, filename, jobId, url }'],
-        implementation: 'Validates the remote URL, blocks private targets, and dispatches the remote ZIM download through ZimService.',
-        usedBy: ['Remote explorer install'],
+        path: '/api/zim/curated-categories',
+        title: 'Library categories',
+        summary: 'The offline library catalog by category and tier.',
+        handler: 'NativeRuntime.educationCategories',
+        source: 'Router.swift:181 (RoachClawStatus.swift:1083)',
+        request: ['None.'],
+        response: ['Categories with `tiers`, each tier with `resources`, plus `installedTierSlug`.'],
+        implementation: 'Read from the bundled `collections/kiwix-categories.json`; installed state comes from `storage/zim`.',
       },
       {
         id: 'zim-download-category-tier',
         method: 'POST',
-        path: '/download-category-tier',
-        title: 'Download category tier',
-        summary: 'Queues every resource in one curated category tier.',
-        handler: 'downloadCategoryTier',
-        request: ['Body: { categorySlug, tierSlug }'],
-        response: ['JSON: { message, categorySlug, tierSlug, resources }'],
-        implementation: 'Looks up the category tier and dispatches every resource inside that tier.',
-        usedBy: ['Apps install handoff', 'ManagedAppRuntime.downloadCategoryTier'],
+        path: '/api/zim/download-category-tier',
+        title: 'Download a library tier',
+        summary: 'Queues every ZIM file in one tier of one category.',
+        handler: 'NativeRuntime.queueResources',
+        source: 'Router.swift:183',
+        body: { categorySlug: 'REPLACE-ME', tierSlug: 'REPLACE-ME' },
+        request: ['JSON body: `categorySlug`, `tierSlug`.'],
+        response: ['`{ success, ok, message: "<n> knowledge downloads queued." }`'],
+        implementation: 'Files land in `storage/zim`.',
+      },
+      {
+        id: 'zim-download-category-resource',
+        method: 'POST',
+        path: '/api/zim/download-category-resource',
+        title: 'Download one library item',
+        summary: 'Queues a single resource from a category.',
+        handler: 'NativeRuntime.queueResources',
+        source: 'Router.swift:187',
+        body: { categorySlug: 'REPLACE-ME', resourceId: 'REPLACE-ME' },
+        request: ['JSON body: `categorySlug`, `resourceId`.'],
+        response: ['`{ success, ok, message }`'],
+        implementation: 'Searches every tier in the category for that resource id.',
+      },
+      {
+        id: 'zim-download-remote',
+        method: 'POST',
+        path: '/api/zim/download-remote',
+        title: 'Download a ZIM by URL',
+        summary: 'Queues one ZIM file, or resolves a descriptor first.',
+        handler: 'NativeRuntime.queueResolvedDownload',
+        source: 'Router.swift:191',
+        body: { url: 'https://example.com/library.zim' },
+        request: ['JSON body: `url`.'],
+        response: ['`{ success, ok, message }`'],
+        implementation: 'Same descriptor and checksum rules as maps.',
       },
       {
         id: 'zim-wikipedia',
         method: 'GET',
-        path: '/wikipedia',
-        title: 'Wikipedia state',
-        summary: 'Returns the current selected Wikipedia pack state.',
-        handler: 'getWikipediaState',
-        request: ['No body required'],
-        response: ['Wikipedia selection state'],
-        implementation: 'Reads the current Wikipedia option state from ZimService.',
-        usedBy: ['ManagedAppRuntime', 'Wikipedia selector'],
+        path: '/api/zim/wikipedia',
+        title: 'Wikipedia options',
+        summary: 'Which Wikipedia builds you can install, and which you picked.',
+        handler: 'NativeRuntime.wikipediaState',
+        source: 'Router.swift:182 (RoachClawStatus.swift:1131)',
+        request: ['None.'],
+        response: ['`{ options, currentSelection }`'],
+        implementation: 'The selection lives in `storage/zim/wikipedia-selection.json`.',
       },
       {
         id: 'zim-wikipedia-select',
         method: 'POST',
-        path: '/wikipedia/select',
-        title: 'Select Wikipedia pack',
-        summary: 'Sets the active Wikipedia option.',
-        handler: 'selectWikipedia',
-        request: ['Body: { optionId }'],
-        response: ['Selection result'],
-        implementation: 'Validates the option id, then switches the active Wikipedia pack in ZimService.',
-        usedBy: ['Wikipedia selector UI'],
+        path: '/api/zim/wikipedia/select',
+        title: 'Pick a Wikipedia build',
+        summary: 'Records your choice and queues the download.',
+        handler: 'NativeRuntime.selectWikipediaOption',
+        source: 'Router.swift:195 (Downloads.swift:671)',
+        body: { optionId: 'none' },
+        request: ['JSON body: `optionId` from /api/zim/wikipedia.'],
+        response: ['`{ success, ok, message }`'],
+        implementation: '`none`, or an id that is not in the list, records a skip and downloads nothing.',
       },
       {
-        id: 'zim-delete',
-        method: 'DELETE',
-        path: '/:filename',
-        title: 'Delete ZIM file',
-        summary: 'Deletes one installed ZIM file.',
-        handler: 'delete',
-        request: ['Path param: filename'],
-        response: ['JSON: { message } or 404'],
-        implementation: 'Validates the filename and removes it from local ZIM storage.',
-        usedBy: ['ZIM cleanup action'],
+        id: 'site-archives-list',
+        method: 'GET',
+        path: '/api/site-archives',
+        title: 'Saved sites',
+        summary: 'Lists the sites you have archived.',
+        handler: 'NativeRuntime.siteArchives',
+        source: 'Router.swift:223 (RoachClawStatus.swift:1148)',
+        request: ['None.'],
+        response: ['`{ archives: [{ slug, title, url, createdAt }] }`'],
+        implementation: 'Reads `storage/site-archives/index.json`. Read-only: 1.0.6 has no create or delete route here.',
+      },
+      {
+        id: 'rag-files',
+        method: 'GET',
+        path: '/api/rag/files',
+        title: 'Vault files',
+        summary: 'Up to 80 file paths from your vault.',
+        handler: 'NativeRuntime.listVaultKnowledgeFiles',
+        source: 'Router.swift:167 (RoachClawStatus.swift:1000)',
+        request: ['None.'],
+        response: ['`{ files: [...] }`: relative paths under `storage/Vault`.'],
+        implementation: 'A listing, not a search index. The `roachtail` and `roachclaw` folders are skipped.',
+      },
+      {
+        id: 'roachspeech-model-packs-list',
+        method: 'GET',
+        path: '/api/roachspeech/model-packs',
+        title: 'RoachSpeech packs',
+        summary: 'Installed voice and speech packs, and any in flight.',
+        handler: 'NativeRuntime.roachSpeechModelPacksState',
+        source: 'Router.swift:212 (Downloads.swift:543)',
+        request: ['None.'],
+        response: ['`modelPacksRoot`, `packs` (with each manifest), `registry` of queued, installed and failed packs.'],
+        implementation: 'Packs live in `storage/RoachSpeech/ModelPacks/<packID>`.',
+      },
+      {
+        id: 'roachspeech-model-packs-download',
+        method: 'POST',
+        path: '/api/roachspeech/model-packs/download',
+        title: 'Install a RoachSpeech pack',
+        summary: 'Downloads, checks and unpacks one pack.',
+        handler: 'NativeRuntime.queueRoachSpeechPackDownload',
+        source: 'Router.swift:200 (Downloads.swift:476)',
+        body: { packID: 'REPLACE-ME', kind: 'roachVoice', url: 'https://example.com/pack.zip' },
+        request: ['JSON body: `packID`, `kind` (default `roachVoice`), `url`.'],
+        response: ['`{ success, ok, message, packID, kind, jobId }`'],
+        implementation:
+          'When the archive lands it is unpacked with `ditto`. Its `RoachSpeechPack.json` must name the same pack and kind and declare a Core ML pack with no packaged binary; only then is it swapped into place. A failed install puts the previous pack back.',
       },
     ],
   },
   {
-    id: 'benchmark',
-    label: 'Benchmark',
+    id: 'downloads',
+    label: 'Downloads and jobs',
     scope: 'runtime',
-    basePath: '/api/benchmark',
-    summary: 'Benchmark execution, results, submission, and settings.',
-    stack: 'BenchmarkController -> BenchmarkService / RunBenchmarkJob',
-    callers: ['Benchmark page'],
+    summary: 'The download queue every install shares, plus the benchmark stub.',
+    stack: 'Loopback API → NativeRuntime download queue (in memory)',
+    callers: ['RoachNet.app (RoachNetCore/ManagedAppRuntime.swift)'],
     endpoints: [
       {
-        id: 'benchmark-run',
-        method: 'POST',
-        path: '/run',
-        title: 'Run benchmark',
-        summary: 'Starts a full, system, or AI benchmark run.',
-        handler: 'run',
-        request: ['Body: validated benchmark payload', 'Optional sync=true for synchronous dev execution'],
-        response: ['201 queued result or direct synchronous benchmark result', '409 if one is already running'],
-        implementation: 'Validates the requested benchmark type, guards against concurrent runs, and either executes immediately or dispatches RunBenchmarkJob.',
-        usedBy: ['Primary benchmark action'],
-      },
-      {
-        id: 'benchmark-run-system',
-        method: 'POST',
-        path: '/run/system',
-        title: 'Run system benchmark',
-        summary: 'Starts a system-only benchmark.',
-        handler: 'runSystem',
-        request: ['No body required'],
-        response: ['201 with benchmark_id or 409 on active run'],
-        implementation: 'Queues a system-only RunBenchmarkJob.',
-        usedBy: ['System benchmark quick action'],
-      },
-      {
-        id: 'benchmark-run-ai',
-        method: 'POST',
-        path: '/run/ai',
-        title: 'Run AI benchmark',
-        summary: 'Starts an AI-only benchmark.',
-        handler: 'runAI',
-        request: ['No body required'],
-        response: ['201 with benchmark_id or 409 on active run'],
-        implementation: 'Queues an AI-only RunBenchmarkJob.',
-        usedBy: ['AI benchmark quick action'],
-      },
-      {
-        id: 'benchmark-results',
+        id: 'downloads-jobs',
         method: 'GET',
-        path: '/results',
-        title: 'All results',
-        summary: 'Returns every benchmark result.',
-        handler: 'results',
-        request: ['No body required'],
-        response: ['JSON: { results, total }'],
-        implementation: 'Returns the full benchmark history from BenchmarkService.',
-        usedBy: ['Benchmark results view'],
+        path: '/api/downloads/jobs',
+        title: 'Download jobs',
+        summary: 'Everything queued, running, finished or failed.',
+        handler: 'NativeRuntime.downloadJobsSnapshot',
+        source: 'Router.swift:255',
+        request: ['None.'],
+        response: ['Array of jobs: `jobId`, `url`, `filetype`, `status` (`queued`, `downloading`, `completed`, `failed`, `cancelled`), `progress`, `bytesReceived`, `totalBytes`, `filepath`, `failedReason`.'],
+        implementation: 'In memory, newest 200. The list empties when the runtime restarts; the files do not.',
       },
       {
-        id: 'benchmark-results-latest',
-        method: 'GET',
-        path: '/results/latest',
-        title: 'Latest result',
-        summary: 'Returns the latest benchmark result.',
-        handler: 'latest',
-        request: ['No body required'],
-        response: ['JSON: { result }'],
-        implementation: 'Reads the newest benchmark result or null if nothing has run yet.',
-        usedBy: ['Latest result card'],
-      },
-      {
-        id: 'benchmark-results-show',
-        method: 'GET',
-        path: '/results/:id',
-        title: 'Result by id',
-        summary: 'Returns one benchmark result.',
-        handler: 'show',
-        request: ['Path param: id'],
-        response: ['JSON: { result } or 404'],
-        implementation: 'Loads one stored result by id and returns 404 when it is missing.',
-        usedBy: ['Benchmark detail view'],
-      },
-      {
-        id: 'benchmark-submit',
-        method: 'POST',
-        path: '/submit',
-        title: 'Submit result',
-        summary: 'Submits a result to the central benchmark repository.',
-        handler: 'submit',
-        request: ['Body: validated submit payload', 'Optional anonymous=true'],
-        response: ['JSON: { success, repository_id, percentile } or error'],
-        implementation: 'Validates the submission, then forwards it to BenchmarkService with optional anonymous mode.',
-        usedBy: ['Submit benchmark action'],
-      },
-      {
-        id: 'benchmark-builder-tag',
-        method: 'POST',
-        path: '/builder-tag',
-        title: 'Update builder tag',
-        summary: 'Assigns or clears a builder tag on a result.',
-        handler: 'updateBuilderTag',
-        request: ['Body: { benchmark_id, builder_tag }'],
-        response: ['JSON: { success, builder_tag } or validation errors'],
-        implementation: 'Loads the result, validates the tag format, then persists the builder tag.',
-        usedBy: ['Benchmark metadata editor'],
-      },
-      {
-        id: 'benchmark-comparison',
-        method: 'GET',
-        path: '/comparison',
-        title: 'Comparison stats',
-        summary: 'Returns comparison stats from the central repository.',
-        handler: 'comparison',
-        request: ['No body required'],
-        response: ['JSON: { stats }'],
-        implementation: 'Returns comparison aggregates from BenchmarkService.',
-        usedBy: ['Benchmark comparison view'],
+        id: 'downloads-remove-job',
+        method: 'DELETE',
+        path: '/api/downloads/jobs/:jobId',
+        examplePath: '/api/downloads/jobs/JOB_ID',
+        title: 'Cancel or clear a job',
+        summary: 'Stops an active download, or drops a finished one from the list.',
+        handler: 'NativeRuntime.cancelDownloadJob',
+        source: 'Router.swift:299 (Downloads.swift:326)',
+        request: ['Path: the `jobId`.'],
+        response: ['`{ success: true, ok: true, cancelled }`. `cancelled` is false for an unknown id.'],
+        implementation: 'An active transfer is stopped and its `.part` file deleted. A finished file stays on disk.',
       },
       {
         id: 'benchmark-status',
         method: 'GET',
-        path: '/status',
+        path: '/api/benchmark/status',
         title: 'Benchmark status',
-        summary: 'Returns the current run status.',
-        handler: 'status',
-        request: ['No body required'],
-        response: ['Current benchmark status'],
-        implementation: 'Returns the live status snapshot from BenchmarkService.',
-        usedBy: ['Benchmark progress state'],
+        summary: '`idle`, almost always.',
+        handler: 'NativeRuntime.benchmarkStatus',
+        source: 'Router.swift:256',
+        request: ['None.'],
+        response: ['`{ status, benchmarkId }`'],
+        implementation: 'See the next route.',
       },
       {
-        id: 'benchmark-settings',
-        method: 'GET',
-        path: '/settings',
-        title: 'Benchmark settings',
-        summary: 'Returns persisted benchmark settings.',
-        handler: 'settings',
-        request: ['No body required'],
-        response: ['Benchmark settings object'],
-        implementation: 'Reads all benchmark settings from the BenchmarkSetting model.',
-        usedBy: ['Benchmark settings page'],
-      },
-      {
-        id: 'benchmark-settings-update',
+        id: 'benchmark-run',
         method: 'POST',
-        path: '/settings',
-        title: 'Update benchmark settings',
-        summary: 'Updates persisted benchmark settings.',
-        handler: 'updateSettings',
-        request: ['Body: currently supports allow_anonymous_submission'],
-        response: ['JSON: { success, settings }'],
-        implementation: 'Updates persisted benchmark settings and returns the refreshed settings payload.',
-        usedBy: ['Benchmark settings form'],
+        path: '/api/benchmark/run',
+        title: 'Run a benchmark',
+        summary: 'Returns a benchmark id. No benchmark runs in 1.0.6.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:257',
+        body: { benchmark_type: 'system' },
+        request: ['JSON body: optional `benchmark_type`.'],
+        response: ['201 with `{ success, job_id, benchmark_id, message }`'],
+        implementation: 'Status flips to `starting` and back to `idle` two seconds later. That is the whole benchmark.',
+      },
+    ],
+  },
+  {
+    id: 'companion',
+    label: 'Companion bridge',
+    scope: 'companion',
+    summary: 'What your phone sees: a token-gated proxy for /api/companion/* and nothing else.',
+    stack: 'RoachNet iOS → RoachTail bridge (in-process, loopback) → token or peer check → NativeRuntime.route',
+    callers: ['RoachNet iOS 0.2.0 over RoachTail', 'RoachNet.app RoachTail, RoachSync and account settings'],
+    endpoints: [
+      {
+        id: 'companion-health',
+        method: 'GET',
+        path: '/health',
+        title: 'Bridge health',
+        summary: 'The one bridge path that needs no token.',
+        handler: 'CompanionProxy.handle',
+        source: 'RuntimeServer.swift:329',
+        noAuth: true,
+        request: ['None.'],
+        response: ['`{ status: "ok", targetOrigin, tokenConfigured, inProcess: true }`'],
+        implementation:
+          'Bridge port only. Anything outside `/api/companion/` gets a 404 from the bridge, so a phone token cannot reach the rest of the API.',
+      },
+      {
+        id: 'companion-bootstrap',
+        method: 'GET',
+        path: '/api/companion/bootstrap',
+        title: 'Phone bootstrap',
+        summary: 'Everything the phone’s first screen needs, in one call.',
+        handler: 'NativeRuntime.companionBootstrapState',
+        source: 'Router.swift:224 (RoachClawStatus.swift:931)',
+        request: ['None.'],
+        response: ['`appName`, `machineName`, `appsCatalogUrl`, `account`, `runtime`, `vault`.'],
+        implementation: 'It embeds the full runtime snapshot, so it costs what /api/companion/runtime costs.',
+      },
+      {
+        id: 'companion-runtime',
+        method: 'GET',
+        path: '/api/companion/runtime',
+        title: 'Runtime snapshot',
+        summary: 'The phone’s Runtime tab: system, models, services, downloads.',
+        handler: 'NativeRuntime.companionRuntimeState',
+        source: 'Router.swift:225 (RoachClawStatus.swift:943)',
+        request: ['None.'],
+        response: ['`system`, `providers`, `roachClaw`, `account`, `roachTail` (join code hidden), `roachSync`, `services`, `downloads`, `installedModels`, `issues`, `benchmark`.'],
+        implementation: '`issues` explains, in words, why chat might not answer yet.',
+      },
+      {
+        id: 'companion-vault',
+        method: 'GET',
+        path: '/api/companion/vault',
+        title: 'Vault summary',
+        summary: 'Where the vault is and what is in it.',
+        handler: 'NativeRuntime.companionVaultState',
+        source: 'Router.swift:226 (RoachClawStatus.swift:987)',
+        request: ['None.'],
+        response: ['`{ vaultPath, knowledgeFiles, roachBrain: [] }`'],
+        implementation: 'File names only, up to 80. The phone does not get file contents from this route.',
+      },
+      {
+        id: 'companion-account',
+        method: 'GET',
+        path: '/api/companion/account',
+        title: 'Account link',
+        summary: 'The account metadata this Mac holds.',
+        handler: 'NativeRuntime.accountState',
+        source: 'Router.swift:227 (RoachClawStatus.swift:861)',
+        request: ['None.'],
+        response: ['`linked`, `status` (`local-only` until linked), `email`, `displayName`, `settingsSyncEnabled`, `savedAppsSyncEnabled`, `hostedChatEnabled`.'],
+        implementation: 'Metadata on the Mac. Signing in happens at accounts.roachnet.org, not here.',
+        usedBy: ['RoachNet.app account settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-account-affect',
+        method: 'POST',
+        path: '/api/companion/account/affect',
+        title: 'Link or unlink the account',
+        summary: 'Updates the account metadata on this Mac.',
+        handler: 'NativeRuntime.affectCompanionAccount',
+        source: 'Router.swift:253 (CompanionLanes.swift:161)',
+        body: { action: 'link', email: 'you@example.com', displayName: 'You' },
+        request: ['JSON body: `action` (`link`, `unlink`, `refresh`). For `link`: `email`, `displayName` and the three sync booleans.'],
+        response: ['`{ success, message, state }`', '400 for any other action.'],
+        implementation: '`unlink` resets to `local-only`. Nothing is sent to roachnet.org by this call.',
+        usedBy: ['RoachNet.app account settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-roachtail',
+        method: 'GET',
+        path: '/api/companion/roachtail',
+        title: 'RoachTail state',
+        summary: 'Pairing, peers and routes for the private device lane.',
+        handler: 'NativeRuntime.roachTailState',
+        source: 'Router.swift:228 (RoachTail.swift:338)',
+        request: ['None.'],
+        response: ['`enabled`, `status` (`local-only`, `armed`, `relay-ready`, `connected`), `transportMode`, `peers`, `routes`, `joinCode`, `pairingPayload`, `controlPlane`.'],
+        implementation:
+          'Called with a peer token, `joinCode` and `pairingPayload` are null. A join code lasts ten minutes and a fresh one is minted when it expires.',
+        usedBy: ['RoachNet.app RoachTail settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-roachtail-pair',
+        method: 'POST',
+        path: '/api/companion/roachtail/pair',
+        title: 'Pair a device',
+        summary: 'Trades a join code for a device token. No token needed, which is the point.',
+        handler: 'NativeRuntime.pairRoachTailPeer',
+        source: 'Router.swift:231 (RoachTail.swift:489)',
+        noAuth: true,
+        body: { joinCode: 'ABCD-EF12-3456', peerName: 'iPhone', platform: 'iOS' },
+        request: ['JSON body: `joinCode` (required), `peerName`, `platform`, optional `endpoint`, `tags`, `capabilities`.'],
+        response: [
+          '`token` and `peerId` (the contract shipped phones read), `peerToken`, `bridgeUrl`, `runtimeTunnelUrl`, `state`.',
+          '409 if RoachTail is off. 401 for a wrong, expired or used code.',
+        ],
+        implementation:
+          'Each device gets its own `rtp_` token and the Mac keeps only its hash. One pairing per code, and five wrong guesses retire the code.',
+      },
+      {
+        id: 'companion-roachtail-affect',
+        method: 'POST',
+        path: '/api/companion/roachtail/affect',
+        title: 'Change RoachTail',
+        summary: 'Turn the lane on or off, refresh the code, manage peers.',
+        handler: 'NativeRuntime.mutateRoachTailState',
+        source: 'Router.swift:232 (RoachTail.swift:392)',
+        body: { action: 'refresh-join-code' },
+        request: ['JSON body: `action`: `enable`, `disable`, `refresh-join-code`, `clear-peers`, `set-relay-host` (with `relayHost`), `register-peer`, `remove-peer` (with `peerId`).'],
+        response: ['`{ success, ok, message, state }`. `register-peer` also returns a one-time `token`.'],
+        implementation:
+          'A paired device may only call `remove-peer`, and only on itself; anything else is a 403. It can do that even while RoachTail is off.',
+        usedBy: ['RoachNet.app RoachTail settings', 'RoachNet iOS (remove this device)'],
+      },
+      {
+        id: 'companion-roachsync',
+        method: 'GET',
+        path: '/api/companion/roachsync',
+        title: 'RoachSync state',
+        summary: 'Sync settings for this Mac.',
+        handler: 'NativeRuntime.roachSyncState',
+        source: 'Router.swift:235 (RoachClawStatus.swift:884)',
+        request: ['None.'],
+        response: ['`enabled`, `status`, `folderPath` (defaults to storage), `peers`, `transportMode: "native-local"`.'],
+        implementation: 'Off until you arm it.',
+        usedBy: ['RoachNet.app RoachSync settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-roachsync-affect',
+        method: 'POST',
+        path: '/api/companion/roachsync/affect',
+        title: 'Change RoachSync',
+        summary: 'Enable, disable, refresh, set the folder or clear peers.',
+        handler: 'NativeRuntime.affectCompanionRoachSync',
+        source: 'Router.swift:254 (CompanionLanes.swift:197)',
+        body: { action: 'enable' },
+        request: ['JSON body: `action`: `enable`, `disable`, `refresh`, `set-folder-path` (with an existing absolute `folderPath`), `clear-peers`.'],
+        response: ['`{ success, message, state }`', '400 for a folder that does not exist on this Mac.'],
+        implementation: '`~` in `folderPath` is expanded before the check.',
+        usedBy: ['RoachNet.app RoachSync settings', 'RoachNet iOS'],
+      },
+      {
+        id: 'companion-install',
+        method: 'POST',
+        path: '/api/companion/install',
+        title: 'Queue an install',
+        summary: 'The App Store install lane, for the phone and the Mac.',
+        handler: 'NativeRuntime.handleCompanionInstall',
+        source: 'Router.swift:236 (Downloads.swift:598)',
+        body: { action: 'roachclaw-model', model: 'qwen2.5-coder:1.5b' },
+        request: [
+          'JSON body: `action` (or `type`): `base-map-assets`, `map-collection` (`slug`), `education-tier` (`categorySlug`, `tierSlug`), `education-resource` (`categorySlug`, `resourceId`), `direct-download` (`url`, `filetype`), `wikipedia-option` (`optionId`), `roachclaw-model` (`model`), `roachspeech-pack` (`packID`, `kind`, `url`).',
+        ],
+        response: [
+          '`{ success, ok, action, message, jobId, jobIds, queued }`',
+          '400 for a missing or unknown action. 403 when a paired device names a private or loopback host.',
+        ],
+        implementation:
+          'From a paired phone, `url`, `mirrorUrl` and `sourceUrl` go through the URL-safety check with private ranges blocked, so a phone cannot turn your Mac into a fetcher for your own network.',
+      },
+      {
+        id: 'companion-sessions-index',
+        method: 'GET',
+        path: '/api/companion/chat/sessions',
+        title: 'Chat sessions',
+        summary: 'Your RoachClaw chats from the phone, newest first.',
+        handler: 'NativeRuntime.companionChatSessions',
+        source: 'Router.swift:249',
+        request: ['None.'],
+        response: ['Array of `{ id, title, model, timestamp }`.'],
+        implementation: 'Stored in `companion-chat.json` in the RoachClaw state folder. The newest 200 sessions are kept.',
+      },
+      {
+        id: 'companion-sessions-store',
+        method: 'POST',
+        path: '/api/companion/chat/sessions',
+        title: 'New chat session',
+        summary: 'Creates an empty session.',
+        handler: 'NativeRuntime.createCompanionChatSession',
+        source: 'Router.swift:250 (CompanionLanes.swift:76)',
+        body: { title: 'Trip notes', model: 'qwen2.5-coder:1.5b' },
+        request: ['JSON body: optional `title` (default “New Chat”) and `model`.'],
+        response: ['201 with the new session, `messages: []`.'],
+        implementation: 'You rarely need it: /api/companion/chat/send makes a session when it does not find one.',
+      },
+      {
+        id: 'companion-sessions-show',
+        method: 'GET',
+        path: '/api/companion/chat/sessions/:id',
+        examplePath: '/api/companion/chat/sessions/SESSION_ID',
+        title: 'One chat session',
+        summary: 'A session with its messages.',
+        handler: 'NativeRuntime.companionChatSession',
+        source: 'Router.swift:274 (CompanionLanes.swift:41)',
+        request: ['Path: the session `id`.'],
+        response: ['The session, `messages` included.', '404 `Session not found`.'],
+        implementation: 'Full history; the 40-message window only applies to what is sent to the model.',
+      },
+      {
+        id: 'companion-chat-send',
+        method: 'POST',
+        path: '/api/companion/chat/send',
+        title: 'Send a chat message',
+        summary: 'Records your message, asks the local model, records the reply.',
+        handler: 'NativeRuntime.sendCompanionChatMessage',
+        source: 'Router.swift:251 (CompanionLanes.swift:84)',
+        body: { content: 'What is on my calendar tomorrow?', model: 'qwen2.5-coder:1.5b' },
+        request: ['JSON body: `content` (required), `sessionId` (a new session if missing or unknown), `model`, up to four `images`, `visionSummary`.'],
+        response: [
+          '`{ session, userMessage, assistantMessage }`',
+          '400 without content. 503 when no local model answers.',
+        ],
+        implementation:
+          'Sends the last 40 messages to the local model and titles a new chat from its first line. The roachnet.org web chat relays through this route when you give it a paired device.',
+        usedBy: ['RoachNet iOS RoachClaw tab', 'roachnet.org web chat relay'],
+      },
+      {
+        id: 'companion-services-affect',
+        method: 'POST',
+        path: '/api/companion/services/affect',
+        title: 'Control a service',
+        summary: 'Start, stop or restart a service from the phone.',
+        handler: 'NativeRuntime.affectCompanionService',
+        source: 'Router.swift:252 (CompanionLanes.swift:140)',
+        body: { serviceName: 'roachnet_ollama', action: 'restart' },
+        request: ['JSON body: `serviceName` (or `service_name`) from /api/system/services, `action`: `start`, `stop` or `restart`.'],
+        response: ['`{ ok, serviceName, action, result }`', '400 for a bad action, 404 for an unknown service.'],
+        implementation: 'Only Ollama start and restart actually do something. The rest are validated and acknowledged.',
+      },
+      {
+        id: 'companion-catch-all',
+        method: 'POST',
+        path: '/api/companion/*',
+        examplePath: '/api/companion/anything-else',
+        title: 'Any other companion action',
+        summary: 'Every other POST under /api/companion/ gets the same polite reply.',
+        handler: 'NativeRuntime.route',
+        source: 'Router.swift:310',
+        request: ['Any path under `/api/companion/` not listed above.'],
+        response: ['`{ success: true, ok: true, message: "Native companion action recorded." }`'],
+        implementation: 'Despite the wording, nothing is recorded. It keeps older phones from hitting a 404.',
+      },
+    ],
+  },
+  {
+    id: 'web',
+    label: 'roachnet.org functions',
+    scope: 'web',
+    summary: 'The two server functions behind accounts.roachnet.org and RoachClaw on the web.',
+    stack: 'Browser → Netlify function → Supabase Auth and tables (row-level security) → your paired Mac or RoachBrain Cloud',
+    callers: ['accounts.roachnet.org', 'roachnet.org/roachclaw'],
+    endpoints: [
+      {
+        id: 'account-register',
+        method: 'POST',
+        path: '/.netlify/functions/register-account',
+        title: 'Create a website account',
+        summary: 'Signs you up for the optional roachnet.org account.',
+        handler: 'netlify/functions/register-account.mjs',
+        source: 'register-account.mjs (roachnet-org repo)',
+        curl: [
+          "curl -s -X POST https://roachnet.org/.netlify/functions/register-account \\",
+          "  -H 'origin: https://accounts.roachnet.org' \\",
+          "  -H 'content-type: application/json' \\",
+          `  -d '{"email":"you@example.com","password":"at-least-ten-characters","captchaToken":"TURNSTILE_TOKEN"}'`,
+        ].join('\n'),
+        request: [
+          'Origin must be roachnet.org or accounts.roachnet.org, or you get a 403.',
+          'JSON body: `email`, `password` (10 characters or more), `displayName` (up to 60), `captchaToken` when Turnstile is on.',
+          '`company` is a honeypot. Fill it in and you are turned away.',
+        ],
+        response: [
+          '`{ ok: true, requiresConfirmation, message, userId }`',
+          '409 `user_exists`. 429 if the form was submitted inhumanly fast. 503 when the backend or rate limiter is down.',
+        ],
+        implementation:
+          'Signs up through Supabase `/auth/v1/signup` with the public key and sends a confirmation link back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
+      },
+      {
+        id: 'roachclaw-web-chat',
+        method: 'POST',
+        path: '/.netlify/functions/roachclaw-chat',
+        title: 'Web RoachClaw message',
+        summary: 'One prompt from roachnet.org/roachclaw, answered by your Mac or by RoachBrain Cloud.',
+        handler: 'netlify/functions/roachclaw-chat.mjs',
+        source: 'roachclaw-chat.mjs (roachnet-org repo)',
+        curl: [
+          "curl -s -X POST https://roachnet.org/.netlify/functions/roachclaw-chat \\",
+          '  -H "authorization: Bearer $SUPABASE_ACCESS_TOKEN" \\',
+          "  -H 'content-type: application/json' \\",
+          `  -d '{"message":"Hello from the web"}'`,
+        ].join('\n'),
+        request: [
+          '`authorization: Bearer <Supabase access token>`.',
+          'JSON body: `message` (required), `threadId`, `bridgeUrl`, `bridgeToken`, `bridgeLabel`.',
+          '`bridgeUrl` must be on the deploy’s allow-list.',
+        ],
+        response: [
+          '`{ ok, thread, userMessage, assistantMessage, provider, model }`',
+          '401 without a valid session. 404 for a thread that is not yours. 503 when web chat is not armed. 500 if the reply fails.',
+        ],
+        implementation:
+          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: a small open model running inside the function.',
       },
     ],
   },
 ]
+
+/* --------------------------------------------------------------------------
+   Renderer
+   -------------------------------------------------------------------------- */
 
 const methodOrder = ['ALL', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 const groupNav = document.querySelector('#api-group-nav')
@@ -1887,10 +1631,17 @@ const statsMount = document.querySelector('#api-stats')
 const groupSummary = document.querySelector('#api-group-summary')
 const routeList = document.querySelector('#api-route-list')
 const detailPane = document.querySelector('#api-detail-pane')
+const detailBody = document.querySelector('#api-detail-body')
+const detailClose = document.querySelector('#api-detail-close')
+const detailScrim = document.querySelector('#api-detail-scrim')
 const searchInput = document.querySelector('#api-search')
 const methodFilter = document.querySelector('#api-method-filter')
 const routeCount = document.querySelector('#api-route-count')
 const viewTitle = document.querySelector('#api-view-title')
+const notice = document.querySelector('#api-notice')
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+const sheetQuery = window.matchMedia('(max-width: 960px)')
 
 const flattenedRoutes = apiGroups.flatMap((group) =>
   group.endpoints.map((endpoint) => ({
@@ -1901,141 +1652,266 @@ const flattenedRoutes = apiGroups.flatMap((group) =>
     groupSummary: group.summary,
     groupStack: group.stack,
     groupCallers: group.callers,
-    fullPath: `${group.basePath}${endpoint.path}`.replace(/\/{2,}/g, '/'),
+    fullPath: endpoint.path,
   }))
 )
+const routeIndex = new Map(flattenedRoutes.map((route) => [route.id, route]))
+const presentMethods = methodOrder.filter((method) => method === 'ALL' || flattenedRoutes.some((route) => route.method === method))
 
 let activeGroup = 'all'
 let activeMethod = 'ALL'
 let activeRouteId = flattenedRoutes[0]?.id || null
 let searchQuery = ''
+let sheetOpen = false
+let sheetReturnFocus = null
+
+function escapeHTML(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+// Escapes, then turns `code` spans into <code>.
+function rich(value) {
+  return escapeHTML(value).replace(/`([^`]+)`/g, '<code>$1</code>')
+}
+
+// Let long paths wrap after a slash instead of mid-word on phones.
+function pathBreaks(html) {
+  return html.replace(/(?<!<)\//g, '/<wbr>')
+}
+
+function highlight(value) {
+  const safe = escapeHTML(value)
+  if (!searchQuery) return safe
+  const needle = escapeHTML(searchQuery)
+  const lower = safe.toLowerCase()
+  let output = ''
+  let cursor = 0
+  let index = lower.indexOf(needle)
+  while (index !== -1 && needle) {
+    output += `${safe.slice(cursor, index)}<mark>${safe.slice(index, index + needle.length)}</mark>`
+    cursor = index + needle.length
+    index = lower.indexOf(needle, cursor)
+  }
+  return output + safe.slice(cursor)
+}
+
+function shellQuote(text) {
+  return `'${String(text).replaceAll("'", `'\\''`)}'`
+}
+
+function curlFor(route) {
+  if (route.curl) return route.curl
+  const surface = surfaces[route.scope]
+  const path = route.examplePath || route.fullPath
+  const url = `"${surface.base}${path}${route.query ? `?${route.query}` : ''}"`
+  const lines = [route.method === 'GET' ? `curl -s ${url}` : `curl -s -X ${route.method} ${url}`]
+  if (route.scope === 'companion' && !route.noAuth) lines.push('-H "authorization: Bearer $TOKEN"')
+  if (route.body) {
+    lines.push("-H 'content-type: application/json'")
+    lines.push(`-d ${shellQuote(JSON.stringify(route.body))}`)
+  }
+  return lines.map((line, index) => (index === 0 ? line : `  ${line}`)).join(' \\\n')
+}
+
+function haystackFor(route) {
+  return [
+    route.groupLabel,
+    route.title,
+    route.summary,
+    route.fullPath,
+    route.handler,
+    route.source,
+    route.method,
+    ...(route.usedBy || []),
+    ...(route.request || []),
+    ...(route.response || []),
+    route.implementation,
+  ]
+    .join(' ')
+    .toLowerCase()
+}
+const haystacks = new Map(flattenedRoutes.map((route) => [route.id, haystackFor(route)]))
+
+function matches(route, { group = activeGroup, method = activeMethod, query = searchQuery } = {}) {
+  if (group !== 'all' && route.groupId !== group) return false
+  if (method !== 'ALL' && route.method !== method) return false
+  if (query && !haystacks.get(route.id).includes(query)) return false
+  return true
+}
+
+function getFilteredRoutes() {
+  return flattenedRoutes.filter((route) => matches(route))
+}
+
+function plural(count, noun) {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`
+}
 
 function renderStats() {
-  const setupCount = flattenedRoutes.filter((route) => route.scope === 'setup').length
-  const runtimeCount = flattenedRoutes.filter((route) => route.scope === 'runtime').length
-
-  statsMount.innerHTML = `
-    <article class="api-docs-stat">
-      <strong>${flattenedRoutes.length}</strong>
-      <span>Total routes</span>
-    </article>
-    <article class="api-docs-stat">
-      <strong>${runtimeCount}</strong>
-      <span>Runtime</span>
-    </article>
-    <article class="api-docs-stat">
-      <strong>${setupCount}</strong>
-      <span>Setup</span>
-    </article>
-  `
+  if (!statsMount) return
+  const count = (method) => flattenedRoutes.filter((route) => route.method === method).length
+  const items = [
+    [flattenedRoutes.length, 'Routes in 1.0.6'],
+    [count('GET'), 'GET'],
+    [count('POST'), 'POST'],
+    [count('DELETE'), 'DELETE'],
+  ]
+  statsMount.innerHTML = items
+    .map(([value, label]) => `<li class="nx-stat"><span class="nx-stat__value">${value}</span><span class="nx-stat__label">${escapeHTML(label)}</span></li>`)
+    .join('')
 }
 
 function renderGroupNav() {
   const items = [
-    {
-      id: 'all',
-      label: 'All routes',
-      count: flattenedRoutes.length,
-      summary: 'Every documented setup and runtime route.',
-    },
-    ...apiGroups.map((group) => ({
-      id: group.id,
-      label: group.label,
-      count: group.endpoints.length,
-      summary: group.summary,
-    })),
+    { id: 'all', label: 'All routes', scope: '' },
+    ...apiGroups.map((group) => ({ id: group.id, label: group.label, scope: group.scope })),
   ]
-
   groupNav.innerHTML = items
-    .map(
-      (item) => `
-        <button
-          class="api-docs-group${item.id === activeGroup ? ' is-active' : ''}"
-          data-group-id="${item.id}"
-          type="button"
-          aria-pressed="${item.id === activeGroup ? 'true' : 'false'}"
-        >
-          <span class="api-docs-group__copy">
-            <strong>${item.label}</strong>
-            <small>${item.summary}</small>
-          </span>
-          <span class="api-docs-group__count">${item.count}</span>
-        </button>
-      `
-    )
-    .join('')
-
-  groupNav.querySelectorAll('[data-group-id]').forEach((button) => {
-    button.addEventListener('click', () => {
-      activeGroup = button.getAttribute('data-group-id') || 'all'
-      syncSelection()
-      renderAll()
+    .map((item) => {
+      const visible = flattenedRoutes.filter((route) => matches(route, { group: item.id })).length
+      const active = item.id === activeGroup
+      return `
+        <li>
+          <button class="api-rail__item${active ? ' is-active' : ''}${visible ? '' : ' is-empty'}" data-group-id="${item.id}" type="button" aria-pressed="${active}">
+            <span class="api-rail__label">${escapeHTML(item.label)}</span>
+            <span class="api-rail__count" aria-label="${plural(visible, 'route')}">${visible}</span>
+          </button>
+        </li>`
     })
-  })
+    .join('')
 }
 
 function renderMethodFilter() {
-  const counts = methodOrder.reduce((acc, method) => {
-    acc[method] =
-      method === 'ALL'
-        ? flattenedRoutes.length
-        : flattenedRoutes.filter((route) => route.method === method).length
-    return acc
-  }, {})
-
-  methodFilter.innerHTML = methodOrder
-    .map(
-      (method) => `
-        <button
-          class="api-method-chip${method === activeMethod ? ' is-active' : ''}"
-          data-method="${method}"
-          type="button"
-          aria-pressed="${method === activeMethod ? 'true' : 'false'}"
-        >
-          ${method}
-          <span>${counts[method]}</span>
-        </button>
-      `
-    )
-    .join('')
-
-  methodFilter.querySelectorAll('[data-method]').forEach((button) => {
-    button.addEventListener('click', () => {
-      activeMethod = button.getAttribute('data-method') || 'ALL'
-      syncSelection()
-      renderAll()
+  methodFilter.innerHTML = presentMethods
+    .map((method) => {
+      const count = flattenedRoutes.filter((route) => matches(route, { method })).length
+      const active = method === activeMethod
+      return `
+        <button class="api-chip api-chip--${method.toLowerCase()}${active ? ' is-active' : ''}" data-method="${method}" type="button" aria-pressed="${active}">
+          <span>${method === 'ALL' ? 'All' : method}</span>
+          <span class="api-chip__count">${count}</span>
+        </button>`
     })
-  })
+    .join('')
 }
 
-function getCurrentGroup() {
-  if (activeGroup === 'all') {
-    return null
+function renderSummary() {
+  const group = apiGroups.find((item) => item.id === activeGroup) || null
+  const filtered = getFilteredRoutes()
+  const surface = group ? surfaces[group.scope] : null
+  viewTitle.textContent = group ? group.label : searchQuery ? 'Search results' : 'All routes'
+  routeCount.textContent = plural(filtered.length, 'route')
+
+  groupSummary.innerHTML = group
+    ? `
+      <p class="api-summary__text">${rich(group.summary)}</p>
+      <dl class="api-summary__meta">
+        <div><dt>Server</dt><dd>${escapeHTML(surface.label)} · ${rich(surface.where)}</dd></div>
+        <div><dt>Path</dt><dd>${escapeHTML(group.stack)}</dd></div>
+      </dl>`
+    : `<p class="api-summary__text">${
+        searchQuery
+          ? `Matching “${escapeHTML(searchQuery)}” across paths, handlers and notes.`
+          : 'Four servers: the setup service, the loopback API, the companion bridge, and two functions on roachnet.org.'
+      }</p>`
+}
+
+function renderRouteList() {
+  const filtered = getFilteredRoutes()
+  if (!filtered.length) {
+    routeList.innerHTML = `
+      <li class="api-empty">
+        <p class="api-empty__title">Nothing answers to that.</p>
+        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${activeMethod}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
+        <button class="nx-btn nx-btn--sm" type="button" data-api-reset>Clear filters</button>
+      </li>`
+    return
   }
-  return apiGroups.find((group) => group.id === activeGroup) || null
+  const grouped = activeGroup === 'all'
+  let lastGroup = null
+  routeList.classList.toggle('is-grouped', grouped)
+  routeList.innerHTML = filtered
+    .map((route) => {
+      const active = route.id === activeRouteId
+      let heading = ''
+      if (grouped && route.groupId !== lastGroup) {
+        lastGroup = route.groupId
+        const count = filtered.filter((item) => item.groupId === route.groupId).length
+        heading = `<li class="api-routes__group" aria-hidden="true"><span>${escapeHTML(route.groupLabel)}</span><span>${count}</span></li>`
+      }
+      return `${heading}
+        <li>
+          <button class="api-route${active ? ' is-active' : ''}" data-route-id="${route.id}" type="button" aria-pressed="${active}" aria-controls="api-detail-pane">
+            <span class="api-method api-method--${route.method.toLowerCase()}">${route.method}</span>
+            <span class="api-route__main">
+              <span class="api-route__path">${pathBreaks(highlight(route.fullPath))}</span>
+              <span class="api-route__title">${highlight(route.title)}</span>
+            </span>
+            <span class="api-route__group">${escapeHTML(route.groupLabel)}</span>
+          </button>
+        </li>`
+    })
+    .join('')
 }
 
-function getFilteredRoutes() {
-  return flattenedRoutes.filter((route) => {
-    const matchesGroup = activeGroup === 'all' || route.groupId === activeGroup
-    const matchesMethod = activeMethod === 'ALL' || route.method === activeMethod
-    const haystack = [
-      route.groupLabel,
-      route.title,
-      route.summary,
-      route.fullPath,
-      route.handler,
-      route.groupStack,
-      ...(route.usedBy || []),
-      ...(route.request || []),
-      ...(route.response || []),
-      route.implementation,
-    ]
-      .join(' ')
-      .toLowerCase()
-    const matchesSearch = !searchQuery || haystack.includes(searchQuery)
-    return matchesGroup && matchesMethod && matchesSearch
-  })
+function list(items) {
+  return `<ul>${(items || []).map((item) => `<li>${rich(item)}</li>`).join('')}</ul>`
+}
+
+function renderDetail({ animate = false } = {}) {
+  const route = routeIndex.get(activeRouteId)
+  if (!route || !getFilteredRoutes().includes(route)) {
+    detailBody.innerHTML = `
+      <div class="api-empty api-empty--detail">
+        <p class="api-empty__title">Pick a route.</p>
+        <p class="api-empty__text">Its request, response, source line and a curl you can paste land here.</p>
+      </div>`
+    return
+  }
+  const surface = surfaces[route.scope]
+  const curl = curlFor(route)
+  detailBody.innerHTML = `
+    <header class="api-detail__head">
+      <div class="api-detail__badges">
+        <span class="api-method api-method--${route.method.toLowerCase()}">${route.method}</span>
+        <span class="api-detail__group">${escapeHTML(route.groupLabel)}</span>
+      </div>
+      <h2 class="api-detail__title" id="api-detail-title" tabindex="-1">${escapeHTML(route.title)}</h2>
+      <div class="api-detail__path">
+        <code id="api-detail-path">${escapeHTML(route.fullPath)}</code>
+        <button class="api-copy" type="button" data-api-copy="${escapeHTML(route.fullPath)}" data-api-copied="Path copied">Copy path</button>
+      </div>
+      <p class="api-detail__summary">${rich(route.summary)}</p>
+    </header>
+    <dl class="api-detail__facts">
+      <div><dt>Server</dt><dd>${escapeHTML(surface.label)} · ${rich(surface.where)}</dd></div>
+      <div><dt>Auth</dt><dd>${route.noAuth ? 'None. This route is open on purpose.' : rich(surface.auth)}</dd></div>
+      <div><dt>Handler</dt><dd><code>${escapeHTML(route.handler)}</code></dd></div>
+      <div><dt>Source</dt><dd><code>${escapeHTML(route.source)}</code></dd></div>
+    </dl>
+    <section class="api-detail__block" aria-labelledby="api-d-req"><h3 id="api-d-req">Request</h3>${list(route.request)}</section>
+    <section class="api-detail__block" aria-labelledby="api-d-res"><h3 id="api-d-res">Response</h3>${list(route.response)}</section>
+    <section class="api-detail__block" aria-labelledby="api-d-notes"><h3 id="api-d-notes">Notes</h3><p>${rich(route.implementation)}</p></section>
+    <section class="api-detail__block" aria-labelledby="api-d-call"><h3 id="api-d-call">Called from</h3>${list(route.usedBy || route.groupCallers)}</section>
+    <section class="api-detail__block api-detail__block--example" aria-labelledby="api-d-ex">
+      <div class="api-detail__example-head">
+        <h3 id="api-d-ex">Example</h3>
+        ${route.scope === 'web' ? '' : `<a class="api-detail__vars" href="#before-you-call">Where ${escapeHTML(surfaces[route.scope].base)} comes from</a>`}
+        <button class="api-copy" type="button" data-api-copy-target="#api-detail-curl" data-api-copied="curl copied">Copy curl</button>
+      </div>
+      <pre class="api-curl" tabindex="0" aria-label="Example curl command"><code id="api-detail-curl">${escapeHTML(curl)}</code></pre>
+    </section>`
+  detailPane.scrollTop = 0
+  if (animate && !reducedMotion.matches) {
+    detailBody.classList.remove('is-swapping')
+    void detailBody.offsetWidth
+    detailBody.classList.add('is-swapping')
+  }
 }
 
 function syncSelection() {
@@ -2045,183 +1921,7 @@ function syncSelection() {
   }
 }
 
-function renderSummary() {
-  const currentGroup = getCurrentGroup()
-  const filtered = getFilteredRoutes()
-  const title = currentGroup ? currentGroup.label : searchQuery ? 'Search results' : 'All endpoints'
-  const summary = currentGroup
-    ? currentGroup.summary
-    : searchQuery
-      ? `Filtered by “${searchQuery}”.`
-      : 'Setup routes, runtime routes, and the service edges behind them.'
-
-  viewTitle.textContent = title
-  routeCount.textContent = `${filtered.length} routes`
-
-  groupSummary.innerHTML = `
-    <div class="api-docs-hero__copy">
-      <span class="api-docs-kicker">${currentGroup ? currentGroup.scope : 'runtime + setup'}</span>
-      <h2>${title}</h2>
-      <p>${summary}</p>
-    </div>
-    <div class="api-docs-hero__meta">
-      <article>
-        <span>Visible</span>
-        <strong>${filtered.length}</strong>
-      </article>
-      <article>
-        <span>Group</span>
-        <strong>${currentGroup ? currentGroup.endpoints.length : flattenedRoutes.length}</strong>
-      </article>
-      <article>
-        <span>Stack</span>
-        <strong>${currentGroup ? currentGroup.stack.split(' -> ').length : apiGroups.length} layers</strong>
-      </article>
-    </div>
-  `
-}
-
-function renderRouteList() {
-  const filtered = getFilteredRoutes()
-
-  if (!filtered.length) {
-    routeList.innerHTML = `
-      <div class="api-empty-state">
-        <span class="api-docs-kicker">No matches</span>
-        <h3>Nothing matches that.</h3>
-        <p>Try a different group, method, or search term.</p>
-      </div>
-    `
-    return
-  }
-
-  routeList.innerHTML = filtered
-    .map(
-      (route) => `
-        <button
-          class="api-route-card${route.id === activeRouteId ? ' is-active' : ''}"
-          data-route-id="${route.id}"
-          type="button"
-          aria-pressed="${route.id === activeRouteId ? 'true' : 'false'}"
-        >
-          <div class="api-route-card__top">
-            <span class="api-route-card__method api-route-card__method--${route.method.toLowerCase()}">${route.method}</span>
-            <span class="api-route-card__group">${route.groupLabel}</span>
-          </div>
-          <strong>${route.title}</strong>
-          <code>${route.fullPath}</code>
-          <p>${route.summary}</p>
-          <span class="api-route-card__handler">${route.handler}</span>
-        </button>
-      `
-    )
-    .join('')
-
-  routeList.querySelectorAll('[data-route-id]').forEach((button) => {
-    button.addEventListener('click', () => {
-      activeRouteId = button.getAttribute('data-route-id')
-      renderRouteList()
-      renderDetail()
-      updateHash()
-      button.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-      })
-      snapDetailPaneIntoView('smooth')
-    })
-  })
-}
-
-function renderDetail() {
-  const route = flattenedRoutes.find((item) => item.id === activeRouteId)
-
-  if (!route) {
-    detailPane.innerHTML = `
-      <div class="api-empty-state api-empty-state--detail">
-        <span class="api-docs-kicker">Select a route</span>
-        <h3>Pick an endpoint.</h3>
-        <p>Click any route on the left and its request, response, and implementation details land here.</p>
-      </div>
-    `
-    return
-  }
-
-  detailPane.innerHTML = `
-    <div class="api-detail-header">
-      <div class="api-detail-header__badges">
-        <span class="api-route-card__method api-route-card__method--${route.method.toLowerCase()}">${route.method}</span>
-        <span class="api-detail-header__group">${route.groupLabel}</span>
-      </div>
-      <h3>${route.title}</h3>
-      <code>${route.fullPath}</code>
-      <p>${route.summary}</p>
-    </div>
-
-    <section class="api-detail-block">
-      <span class="api-docs-kicker">Handler</span>
-      <strong>${route.handler}</strong>
-      <p>${route.groupStack}</p>
-    </section>
-
-    <section class="api-detail-block">
-      <span class="api-docs-kicker">Request</span>
-      <ul>${(route.request || []).map((item) => `<li>${item}</li>`).join('')}</ul>
-    </section>
-
-    <section class="api-detail-block">
-      <span class="api-docs-kicker">Response</span>
-      <ul>${(route.response || []).map((item) => `<li>${item}</li>`).join('')}</ul>
-    </section>
-
-    <section class="api-detail-block">
-      <span class="api-docs-kicker">Implementation</span>
-      <p>${route.implementation}</p>
-    </section>
-
-    <section class="api-detail-block">
-      <span class="api-docs-kicker">Called from</span>
-      <ul>${(route.usedBy || route.groupCallers || []).map((item) => `<li>${item}</li>`).join('')}</ul>
-    </section>
-  `
-
-  detailPane.scrollTop = 0
-}
-
-function updateHash() {
-  if (!activeRouteId) {
-    return
-  }
-  history.replaceState(null, '', `#${activeRouteId}`)
-}
-
-function snapDetailPaneIntoView(behavior = 'smooth') {
-  if (!detailPane) {
-    return
-  }
-
-  window.requestAnimationFrame(() => {
-    detailPane.scrollIntoView({
-      behavior,
-      block: 'start',
-    })
-  })
-}
-
-function hydrateFromHash() {
-  const id = window.location.hash.replace(/^#/, '').trim()
-  if (!id) {
-    return
-  }
-  const route = flattenedRoutes.find((item) => item.id === id)
-  if (!route) {
-    return
-  }
-  activeGroup = route.groupId
-  activeRouteId = route.id
-}
-
 function renderAll() {
-  renderStats()
   renderGroupNav()
   renderMethodFilter()
   renderSummary()
@@ -2229,22 +1929,287 @@ function renderAll() {
   renderDetail()
 }
 
-searchInput?.addEventListener('input', (event) => {
-  searchQuery = String(event.currentTarget.value || '').trim().toLowerCase()
-  syncSelection()
-  renderAll()
-})
-
-hydrateFromHash()
-syncSelection()
-renderAll()
-if (window.location.hash) {
-  snapDetailPaneIntoView('auto')
+// After a filter shrinks the list, keep its top in view under the sticky toolbar
+// instead of leaving the reader below an emptied page.
+const toolbar = document.querySelector('.api-toolbar')
+const workArea = document.querySelector('.api-work')
+const listSection = document.querySelector('.api-list')
+function keepListInView() {
+  if (!toolbar || !workArea || !listSection) return
+  const stickyTop = Number.parseFloat(getComputedStyle(toolbar).top) || 0
+  const listTop = listSection.getBoundingClientRect().top
+  if (listTop < stickyTop + toolbar.offsetHeight) {
+    window.scrollTo({ top: window.scrollY + workArea.getBoundingClientRect().top - stickyTop, behavior: 'instant' })
+  }
 }
 
-window.addEventListener('hashchange', () => {
-  hydrateFromHash()
+function applyFilters() {
   syncSelection()
   renderAll()
-  snapDetailPaneIntoView('smooth')
+  keepListInView()
+}
+
+function updateHash() {
+  if (!activeRouteId) return
+  try {
+    history.replaceState(null, '', `#${activeRouteId}`)
+  } catch {
+    // A sandboxed preview may refuse history writes; the page still works.
+  }
+}
+
+function showNotice(text) {
+  if (!notice) return
+  notice.textContent = text
+  notice.hidden = !text
+}
+
+function focusRoute(id) {
+  const button = routeList.querySelector(`[data-route-id="${CSS.escape(id)}"]`)
+  if (button) button.focus({ preventScroll: false })
+}
+
+function selectRoute(id, { fromKeyboard = false, openSheet = true } = {}) {
+  if (!routeIndex.has(id)) return
+  const changed = id !== activeRouteId
+  activeRouteId = id
+  routeList.querySelectorAll('[data-route-id]').forEach((button) => {
+    const on = button.getAttribute('data-route-id') === id
+    button.classList.toggle('is-active', on)
+    button.setAttribute('aria-pressed', String(on))
+  })
+  renderDetail({ animate: changed })
+  updateHash()
+  showNotice('')
+  if (sheetQuery.matches && openSheet) {
+    openDetailSheet(routeList.querySelector(`[data-route-id="${CSS.escape(id)}"]`))
+  } else if (fromKeyboard) {
+    routeList.querySelector(`[data-route-id="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'nearest' })
+  }
+}
+
+/* Phone sheet: the detail pane slides up over the list. */
+function setInert(open) {
+  detailPane.toggleAttribute('inert', sheetQuery.matches && !open)
+}
+
+function trapFocus(event) {
+  if (!sheetOpen || event.key !== 'Tab') return
+  const focusable = [...detailPane.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')].filter((element) => element.getClientRects().length)
+  if (!focusable.length) return
+  const first = focusable[0]
+  const last = focusable.at(-1)
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+function openDetailSheet(returnTo) {
+  if (!sheetQuery.matches) return
+  sheetOpen = true
+  sheetReturnFocus = returnTo || document.activeElement
+  document.documentElement.classList.add('api-sheet-open')
+  detailPane.classList.add('is-open')
+  detailScrim.hidden = false
+  detailPane.setAttribute('role', 'dialog')
+  detailPane.setAttribute('aria-modal', 'true')
+  detailPane.setAttribute('aria-labelledby', 'api-detail-title')
+  setInert(true)
+  requestAnimationFrame(() => detailPane.querySelector('#api-detail-title')?.focus({ preventScroll: true }))
+}
+
+function closeDetailSheet() {
+  if (!sheetOpen) return
+  sheetOpen = false
+  document.documentElement.classList.remove('api-sheet-open')
+  detailPane.classList.remove('is-open')
+  detailScrim.hidden = true
+  detailPane.removeAttribute('role')
+  detailPane.removeAttribute('aria-modal')
+  detailPane.removeAttribute('aria-labelledby')
+  setInert(false)
+  const target = sheetReturnFocus
+  sheetReturnFocus = null
+  if (target && document.contains(target)) target.focus({ preventScroll: true })
+  else if (activeRouteId) focusRoute(activeRouteId)
+}
+
+function onLayoutChange() {
+  if (!sheetQuery.matches && sheetOpen) closeDetailSheet()
+  setInert(false)
+}
+
+/* Copy with a toast. nx.js binds static copy buttons at boot; these are rendered later. */
+let toast
+function showToast(message) {
+  toast = toast || document.querySelector('.nx-toast')
+  if (!toast) {
+    toast = document.createElement('div')
+    toast.className = 'nx-toast'
+    toast.setAttribute('role', 'status')
+    toast.setAttribute('aria-live', 'polite')
+    document.body.append(toast)
+  }
+  toast.textContent = message
+  toast.classList.add('is-on')
+  clearTimeout(toast._apiTimer)
+  toast._apiTimer = setTimeout(() => toast.classList.remove('is-on'), 2200)
+}
+
+async function copyFrom(button) {
+  const target = button.dataset.apiCopyTarget ? document.querySelector(button.dataset.apiCopyTarget) : null
+  const text = target ? target.textContent : button.dataset.apiCopy
+  if (!text) return
+  try {
+    await navigator.clipboard.writeText(text)
+    button.classList.add('is-done')
+    setTimeout(() => button.classList.remove('is-done'), 1200)
+    showToast(button.dataset.apiCopied || 'Copied to your clipboard')
+  } catch {
+    if (target) {
+      const range = document.createRange()
+      range.selectNodeContents(target)
+      const selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(range)
+    }
+    showToast('Selected. Press ⌘C to copy')
+  }
+}
+
+function resetFilters() {
+  activeGroup = 'all'
+  activeMethod = 'ALL'
+  searchQuery = ''
+  if (searchInput) searchInput.value = ''
+  applyFilters()
+}
+
+function hydrateFromHash({ initial = false } = {}) {
+  const id = decodeURIComponent(window.location.hash.replace(/^#/, '').trim())
+  if (!id) return
+  const route = routeIndex.get(id)
+  if (!route) {
+    if (/^[a-z0-9-]+$/.test(id) && !document.getElementById(id)) {
+      showNotice(`There is no route called “${id}” in 1.0.6. It may have left with the Node runtime.`)
+    }
+    return
+  }
+  activeGroup = route.groupId
+  activeMethod = 'ALL'
+  searchQuery = ''
+  if (searchInput) searchInput.value = ''
+  activeRouteId = route.id
+  syncSelection()
+  renderAll()
+  requestAnimationFrame(() => {
+    const button = routeList.querySelector(`[data-route-id="${CSS.escape(route.id)}"]`)
+    button?.scrollIntoView({ block: 'center', behavior: initial || reducedMotion.matches ? 'auto' : 'smooth' })
+    if (sheetQuery.matches) openDetailSheet(button)
+  })
+}
+
+/* Events */
+groupNav.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-group-id]')
+  if (!button) return
+  activeGroup = button.getAttribute('data-group-id') || 'all'
+  applyFilters()
+  updateHash()
 })
+
+methodFilter.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-method]')
+  if (!button) return
+  activeMethod = button.getAttribute('data-method') || 'ALL'
+  applyFilters()
+  updateHash()
+})
+
+routeList.addEventListener('click', (event) => {
+  if (event.target.closest('[data-api-reset]')) {
+    resetFilters()
+    searchInput?.focus()
+    return
+  }
+  const button = event.target.closest('[data-route-id]')
+  if (button) selectRoute(button.getAttribute('data-route-id'))
+})
+
+routeList.addEventListener('keydown', (event) => {
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+  const buttons = [...routeList.querySelectorAll('[data-route-id]')]
+  const index = buttons.indexOf(document.activeElement)
+  if (index === -1) return
+  event.preventDefault()
+  const next = buttons[Math.max(0, Math.min(buttons.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1)))]
+  next.focus()
+  if (!sheetQuery.matches) selectRoute(next.getAttribute('data-route-id'), { fromKeyboard: true })
+})
+
+document.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-api-copy], [data-api-copy-target]')
+  if (button) copyFrom(button)
+})
+
+searchInput?.addEventListener('input', (event) => {
+  searchQuery = String(event.currentTarget.value || '').trim().toLowerCase()
+  applyFilters()
+})
+
+searchInput?.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    event.stopPropagation()
+    if (searchInput.value) {
+      searchInput.value = ''
+      searchQuery = ''
+      applyFilters()
+    } else {
+      searchInput.blur()
+    }
+  } else if (event.key === 'Enter') {
+    const first = routeList.querySelector('[data-route-id]')
+    if (first) {
+      event.preventDefault()
+      selectRoute(first.getAttribute('data-route-id'))
+      if (!sheetQuery.matches) first.focus()
+    }
+  }
+})
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && sheetOpen) {
+    event.preventDefault()
+    closeDetailSheet()
+    return
+  }
+  trapFocus(event)
+  if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return
+  const target = event.target
+  if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return
+  if (sheetOpen) closeDetailSheet()
+  event.preventDefault()
+  searchInput?.focus()
+  searchInput?.select()
+})
+
+detailClose?.addEventListener('click', closeDetailSheet)
+detailPane.addEventListener('click', (event) => {
+  if (event.target.closest('.api-detail__vars') && sheetOpen) closeDetailSheet()
+})
+detailScrim?.addEventListener('click', closeDetailSheet)
+sheetQuery.addEventListener('change', onLayoutChange)
+
+window.addEventListener('hashchange', () => hydrateFromHash())
+
+/* Boot */
+renderStats()
+syncSelection()
+renderAll()
+setInert(false)
+hydrateFromHash({ initial: true })
+document.documentElement.classList.add('api-ready')
