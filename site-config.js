@@ -18,7 +18,7 @@ window.__ROACHNET_SITE_CONFIG__ = {
     "modelLabel": "Local relay or cloud model"
   },
   "turnstile": {
-    "enabled": false,
-    "siteKey": ""
+    "enabled": true,
+    "siteKey": "0x4AAAAAAFTwZVJjvKciYCVe"
   }
 }

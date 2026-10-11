@@ -165,6 +165,13 @@ const appScript = await source('app.js')
 assert.doesNotMatch(appScript, /createElement\('iframe'\)/)
 assert.match(appScript, /function startHandedOffDownload/)
 assert.match(appScript, /hostname === 'github\.com'/)
+// Sign-up needs a real Turnstile site key whenever the human check is switched on
+// (the secret lives only in the Netlify environment, never in the repo).
+{
+  const siteConfig = JSON.parse((await source('site-config.js')).replace(/^window\.__ROACHNET_SITE_CONFIG__ = /, '').replace(/;?\s*$/, ''))
+  if (siteConfig.turnstile.enabled) assert.match(siteConfig.turnstile.siteKey, /^0x4[A-Za-z0-9_-]{18,}$/, 'Turnstile is on but the site key is missing')
+  assert.doesNotMatch(await source('site-config.js'), /secret/i, 'site-config.js is public: no secrets')
+}
 // Accounts posts sign-ups to the roachnet.org function, so its CSP must allow it.
 assert.match(accountsBuild, /connect-src 'self' https:\/\/roachnet\.org /)
 for (const page of ['index.html', 'home/index.html', 'brew/index.html', 'app-store.html']) {

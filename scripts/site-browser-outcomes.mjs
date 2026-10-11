@@ -96,7 +96,7 @@ async function checkPage(browser, baseUrl, pathname, viewport, label) {
   page.on('request', (request) => {
     const url = new URL(request.url())
     if (url.origin === baseUrl) return request.continue()
-    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : 'export {}' })
+    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : '/* third-party script stubbed for the test */' })
   })
   try {
     const response = await page.goto(`${baseUrl}${pathname}`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
@@ -200,7 +200,7 @@ async function halloweenPage(browser, baseUrl, pathname, { iso, viewport = { wid
   page.on('request', (request) => {
     const url = new URL(request.url())
     if (url.origin === baseUrl) return request.continue()
-    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : 'export {}' })
+    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : '/* third-party script stubbed for the test */' })
   })
   const go = async (suffix = '') => {
     const response = await page.goto(`${baseUrl}${pathname}${suffix}`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
@@ -392,7 +392,7 @@ async function checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl) {
       })
     }
     if (url.origin === baseUrl) return request.continue()
-    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : 'export {}' })
+    return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : '/* third-party script stubbed for the test */' })
   })
   try {
     const response = await page.goto(`${baseUrl}/roachclaw/`, { waitUntil: 'domcontentloaded', timeout: 15_000 })
