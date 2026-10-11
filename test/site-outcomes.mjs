@@ -231,4 +231,57 @@ const blockedBridge = await chatHandler(
 )
 assert.equal(blockedBridge.status, 400)
 
+// The iOS page's buttons and its script must point at the same, current IPA.
+const iosPage = await source('ios/index.html')
+const iosScript = await source('ios/ios-install.js')
+const pageIpas = new Set([...iosPage.matchAll(/data-ipa-download href="([^"]+)"/g)].map(([, href]) => href))
+assert.equal(pageIpas.size, 1, 'every IPA button on the iOS page uses one URL')
+const [pageIpa] = pageIpas
+assert.match(pageIpa, /RoachNetiOS-v0\.2\.0-unsigned\.ipa$/)
+for (const [ipa] of iosScript.matchAll(/https:\/\/[^'"\s]+\.ipa/g)) {
+  assert.equal(ipa, pageIpa, 'ios-install.js must not override the page with a different IPA')
+}
+
+// The Homebrew helper zip is what the Install with Homebrew button downloads: it must hold the
+// current script, executable, at the zip root, with no macOS metadata riding along.
+{
+  const { inflateRawSync } = await import('node:zlib')
+  const zip = await readFile(path.join(root, 'downloads/RoachNet-Homebrew.command.zip'))
+  const script = await readFile(path.join(root, 'downloads/RoachNet-Homebrew.command'))
+  const endOfDirectory = zip.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]))
+  assert.ok(endOfDirectory >= 0, 'helper zip has a central directory')
+  const entryCount = zip.readUInt16LE(endOfDirectory + 10)
+  let offset = zip.readUInt32LE(endOfDirectory + 16)
+  const entries = []
+  for (let index = 0; index < entryCount; index += 1) {
+    const nameLength = zip.readUInt16LE(offset + 28)
+    entries.push({
+      name: zip.subarray(offset + 46, offset + 46 + nameLength).toString('utf8'),
+      method: zip.readUInt16LE(offset + 10),
+      compressedSize: zip.readUInt32LE(offset + 20),
+      mode: zip.readUInt32LE(offset + 38) >>> 16,
+      localOffset: zip.readUInt32LE(offset + 42),
+    })
+    offset += 46 + nameLength + zip.readUInt16LE(offset + 30) + zip.readUInt16LE(offset + 32)
+  }
+  assert.deepEqual(entries.map(({ name }) => name), ['RoachNet-Homebrew.command'])
+  const [entry] = entries
+  assert.equal(entry.mode & 0o777, 0o755, 'the helper is executable once unzipped')
+  const dataStart = entry.localOffset + 30 + zip.readUInt16LE(entry.localOffset + 26) + zip.readUInt16LE(entry.localOffset + 28)
+  const packed = zip.subarray(dataStart, dataStart + entry.compressedSize)
+  const unpacked = entry.method === 8 ? inflateRawSync(packed) : packed
+  assert.ok(unpacked.equals(script), 'helper zip matches downloads/RoachNet-Homebrew.command')
+  assert.match(script.toString('utf8'), /brew tap --force RoachWares\/roachnet/)
+  assert.doesNotMatch(script.toString('utf8'), /AHGRoach/)
+}
+
+// Copy facts that drifted once: page anchors that live on /home/, and the browser storage line.
+for (const file of ['app.js', 'app-store.js', 'scripts/build-app-store-catalog.mjs']) {
+  assert.doesNotMatch(await source(file), /https:\/\/roachnet\.org\/#(?:screens|downloads)/, `${file} links /home/ anchors`)
+}
+assert.doesNotMatch(await source('app.js'), /free \(approx\.\)/, 'a browser cannot see free disk space')
+const catalogText = await source('app-store-catalog.json')
+assert.doesNotMatch(catalogText, /District Of Columbia|Of The Northern/)
+assert.doesNotMatch(catalogText, /"(?:subtitle|status|summary|machineFit)": "[^"]*\blane\b/i, 'store cards skip the internal "lane" jargon')
+
 console.log('site outcome checks passed')

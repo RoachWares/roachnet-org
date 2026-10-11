@@ -148,7 +148,7 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
   })
 
   if (!response.ok) {
-    return { success: false, message: 'Captcha verification did not finish cleanly.' }
+    return { success: false, message: "The human check service didn't answer. Wait a minute and try again." }
   }
 
   const result = await response.json()
@@ -156,7 +156,7 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
   const success = result.success === true && hostnameOk
   return {
     success,
-    message: success ? '' : 'Captcha verification failed.',
+    message: success ? '' : "The human check didn't pass. Do it again, then press Create account.",
   }
 }
 
@@ -198,7 +198,7 @@ export function createRegistrationHandler({
         json(
           {
             ok: false,
-            message: 'The account lane is missing its secure auth configuration.',
+            message: "Sign-up isn't available right now. You can still sign in to an existing account; try sign-up again later.",
           },
           503
         )
@@ -224,11 +224,11 @@ export function createRegistrationHandler({
     const startedAt = Number(payload?.startedAt || 0)
 
     if (honeypot) {
-      return withCors(request, json({ ok: false, message: 'Request rejected.' }, 400))
+      return withCors(request, json({ ok: false, message: "That sign-up didn't go through. Reload the page and try again." }, 400))
     }
 
     if (!validateEmail(email)) {
-      return withCors(request, json({ ok: false, message: 'Enter a real email address.' }, 400))
+      return withCors(request, json({ ok: false, message: 'That email address looks incomplete. Check it and try again.' }, 400))
     }
 
     if (password.length < 10) {
@@ -248,7 +248,7 @@ export function createRegistrationHandler({
     if (displayName.length > 60) {
       return withCors(
         request,
-        json({ ok: false, message: 'Keep the display name under 60 characters.' }, 400)
+        json({ ok: false, message: 'Keep the name to 60 characters or fewer.' }, 400)
       )
     }
 
@@ -272,7 +272,7 @@ export function createRegistrationHandler({
             {
               ok: false,
               code: 'captcha_unavailable',
-              message: 'Account creation is unavailable until human verification is configured.',
+              message: 'Sign-up is paused until the human check is set up. You can still sign in to an existing account.',
             },
             503
           )
@@ -301,7 +301,7 @@ export function createRegistrationHandler({
             {
               ok: false,
               code: 'captcha_unavailable',
-              message: 'Captcha verification is temporarily unavailable.',
+              message: "The human check service didn't answer. Wait a minute and try again.",
             },
             503
           )
@@ -323,7 +323,7 @@ export function createRegistrationHandler({
           {
             ok: false,
             code: 'rate_limit_unavailable',
-            message: 'Account creation could not establish abuse protection.',
+            message: "Sign-up can't run safely right now. Try again in a few minutes.",
           },
           503
         )
@@ -349,7 +349,7 @@ export function createRegistrationHandler({
               {
                 ok: false,
                 code: 'rate_limited',
-                message: 'Too many account attempts. Wait and try again.',
+                message: 'Too many sign-up attempts. Wait up to an hour and try again, or check your inbox for a confirmation link.',
               },
               429,
               { 'retry-after': String(result.retryAfterSeconds) }
@@ -364,7 +364,7 @@ export function createRegistrationHandler({
           {
             ok: false,
             code: 'rate_limit_unavailable',
-            message: 'Account creation is temporarily unavailable.',
+            message: 'Sign-up is unavailable for a moment. Try again in a few minutes.',
           },
           503
         )
@@ -394,7 +394,7 @@ export function createRegistrationHandler({
     } catch {
       return withCors(
         request,
-        json({ ok: false, message: 'Account creation is temporarily unavailable.' }, 503)
+        json({ ok: false, message: "Sign-up couldn't reach the account service. Try again in a few minutes." }, 503)
       )
     }
 
@@ -417,7 +417,7 @@ export function createRegistrationHandler({
         json(
           {
             ok: false,
-            message: message || 'Account creation did not finish cleanly.',
+            message: message || "Sign-up didn't go through. Try again in a few minutes.",
           },
           createResponse.status
         )

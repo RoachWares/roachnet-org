@@ -138,7 +138,7 @@
         <div class="api-start__grid">
           <article class="api-start__card">
             <h3 class="nx-h3">Loopback API</h3>
-            <p class="nx-prose">It takes a fresh port on every launch and writes it down for you. This sets <code>$ROACHNET</code> for every example on this page.</p>
+            <p class="nx-prose">It takes a fresh port on every launch and writes it to a state file. The first line below sets <code>$ROACHNET</code> for every example on this page.</p>
             <div class="nx-console api-console">
               <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
               <div class="nx-console__body">
@@ -170,7 +170,7 @@
             <h3 class="nx-h3">House rules</h3>
             <ul class="api-rules">
               <li><strong>JSON means JSON.</strong> Bodies must say <code>content-type: application/json</code>. Anything else gets a 415. That is CSRF protection, not pedantry.</li>
-              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a rebinding web page can’t read your Mac.</li>
+              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a page using DNS rebinding can’t read your Mac.</li>
               <li><strong>Errors are boring.</strong> <code>{ "error": "…" }</code> with a real status code.</li>
               <li><strong>Small bodies.</strong> 1 MB on the loopback API, 2 MB through the bridge.</li>
               <li><strong>Setup keeps to itself.</strong> Its service runs only while Setup is open, on a port only Setup knows. To try it by hand, start <code>roachnet-runtime --setup</code> with <code>ROACHNET_SETUP_PORT=38080</code> and set <code>SETUP=http://127.0.0.1:38080</code>.</li>

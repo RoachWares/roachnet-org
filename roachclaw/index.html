@@ -6,7 +6,7 @@
     <title>RoachClaw on the web</title>
     <meta
       name="description"
-      content="RoachClaw in your browser: drafts, debugging, summaries and plain answers from a hosted model, saved to your RoachNet account. Private questions belong in the RoachNet app on your Mac."
+      content="RoachClaw in your browser: short answers and rough drafts from a small hosted model, saved to your RoachNet account. For real work and private files, use RoachClaw in the RoachNet app on your Mac."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/roachclaw/" />
@@ -18,7 +18,7 @@
     <meta property="og:title" content="RoachClaw on the web" />
     <meta
       property="og:description"
-      content="Ask RoachClaw for drafts, fixes and summaries from any browser. Your conversations follow your account; your files stay on your Mac."
+      content="Short answers and rough drafts from a small hosted model, in any browser you sign in to. For real work, RoachClaw runs on your Mac."
     />
     <meta property="og:url" content="https://roachnet.org/roachclaw/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
@@ -26,7 +26,7 @@
     <meta name="twitter:title" content="RoachClaw on the web" />
     <meta
       name="twitter:description"
-      content="Ask RoachClaw for drafts, fixes and summaries from any browser. Your conversations follow your account; your files stay on your Mac."
+      content="Short answers and rough drafts from a small hosted model, in any browser you sign in to. For real work, RoachClaw runs on your Mac."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
@@ -137,8 +137,8 @@
               <section class="rc-welcome" id="roachclaw-welcome" aria-labelledby="roachclaw-welcome-title">
                 <div class="rc-welcome__intro">
                   <p class="nx-overline nx-overline--cyan">RoachClaw on the web</p>
-                  <h2 class="rc-empty-state__heading" id="roachclaw-welcome-title">What are we fixing, building or untangling today?</h2>
-                  <p class="rc-empty-state__sub">Ask for a draft, a fix or a summary. Conversations save to your account, so you can pick them up in any browser.</p>
+                  <h2 class="rc-empty-state__heading" id="roachclaw-welcome-title">What needs fixing, building or untangling today?</h2>
+                  <p class="rc-empty-state__sub">Ask a short question or for a rough draft. Conversations save to your account, so you can pick them up in any browser.</p>
                 </div>
 
                 <section class="rc-auth-gate" id="roachclaw-auth-gate" aria-labelledby="roachclaw-gate-title" hidden>
@@ -189,7 +189,7 @@
                         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="5.5" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       </span>
                       <strong>Debug a problem</strong>
-                      <span>Errors, configs, surprise behaviour. Nobody blames the chair.</span>
+                      <span>Errors, configs, surprise behavior. One next step at a time.</span>
                     </button>
                     <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="summarize">
                       <span class="rc-starter-card__icon" aria-hidden="true">
@@ -221,12 +221,12 @@
                     <article class="rc-relay__card" data-state="live">
                       <p class="rc-relay__state"><span aria-hidden="true"></span>In use here</p>
                       <h3>Hosted model</h3>
-                      <p>In the browser, RoachClaw answers with a hosted model. Each message and reply is saved to your account, so the thread is still there next time.</p>
+                      <p>In the browser, RoachClaw answers with a small hosted model, so keep it to short questions. Each message and reply is saved to your account, so the thread is still there next time.</p>
                     </article>
                     <article class="rc-relay__card" data-state="off">
                       <p class="rc-relay__state"><span aria-hidden="true"></span>Not connected</p>
                       <h3>Your Mac via RoachTail</h3>
-                      <p>This page can't reach your Mac yet. For questions about your own files, open RoachClaw in the RoachNet app, where it runs on models on your machine.</p>
+                      <p>This page can't reach your Mac yet. For questions about your own files, open RoachClaw in the RoachNet app, where it runs local models on your Mac.</p>
                       <a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Get RoachNet for macOS</a>
                     </article>
                   </div>
@@ -252,7 +252,7 @@
                 </p>
                 <p class="rc-composer__hint" id="roachclaw-hint">Hosted model</p>
               </div>
-              <p class="rc-composer__disclaimer" role="status" aria-live="polite">In the browser RoachClaw uses a hosted model. For private files, ask it in the RoachNet app on your Mac.</p>
+              <p class="rc-composer__disclaimer" role="status" aria-live="polite">In the browser, RoachClaw uses a hosted model. For private files, ask it in the RoachNet app on your Mac.</p>
             </div>
           </div>
         </main>
@@ -267,7 +267,7 @@
       <div class="nx-foot__grid">
         <div class="nx-foot__brand">
           <strong>RoachClaw</strong>
-          <span>Drafts, fixes and summaries in any browser. The private stuff stays in the RoachNet app on your Mac.</span>
+          <span>Quick answers and rough drafts in any browser. The private stuff stays in the RoachNet app on your Mac.</span>
           <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
         </div>
         <div class="nx-foot__col">

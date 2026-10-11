@@ -42,7 +42,7 @@ function loadSupabase() {
       script.onload = () => (window.supabase?.createClient ? resolve(window.supabase) : reject(new Error('supabase-js loaded without createClient')))
       script.onerror = () => {
         supabaseLoading = null
-        reject(new Error('Could not load the sign-in library.'))
+        reject(new Error("The sign-in code didn't load. Check your connection and reload the page."))
       }
       document.head.append(script)
     })
@@ -165,7 +165,7 @@ async function resolveSiteAuthState() {
       client: null,
       session: null,
       reason:
-        'Site accounts are not armed on this deploy yet. RoachTail, RoachSync, and the native runtime still stay on your own devices until this is live.',
+        "Sign-in is off on this copy of the site. RoachNet on your Mac doesn't need an account and works as usual.",
       config,
     }
   }

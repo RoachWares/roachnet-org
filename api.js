@@ -9,7 +9,7 @@ const surfaces = {
   setup: {
     label: 'Setup service',
     base: '$SETUP',
-    where: '127.0.0.1, ephemeral port (set ROACHNET_SETUP_PORT to pin it)',
+    where: '127.0.0.1, ephemeral port (set `ROACHNET_SETUP_PORT` to pin it)',
     auth: 'No token. Loopback Host header only; JSON bodies must be sent as `application/json`.',
   },
   runtime: {
@@ -118,7 +118,7 @@ const apiGroups = [
           '400 if the app is not at that path yet.',
         ],
         implementation:
-          'Records `lastOpenedMode: "app"` and `preferredShell: "native"`. There is no fallback launcher any more: no app, no launch.',
+          'Records `lastOpenedMode: "app"` and `preferredShell: "native"`. There is no fallback launcher anymore, so a missing app means a 400.',
         usedBy: ['Finish step in RoachNet Setup.app'],
       },
       {
@@ -163,7 +163,7 @@ const apiGroups = [
         method: 'GET',
         path: '/api/health',
         title: 'Runtime health',
-        summary: 'The cheapest call on the Mac.',
+        summary: 'Liveness check. The cheapest call the runtime answers.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:100',
         request: ['None.'],
@@ -177,7 +177,7 @@ const apiGroups = [
         method: 'GET',
         path: '/api/system/internet-status',
         title: 'Internet check',
-        summary: 'A bare boolean: does github.com resolve.',
+        summary: 'A bare boolean: whether github.com resolves.',
         handler: 'DNS.resolves',
         source: 'Router.swift:101',
         request: ['None.'],
@@ -215,7 +215,7 @@ const apiGroups = [
           'Each has `service_name`, `friendly_name`, `description`, `installed`, `installation_status`, `status`, `ui_location`.',
         ],
         implementation:
-          'Only Chat reflects a live probe (is Ollama answering). Notes and Data Lab are built in and always report `running`. The rest report `available`.',
+          'Only Chat reflects a live probe (whether Ollama answers). Notes and Data Lab are built in and always report `running`. The rest report `available`.',
       },
       {
         id: 'system-services-install',
@@ -229,7 +229,7 @@ const apiGroups = [
         request: ['JSON body: `service_name`.'],
         response: ['`{ success: true, ok: true, message }`'],
         implementation:
-          'Native services have nothing to install, so any name other than `roachnet_ollama` gets a polite reply and no action.',
+          'Native services have nothing to install, so any name other than `roachnet_ollama` gets a success reply and no action.',
       },
       {
         id: 'system-services-affect',
@@ -243,14 +243,14 @@ const apiGroups = [
         request: ['JSON body: `service_name`, `action`.'],
         response: ['`{ success: true, ok: true, message: "<action> request recorded." }`'],
         implementation:
-          'Starting Ollama launches the contained runner with `OLLAMA_MODELS` pointed at `storage/models/ollama` and none of RoachNet’s own credentials in its environment. Other combinations are answered and otherwise left alone.',
+          'Starting Ollama launches the contained runner with `OLLAMA_MODELS` pointed at `storage/models/ollama` and none of RoachNet’s own credentials in its environment. Any other combination gets the same reply and changes nothing.',
       },
       {
         id: 'system-ai-providers',
         method: 'GET',
         path: '/api/system/ai/providers',
         title: 'AI providers',
-        summary: 'Is the local model server up, and which cloud keys exist.',
+        summary: 'Whether the local model server is up, and which cloud keys exist.',
         handler: 'NativeRuntime.providerStatus',
         source: 'Router.swift:104',
         request: ['None.'],
@@ -404,7 +404,7 @@ const apiGroups = [
         method: 'GET',
         path: '/api/roachclaw/readiness',
         title: 'Readiness',
-        summary: 'Can RoachClaw write where it needs to.',
+        summary: 'Whether RoachClaw can write where it needs to.',
         handler: 'NativeRuntime.roachClawReadinessState',
         source: 'Router.swift:142',
         request: ['None.'],
@@ -449,7 +449,7 @@ const apiGroups = [
           '500 when `prompt` is empty.',
         ],
         implementation:
-          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so instead of pretending.',
+          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so.',
       },
       {
         id: 'roachclaw-operations',
@@ -500,7 +500,7 @@ const apiGroups = [
         handler: 'NativeRuntime.browseRoachClawWorkspace',
         source: 'Router.swift:117 (RoachClawStores.swift:830)',
         query: 'path=$HOME/Projects',
-        request: ['Query: `path`. Missing or not a folder means your home folder (or `ROACHNET_WORKSPACE_BROWSE_ROOT`).'],
+        request: ['Query: `path`. If it is missing or not a folder, you get your home folder (or `ROACHNET_WORKSPACE_BROWSE_ROOT`).'],
         response: ['`{ path, parent, dirs: [{ name, path, modifiedAt }], count }`'],
         implementation: 'Folders only, no files. Hidden folders and symlinks are skipped.',
       },
@@ -846,7 +846,7 @@ const apiGroups = [
         ],
         response: [
           '`{ schema, updatedAt, <key>: [...] }`.',
-          'The array key usually matches the path. Exceptions: `events` (calendar), `drafts` (editor-drafts), `entries` (search-cache), `assets` (gallery), `runs` (agent-runs), `compactions`, `tools` (tool-index), `templates` (presets).',
+          'The array key usually matches the path. Exceptions: `events` (calendar), `drafts` (editor-drafts), `entries` (search-cache), `assets` (gallery), `runs` (agent-runs), `compactions` (context-compactions), `tools` (tool-index), `templates` (presets).',
         ],
         implementation:
           'Each store is a JSON file under `storage/.runtime/roachclaw/`. The older `storage/vault/roachclaw/` copy is read as a fallback, never written.',
@@ -877,7 +877,7 @@ const apiGroups = [
         source: 'Router.swift:291',
         request: ['Path: the collection and the item `id`.'],
         response: ['`{ success, ok, deleted, id, state }`. `deleted` is false if nothing matched.'],
-        implementation: 'No soft delete. Gone is gone; take a backup first if you care.',
+        implementation: 'No soft delete. Take a backup first if you might want the item back.',
       },
       {
         id: 'roachclaw-mail',
@@ -979,7 +979,7 @@ const apiGroups = [
         source: 'Router.swift:288',
         request: ['Path: the schedule `id`.'],
         response: ['`{ success, ok, deleted, id, state }`'],
-        implementation: 'Nothing is running because of it, so nothing stops.',
+        implementation: 'Schedules never start a model, so deleting one stops nothing.',
       },
       {
         id: 'roachclaw-cookbook-progress',
@@ -1004,7 +1004,7 @@ const apiGroups = [
         source: 'Router.swift:220',
         request: ['None.'],
         response: ['`snapshots`: `id`, `title`, `summary`, `sections`, `createdAt`.'],
-        implementation: 'Metadata only. See the next route for where the data goes.',
+        implementation: 'Metadata only. See POST /api/roachclaw/backups for where the data goes.',
       },
       {
         id: 'roachclaw-backups-create',
@@ -1031,7 +1031,7 @@ const apiGroups = [
         source: 'Router.swift:298',
         request: ['Path: the snapshot `id`.'],
         response: ['`{ success, ok, deleted, id, state }`'],
-        implementation: 'Only the record goes. Any export you saved yourself is yours to keep.',
+        implementation: 'Only the record is removed. Exports you saved yourself are untouched.',
       },
       {
         id: 'roachclaw-export',
@@ -1091,7 +1091,7 @@ const apiGroups = [
         body: { slug: 'REPLACE-WITH-A-SLUG' },
         request: ['JSON body: `slug` from /api/maps/curated-collections.'],
         response: ['`{ success, ok, message: "<n> map downloads queued." }`'],
-        implementation: 'An unknown slug queues zero downloads and says so, politely, with a 200.',
+        implementation: 'An unknown slug queues zero downloads and says so, with a 200.',
       },
       {
         id: 'maps-download-remote',
@@ -1156,7 +1156,7 @@ const apiGroups = [
         body: { url: 'https://example.com/library.zim' },
         request: ['JSON body: `url`.'],
         response: ['`{ success, ok, message }`'],
-        implementation: 'Same descriptor and checksum rules as maps.',
+        implementation: 'Same descriptor and checksum rules as /api/maps/download-remote.',
       },
       {
         id: 'zim-wikipedia',
@@ -1278,7 +1278,7 @@ const apiGroups = [
         source: 'Router.swift:256',
         request: ['None.'],
         response: ['`{ status, benchmarkId }`'],
-        implementation: 'See the next route.',
+        implementation: 'See POST /api/benchmark/run.',
       },
       {
         id: 'benchmark-run',
@@ -1291,7 +1291,7 @@ const apiGroups = [
         body: { benchmark_type: 'system' },
         request: ['JSON body: optional `benchmark_type`.'],
         response: ['201 with `{ success, job_id, benchmark_id, message }`'],
-        implementation: 'Status flips to `starting` and back to `idle` two seconds later. That is the whole benchmark.',
+        implementation: 'Status flips to `starting` and back to `idle` two seconds later. Nothing is measured.',
       },
     ],
   },
@@ -1377,7 +1377,7 @@ const apiGroups = [
         body: { action: 'link', email: 'you@example.com', displayName: 'You' },
         request: ['JSON body: `action` (`link`, `unlink`, `refresh`). For `link`: `email`, `displayName` and the three sync booleans.'],
         response: ['`{ success, message, state }`', '400 for any other action.'],
-        implementation: '`unlink` resets to `local-only`. Nothing is sent to roachnet.org by this call.',
+        implementation: '`unlink` resets to `local-only`. This call sends nothing to roachnet.org.',
         usedBy: ['RoachNet.app account settings', 'RoachNet iOS'],
       },
       {
@@ -1391,7 +1391,7 @@ const apiGroups = [
         request: ['None.'],
         response: ['`enabled`, `status` (`local-only`, `armed`, `relay-ready`, `connected`), `transportMode`, `peers`, `routes`, `joinCode`, `pairingPayload`, `controlPlane`.'],
         implementation:
-          'Called with a peer token, `joinCode` and `pairingPayload` are null. A join code lasts ten minutes and a fresh one is minted when it expires.',
+          'With a peer token, `joinCode` and `pairingPayload` come back null. A join code lasts ten minutes and a fresh one is minted when it expires.',
         usedBy: ['RoachNet.app RoachTail settings', 'RoachNet iOS'],
       },
       {
@@ -1399,14 +1399,14 @@ const apiGroups = [
         method: 'POST',
         path: '/api/companion/roachtail/pair',
         title: 'Pair a device',
-        summary: 'Trades a join code for a device token. No token needed, which is the point.',
+        summary: 'Trades a join code for a device token, so it needs no token itself.',
         handler: 'NativeRuntime.pairRoachTailPeer',
         source: 'Router.swift:231 (RoachTail.swift:489)',
         noAuth: true,
         body: { joinCode: 'ABCD-EF12-3456', peerName: 'iPhone', platform: 'iOS' },
         request: ['JSON body: `joinCode` (required), `peerName`, `platform`, optional `endpoint`, `tags`, `capabilities`.'],
         response: [
-          '`token` and `peerId` (the contract shipped phones read), `peerToken`, `bridgeUrl`, `runtimeTunnelUrl`, `state`.',
+          '`token` and `peerId` (the fields shipped phones read), `peerToken`, `bridgeUrl`, `runtimeTunnelUrl`, `state`.',
           '409 if RoachTail is off. 401 for a wrong, expired or used code.',
         ],
         implementation:
@@ -1437,7 +1437,7 @@ const apiGroups = [
         source: 'Router.swift:235 (RoachClawStatus.swift:884)',
         request: ['None.'],
         response: ['`enabled`, `status`, `folderPath` (defaults to storage), `peers`, `transportMode: "native-local"`.'],
-        implementation: 'Off until you arm it.',
+        implementation: 'Off until you enable it.',
         usedBy: ['RoachNet.app RoachSync settings', 'RoachNet iOS'],
       },
       {
@@ -1459,7 +1459,7 @@ const apiGroups = [
         method: 'POST',
         path: '/api/companion/install',
         title: 'Queue an install',
-        summary: 'The App Store install lane, for the phone and the Mac.',
+        summary: 'The RoachNet Apps install lane, for the phone and the Mac.',
         handler: 'NativeRuntime.handleCompanionInstall',
         source: 'Router.swift:236 (Downloads.swift:598)',
         body: { action: 'roachclaw-model', model: 'qwen2.5-coder:1.5b' },
@@ -1548,7 +1548,7 @@ const apiGroups = [
         path: '/api/companion/*',
         examplePath: '/api/companion/anything-else',
         title: 'Any other companion action',
-        summary: 'Every other POST under /api/companion/ gets the same polite reply.',
+        summary: 'Every other POST under /api/companion/ gets the same success reply.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:310',
         request: ['Any path under `/api/companion/` not listed above.'],
@@ -1581,15 +1581,15 @@ const apiGroups = [
         ].join('\n'),
         request: [
           'Origin must be roachnet.org or accounts.roachnet.org, or you get a 403.',
-          'JSON body: `email`, `password` (10 characters or more), `displayName` (up to 60), `captchaToken` when Turnstile is on.',
-          '`company` is a honeypot. Fill it in and you are turned away.',
+          'JSON body (16 KB at most): `email`, `password` (10 to 72 characters), `displayName` (up to 60), `captchaToken` when Turnstile is on.',
+          '`company` is a honeypot. Any value in it gets the request rejected.',
         ],
         response: [
           '`{ ok: true, requiresConfirmation, message, userId }`',
-          '409 `user_exists`. 429 if the form was submitted inhumanly fast. 503 when the backend or rate limiter is down.',
+          '400 `captcha_required`, 403 `captcha_failed`, 409 `user_exists`, 413 over 16 KB. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
         ],
         implementation:
-          'Signs up through Supabase `/auth/v1/signup` with the public key and sends a confirmation link back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
+          'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
       },
       {
         id: 'roachclaw-web-chat',
@@ -1607,12 +1607,13 @@ const apiGroups = [
         ].join('\n'),
         request: [
           '`authorization: Bearer <Supabase access token>`.',
+          'A browser Origin other than roachnet.org or accounts.roachnet.org gets a 403. Calls with no Origin header, like curl, still need the token.',
           'JSON body: `message` (required), `threadId`, `bridgeUrl`, `bridgeToken`, `bridgeLabel`.',
           '`bridgeUrl` must be on the deploy’s allow-list.',
         ],
         response: [
           '`{ ok, thread, userMessage, assistantMessage, provider, model }`',
-          '401 without a valid session. 404 for a thread that is not yours. 503 when web chat is not armed. 500 if the reply fails.',
+          '400 for a bad `threadId` or bridge address. 401 without a valid session. 404 for a thread that is not yours. 413 over 64 KB. 429 `rate_limited` after 20 messages in 10 minutes or 200 in a day. 503 when web chat is off or the limiter is down. 500 if the reply fails.',
         ],
         implementation:
           'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: a small open model running inside the function.',
@@ -2100,7 +2101,7 @@ function hydrateFromHash({ initial = false } = {}) {
   const route = routeIndex.get(id)
   if (!route) {
     if (/^[a-z0-9-]+$/.test(id) && !document.getElementById(id)) {
-      showNotice(`There is no route called “${id}” in 1.0.6. It may have left with the Node runtime.`)
+      showNotice(`No route called “${id}” in 1.0.6. It may have left with the Node runtime. Try the search above.`)
     }
     return
   }

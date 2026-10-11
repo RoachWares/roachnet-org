@@ -414,8 +414,8 @@ function setMode(nextMode, { focus = false } = {}) {
   if (formNote) {
     formNote.textContent =
       accountMode === 'signup'
-        ? 'We send a confirmation link before the account works. Use an inbox you can open.'
-        : 'Signing in only links this website to your account. The vault stays out of it.'
+        ? 'You get a confirmation link before the account works. Use an inbox you can open.'
+        : 'Signing in only links this browser to your account. The vault stays out of it.'
   }
 
   if (turnstileShell) {
@@ -436,7 +436,7 @@ function renderStatus() {
 
   if (!enabled) {
     setAuthView('disabled')
-    statusTitle.textContent = 'Sign-in is off on this deploy.'
+    statusTitle.textContent = "Sign-in isn't available here."
     statusBody.textContent = authState.reason
     statusBadge.textContent = 'Off'
     statusBadge.dataset.state = 'disabled'
@@ -444,8 +444,8 @@ function renderStatus() {
     form?.setAttribute('aria-disabled', 'true')
     setFormBusy(true)
     setSnapshot({
-      title: 'Nothing to show on this deploy.',
-      body: 'This copy of the site has no live account keys, so there is no account to read.',
+      title: 'Nothing to show here.',
+      body: "There's no account to read until sign-in is available.",
     })
     rowsEmpty(deviceList, 'Sign-in is off here.')
     rowsEmpty(appList, 'Sign-in is off here.')
@@ -468,13 +468,13 @@ function renderStatus() {
 
   setAuthView('signed-out')
   statusTitle.textContent = 'Not signed in.'
-  statusBody.textContent = 'Sign in to see your devices and saved apps, or make an account in a minute.'
+  statusBody.textContent = 'Sign in to see your devices and RoachClaw threads, or make an account in a minute.'
   statusBadge.textContent = 'Ready'
   statusBadge.dataset.state = 'ready'
   signOutButton.hidden = true
   setSnapshot({
     title: "Sign in to see what's here.",
-    body: 'Your devices, saved apps and RoachClaw threads show up here once you sign in.',
+    body: 'Your devices and RoachClaw threads show up here once you sign in.',
   })
   rowsEmpty(deviceList, 'Nothing to show until you sign in.')
   rowsEmpty(appList, 'Nothing to show until you sign in.')
@@ -610,7 +610,7 @@ async function loadSnapshot() {
 
   if (appList) {
     if (!appRows.length) {
-      rowsEmpty(appList, 'No saved apps yet. Browse apps.roachnet.org and mark the ones you want.')
+      rowsEmpty(appList, "Nothing here yet. The store can't save picks today, so this list stays empty.")
     } else {
       appList.replaceChildren(
         ...appRows.map((app) =>
@@ -679,12 +679,12 @@ async function ensureTurnstile() {
       },
       'error-callback': () => {
         captchaToken = ''
-        setTurnstileState('The human check did not load.', 'error')
+        setTurnstileState("The human check didn't load. Reload the page to try again. Signing in doesn't need it.", 'error')
       },
     })
     setTurnstileState('Finish the human check to create the account.')
   } catch {
-    setTurnstileState('The human check could not load right now.', 'error')
+    setTurnstileState("The human check couldn't load. Reload the page to try again. Signing in doesn't need it.", 'error')
   }
 }
 
@@ -712,7 +712,7 @@ async function registerAccount({ email, password, displayName }) {
   }))
 
   if (!response.ok || result.ok !== true) {
-    throw new Error(result.message || 'Account creation did not go through.')
+    throw new Error(result.message || "Sign-up didn't go through. Try again in a minute.")
   }
 
   return result
@@ -884,7 +884,7 @@ This root is reconciled byte-for-byte from the current production source.
     <title>RoachNet Account</title>
     <meta
       name="description"
-      content="An optional RoachNet account for RoachClaw web conversations, saved app picks and a short list of your devices. Your models, vault and files stay on your Mac."
+      content="An optional RoachNet account for RoachClaw web conversations and a short list of your devices. Your models, vault and files stay on your Mac."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://accounts.roachnet.org/" />
@@ -896,7 +896,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta property="og:title" content="RoachNet Account" />
     <meta
       property="og:description"
-      content="The small stuff travels: RoachClaw web threads, saved app picks, a device list. The heavy stuff stays on your Mac."
+      content="The small stuff travels: RoachClaw web threads and a device list. The heavy stuff stays on your Mac."
     />
     <meta property="og:url" content="https://accounts.roachnet.org/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
@@ -904,7 +904,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:title" content="RoachNet Account" />
     <meta
       name="twitter:description"
-      content="The small stuff travels: RoachClaw web threads, saved app picks, a device list. The heavy stuff stays on your Mac."
+      content="The small stuff travels: RoachClaw web threads and a device list. The heavy stuff stays on your Mac."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
@@ -954,7 +954,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="nx-overline">RoachNet Account · optional</p>
           <h1 class="nx-display ac-title" id="account-title">The small stuff travels. <span class="nx-accent">The rest stays home.</span></h1>
           <p class="nx-lede">
-            You don't need an account to use RoachNet. Make one and it keeps your RoachClaw web conversations, the apps you saved and a short list of the devices you signed in from. Your models, vault and files never leave your Mac.
+            You don't need an account to use RoachNet. Make one and it keeps your RoachClaw web conversations and a short list of the devices you signed in from. Your models, vault and files never leave your Mac.
           </p>
           <div class="nx-actions">
             <a class="nx-btn nx-btn--primary" href="https://roachnet.org/roachclaw/">Open RoachClaw on the web</a>
@@ -1019,11 +1019,11 @@ This root is reconciled byte-for-byte from the current production source.
 
               <div class="account-turnstile" id="account-turnstile-shell" hidden>
                 <div id="account-turnstile"></div>
-                <p class="ac-form__note" id="account-turnstile-note">Verifying this request.</p>
+                <p class="ac-form__note" id="account-turnstile-note">Loading the human check…</p>
               </div>
 
               <button class="nx-btn nx-btn--primary ac-submit" id="account-submit" type="submit"><span class="ac-submit__label">Sign in</span></button>
-              <p class="ac-form__note" id="account-form-note">Signing in only links this website to your account. The vault stays out of it.</p>
+              <p class="ac-form__note" id="account-form-note">Signing in only links this browser to your account. The vault stays out of it.</p>
               <p class="ac-form__feedback" id="account-feedback" role="status" aria-live="polite"></p>
             </form>
           </div>
@@ -1041,7 +1041,7 @@ This root is reconciled byte-for-byte from the current production source.
             <p class="nx-card__eyebrow nx-card__eyebrow--cyan">Syncs with your account</p>
             <ul class="ac-list">
               <li><strong>RoachClaw web conversations</strong><span>The threads and replies you send from a browser.</span></li>
-              <li><strong>Saved app picks</strong><span>The apps you've marked so you can find them again.</span></li>
+              <li><strong>Saved app picks</strong><span>Not yet. The store can't save picks today, so nothing goes here.</span></li>
               <li><strong>Your device list</strong><span>A name, a platform and a last-seen time for each device you sign in from.</span></li>
               <li><strong>A few web settings</strong><span>Small preferences for the website.</span></li>
             </ul>
@@ -1049,7 +1049,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card ac-ledger__card ac-ledger__card--home">
             <p class="nx-card__eyebrow">Stays on your Mac</p>
             <ul class="ac-list">
-              <li><strong>Your models</strong><span>RoachClaw in the Mac app runs on models on your own machine.</span></li>
+              <li><strong>Your models</strong><span>In the Mac app, RoachClaw runs local models on your own machine.</span></li>
               <li><strong>Your vault and files</strong><span>Everything in <code>~/RoachNet</code>. This account never sees it.</span></li>
               <li><strong>Paths and secrets</strong><span>Where things live on disk and the keys your runtime uses.</span></li>
               <li><strong>The runtime</strong><span>The native Swift runtime that does the work on your Mac.</span></li>
@@ -1063,7 +1063,7 @@ This root is reconciled byte-for-byte from the current production source.
           <div>
             <p class="nx-overline">Your account</p>
             <h2 class="nx-h2" id="account-snapshot-title">Sign in to see what's here.</h2>
-            <p class="nx-lede" id="account-snapshot-body">Your devices, saved apps and RoachClaw threads show up here once you sign in.</p>
+            <p class="nx-lede" id="account-snapshot-body">Your devices and RoachClaw threads show up here once you sign in.</p>
           </div>
         </div>
 
@@ -1087,7 +1087,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card ac-panel">
             <div class="ac-panel__head">
               <h3 class="nx-h3">Saved apps</h3>
-              <p class="ac-panel__meta">Your picks</p>
+              <p class="ac-panel__meta">Not in use yet</p>
             </div>
             <ul class="ac-rows" id="account-app-list">
               <li class="ac-rows__empty">Nothing to show until you sign in.</li>
@@ -1138,7 +1138,7 @@ This root is reconciled byte-for-byte from the current production source.
       <div class="nx-foot__grid">
         <div class="nx-foot__brand">
           <strong>RoachNet Account</strong>
-          <span>Optional. It carries RoachClaw web threads, saved app picks and your device list. The heavy lifting stays on your Mac.</span>
+          <span>Optional. It carries RoachClaw web threads and your device list. The heavy lifting stays on your Mac.</span>
           <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
         </div>
         <div class="nx-foot__col">
@@ -1214,7 +1214,7 @@ const surfaces = {
   setup: {
     label: 'Setup service',
     base: '$SETUP',
-    where: '127.0.0.1, ephemeral port (set ROACHNET_SETUP_PORT to pin it)',
+    where: '127.0.0.1, ephemeral port (set `ROACHNET_SETUP_PORT` to pin it)',
     auth: 'No token. Loopback Host header only; JSON bodies must be sent as `application/json`.',
   },
   runtime: {
@@ -1323,7 +1323,7 @@ const apiGroups = [
           '400 if the app is not at that path yet.',
         ],
         implementation:
-          'Records `lastOpenedMode: "app"` and `preferredShell: "native"`. There is no fallback launcher any more: no app, no launch.',
+          'Records `lastOpenedMode: "app"` and `preferredShell: "native"`. There is no fallback launcher anymore, so a missing app means a 400.',
         usedBy: ['Finish step in RoachNet Setup.app'],
       },
       {
@@ -1368,7 +1368,7 @@ const apiGroups = [
         method: 'GET',
         path: '/api/health',
         title: 'Runtime health',
-        summary: 'The cheapest call on the Mac.',
+        summary: 'Liveness check. The cheapest call the runtime answers.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:100',
         request: ['None.'],
@@ -1382,7 +1382,7 @@ const apiGroups = [
         method: 'GET',
         path: '/api/system/internet-status',
         title: 'Internet check',
-        summary: 'A bare boolean: does github.com resolve.',
+        summary: 'A bare boolean: whether github.com resolves.',
         handler: 'DNS.resolves',
         source: 'Router.swift:101',
         request: ['None.'],
@@ -1420,7 +1420,7 @@ const apiGroups = [
           'Each has `service_name`, `friendly_name`, `description`, `installed`, `installation_status`, `status`, `ui_location`.',
         ],
         implementation:
-          'Only Chat reflects a live probe (is Ollama answering). Notes and Data Lab are built in and always report `running`. The rest report `available`.',
+          'Only Chat reflects a live probe (whether Ollama answers). Notes and Data Lab are built in and always report `running`. The rest report `available`.',
       },
       {
         id: 'system-services-install',
@@ -1434,7 +1434,7 @@ const apiGroups = [
         request: ['JSON body: `service_name`.'],
         response: ['`{ success: true, ok: true, message }`'],
         implementation:
-          'Native services have nothing to install, so any name other than `roachnet_ollama` gets a polite reply and no action.',
+          'Native services have nothing to install, so any name other than `roachnet_ollama` gets a success reply and no action.',
       },
       {
         id: 'system-services-affect',
@@ -1448,14 +1448,14 @@ const apiGroups = [
         request: ['JSON body: `service_name`, `action`.'],
         response: ['`{ success: true, ok: true, message: "<action> request recorded." }`'],
         implementation:
-          'Starting Ollama launches the contained runner with `OLLAMA_MODELS` pointed at `storage/models/ollama` and none of RoachNet’s own credentials in its environment. Other combinations are answered and otherwise left alone.',
+          'Starting Ollama launches the contained runner with `OLLAMA_MODELS` pointed at `storage/models/ollama` and none of RoachNet’s own credentials in its environment. Any other combination gets the same reply and changes nothing.',
       },
       {
         id: 'system-ai-providers',
         method: 'GET',
         path: '/api/system/ai/providers',
         title: 'AI providers',
-        summary: 'Is the local model server up, and which cloud keys exist.',
+        summary: 'Whether the local model server is up, and which cloud keys exist.',
         handler: 'NativeRuntime.providerStatus',
         source: 'Router.swift:104',
         request: ['None.'],
@@ -1609,7 +1609,7 @@ const apiGroups = [
         method: 'GET',
         path: '/api/roachclaw/readiness',
         title: 'Readiness',
-        summary: 'Can RoachClaw write where it needs to.',
+        summary: 'Whether RoachClaw can write where it needs to.',
         handler: 'NativeRuntime.roachClawReadinessState',
         source: 'Router.swift:142',
         request: ['None.'],
@@ -1654,7 +1654,7 @@ const apiGroups = [
           '500 when `prompt` is empty.',
         ],
         implementation:
-          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so instead of pretending.',
+          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so.',
       },
       {
         id: 'roachclaw-operations',
@@ -1705,7 +1705,7 @@ const apiGroups = [
         handler: 'NativeRuntime.browseRoachClawWorkspace',
         source: 'Router.swift:117 (RoachClawStores.swift:830)',
         query: 'path=$HOME/Projects',
-        request: ['Query: `path`. Missing or not a folder means your home folder (or `ROACHNET_WORKSPACE_BROWSE_ROOT`).'],
+        request: ['Query: `path`. If it is missing or not a folder, you get your home folder (or `ROACHNET_WORKSPACE_BROWSE_ROOT`).'],
         response: ['`{ path, parent, dirs: [{ name, path, modifiedAt }], count }`'],
         implementation: 'Folders only, no files. Hidden folders and symlinks are skipped.',
       },
@@ -2051,7 +2051,7 @@ const apiGroups = [
         ],
         response: [
           '`{ schema, updatedAt, <key>: [...] }`.',
-          'The array key usually matches the path. Exceptions: `events` (calendar), `drafts` (editor-drafts), `entries` (search-cache), `assets` (gallery), `runs` (agent-runs), `compactions`, `tools` (tool-index), `templates` (presets).',
+          'The array key usually matches the path. Exceptions: `events` (calendar), `drafts` (editor-drafts), `entries` (search-cache), `assets` (gallery), `runs` (agent-runs), `compactions` (context-compactions), `tools` (tool-index), `templates` (presets).',
         ],
         implementation:
           'Each store is a JSON file under `storage/.runtime/roachclaw/`. The older `storage/vault/roachclaw/` copy is read as a fallback, never written.',
@@ -2082,7 +2082,7 @@ const apiGroups = [
         source: 'Router.swift:291',
         request: ['Path: the collection and the item `id`.'],
         response: ['`{ success, ok, deleted, id, state }`. `deleted` is false if nothing matched.'],
-        implementation: 'No soft delete. Gone is gone; take a backup first if you care.',
+        implementation: 'No soft delete. Take a backup first if you might want the item back.',
       },
       {
         id: 'roachclaw-mail',
@@ -2184,7 +2184,7 @@ const apiGroups = [
         source: 'Router.swift:288',
         request: ['Path: the schedule `id`.'],
         response: ['`{ success, ok, deleted, id, state }`'],
-        implementation: 'Nothing is running because of it, so nothing stops.',
+        implementation: 'Schedules never start a model, so deleting one stops nothing.',
       },
       {
         id: 'roachclaw-cookbook-progress',
@@ -2209,7 +2209,7 @@ const apiGroups = [
         source: 'Router.swift:220',
         request: ['None.'],
         response: ['`snapshots`: `id`, `title`, `summary`, `sections`, `createdAt`.'],
-        implementation: 'Metadata only. See the next route for where the data goes.',
+        implementation: 'Metadata only. See POST /api/roachclaw/backups for where the data goes.',
       },
       {
         id: 'roachclaw-backups-create',
@@ -2236,7 +2236,7 @@ const apiGroups = [
         source: 'Router.swift:298',
         request: ['Path: the snapshot `id`.'],
         response: ['`{ success, ok, deleted, id, state }`'],
-        implementation: 'Only the record goes. Any export you saved yourself is yours to keep.',
+        implementation: 'Only the record is removed. Exports you saved yourself are untouched.',
       },
       {
         id: 'roachclaw-export',
@@ -2296,7 +2296,7 @@ const apiGroups = [
         body: { slug: 'REPLACE-WITH-A-SLUG' },
         request: ['JSON body: `slug` from /api/maps/curated-collections.'],
         response: ['`{ success, ok, message: "<n> map downloads queued." }`'],
-        implementation: 'An unknown slug queues zero downloads and says so, politely, with a 200.',
+        implementation: 'An unknown slug queues zero downloads and says so, with a 200.',
       },
       {
         id: 'maps-download-remote',
@@ -2361,7 +2361,7 @@ const apiGroups = [
         body: { url: 'https://example.com/library.zim' },
         request: ['JSON body: `url`.'],
         response: ['`{ success, ok, message }`'],
-        implementation: 'Same descriptor and checksum rules as maps.',
+        implementation: 'Same descriptor and checksum rules as /api/maps/download-remote.',
       },
       {
         id: 'zim-wikipedia',
@@ -2483,7 +2483,7 @@ const apiGroups = [
         source: 'Router.swift:256',
         request: ['None.'],
         response: ['`{ status, benchmarkId }`'],
-        implementation: 'See the next route.',
+        implementation: 'See POST /api/benchmark/run.',
       },
       {
         id: 'benchmark-run',
@@ -2496,7 +2496,7 @@ const apiGroups = [
         body: { benchmark_type: 'system' },
         request: ['JSON body: optional `benchmark_type`.'],
         response: ['201 with `{ success, job_id, benchmark_id, message }`'],
-        implementation: 'Status flips to `starting` and back to `idle` two seconds later. That is the whole benchmark.',
+        implementation: 'Status flips to `starting` and back to `idle` two seconds later. Nothing is measured.',
       },
     ],
   },
@@ -2582,7 +2582,7 @@ const apiGroups = [
         body: { action: 'link', email: 'you@example.com', displayName: 'You' },
         request: ['JSON body: `action` (`link`, `unlink`, `refresh`). For `link`: `email`, `displayName` and the three sync booleans.'],
         response: ['`{ success, message, state }`', '400 for any other action.'],
-        implementation: '`unlink` resets to `local-only`. Nothing is sent to roachnet.org by this call.',
+        implementation: '`unlink` resets to `local-only`. This call sends nothing to roachnet.org.',
         usedBy: ['RoachNet.app account settings', 'RoachNet iOS'],
       },
       {
@@ -2596,7 +2596,7 @@ const apiGroups = [
         request: ['None.'],
         response: ['`enabled`, `status` (`local-only`, `armed`, `relay-ready`, `connected`), `transportMode`, `peers`, `routes`, `joinCode`, `pairingPayload`, `controlPlane`.'],
         implementation:
-          'Called with a peer token, `joinCode` and `pairingPayload` are null. A join code lasts ten minutes and a fresh one is minted when it expires.',
+          'With a peer token, `joinCode` and `pairingPayload` come back null. A join code lasts ten minutes and a fresh one is minted when it expires.',
         usedBy: ['RoachNet.app RoachTail settings', 'RoachNet iOS'],
       },
       {
@@ -2604,14 +2604,14 @@ const apiGroups = [
         method: 'POST',
         path: '/api/companion/roachtail/pair',
         title: 'Pair a device',
-        summary: 'Trades a join code for a device token. No token needed, which is the point.',
+        summary: 'Trades a join code for a device token, so it needs no token itself.',
         handler: 'NativeRuntime.pairRoachTailPeer',
         source: 'Router.swift:231 (RoachTail.swift:489)',
         noAuth: true,
         body: { joinCode: 'ABCD-EF12-3456', peerName: 'iPhone', platform: 'iOS' },
         request: ['JSON body: `joinCode` (required), `peerName`, `platform`, optional `endpoint`, `tags`, `capabilities`.'],
         response: [
-          '`token` and `peerId` (the contract shipped phones read), `peerToken`, `bridgeUrl`, `runtimeTunnelUrl`, `state`.',
+          '`token` and `peerId` (the fields shipped phones read), `peerToken`, `bridgeUrl`, `runtimeTunnelUrl`, `state`.',
           '409 if RoachTail is off. 401 for a wrong, expired or used code.',
         ],
         implementation:
@@ -2642,7 +2642,7 @@ const apiGroups = [
         source: 'Router.swift:235 (RoachClawStatus.swift:884)',
         request: ['None.'],
         response: ['`enabled`, `status`, `folderPath` (defaults to storage), `peers`, `transportMode: "native-local"`.'],
-        implementation: 'Off until you arm it.',
+        implementation: 'Off until you enable it.',
         usedBy: ['RoachNet.app RoachSync settings', 'RoachNet iOS'],
       },
       {
@@ -2664,7 +2664,7 @@ const apiGroups = [
         method: 'POST',
         path: '/api/companion/install',
         title: 'Queue an install',
-        summary: 'The App Store install lane, for the phone and the Mac.',
+        summary: 'The RoachNet Apps install lane, for the phone and the Mac.',
         handler: 'NativeRuntime.handleCompanionInstall',
         source: 'Router.swift:236 (Downloads.swift:598)',
         body: { action: 'roachclaw-model', model: 'qwen2.5-coder:1.5b' },
@@ -2753,7 +2753,7 @@ const apiGroups = [
         path: '/api/companion/*',
         examplePath: '/api/companion/anything-else',
         title: 'Any other companion action',
-        summary: 'Every other POST under /api/companion/ gets the same polite reply.',
+        summary: 'Every other POST under /api/companion/ gets the same success reply.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:310',
         request: ['Any path under `/api/companion/` not listed above.'],
@@ -2786,15 +2786,15 @@ const apiGroups = [
         ].join('\n'),
         request: [
           'Origin must be roachnet.org or accounts.roachnet.org, or you get a 403.',
-          'JSON body: `email`, `password` (10 characters or more), `displayName` (up to 60), `captchaToken` when Turnstile is on.',
-          '`company` is a honeypot. Fill it in and you are turned away.',
+          'JSON body (16 KB at most): `email`, `password` (10 to 72 characters), `displayName` (up to 60), `captchaToken` when Turnstile is on.',
+          '`company` is a honeypot. Any value in it gets the request rejected.',
         ],
         response: [
           '`{ ok: true, requiresConfirmation, message, userId }`',
-          '409 `user_exists`. 429 if the form was submitted inhumanly fast. 503 when the backend or rate limiter is down.',
+          '400 `captcha_required`, 403 `captcha_failed`, 409 `user_exists`, 413 over 16 KB. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
         ],
         implementation:
-          'Signs up through Supabase `/auth/v1/signup` with the public key and sends a confirmation link back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
+          'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
       },
       {
         id: 'roachclaw-web-chat',
@@ -2812,12 +2812,13 @@ const apiGroups = [
         ].join('\n'),
         request: [
           '`authorization: Bearer <Supabase access token>`.',
+          'A browser Origin other than roachnet.org or accounts.roachnet.org gets a 403. Calls with no Origin header, like curl, still need the token.',
           'JSON body: `message` (required), `threadId`, `bridgeUrl`, `bridgeToken`, `bridgeLabel`.',
           '`bridgeUrl` must be on the deploy’s allow-list.',
         ],
         response: [
           '`{ ok, thread, userMessage, assistantMessage, provider, model }`',
-          '401 without a valid session. 404 for a thread that is not yours. 503 when web chat is not armed. 500 if the reply fails.',
+          '400 for a bad `threadId` or bridge address. 401 without a valid session. 404 for a thread that is not yours. 413 over 64 KB. 429 `rate_limited` after 20 messages in 10 minutes or 200 in a day. 503 when web chat is off or the limiter is down. 500 if the reply fails.',
         ],
         implementation:
           'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: a small open model running inside the function.',
@@ -3305,7 +3306,7 @@ function hydrateFromHash({ initial = false } = {}) {
   const route = routeIndex.get(id)
   if (!route) {
     if (/^[a-z0-9-]+$/.test(id) && !document.getElementById(id)) {
-      showNotice(`There is no route called “${id}” in 1.0.6. It may have left with the Node runtime.`)
+      showNotice(`No route called “${id}” in 1.0.6. It may have left with the Node runtime. Try the search above.`)
     }
     return
   }
@@ -3570,7 +3571,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="api-start__grid">
           <article class="api-start__card">
             <h3 class="nx-h3">Loopback API</h3>
-            <p class="nx-prose">It takes a fresh port on every launch and writes it down for you. This sets <code>$ROACHNET</code> for every example on this page.</p>
+            <p class="nx-prose">It takes a fresh port on every launch and writes it to a state file. The first line below sets <code>$ROACHNET</code> for every example on this page.</p>
             <div class="nx-console api-console">
               <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
               <div class="nx-console__body">
@@ -3602,7 +3603,7 @@ This root is reconciled byte-for-byte from the current production source.
             <h3 class="nx-h3">House rules</h3>
             <ul class="api-rules">
               <li><strong>JSON means JSON.</strong> Bodies must say <code>content-type: application/json</code>. Anything else gets a 415. That is CSRF protection, not pedantry.</li>
-              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a rebinding web page can’t read your Mac.</li>
+              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a page using DNS rebinding can’t read your Mac.</li>
               <li><strong>Errors are boring.</strong> <code>{ "error": "…" }</code> with a real status code.</li>
               <li><strong>Small bodies.</strong> 1 MB on the loopback API, 2 MB through the bridge.</li>
               <li><strong>Setup keeps to itself.</strong> Its service runs only while Setup is open, on a port only Setup knows. To try it by hand, start <code>roachnet-runtime --setup</code> with <code>ROACHNET_SETUP_PORT=38080</code> and set <code>SETUP=http://127.0.0.1:38080</code>.</li>
@@ -3788,7 +3789,7 @@ This root is reconciled byte-for-byte from the current production source.
     <main class="nx-main st-main" id="apps-main" tabindex="-1">
       <section class="st-head" aria-labelledby="apps-title">
         <div class="st-head__copy">
-          <p class="nx-overline">RoachNet Apps <span class="st-head__count" data-store-total>323 installs</span></p>
+          <p class="nx-overline">RoachNet Apps <span class="st-head__count" data-store-total>325 installs</span></p>
           <h1 class="st-head__title" id="apps-title">Pick the pack. <span class="nx-accent">Know where it lands.</span></h1>
           <p class="nx-lede st-head__lede">
             Maps, local models, offline libraries and voice packs that hand straight to RoachNet on your Mac. Every one says how big it is, where it comes from and which part of the app it lands in. Nothing to unzip. Nothing lost in Downloads.
@@ -4045,7 +4046,7 @@ const sectionDefinitions = [
     key: 'Science & Simulations',
     navLabel: 'Science',
     eyebrow: 'Lab shelf',
-    title: 'Science for the curious machine.',
+    title: 'Physics, chemistry, biology and space.',
     description: 'Physics, astronomy, chemistry, biology and interactive simulations you can poke at offline.',
     icon: 'LAB',
     group: 'Library',
@@ -4054,8 +4055,8 @@ const sectionDefinitions = [
     key: 'Kids & Family',
     navLabel: 'Kids',
     eyebrow: 'Family shelf',
-    title: 'Shelves for a machine other people use too.',
-    description: 'Story collections, lighter encyclopedias and family reading.',
+    title: 'Reading for kids, answers for parents.',
+    description: 'Picture books, a kid-friendly encyclopedia and parenting Q&A.',
     icon: 'KID',
     group: 'Library',
   },
@@ -4092,7 +4093,7 @@ const sectionDefinitions = [
     navLabel: 'Words',
     eyebrow: 'Language shelf',
     title: 'Writing, language and quotations.',
-    description: 'Editing, reading, language learning and linguistics shelves for a machine that writes a lot.',
+    description: 'Editing, reading, language learning and linguistics shelves for people who write a lot.',
     icon: 'TXT',
     group: 'Library',
   },
@@ -4128,7 +4129,7 @@ const sectionDefinitions = [
     navLabel: 'Homestead',
     eyebrow: 'Self-reliance',
     title: 'Energy, growing and building it yourself.',
-    description: 'Longer-lived shelves for sustainability, field fixes and real-world making.',
+    description: 'Sustainability wikis, energy systems and field manuals for fixing and building things yourself.',
     icon: 'HME',
     group: 'Library',
   },
@@ -4174,7 +4175,7 @@ const sectionDefinitions = [
     navLabel: 'Security',
     eyebrow: 'Defense shelf',
     title: 'Security reference for the machine you trust.',
-    description: 'Threat models, Tor, defensive work and reverse engineering, readable without a tab staying open.',
+    description: 'Threat models, Tor, defensive work and reverse engineering, readable offline.',
     icon: 'SEC',
     group: 'Library',
   },
@@ -4201,7 +4202,7 @@ const sectionDefinitions = [
     navLabel: 'Infra',
     eyebrow: 'Infra shelf',
     title: 'Networks, servers and operations.',
-    description: 'Docs for operators and builders who expect the machine to keep working when the hosted tools do not.',
+    description: 'Server, database, container and network docs that stay readable when the hosted ones go down.',
     icon: 'NET',
     group: 'Library',
   },
@@ -4237,7 +4238,7 @@ const sectionDefinitions = [
     navLabel: 'Library',
     eyebrow: 'Deep reference',
     title: 'Dictionaries and primary sources.',
-    description: 'Wordbooks, source texts and very large public-domain archives, for when the vault should feel like a reading room.',
+    description: 'Wordbooks, source texts and very large public-domain archives, for when your Mac should feel like a reading room.',
     icon: 'LIB',
     group: 'Library',
   },
@@ -4268,7 +4269,7 @@ const sectionDefinitions = [
     eyebrow: 'Settings › Packs',
     title: 'Feature packs for RoachNet 1.1.',
     description:
-      'RoachNet 1.1 ships a core of about 31 MB and installs the rest on demand. Packs are checksum-verified, installed transactionally and removable without losing your data. They need 1.1, which is still in the workshop.',
+      'RoachNet 1.1 ships a core of about 31 MB and installs the rest on demand. Packs are checked against their SHA-256, installed all-or-nothing and removable without losing your data. They need 1.1, which is still in the workshop.',
     short: 'Pieces of RoachNet 1.1 you add when you want them. They need 1.1, which is still in the workshop.',
     rowEyebrow: 'New for 1.1',
     icon: 'PCK',
@@ -4317,7 +4318,7 @@ const todayRows = [
     ],
   },
   {
-    eyebrow: 'Editors’ picks',
+    eyebrow: 'Hand-picked',
     title: 'Worth the disk space.',
     note: 'Study shelves, deep reference and RoachClaw picks for the second weekend.',
     sections: [
@@ -4350,10 +4351,10 @@ const searchSuggestions = ['python', 'medicine', 'wikipedia', 'voice', 'linux', 
 const itemCopy = {
   'course-wikibooks_en_all_nopic': {
     blurb:
-      'Open textbooks for math, science, computing, languages, and more, all pulled into one clean study shelf.',
+      'Open textbooks for math, science, computing, languages and more, on one study shelf.',
     detail: [
-      'Good for brushing up on core subjects or wandering into something new at 2 AM without ending up in a maze of tabs.',
-      'Wikibooks installs as its own RoachNet course app, so it shows up in Education as a single named library instead of a mess of separate files.',
+      'Good for brushing up on the basics, or wandering into something new at 2 AM, minus the maze of tabs.',
+      'It installs as one named library in Education, not a pile of separate files.',
     ],
   },
   'course-wikiversity_en_all_maxi': {
@@ -4361,23 +4362,23 @@ const itemCopy = {
       'Community-built courses and tutorials that feel more like guided paths than isolated articles.',
     detail: [
       'Wikiversity is good when you want the “walk me through it” version instead of a dry reference page.',
-      'It lands in Education as a distinct study shelf with tutorials, course outlines, and practice-oriented material.',
+      'Tutorials, course outlines and practice material, on their own shelf in Education.',
     ],
   },
   'course-ted_mul_ted-ed': {
     blurb:
-      'Short, tightly-produced lessons on specific ideas, from black holes to literary devices and historical weirdness.',
+      'Short, well-made lessons on one idea at a time, from black holes to literary devices to odd corners of history.',
     detail: [
-      'TED-Ed is the quick-hit study shelf: concise explainers, clean pacing, and just enough polish to keep the learning shelf lively.',
-      'It works well as a lightweight watch-later install inside the RoachNet vault.',
+      'The quick-hit shelf: short explainers that suit a coffee break better than a semester.',
+      'A watch-later list that doesn’t need a connection.',
     ],
   },
   'course-openmusictheory.com_en_all': {
     blurb:
-      'Harmony, notation, rhythm, and ear-training in one clean music-theory shelf.',
+      'Harmony, notation, rhythm and ear training, in one music-theory course.',
     detail: [
       'Open Music Theory is useful for production, arranging, scoring, and the occasional “wait, what chord am I actually hearing?” moment.',
-      'It installs as a real course app in the audio/education shelf instead of hiding in a generic provider bundle.',
+      'It gets its own shelf under Audio, not a spot in a generic bundle.',
     ],
   },
   'base-atlas': {
@@ -4390,11 +4391,11 @@ const itemCopy = {
   },
   'map-pacific': {
     blurb:
-      'A full Pacific rim atlas: West Coast city grids, mountain passes, shoreline routes, and the big empty stretches between them.',
+      'Alaska, California, Hawaii, Oregon and Washington: city grids, mountain passes and the big empty stretches between.',
   },
   'map-mountain': {
     blurb:
-      'Mountain West coverage from ski towns and canyon roads to high-desert connectors and all the strange mileage in between.',
+      'Ski towns, canyon roads and high desert across eight states, Montana down to New Mexico.',
   },
   'map-west-south-central': {
     blurb:
@@ -4402,35 +4403,35 @@ const itemCopy = {
   },
   'map-east-south-central': {
     blurb:
-      'Backroads, river crossings, and hill-country routes for four linked states that often share the same drives and supply chains.',
+      'Back roads, river crossings and hill country across Alabama, Kentucky, Mississippi and Tennessee.',
   },
   'map-south-atlantic': {
     blurb:
-      'Coastal sprawl, hurricane corridors, and inland connectors running from Delaware down through Florida.',
+      'Coastal sprawl, hurricane routes and inland connectors from Delaware down to Florida, DC included.',
   },
   'map-west-north-central': {
     blurb:
-      'A classic flyover pack: grain routes, rail towns, river cities, and a lot of straight lines done properly.',
+      'Grain routes, rail towns, river cities and some very straight roads across seven states, the Dakotas to Missouri.',
   },
   'map-east-north-central': {
     blurb:
-      'Lake shoreline cities, industrial belts, and the connector towns that hold the middle of the region together.',
+      'Great Lakes cities, factory towns and county roads across Illinois, Indiana, Michigan, Ohio and Wisconsin.',
   },
   'map-mid-atlantic': {
     blurb:
-      'Dense Northeast corridors, upstate routes, and the weird stuff between exits from New Jersey through Pennsylvania.',
+      'Dense corridors, upstate routes and a great many exits, across New Jersey, New York and Pennsylvania.',
   },
   'map-new-england': {
     blurb:
-      'Coastal towns, mountain roads, and small-state border crossings from Connecticut up through northern Maine.',
+      'Coastal towns, mountain roads and a lot of state lines, from Connecticut up to northern Maine.',
   },
   'course-zimgit-medicine_en': {
     blurb:
-      'Field and emergency medicine books and guides: trauma care, assessment checklists, treatment steps, and reference tables in one package.',
+      'Field and emergency medicine books: trauma care, assessment checklists, treatment steps and reference tables.',
   },
   'course-nhs.uk_en_medicines': {
     blurb:
-      'Drug monographs laid out clearly: what each medicine does, when it is used, typical doses, side effects, and interaction notes.',
+      'What each medicine does, when it’s used, typical doses, side effects and interactions, from the NHS.',
   },
   'course-fas-military-medicine_en': {
     blurb:
@@ -4442,27 +4443,27 @@ const itemCopy = {
   },
   'course-medlineplus.gov_en_all': {
     blurb:
-      'NIH reference on conditions, symptoms, procedures, drugs, supplements, and wellness topics in one encyclopedia-style shelf.',
+      'The NIH’s plain-language encyclopedia of conditions, symptoms, procedures, drugs and supplements.',
   },
   'course-wikipedia_en_medicine_maxi': {
     blurb:
-      'Picked-through Wikipedia medical articles with images kept where they actually help: conditions, anatomy, procedures, and pathologies.',
+      'A curated set of Wikipedia’s medical articles, images included: conditions, anatomy, procedures and pathology.',
   },
   'course-libretexts.org_en_med': {
     blurb:
-      'Course-style medical textbooks on systems, pathophysiology, diagnostics, and treatment chapters laid out like a proper curriculum.',
+      'Medical textbooks on body systems, pathophysiology, diagnostics and treatment, laid out like a curriculum.',
   },
   'course-librepathology_en_all_maxi': {
     blurb:
-      'Microscopic findings, disease patterns, differential tables, and pathology case write-ups in one tight specialist shelf.',
+      'Microscopic findings, disease patterns, differential tables and case write-ups for pathology.',
   },
   'course-canadian_prepper_winterprepping_en': {
     blurb:
-      'A focused cold-weather shelf for layering systems, shelter choices, heating, vehicle prep, and what realistically fails first in deep winter.',
+      'Cold-weather video guides: layering, shelter, heating, vehicle prep and what tends to fail first in deep winter.',
   },
   'course-canadian_prepper_bugoutroll_en': {
     blurb:
-      'A gear-first shelf for packs, pouches, rolls, and how to build a setup where everything has a clear job.',
+      'Gear videos on packs, pouches and rolls, and how to build a kit where everything has a job.',
   },
   'course-canadian_prepper_bugoutconcepts_en': {
     blurb:
@@ -4470,19 +4471,19 @@ const itemCopy = {
   },
   'course-urban-prepper_en_all': {
     blurb:
-      'City-focused scenarios: outages, supply shocks, protests, elevators that stop, and how to navigate dense environments when systems stutter.',
+      'City scenarios: outages, supply shocks, protests, elevators that stop and getting around when the systems stutter.',
   },
   'course-canadian_prepper_preppingfood_en': {
     blurb:
-      'Storage methods, staple choices, rotation systems, and actual meal ideas built around prep, not restaurant cooking.',
+      'Storage methods, staples, rotation and meal ideas built around the pantry, not the restaurant.',
   },
   'course-gutenberg_en_lcc-u': {
     blurb:
-      'Doctrine-era texts on tactics, campaigns, field craft, and command; more how armies move and think than quote-poster military history.',
+      'Classic texts on tactics, campaigns, fieldcraft and command: how armies move and think, not quote-poster history.',
   },
   'course-libretexts.org_en_math': {
     blurb:
-      'A full math sequence in one shelf: algebra, trig, calculus, linear algebra, stats, and more, laid out like a real course track.',
+      'A full math sequence: algebra, trig, calculus, linear algebra, stats and more, in course order.',
   },
   'course-libretexts.org_en_phys': {
     blurb:
@@ -4498,11 +4499,11 @@ const itemCopy = {
   },
   'course-wikibooks_en_all_maxi': {
     blurb:
-      'The image-rich Wikibooks shelf, keeping diagrams, figures, and illustrations where they actually teach something.',
+      'Wikibooks with every diagram, figure and illustration left in. Bigger, and better for anything visual.',
   },
   'course-ted_mul_ted-conference': {
     blurb:
-      'Flagship TED talks across science, design, policy, culture, and human stories; a good ideas shelf for background watching.',
+      'The main-stage TED talks: science, design, policy, culture and people. Good for background watching.',
   },
   'course-libretexts.org_en_human': {
     blurb:
@@ -4514,7 +4515,7 @@ const itemCopy = {
   },
   'course-libretexts.org_en_eng': {
     blurb:
-      'Statics, circuits, fluids, materials, and other engineering fundamentals organized like a proper program track.',
+      'Statics, circuits, fluids, materials and other engineering fundamentals, laid out like a degree program.',
   },
   'course-libretexts.org_en_business': {
     blurb:
@@ -4685,7 +4686,7 @@ function updateConnectivity() {
   if (!connectivityNode) return
   const isOnline = navigator.onLine
   connectivityNode.dataset.state = isOnline ? 'online' : 'offline'
-  connectivityNode.textContent = isOnline ? 'Online. Installs can start right away.' : 'You are offline. Installs need a connection to download.'
+  connectivityNode.textContent = isOnline ? 'Online. Installs can start right away.' : 'You’re offline. Installs need a connection; what’s installed still works.'
 }
 
 function startTelemetry() {
@@ -4762,7 +4763,7 @@ function attemptNativeInstall(url) {
   fallbackTimer = window.setTimeout(() => {
     if (completed) return
     clearFallback()
-    window.location.href = 'https://roachnet.org/#downloads'
+    window.location.href = 'https://roachnet.org/home/#downloads'
   }, 1400)
 
   window.location.href = url
@@ -4798,17 +4799,17 @@ function landingFor(item, section) {
   switch (action) {
     case 'base-map-assets':
     case 'map-collection':
-      return { place: 'Maps', note: 'One file per state in ~/RoachNet/storage/maps, checked against its SHA-256.' }
+      return { place: 'Maps', note: 'One file per state or territory in ~/RoachNet/storage/maps, each checked against its SHA-256.' }
     case 'direct-download':
       return item.installIntent?.filetype === 'map'
         ? { place: 'Maps', note: 'One map file in ~/RoachNet/storage/maps, checked against its SHA-256.' }
         : { place: 'Downloads lane', note: 'Fetched by RoachNet from the descriptor and filed with your other installs.' }
     case 'education-tier':
-      return { place: 'A shelf per pack', note: 'One install queues every shelf in the stack. Each one keeps its own name.' }
+      return { place: 'One shelf each', note: 'One install queues every shelf in the stack. Each one keeps its own name.' }
     case 'education-resource':
       return { place: `${section.navLabel} shelf`, note: 'Lands as its own named shelf you can read offline.' }
     case 'wikipedia-option':
-      return { place: 'Wikipedia', note: 'Queued straight into the RoachNet Wikipedia lane.' }
+      return { place: 'Wikipedia', note: 'Queued straight into RoachNet’s Wikipedia library.' }
     case 'roachclaw-model':
       return { place: 'RoachClaw', note: 'Joins the RoachClaw model list and runs on your Mac.' }
     case 'roachspeech-pack':
@@ -5024,7 +5025,7 @@ function renderHero(item) {
         ${body ? `<p class="st-hero__body">${escapeHtml(body)}</p>` : ''}
         <div class="st-hero__actions">
           ${renderInstallControl(item, 'hero')}
-          <button class="nx-btn st-hero__more" type="button" data-preview-id="${escapeHtml(item.id)}" aria-haspopup="dialog">See what is inside</button>
+          <button class="nx-btn st-hero__more" type="button" data-preview-id="${escapeHtml(item.id)}" aria-haspopup="dialog">See what’s inside</button>
         </div>
       </div>
       <div class="st-hero__art">
@@ -5401,7 +5402,7 @@ function renderDetail(item) {
   const artifact = item.artifact || {}
   const artifactUrl = artifact.url || item.installIntent?.mirrorUrl || item.installIntent?.url || ''
   const detailHref = safeHref(item.detailUrl || item.primaryUrl)
-  const includes = item.includes?.length ? item.includes : ['Direct native install handoff into the right RoachNet section.']
+  const includes = item.includes?.length ? item.includes : ['Installs straight into the right part of RoachNet.']
   // Unavailable / unsupported items explain themselves next to the disabled
   // install control; the notice is only for the 1.1 requirement.
   const notice = item.state === 'ready' && item.minimum
@@ -5457,7 +5458,7 @@ function renderDetail(item) {
           ${factRow('Tier', item.tier)}
           ${factRow('Needs', item.minimumRoachNet ? `RoachNet ${item.minimumRoachNet} or later` : '')}
           ${factRow('Source', item.source || 'RoachNet mirror')}
-          ${factRow('Artifact lane', item.artifactLabel)}
+          ${factRow('How it installs', item.artifactLabel)}
           ${factRow('Provider', artifact.provider || item.installIntent?.artifactProvider || 'RoachNet catalog')}
           ${factRow('Object key', artifact.key || item.installIntent?.artifactKey, { mono: true })}
           ${factRow('Download URL', artifactUrl, { href: artifactUrl, mono: true })}
@@ -5531,7 +5532,7 @@ async function copyItemLink(button) {
       if (label) label.textContent = 'Copy link'
     }, 1800)
   } catch {
-    showToast(`Copy this by hand: ${url}`)
+    showToast(`Couldn’t copy. Here’s the link: ${url}`)
   }
 }
 
@@ -5947,7 +5948,7 @@ This root is reconciled byte-for-byte from the current production source.
         </ol>
         <div class="nx-actions nx-mt-32">
           <button class="nx-btn nx-btn--primary" data-homebrew-install type="button">Install with Homebrew</button>
-          <a class="nx-btn" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">Use the Setup app instead</a>
+          <a class="nx-btn" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">Download RoachNet Setup instead</a>
         </div>
       </section>
 
@@ -5960,7 +5961,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">App bundle</p>
             <h3 class="nx-card__title"><code>~/RoachNet/app/RoachNet.app</code></h3>
-            <p class="nx-card__body">The same app the Setup app installs, cleared so macOS opens it without an argument. The Setup app itself stays in <code>~/RoachNet/setup</code> for repairs.</p>
+            <p class="nx-card__body">The same app the Setup app installs, cleared so macOS opens it without a fight. The Setup app itself stays in <code>~/RoachNet/setup</code> for repairs.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Storage root</p>
@@ -5989,7 +5990,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Native installer</p>
             <h3 class="nx-card__title">The cask runs RoachNet's own Swift installer.</h3>
-            <p class="nx-card__body">Preflight checks, a smoke test, and a swap that keeps your storage. No Node, no source tree, nothing global.</p>
+            <p class="nx-card__body">Preflight checks, a smoke test and a swap that keeps your storage. No Node, no source tree, nothing global.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Launch-safe</p>
@@ -6013,7 +6014,7 @@ This root is reconciled byte-for-byte from the current production source.
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Identical either way</p>
-            <h3 class="nx-card__title">Same API and same behaviour as the Setup app install.</h3>
+            <h3 class="nx-card__title">Same API and same behavior as the Setup app install.</h3>
             <p class="nx-card__body">Only the route is different.</p>
           </article>
         </div>
@@ -6187,7 +6188,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="nx-overline">RoachNet 1.0.6 for macOS</p>
           <h1 class="nx-display nx-display--xl" id="hero-title">Everything you need, <span class="nx-accent">where you left it.</span></h1>
           <p class="nx-lede">
-            Local AI, code, maps, media, games and your vault in one native Mac app, with RoachClaw a shortcut or a spoken word away. Offline on purpose, not by chance.
+            Local AI, code, maps, media, games and your vault in one native Mac app. Offline on purpose, not by chance.
           </p>
           <div class="nx-actions">
             <button class="nx-btn nx-btn--primary" id="primary-download" type="button">Download RoachNet 1.0.6 for macOS</button>
@@ -6202,7 +6203,7 @@ This root is reconciled byte-for-byte from the current production source.
           <ul class="nx-status" aria-label="Live status">
             <li data-state="pending" data-hero-time>--:--</li>
             <li data-state="pending" data-hero-connectivity>Checking connection</li>
-            <li data-state="pending" data-hero-storage>Checking free space</li>
+            <li data-state="pending" data-hero-storage>Checking browser storage</li>
           </ul>
           <ul class="nx-links" aria-label="RoachNet utility links">
             <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Homebrew details</a></li>
@@ -6247,7 +6248,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="nx-section__head">
           <p class="nx-overline">Why RoachNet</p>
           <h2 class="nx-h2" id="features-title">Offline on purpose. Not by chance.</h2>
-          <p class="nx-lede">One folder on your machine. Easier to trust, easier to move, and still useful when the network stops pretending.</p>
+          <p class="nx-lede">Built to stay useful when the network stops pretending.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--tilt nx-reveal" role="listitem">
@@ -6308,7 +6309,7 @@ This root is reconciled byte-for-byte from the current production source.
             <div class="nx-shot__copy">
               <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachClaw</p>
               <h3 class="nx-card__title">The local AI workbench.</h3>
-              <p class="nx-card__body">Run models on your own machine, switch between them, see exactly what's loaded, and pull in project context without playing prompt telephone. A shortcut or a spoken word away.</p>
+              <p class="nx-card__body">Run models on your own machine, switch between them, see exactly what's loaded and pull in project context without playing prompt telephone. A shortcut or a spoken word away.</p>
             </div>
           </article>
           <article class="nx-card nx-shot nx-reveal" role="listitem">
@@ -6319,7 +6320,7 @@ This root is reconciled byte-for-byte from the current production source.
             <div class="nx-shot__copy">
               <p class="nx-card__eyebrow">Vault</p>
               <h3 class="nx-card__title">Your library, offline.</h3>
-              <p class="nx-card__body">Notes, maps, courses, books, saved web pages, music, video, and anything you've installed from RoachNet Apps. Part library, part workshop, entirely yours.</p>
+              <p class="nx-card__body">Notes, maps, courses, books, saved web pages, music, video and anything you've installed from RoachNet Apps. Part library, part workshop, entirely yours.</p>
             </div>
           </article>
           <article class="nx-card nx-shot nx-reveal" role="listitem">
@@ -6340,7 +6341,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="nx-section__head">
           <p class="nx-overline">Where it fits</p>
           <h2 class="nx-h2" id="fit-title">Where it actually helps.</h2>
-          <p class="nx-lede">For people who want their files, tools and context to keep working when the internet doesn't. If you like owning your hardware and your data, you're in the right place.</p>
+          <p class="nx-lede">For people who want their files, tools and context to keep working when the internet doesn't.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-reveal" role="listitem">
@@ -6377,7 +6378,7 @@ This root is reconciled byte-for-byte from the current production source.
           <a class="nx-card nx-card--clickable nx-reveal" role="listitem" href="https://apps.roachnet.org/#medicine">
             <p class="nx-card__eyebrow">Medicine</p>
             <h3 class="nx-card__title">Remedies, treatments and references for people who prepare.</h3>
-            <p class="nx-card__body">Instead of trusting search results under pressure.</p>
+            <p class="nx-card__body">So you're not trusting search results under pressure.</p>
             <p class="nx-card__foot nx-link nx-link--arrow">Browse</p>
           </a>
           <a class="nx-card nx-card--clickable nx-reveal" role="listitem" href="https://apps.roachnet.org/#dev">
@@ -6412,7 +6413,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow nx-card__eyebrow--cyan">RoachClaw</p>
             <h3 class="nx-card__title">A local AI for your code, notes and everything between.</h3>
-            <p class="nx-card__body">One shortcut or one spoken word away. No API keys, no cloud required.</p>
+            <p class="nx-card__body">A shortcut or a spoken word away, on models you picked. No API keys, no cloud.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Dev Studio</p>
@@ -6422,7 +6423,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Maps &amp; vault</p>
             <h3 class="nx-card__title">Plan the trip, sketch the route, keep the map.</h3>
-            <p class="nx-card__body">Open the map pack, ask RoachClaw to rough out the route, and let RoachAtlas handle the turns. Same app, no tab-hopping.</p>
+            <p class="nx-card__body">Open the map pack, ask RoachClaw to rough out the route and let RoachAtlas handle the turns. Same app, no tab-hopping.</p>
           </article>
         </div>
       </section>
@@ -6452,7 +6453,7 @@ This root is reconciled byte-for-byte from the current production source.
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Phone pairing</p>
-            <h3 class="nx-card__title">RoachNet iOS 0.2.0 works against the new engine.</h3>
+            <h3 class="nx-card__title">RoachNet iOS 0.2.0 works with the new engine.</h3>
             <p class="nx-card__body">RoachTail pairing, RoachClaw chat and service controls from your phone.</p>
           </article>
           <article class="nx-card nx-card--signal nx-reveal" role="listitem">
@@ -6467,7 +6468,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="nx-section__head">
           <p class="nx-overline">Download</p>
           <h2 class="nx-h2" id="downloads-title">Get it on your machine.</h2>
-          <p class="nx-lede">Installer or Homebrew, the ending is the same: RoachNet on hardware you own, in a folder you can back up, move or delete in one drag.</p>
+          <p class="nx-lede">Installer or Homebrew, same ending: RoachNet in one folder, on a Mac you own.</p>
         </div>
         <div class="nx-grid nx-grid--2 nx-downloads">
           <button class="nx-card nx-card--feature nx-card--clickable download-hero-card nx-reveal" data-platform="mac" type="button">
@@ -6500,7 +6501,7 @@ This root is reconciled byte-for-byte from the current production source.
           </a>
         </div>
         <p class="nx-prose nx-mt-24" id="homebrew-note">
-          Mac only. Browsers can't open Terminal, so the Homebrew button downloads a small helper that opens it and runs the install. Read it first; we'd think more of you for it.
+          Mac only. Browsers can't open Terminal, so Install with Homebrew downloads a small helper that runs there, adds Homebrew if it's missing, then installs RoachNet. Read it before you run it; it's short.
         </p>
         <div class="nx-actions nx-mt-24">
           <button class="nx-btn nx-btn--primary" id="downloads-primary" type="button">Download RoachNet 1.0.6 for macOS</button>
@@ -6513,7 +6514,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="nx-band nx-reveal">
           <p class="nx-overline nx-overline--purple">Independent</p>
           <h2 class="nx-h2 nx-mt-16" id="support-title">Made by one stubborn Roach, for people who keep their own machines.</h2>
-          <p class="nx-lede nx-mt-16 nx-content">RoachNet is made by RoachWares LLC: one person, one company, no committee. It exists because someone wanted it badly enough to build it, and it keeps improving because people like you show up.</p>
+          <p class="nx-lede nx-mt-16 nx-content">RoachWares LLC is one person, one company, no committee. RoachNet exists because someone wanted it badly enough to build it, and it keeps getting better because people like you show up.</p>
           <div class="nx-actions nx-actions--center nx-mt-32">
             <a class="nx-btn nx-btn--primary" href="https://www.roachwares.org/">Meet RoachWares</a>
             <a class="nx-btn" href="https://www.paypal.com/ncp/payment/ZV8RL9DWQXHGE" target="_blank" rel="noreferrer">Chip in</a>
@@ -6971,7 +6972,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RoachNet iOS: RoachNet in your pocket</title>
-    <meta name="description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/ios/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -6980,12 +6981,12 @@ This root is reconciled byte-for-byte from the current production source.
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="RoachNet iOS: RoachNet in your pocket" />
-    <meta property="og:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta property="og:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
     <meta property="og:url" content="https://roachnet.org/ios/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="RoachNet iOS: RoachNet in your pocket" />
-    <meta name="twitter:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="twitter:description" content="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="preload" as="image" href="../assets/screens/roachnet-ios-020-home.webp" />
@@ -7036,7 +7037,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="nx-overline">RoachNet iOS 0.2.0 · iPhone &amp; iPad</p>
           <h1 class="nx-display nx-display--xl" id="hero-title">RoachNet <span class="nx-accent">in your pocket.</span></h1>
           <p class="nx-lede">
-            Your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
+            Your Mac's RoachClaw, library and vault on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
           </p>
           <div class="nx-actions">
             <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download RoachNet iOS 0.2.0</a>
@@ -7045,7 +7046,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="nx-hero__meta">
             <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.6 for Mac</span>
           </p>
-          <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store account, no RoachNet account, nobody in the middle.</p>
+          <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store, no RoachNet account, nobody in the middle.</p>
           <ul class="nx-chips" aria-label="What's in the app">
             <li class="nx-chip nx-chip--mono">Home</li>
             <li class="nx-chip nx-chip--mono">RoachClaw</li>
@@ -7092,7 +7093,7 @@ This root is reconciled byte-for-byte from the current production source.
             </div>
             <p class="nx-card__eyebrow">Home · new</p>
             <h3 class="nx-card__title">Your Mac's vital signs at a glance.</h3>
-            <p class="nx-card__body">Which brain is loaded, what's on the shelves, whether RoachTail is up, and what your agents are waiting on. One look before you put the phone back.</p>
+            <p class="nx-card__body">Which brain is loaded, what's on the shelves, whether RoachTail is up and what your agents are waiting on. One look before you put the phone back.</p>
           </article>
           <article class="nx-card nx-phone-card nx-reveal" role="listitem">
             <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
@@ -7140,8 +7141,8 @@ This root is reconciled byte-for-byte from the current production source.
       <section class="nx-section" id="features" aria-labelledby="features-title">
         <div class="nx-section__head">
           <p class="nx-overline">What's new in 0.2.0</p>
-          <h2 class="nx-h2" id="features-title">A new look, a Home tab, and your agents on call.</h2>
-          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for the agent company coming in 1.1.</p>
+          <h2 class="nx-h2" id="features-title">A new look, a Home tab and your agents on call.</h2>
+          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for RoachClaw Org in 1.1.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--feature nx-reveal" role="listitem">
@@ -7194,7 +7195,7 @@ This root is reconciled byte-for-byte from the current production source.
       <section class="nx-section" id="install" aria-labelledby="install-title">
         <div class="nx-section__head">
           <p class="nx-overline">Install</p>
-          <h2 class="nx-h2" id="install-title">SideStore and AltStore, with the routes labeled.</h2>
+          <h2 class="nx-h2" id="install-title">Install with SideStore or AltStore.</h2>
           <p class="nx-lede">Add the RoachNet source once and updates show up on their own, or grab the IPA directly. Same build either way.</p>
         </div>
         <div class="nx-grid nx-grid--2">
@@ -7203,7 +7204,7 @@ This root is reconciled byte-for-byte from the current production source.
             <h3 class="nx-card__title">Add the source, or hand SideStore the IPA directly.</h3>
             <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to SideStore</a>
+              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
               <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
             </div>
@@ -7220,7 +7221,7 @@ This root is reconciled byte-for-byte from the current production source.
             <h3 class="nx-card__title">Use the same RoachNet source in AltStore.</h3>
             <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to AltStore</a>
+              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
               <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
             </div>
@@ -7229,7 +7230,7 @@ This root is reconciled byte-for-byte from the current production source.
             <ol class="nx-steps nx-mt-16">
               <li class="nx-step"><strong>Install AltStore and keep AltServer available on your Mac.</strong></li>
               <li class="nx-step"><strong>Add the RoachNet source URL, then install RoachNetiOS from AltStore.</strong></li>
-              <li class="nx-step"><strong>Refresh before the 7-day signature runs out, then pair your Mac on first launch.</strong></li>
+              <li class="nx-step"><strong>Pair your Mac on first launch. Refresh before the 7-day signature runs out.</strong></li>
             </ol>
           </article>
         </div>
@@ -7239,7 +7240,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="nx-section__head">
           <p class="nx-overline">Pairing</p>
           <h2 class="nx-h2" id="pairing-title">Pair once. The phone stays useful.</h2>
-          <p class="nx-lede">Your Mac keeps the models, the vault and the installs. The phone stays fast because it isn't trying to be a second desktop.</p>
+          <p class="nx-lede">Your Mac keeps the models, the vault and the installs. The phone is fast because it isn't trying to be a second desktop.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--signal nx-reveal" role="listitem">
@@ -7250,7 +7251,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Alias</p>
             <h3 class="nx-card__title"><code>https://roachnet.roachtail</code> is the front door.</h3>
-            <p class="nx-card__body">Or just scan the code on your Mac. Either way this device gets its own key.</p>
+            <p class="nx-card__body">Type it in if you'd rather not scan the code.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Fallback</p>
@@ -19251,7 +19252,7 @@ if (root) {
 
     if (hint) {
       hint.textContent = !authState?.enabled
-        ? 'Sign-in is off on this deploy'
+        ? "Sign-in isn't available here"
         : session?.user
           ? 'Hosted model'
           : 'Sign in to send'
@@ -19428,7 +19429,7 @@ if (root) {
       .single()
 
     if (error || !data) {
-      throw new Error(error?.message || 'Could not start a new conversation.')
+      throw new Error(error?.message || "RoachClaw couldn't start a new conversation. Try again in a moment.")
     }
 
     threads = [data, ...threads]
@@ -19591,7 +19592,7 @@ if (root) {
 
       const payload = await response.json().catch(() => ({}))
       if (!response.ok || payload?.ok !== true) {
-        throw new Error(payload?.message || 'RoachClaw could not finish the request.')
+        throw new Error(payload?.message || "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
       }
 
       activeThreadId = payload.thread?.id || activeThreadId
@@ -19630,7 +19631,7 @@ if (root) {
       setComposerFeedback(
         /failed to fetch|networkerror|load failed/i.test(reason)
           ? 'Could not reach RoachClaw. Your message is back in the box, so try again in a moment.'
-          : reason || 'RoachClaw could not finish that one. Try again.',
+          : reason || "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.",
         'error'
       )
     } finally {
@@ -19650,7 +19651,7 @@ if (root) {
       setGateFeedback('Sign-in is not available here yet.', 'error')
       showGate()
       setAuthBusy(true)
-      setComposerFeedback('Sign-in is not switched on for this site yet, so messages cannot be sent.', 'error')
+      setComposerFeedback("Sign-in isn't available here, so messages can't be sent. RoachClaw in the Mac app doesn't need an account.", 'error')
       renderChrome()
       return
     }
@@ -19838,7 +19839,7 @@ This root is reconciled byte-for-byte from the current production source.
     <title>RoachClaw on the web</title>
     <meta
       name="description"
-      content="RoachClaw in your browser: drafts, debugging, summaries and plain answers from a hosted model, saved to your RoachNet account. Private questions belong in the RoachNet app on your Mac."
+      content="RoachClaw in your browser: short answers and rough drafts from a small hosted model, saved to your RoachNet account. For real work and private files, use RoachClaw in the RoachNet app on your Mac."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/roachclaw/" />
@@ -19850,7 +19851,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta property="og:title" content="RoachClaw on the web" />
     <meta
       property="og:description"
-      content="Ask RoachClaw for drafts, fixes and summaries from any browser. Your conversations follow your account; your files stay on your Mac."
+      content="Short answers and rough drafts from a small hosted model, in any browser you sign in to. For real work, RoachClaw runs on your Mac."
     />
     <meta property="og:url" content="https://roachnet.org/roachclaw/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
@@ -19858,7 +19859,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:title" content="RoachClaw on the web" />
     <meta
       name="twitter:description"
-      content="Ask RoachClaw for drafts, fixes and summaries from any browser. Your conversations follow your account; your files stay on your Mac."
+      content="Short answers and rough drafts from a small hosted model, in any browser you sign in to. For real work, RoachClaw runs on your Mac."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
@@ -19969,8 +19970,8 @@ This root is reconciled byte-for-byte from the current production source.
               <section class="rc-welcome" id="roachclaw-welcome" aria-labelledby="roachclaw-welcome-title">
                 <div class="rc-welcome__intro">
                   <p class="nx-overline nx-overline--cyan">RoachClaw on the web</p>
-                  <h2 class="rc-empty-state__heading" id="roachclaw-welcome-title">What are we fixing, building or untangling today?</h2>
-                  <p class="rc-empty-state__sub">Ask for a draft, a fix or a summary. Conversations save to your account, so you can pick them up in any browser.</p>
+                  <h2 class="rc-empty-state__heading" id="roachclaw-welcome-title">What needs fixing, building or untangling today?</h2>
+                  <p class="rc-empty-state__sub">Ask a short question or for a rough draft. Conversations save to your account, so you can pick them up in any browser.</p>
                 </div>
 
                 <section class="rc-auth-gate" id="roachclaw-auth-gate" aria-labelledby="roachclaw-gate-title" hidden>
@@ -20021,7 +20022,7 @@ This root is reconciled byte-for-byte from the current production source.
                         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="5.5" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       </span>
                       <strong>Debug a problem</strong>
-                      <span>Errors, configs, surprise behaviour. Nobody blames the chair.</span>
+                      <span>Errors, configs, surprise behavior. One next step at a time.</span>
                     </button>
                     <button class="nx-card nx-card--clickable rc-starter-card" type="button" data-starter="summarize">
                       <span class="rc-starter-card__icon" aria-hidden="true">
@@ -20053,12 +20054,12 @@ This root is reconciled byte-for-byte from the current production source.
                     <article class="rc-relay__card" data-state="live">
                       <p class="rc-relay__state"><span aria-hidden="true"></span>In use here</p>
                       <h3>Hosted model</h3>
-                      <p>In the browser, RoachClaw answers with a hosted model. Each message and reply is saved to your account, so the thread is still there next time.</p>
+                      <p>In the browser, RoachClaw answers with a small hosted model, so keep it to short questions. Each message and reply is saved to your account, so the thread is still there next time.</p>
                     </article>
                     <article class="rc-relay__card" data-state="off">
                       <p class="rc-relay__state"><span aria-hidden="true"></span>Not connected</p>
                       <h3>Your Mac via RoachTail</h3>
-                      <p>This page can't reach your Mac yet. For questions about your own files, open RoachClaw in the RoachNet app, where it runs on models on your machine.</p>
+                      <p>This page can't reach your Mac yet. For questions about your own files, open RoachClaw in the RoachNet app, where it runs local models on your Mac.</p>
                       <a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Get RoachNet for macOS</a>
                     </article>
                   </div>
@@ -20084,7 +20085,7 @@ This root is reconciled byte-for-byte from the current production source.
                 </p>
                 <p class="rc-composer__hint" id="roachclaw-hint">Hosted model</p>
               </div>
-              <p class="rc-composer__disclaimer" role="status" aria-live="polite">In the browser RoachClaw uses a hosted model. For private files, ask it in the RoachNet app on your Mac.</p>
+              <p class="rc-composer__disclaimer" role="status" aria-live="polite">In the browser, RoachClaw uses a hosted model. For private files, ask it in the RoachNet app on your Mac.</p>
             </div>
           </div>
         </main>
@@ -20099,7 +20100,7 @@ This root is reconciled byte-for-byte from the current production source.
       <div class="nx-foot__grid">
         <div class="nx-foot__brand">
           <strong>RoachClaw</strong>
-          <span>Drafts, fixes and summaries in any browser. The private stuff stays in the RoachNet app on your Mac.</span>
+          <span>Quick answers and rough drafts in any browser. The private stuff stays in the RoachNet app on your Mac.</span>
           <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
         </div>
         <div class="nx-foot__col">
@@ -20227,7 +20228,7 @@ function loadSupabase() {
       script.onload = () => (window.supabase?.createClient ? resolve(window.supabase) : reject(new Error('supabase-js loaded without createClient')))
       script.onerror = () => {
         supabaseLoading = null
-        reject(new Error('Could not load the sign-in library.'))
+        reject(new Error("The sign-in code didn't load. Check your connection and reload the page."))
       }
       document.head.append(script)
     })
@@ -20350,7 +20351,7 @@ async function resolveSiteAuthState() {
       client: null,
       session: null,
       reason:
-        'Site accounts are not armed on this deploy yet. RoachTail, RoachSync, and the native runtime still stay on your own devices until this is live.',
+        "Sign-in is off on this copy of the site. RoachNet on your Mac doesn't need an account and works as usual.",
       config,
     }
   }
@@ -20486,7 +20487,7 @@ This root is reconciled byte-for-byte from the current production source.
           <h1 class="nx-display" id="hero-title">Everything, <span class="nx-accent">one page.</span></h1>
           <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
           <ul class="nx-status" aria-label="Current versions">
-            <li data-state="online">Desktop v1.0.6</li>
+            <li data-state="online">macOS v1.0.6</li>
             <li data-state="online">iOS v0.2.0</li>
             <li data-state="pending">1.1 in the workshop</li>
           </ul>
@@ -20500,8 +20501,8 @@ This root is reconciled byte-for-byte from the current production source.
             <h2 class="nx-card__title">RoachNet</h2>
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/">Mission</a><p>Why this whole thing exists.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Home</a><p>The desktop tour: screenshots, downloads, and the quick read on what RoachNet does.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://apps.roachnet.org/">Apps</a><p>Libraries, courses, field guides, voice packs and models that land straight in the app.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Home</a><p>The Mac tour: screenshots, downloads and a quick read on what RoachNet does.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://apps.roachnet.org/">Apps</a><p>Maps, libraries, courses, field guides, voice packs and models that land straight in the app.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/roachclaw/">RoachClaw</a><p>AI chat in the browser, or on your own machine when the question is nobody else's business.</p></li>
             </ul>
           </article>
@@ -20511,7 +20512,7 @@ This root is reconciled byte-for-byte from the current production source.
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">macOS installer</a><p>Start here. Built for Apple Silicon.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Homebrew</a><p>Same app, same <code>~/RoachNet</code> folder, one command in Terminal.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet iOS</a><p>SideStore and AltStore for iPhone and iPad.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet iOS</a><p>The iPhone and iPad companion, via SideStore or AltStore.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Shared iOS source</a><p>The AltSource feed used by SideStore and AltStore.</p></li>
             </ul>
           </article>
@@ -20519,7 +20520,7 @@ This root is reconciled byte-for-byte from the current production source.
             <p class="nx-card__eyebrow">On the web</p>
             <h2 class="nx-card__title">Accounts and services</h2>
             <ul class="nx-sitemap__list">
-              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Sign-in and sync settings. Everything heavy stays on your machine.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats and a short device list. The rest stays home.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/about/">About RoachWares</a><p>Who builds it, and the rules it is built by.</p></li>
@@ -20531,9 +20532,9 @@ This root is reconciled byte-for-byte from the current production source.
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">Source code and releases</a><p>Code, checksums, releases and docs, all readable before you trust any of it.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Latest release</a><p>What shipped, and when.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/wiki" target="_blank" rel="noreferrer">Wiki</a><p>Install notes, fixes for when things go sideways, and setup docs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/wiki" target="_blank" rel="noreferrer">Wiki</a><p>Install notes, setup docs and fixes for when things go sideways.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Homebrew tap</a><p>The cask, if you'd rather read it than run it.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10" target="_blank" rel="noreferrer">Map packs</a><p>Every state and territory as an offline map, with the checksum of each file.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10" target="_blank" rel="noreferrer">Map packs</a><p>Offline maps for every state, DC and territory, each with its checksum.</p></li>
             </ul>
           </article>
         </div>
@@ -22400,7 +22401,7 @@ test('database error details stay on the server', async () => {
   const response = await handler(chatRequest())
   assert.equal(response.status, 500)
   const result = await response.json()
-  assert.equal(result.message, 'RoachClaw could not finish the request.')
+  assert.equal(result.message, "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
   assert.doesNotMatch(JSON.stringify(result), /secret_column/)
 })
 ```
@@ -22643,6 +22644,59 @@ const blockedBridge = await chatHandler(
 )
 assert.equal(blockedBridge.status, 400)
 
+// The iOS page's buttons and its script must point at the same, current IPA.
+const iosPage = await source('ios/index.html')
+const iosScript = await source('ios/ios-install.js')
+const pageIpas = new Set([...iosPage.matchAll(/data-ipa-download href="([^"]+)"/g)].map(([, href]) => href))
+assert.equal(pageIpas.size, 1, 'every IPA button on the iOS page uses one URL')
+const [pageIpa] = pageIpas
+assert.match(pageIpa, /RoachNetiOS-v0\.2\.0-unsigned\.ipa$/)
+for (const [ipa] of iosScript.matchAll(/https:\/\/[^'"\s]+\.ipa/g)) {
+  assert.equal(ipa, pageIpa, 'ios-install.js must not override the page with a different IPA')
+}
+
+// The Homebrew helper zip is what the Install with Homebrew button downloads: it must hold the
+// current script, executable, at the zip root, with no macOS metadata riding along.
+{
+  const { inflateRawSync } = await import('node:zlib')
+  const zip = await readFile(path.join(root, 'downloads/RoachNet-Homebrew.command.zip'))
+  const script = await readFile(path.join(root, 'downloads/RoachNet-Homebrew.command'))
+  const endOfDirectory = zip.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]))
+  assert.ok(endOfDirectory >= 0, 'helper zip has a central directory')
+  const entryCount = zip.readUInt16LE(endOfDirectory + 10)
+  let offset = zip.readUInt32LE(endOfDirectory + 16)
+  const entries = []
+  for (let index = 0; index < entryCount; index += 1) {
+    const nameLength = zip.readUInt16LE(offset + 28)
+    entries.push({
+      name: zip.subarray(offset + 46, offset + 46 + nameLength).toString('utf8'),
+      method: zip.readUInt16LE(offset + 10),
+      compressedSize: zip.readUInt32LE(offset + 20),
+      mode: zip.readUInt32LE(offset + 38) >>> 16,
+      localOffset: zip.readUInt32LE(offset + 42),
+    })
+    offset += 46 + nameLength + zip.readUInt16LE(offset + 30) + zip.readUInt16LE(offset + 32)
+  }
+  assert.deepEqual(entries.map(({ name }) => name), ['RoachNet-Homebrew.command'])
+  const [entry] = entries
+  assert.equal(entry.mode & 0o777, 0o755, 'the helper is executable once unzipped')
+  const dataStart = entry.localOffset + 30 + zip.readUInt16LE(entry.localOffset + 26) + zip.readUInt16LE(entry.localOffset + 28)
+  const packed = zip.subarray(dataStart, dataStart + entry.compressedSize)
+  const unpacked = entry.method === 8 ? inflateRawSync(packed) : packed
+  assert.ok(unpacked.equals(script), 'helper zip matches downloads/RoachNet-Homebrew.command')
+  assert.match(script.toString('utf8'), /brew tap --force RoachWares\/roachnet/)
+  assert.doesNotMatch(script.toString('utf8'), /AHGRoach/)
+}
+
+// Copy facts that drifted once: page anchors that live on /home/, and the browser storage line.
+for (const file of ['app.js', 'app-store.js', 'scripts/build-app-store-catalog.mjs']) {
+  assert.doesNotMatch(await source(file), /https:\/\/roachnet\.org\/#(?:screens|downloads)/, `${file} links /home/ anchors`)
+}
+assert.doesNotMatch(await source('app.js'), /free \(approx\.\)/, 'a browser cannot see free disk space')
+const catalogText = await source('app-store-catalog.json')
+assert.doesNotMatch(catalogText, /District Of Columbia|Of The Northern/)
+assert.doesNotMatch(catalogText, /"(?:subtitle|status|summary|machineFit)": "[^"]*\blane\b/i, 'store cards skip the internal "lane" jargon')
+
 console.log('site outcome checks passed')
 ```
 
@@ -22801,7 +22855,7 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
   })
 
   if (!response.ok) {
-    return { success: false, message: 'Captcha verification did not finish cleanly.' }
+    return { success: false, message: "The human check service didn't answer. Wait a minute and try again." }
   }
 
   const result = await response.json()
@@ -22809,7 +22863,7 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
   const success = result.success === true && hostnameOk
   return {
     success,
-    message: success ? '' : 'Captcha verification failed.',
+    message: success ? '' : "The human check didn't pass. Do it again, then press Create account.",
   }
 }
 
@@ -22851,7 +22905,7 @@ export function createRegistrationHandler({
         json(
           {
             ok: false,
-            message: 'The account lane is missing its secure auth configuration.',
+            message: "Sign-up isn't available right now. You can still sign in to an existing account; try sign-up again later.",
           },
           503
         )
@@ -22877,11 +22931,11 @@ export function createRegistrationHandler({
     const startedAt = Number(payload?.startedAt || 0)
 
     if (honeypot) {
-      return withCors(request, json({ ok: false, message: 'Request rejected.' }, 400))
+      return withCors(request, json({ ok: false, message: "That sign-up didn't go through. Reload the page and try again." }, 400))
     }
 
     if (!validateEmail(email)) {
-      return withCors(request, json({ ok: false, message: 'Enter a real email address.' }, 400))
+      return withCors(request, json({ ok: false, message: 'That email address looks incomplete. Check it and try again.' }, 400))
     }
 
     if (password.length < 10) {
@@ -22901,7 +22955,7 @@ export function createRegistrationHandler({
     if (displayName.length > 60) {
       return withCors(
         request,
-        json({ ok: false, message: 'Keep the display name under 60 characters.' }, 400)
+        json({ ok: false, message: 'Keep the name to 60 characters or fewer.' }, 400)
       )
     }
 
@@ -22925,7 +22979,7 @@ export function createRegistrationHandler({
             {
               ok: false,
               code: 'captcha_unavailable',
-              message: 'Account creation is unavailable until human verification is configured.',
+              message: 'Sign-up is paused until the human check is set up. You can still sign in to an existing account.',
             },
             503
           )
@@ -22954,7 +23008,7 @@ export function createRegistrationHandler({
             {
               ok: false,
               code: 'captcha_unavailable',
-              message: 'Captcha verification is temporarily unavailable.',
+              message: "The human check service didn't answer. Wait a minute and try again.",
             },
             503
           )
@@ -22976,7 +23030,7 @@ export function createRegistrationHandler({
           {
             ok: false,
             code: 'rate_limit_unavailable',
-            message: 'Account creation could not establish abuse protection.',
+            message: "Sign-up can't run safely right now. Try again in a few minutes.",
           },
           503
         )
@@ -23002,7 +23056,7 @@ export function createRegistrationHandler({
               {
                 ok: false,
                 code: 'rate_limited',
-                message: 'Too many account attempts. Wait and try again.',
+                message: 'Too many sign-up attempts. Wait up to an hour and try again, or check your inbox for a confirmation link.',
               },
               429,
               { 'retry-after': String(result.retryAfterSeconds) }
@@ -23017,7 +23071,7 @@ export function createRegistrationHandler({
           {
             ok: false,
             code: 'rate_limit_unavailable',
-            message: 'Account creation is temporarily unavailable.',
+            message: 'Sign-up is unavailable for a moment. Try again in a few minutes.',
           },
           503
         )
@@ -23047,7 +23101,7 @@ export function createRegistrationHandler({
     } catch {
       return withCors(
         request,
-        json({ ok: false, message: 'Account creation is temporarily unavailable.' }, 503)
+        json({ ok: false, message: "Sign-up couldn't reach the account service. Try again in a few minutes." }, 503)
       )
     }
 
@@ -23070,7 +23124,7 @@ export function createRegistrationHandler({
         json(
           {
             ok: false,
-            message: message || 'Account creation did not finish cleanly.',
+            message: message || "Sign-up didn't go through. Try again in a few minutes.",
           },
           createResponse.status
         )
@@ -23257,12 +23311,12 @@ async function verifyUserSession({ fetchImpl, supabaseUrl, publishableKey, token
   })
 
   if (!response.ok) {
-    return { user: null, error: 'This account session is not valid anymore.' }
+    return { user: null, error: "RoachClaw couldn't confirm your sign-in. Sign in again, then resend your message." }
   }
 
   const user = await response.json().catch(() => null)
   if (!user?.id) {
-    return { user: null, error: 'Could not resolve the signed-in user.' }
+    return { user: null, error: "RoachClaw couldn't confirm your sign-in. Sign in again, then resend your message." }
   }
 
   return { user, error: '' }
@@ -23502,7 +23556,7 @@ export function createChatHandler({
     if (!supabaseUrl || !publishableKey) {
       return withEnvCors(
         request,
-        json({ ok: false, message: 'The hosted lane is missing its account backend configuration.' }, 503)
+        json({ ok: false, message: "RoachClaw on the web can't reach its account service. Try again later. RoachClaw in the Mac app isn't affected." }, 503)
       )
     }
 
@@ -23513,7 +23567,7 @@ export function createChatHandler({
           {
             ok: false,
             code: 'lane_not_armed',
-            message: 'RoachClaw web is not armed on this deploy yet.',
+            message: "RoachClaw on the web is switched off for now. RoachClaw in the Mac app isn't affected.",
           },
           503
         )
@@ -23540,7 +23594,7 @@ export function createChatHandler({
     try {
       const raw = await request.text()
       if (raw.length > maxBodyBytes) {
-        return withEnvCors(request, json({ ok: false, message: 'That message is too large.' }, 413))
+        return withEnvCors(request, json({ ok: false, message: 'That message is too long. Trim it and send it again.' }, 413))
       }
       payload = JSON.parse(raw)
     } catch {
@@ -23558,7 +23612,7 @@ export function createChatHandler({
     }
 
     if (threadId && !threadIdPattern.test(threadId)) {
-      return withEnvCors(request, json({ ok: false, message: 'That chat id is not valid.' }, 400))
+      return withEnvCors(request, json({ ok: false, message: "RoachClaw doesn't recognize that conversation. Start a new chat and try again." }, 400))
     }
 
     if (requestedBridgeUrl && !isAllowedBridgeUrl(requestedBridgeUrl, allowedBridgeOrigins)) {
@@ -23579,7 +23633,7 @@ export function createChatHandler({
           return withEnvCors(
             request,
             new Response(
-              JSON.stringify({ ok: false, code: 'rate_limited', message: 'That is a lot of messages. Give RoachClaw a minute and try again.' }),
+              JSON.stringify({ ok: false, code: 'rate_limited', message: "That's a lot of messages. You've hit the web limit, so wait a while and try again. RoachClaw in the Mac app isn't affected." }),
               {
                 status: 429,
                 headers: {
@@ -23594,7 +23648,7 @@ export function createChatHandler({
       }
     } catch (error) {
       console.error('RoachClaw chat rate limiter unavailable.', error)
-      return withEnvCors(request, json({ ok: false, code: 'rate_limit_unavailable', message: 'RoachClaw web is busy. Try again shortly.' }, 503))
+      return withEnvCors(request, json({ ok: false, code: 'rate_limit_unavailable', message: "RoachClaw on the web is busy. Try again in a minute. RoachClaw in the Mac app isn't affected." }, 503))
     }
 
     const databaseClient = createDatabaseClient({
@@ -23617,7 +23671,7 @@ export function createChatHandler({
         const rows = await databaseClient.request('chat_threads', { query: query.toString() })
         thread = rows?.[0] || null
         if (!thread) {
-          return withEnvCors(request, json({ ok: false, message: 'That chat is not yours anymore.' }, 404))
+          return withEnvCors(request, json({ ok: false, message: "That conversation isn't in your account anymore. Start a new chat to keep going." }, 404))
         }
       } else {
         const inserted = await databaseClient.request('chat_threads', {
@@ -23774,7 +23828,7 @@ export function createChatHandler({
         json(
           {
             ok: false,
-            message: error instanceof PublicError ? error.message : 'RoachClaw could not finish the request.',
+            message: error instanceof PublicError ? error.message : "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.",
           },
           500
         )

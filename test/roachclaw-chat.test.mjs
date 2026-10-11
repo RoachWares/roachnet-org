@@ -134,6 +134,6 @@ test('database error details stay on the server', async () => {
   const response = await handler(chatRequest())
   assert.equal(response.status, 500)
   const result = await response.json()
-  assert.equal(result.message, 'RoachClaw could not finish the request.')
+  assert.equal(result.message, "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
   assert.doesNotMatch(JSON.stringify(result), /secret_column/)
 })

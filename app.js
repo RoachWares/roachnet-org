@@ -155,7 +155,7 @@ function startHandedOffDownload() {
   const toast = document.createElement('div')
   toast.className = 'nx-toast'
   toast.setAttribute('role', 'status')
-  toast.textContent = 'RoachNet Setup for macOS is downloading.'
+  toast.textContent = 'RoachNet Setup is downloading. Open the DMG when it lands.'
   document.body.appendChild(toast)
   window.requestAnimationFrame(() => toast.classList.add('is-on'))
   window.setTimeout(() => toast.classList.remove('is-on'), 4200)
@@ -502,7 +502,7 @@ const fallbackCatalog = {
       ],
       installLabel: 'Get',
       detailLabel: 'Open RoachClaw',
-      detailUrl: 'https://roachnet.org/#screens',
+      detailUrl: 'https://roachnet.org/home/#screens',
       installIntent: {
         action: 'roachclaw-model',
         model: 'qwen2.5-coder:1.5b',
@@ -529,7 +529,7 @@ const fallbackCatalog = {
       ],
       installLabel: 'Get',
       detailLabel: 'Open RoachClaw',
-      detailUrl: 'https://roachnet.org/#screens',
+      detailUrl: 'https://roachnet.org/home/#screens',
       installIntent: {
         action: 'roachclaw-model',
         model: 'qwen2.5-coder:7b',
@@ -585,7 +585,7 @@ function setPlatformFallback(platformKey, primaryButtons, label) {
     })
     if (downloadMeta) {
       downloadMeta.textContent =
-        'The macOS DMG is being republished. Homebrew is live now and lands the same stack in ~/RoachNet.'
+        'The DMG is missing from the latest release. Homebrew installs the same app into ~/RoachNet.'
     }
     return
   }
@@ -597,7 +597,7 @@ function setPlatformFallback(platformKey, primaryButtons, label) {
     }
   })
   if (downloadMeta) {
-    downloadMeta.textContent = `No direct ${label} installer is posted yet. Opening the latest release instead.`
+    downloadMeta.textContent = `No direct ${label} installer yet. The button opens the latest release instead.`
   }
 }
 
@@ -622,7 +622,7 @@ function setPrimaryButton(platformKey) {
       }
     })
     if (downloadMeta) {
-      downloadMeta.textContent = `Starts with RoachNet Setup v${hostedAsset.version} · ${hostedAsset.name}`
+      downloadMeta.textContent = `RoachNet Setup v${hostedAsset.version} · ${hostedAsset.name} · Apple Silicon`
     }
     return
   }
@@ -639,7 +639,7 @@ function setPrimaryButton(platformKey) {
       }
     })
     if (downloadMeta) {
-      downloadMeta.textContent = `Starts with RoachNet Setup v${assetVersion} · ${asset.name}`
+      downloadMeta.textContent = `RoachNet Setup v${assetVersion} · ${asset.name} · Apple Silicon`
     }
     return
   }
@@ -665,7 +665,7 @@ function triggerHomebrewInstall() {
   window.location.href = homebrewHelperUrl
   setInstallStepState(3)
   setHomebrewNote(
-    'Helper downloaded. Open the zip in Finder, then open RoachNet-Homebrew.command to launch Terminal, refresh the tap, and install RoachNet.'
+    'The helper is downloading. Open the zip, then open RoachNet-Homebrew.command. Terminal takes it from there.'
   )
 }
 
@@ -673,10 +673,10 @@ async function copyHomebrewCommand() {
   try {
     await navigator.clipboard.writeText(homebrewCommand)
     setInstallStepState(1)
-    setHomebrewNote('Copied the refresh-first Homebrew command for the current RoachNet cask install.')
+    setHomebrewNote('Copied. Paste it into Terminal and press Return.')
   } catch (error) {
     console.error(error)
-    setHomebrewNote('Clipboard access was blocked. Open the helper download instead.')
+    setHomebrewNote('The browser blocked the clipboard. Copy the command by hand, or use Install with Homebrew.')
   }
 }
 
@@ -725,7 +725,7 @@ async function updateStorageEstimate() {
   }
 
   if (!navigator.storage?.estimate) {
-    heroStorage.textContent = 'Check free space in the app'
+    heroStorage.textContent = 'Browser storage unknown'
     return
   }
 
@@ -734,13 +734,13 @@ async function updateStorageEstimate() {
     const available = Math.max(0, quota - usage)
 
     if (!available) {
-      heroStorage.textContent = 'Free space unknown'
+      heroStorage.textContent = 'Browser storage unknown'
       return
     }
 
-    heroStorage.textContent = `${formatCompactBytes(available)} free (approx.)`
+    heroStorage.textContent = `${formatCompactBytes(available)} free in this browser`
   } catch (error) {
-    heroStorage.textContent = 'Free space unknown'
+    heroStorage.textContent = 'Browser storage unknown'
     console.error(error)
   }
 }
@@ -926,7 +926,7 @@ function attemptNativeInstall(url) {
       return
     }
     clearFallback()
-    window.location.href = 'https://roachnet.org/#downloads'
+    window.location.href = 'https://roachnet.org/home/#downloads'
   }, 1400)
 
   window.location.href = url
@@ -1575,7 +1575,7 @@ async function loadLatestRelease() {
         }
       })
       if (downloadMeta) {
-        downloadMeta.textContent = 'The live release feed is unavailable. Opening the latest release instead.'
+        downloadMeta.textContent = 'The release feed is unreachable right now. The button opens the latest release instead.'
       }
     }
     console.error(error)

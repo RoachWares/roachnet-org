@@ -102,9 +102,9 @@ const artifactOrigin = {
 const roachSpeechPackBaseUrl = `${artifactOrigin.publicBaseUrl}/model-packs`
 
 const courseStatusMap = {
-  essential: 'Great first install',
-  standard: 'Recommended next install',
-  comprehensive: 'Deep archive',
+  essential: 'Good first install',
+  standard: 'Good next install',
+  comprehensive: 'Further reading',
 }
 
 const wikipediaStatusMap = {
@@ -119,16 +119,16 @@ const aiPacks = [
   {
     id: 'roachclaw-quickstart',
     title: 'RoachClaw Quickstart',
-    subtitle: 'Contained qwen2.5-coder:1.5b model',
+    subtitle: 'qwen2.5-coder:1.5b, the small first-boot coder',
     category: 'Local AI',
     section: 'Model Packs',
     size: '1.5 GB',
     status: 'Best first boot',
     source: 'Local model lane',
     summary:
-      'Get RoachClaw talking quickly on a clean machine with the small contained coding model RoachNet already recommends for first boot.',
+      'Gets RoachClaw talking fast on a fresh Mac. This is the small coding model RoachNet recommends for first boot.',
     accent: 'violet',
-    machineFit: 'Best on all Apple Silicon Macs, especially 16 GB machines',
+    machineFit: 'Any Apple Silicon Mac, especially 16 GB machines',
     includes: [
       'Contained Ollama-backed model download',
       'Fastest local coding lane for first launch',
@@ -144,16 +144,16 @@ const aiPacks = [
   {
     id: 'roachclaw-coder-compact',
     title: 'RoachClaw Coder Compact',
-    subtitle: 'Contained qwen2.5-coder:3b fast lane',
+    subtitle: 'qwen2.5-coder:3b, a step up for daily code help',
     category: 'Local AI',
     section: 'Model Packs',
     size: '2.0 GB',
-    status: 'Lean coding lane',
+    status: 'Light coding model',
     source: 'Local model lane',
     summary:
-      'A roomier coding lane than Quickstart without jumping straight to the heavier packs. Good when you want better local code help without tying up the whole machine.',
+      'More room to think than Quickstart, without jumping to the heavy models. Better code help that leaves the rest of the Mac free.',
     accent: 'cyan',
-    machineFit: 'Best on everyday Apple Silicon Macs that want a small but useful local coding lane',
+    machineFit: 'Everyday Apple Silicon Macs that want small but useful code help',
     includes: [
       'Contained 3B coding model queue',
       'A cleaner step up from the first-boot model',
@@ -169,14 +169,14 @@ const aiPacks = [
   {
     id: 'roachclaw-studio',
     title: 'RoachClaw Studio',
-    subtitle: 'Contained qwen2.5-coder:7b upgrade',
+    subtitle: 'qwen2.5-coder:7b for longer refactors',
     category: 'Local AI',
     section: 'Model Packs',
     size: '4.8 GB',
     status: 'For larger Apple Silicon Macs',
     source: 'Local model lane',
     summary:
-      'Move up to the larger local coding lane for longer refactors, stronger reasoning, and more comfortable day-to-day coding assist.',
+      'The bigger local coder: longer refactors, stronger reasoning and more comfortable day-to-day help.',
     accent: 'violet',
     machineFit: 'Best on M2 Pro, Max, and higher-memory Apple Silicon',
     includes: [
@@ -194,16 +194,16 @@ const aiPacks = [
   {
     id: 'roachclaw-generalist',
     title: 'RoachClaw Generalist',
-    subtitle: 'Contained qwen2.5:7b everyday model',
+    subtitle: 'qwen2.5:7b for notes, drafts and planning',
     category: 'Local AI',
     section: 'Model Packs',
     size: '4.7 GB',
-    status: 'Balanced local lane',
+    status: 'Everyday all-rounder',
     source: 'Local model lane',
     summary:
-      'A broader local model for notes, drafting, planning, and general assistant work when you want something less coding-specific than the default lane.',
+      'A broader local model for notes, drafts, planning and general questions, when you want less code and more conversation.',
     accent: 'cyan',
-    machineFit: 'Best on Macs with enough memory for a comfortable always-on local lane',
+    machineFit: 'Macs with enough memory to leave a local model running',
     includes: [
       'Contained general-purpose local model',
       'Works well for notes, drafts, summaries, and planning',
@@ -219,16 +219,16 @@ const aiPacks = [
   {
     id: 'roachclaw-pocket',
     title: 'RoachClaw Pocket',
-    subtitle: 'Contained llama3.2:3b small general model',
+    subtitle: 'llama3.2:3b for quick chat and short notes',
     category: 'Local AI',
     section: 'Model Packs',
     size: '2.0 GB',
     status: 'Fast everyday replies',
     source: 'Local model lane',
     summary:
-      'A lighter general model for quick chat, short notes, and mobile-minded pairings when you want local answers without loading one of the larger shelves.',
+      'A light general model for quick chat and short notes, when you want a local answer without loading a big one.',
     accent: 'green',
-    machineFit: 'Best when you want a lighter general chat lane that wakes up fast',
+    machineFit: 'Any Mac where a fast-starting chat model matters more than depth',
     includes: [
       'Contained 3B general model queue',
       'Useful for quick replies and lighter note work',
@@ -244,16 +244,16 @@ const aiPacks = [
   {
     id: 'roachclaw-analyst',
     title: 'RoachClaw Analyst',
-    subtitle: 'Contained gemma3:4b research lane',
+    subtitle: 'gemma3:4b for reading and summaries',
     category: 'Local AI',
     section: 'Model Packs',
     size: '3.3 GB',
-    status: 'Balanced research lane',
+    status: 'Balanced research model',
     source: 'Local model lane',
     summary:
-      'A practical middleweight model for reading, summarizing, and working through ideas when you want something broader than the coder packs but still reasonably light.',
+      'A middleweight model for reading, summarizing and working through ideas: broader than the coders, still fairly light.',
     accent: 'blue',
-    machineFit: 'Best on Apple Silicon Macs that need a balanced local reading and planning lane',
+    machineFit: 'Apple Silicon Macs that want a mid-size model for reading and planning',
     includes: [
       'Contained 4B research model queue',
       'Strong for notes, summaries, and planning passes',
@@ -269,16 +269,16 @@ const aiPacks = [
   {
     id: 'roachclaw-analyst-pro',
     title: 'RoachClaw Analyst Pro',
-    subtitle: 'Contained gemma3:12b deep work lane',
+    subtitle: 'gemma3:12b for long reads and careful summaries',
     category: 'Local AI',
     section: 'Model Packs',
     size: '8.1 GB',
     status: 'Deep local analysis',
     source: 'Local model lane',
     summary:
-      'A heavier local analyst shelf for longer reads, tighter summaries, and more patient reasoning when the small lanes start to feel cramped.',
+      'A heavier analyst for longer reads, tighter summaries and more patient reasoning, for when the small models feel cramped.',
     accent: 'magenta',
-    machineFit: 'Best on higher-memory Apple Silicon when you want a serious local analysis lane',
+    machineFit: 'Best on higher-memory Apple Silicon Macs',
     includes: [
       'Contained 12B analyst model queue',
       'More comfortable for longer reads and structured summaries',
@@ -294,14 +294,14 @@ const aiPacks = [
   {
     id: 'roachclaw-coder-large',
     title: 'RoachClaw Coder Large',
-    subtitle: 'Contained qwen2.5-coder:14b lane',
+    subtitle: 'qwen2.5-coder:14b for Macs with memory to spare',
     category: 'Local AI',
     section: 'Model Packs',
     size: '9.0 GB',
     status: 'Heavy local install',
     source: 'Local model lane',
     summary:
-      'A bigger local coding model for machines with real headroom and users who want the strongest local-first Dev Studio pairing RoachNet can comfortably stage.',
+      'A bigger coding model for Macs with memory to spare, and the strongest Dev Studio partner RoachNet can comfortably run.',
     accent: 'magenta',
     machineFit: 'Best on higher-memory Apple Silicon and Exo-assisted setups',
     includes: [
@@ -319,14 +319,14 @@ const aiPacks = [
   {
     id: 'roachclaw-coder-ultra',
     title: 'RoachClaw Coder Ultra',
-    subtitle: 'Contained qwen2.5-coder:32b heavyweight shelf',
+    subtitle: 'qwen2.5-coder:32b, the heavyweight coder',
     category: 'Local AI',
     section: 'Model Packs',
     size: '19 GB',
     status: 'Big machine only',
     source: 'Local model lane',
     summary:
-      'The heavyweight local coding shelf for machines with real headroom. This is the one you queue when you want the strongest contained coding lane RoachNet can sensibly carry.',
+      'The heavyweight local coder, for Macs with real headroom. Queue this one when you want the strongest coding model RoachNet can sensibly carry.',
     accent: 'violet',
     machineFit: 'Best on high-memory Apple Silicon or a RoachTail-connected multi-machine setup',
     includes: [
@@ -344,14 +344,14 @@ const aiPacks = [
   {
     id: 'roachclaw-modern-generalist',
     title: 'RoachClaw Modern Generalist',
-    subtitle: 'Contained qwen3:4b daily shelf',
+    subtitle: 'qwen3:4b, a newer small everyday model',
     category: 'Local AI',
     section: 'Model Packs',
     size: '2.6 GB',
-    status: 'Modern small lane',
+    status: 'Newer small model',
     source: 'Local model lane',
     summary:
-      'A newer small general lane for notes, summaries, and fast local answers when you want something sharper than the first-boot pack without waking the whole bunker.',
+      'A newer small model for notes, summaries and fast answers: sharper than the first-boot model, without waking the whole bunker.',
     accent: 'green',
     machineFit: 'Best on 16 GB Apple Silicon machines that need a quick everyday local model',
     includes: [
@@ -369,16 +369,16 @@ const aiPacks = [
   {
     id: 'roachclaw-modern-balanced',
     title: 'RoachClaw Modern Balanced',
-    subtitle: 'Contained qwen3:8b stronger daily shelf',
+    subtitle: 'qwen3:8b for more patient everyday reasoning',
     category: 'Local AI',
     section: 'Model Packs',
     size: '5.2 GB',
     status: 'Better local thinking',
     source: 'Local model lane',
     summary:
-      'A stronger modern general lane for users who want more patient local reasoning without jumping straight into workstation-only territory.',
+      'A stronger everyday model for more patient local reasoning, without going straight to workstation-only sizes.',
     accent: 'cyan',
-    machineFit: 'Best on M-series Macs with enough memory for a serious always-local assistant',
+    machineFit: 'M-series Macs with the memory for an always-local assistant',
     includes: [
       'Contained Qwen3 8B model queue',
       'Good for docs, vault notes, planning, and mixed work',
@@ -394,14 +394,14 @@ const aiPacks = [
   {
     id: 'roachclaw-open-reasoner',
     title: 'RoachClaw Open Reasoner',
-    subtitle: 'Contained gpt-oss:20b reasoning shelf',
+    subtitle: 'gpt-oss:20b, an open-weight reasoning model',
     category: 'Local AI',
     section: 'Model Packs',
     size: '13 GB',
-    status: 'Open-weight heavy lane',
+    status: 'Heavy open-weight model',
     source: 'Local model lane',
     summary:
-      'A heavier open-weight reasoning shelf for machines with headroom. It is not the first thing you install on a cramped Mac, but it earns its space when the work gets thorny.',
+      'A heavy open-weight reasoning model for Macs with headroom. Not a first install on a cramped Mac, but it earns its space when the work gets thorny.',
     accent: 'magenta',
     machineFit: 'Best on higher-memory Apple Silicon and RoachTail-assisted setups',
     includes: [
@@ -419,20 +419,20 @@ const aiPacks = [
   {
     id: 'roachclaw-modern-coder-heavy',
     title: 'RoachClaw Modern Coder Heavy',
-    subtitle: 'Contained qwen3-coder:30b workstation shelf',
+    subtitle: 'qwen3-coder:30b for long-context coding',
     category: 'Local AI',
     section: 'Model Packs',
     size: '19 GB',
-    status: 'Big code shelf',
+    status: 'Heavy coding model',
     source: 'Local model lane',
     summary:
-      'A modern heavyweight coding shelf for long-context work and serious refactors. It is for Macs with headroom, not for pretending a tiny machine is a server rack.',
+      'A heavyweight coder for long-context work and big refactors. For Macs with headroom, not for pretending a small one is a server rack.',
     accent: 'blue',
     machineFit: 'Best on high-memory Apple Silicon or RoachTail-assisted multi-machine setups',
     includes: [
       'Contained Qwen3 Coder 30B model queue',
       'Long-context coding and agent work',
-      'Optional because big models should ask before moving in',
+      'Optional, like every model here',
     ],
     installIntent: {
       action: 'roachclaw-model',
@@ -447,10 +447,10 @@ const aiPacks = [
     category: 'Local AI',
     section: 'Model Packs',
     size: '0.4 GB',
-    status: 'Smallest native lane',
+    status: 'Tiny and quick',
     source: 'Native RoachInference engine',
     summary:
-      'The smallest model the native engine ships a digest for. Instant on any Apple Silicon Mac, good for quick rewrites, summaries and command help; not for deep reasoning.',
+      'A tiny model that answers instantly on any Apple Silicon Mac. Good for quick rewrites, summaries and command help; not for deep reasoning.',
     accent: 'cyan',
     machineFit: 'Runs on every supported Mac, including 8 GB machines',
     includes: ['Native RoachInference pull with SHA-256 verification', 'Sub-second first token on M1 and later', 'A sensible fallback lane next to a bigger model'],
@@ -461,11 +461,11 @@ const aiPacks = [
   {
     id: 'roachclaw-modern-tiny',
     title: 'RoachClaw Modern Tiny',
-    subtitle: 'Native qwen3:0.6b thinking-capable micro model',
+    subtitle: 'Native qwen3:0.6b, tiny, with an optional thinking mode',
     category: 'Local AI',
     section: 'Model Packs',
     size: '0.4 GB',
-    status: 'Modern micro lane',
+    status: 'Micro model',
     source: 'Native RoachInference engine',
     summary:
       'Qwen3 at its smallest: a modern micro model with the newer chat template and optional thinking mode, for machines where every gigabyte counts.',
@@ -483,7 +483,7 @@ const aiPacks = [
     category: 'Local AI',
     section: 'Model Packs',
     size: '4.9 GB',
-    status: 'Balanced general lane',
+    status: 'Long-context all-rounder',
     source: 'Native RoachInference engine',
     summary:
       'Meta’s Llama 3.1 8B as a dependable everyday assistant: writing, explanation, planning and tool-style replies with a long context window.',
@@ -501,7 +501,7 @@ const aiPacks = [
     category: 'Local AI',
     section: 'Model Packs',
     size: '4.4 GB',
-    status: 'Classic 7B lane',
+    status: 'Classic 7B',
     source: 'Native RoachInference engine',
     summary:
       'Mistral 7B Instruct: a fast, well-understood 7B that stays coherent on long drafts and is light on memory for its size.',
@@ -522,7 +522,7 @@ const aiPacks = [
     status: 'Utility micro model',
     source: 'Native RoachInference engine',
     summary:
-      'SmolLM2 135M is a utility model, not a chat partner: classification, short completions, and smoke tests of the native lane on the smallest machines.',
+      'SmolLM2 135M is a utility model, not a chat partner: classification, short completions, and smoke tests of the native engine on the smallest machines.',
     accent: 'cyan',
     machineFit: 'Runs anywhere; useful for testing the native engine',
     includes: ['Native RoachInference pull with SHA-256 verification', 'Loads in under a second', 'Handy for automation steps that need a tiny model'],
@@ -537,7 +537,7 @@ const aiPacks = [
     category: 'Local AI',
     section: 'Model Packs',
     size: '1.1 GB',
-    status: 'Small assistant lane',
+    status: 'Low-memory assistant',
     source: 'Native RoachInference engine',
     summary:
       'SmolLM2 1.7B: a small assistant that answers quickly and keeps memory low, for Macs that need RoachClaw responsive rather than exhaustive.',
@@ -555,14 +555,14 @@ const roachVoicePacks = [
   {
     id: 'roachvoice-cloner-forge',
     title: 'RoachVoice Cloner Forge',
-    subtitle: 'Heavy local voice-cloning shelf',
+    subtitle: 'Voice cloning on your Mac, the heavy option',
     category: 'Voice AI',
     section: 'Voice Packs',
-    size: '1.7 GB',
+    size: '1.6 GB',
     status: 'Voice cloning',
     source: 'RoachSpeech Core ML pack',
     summary:
-      'The full local cloning lane for RoachClaw: Chatterbox-derived Core ML speech, reference voices, and no Python service hiding in the wall.',
+      'Full local voice cloning for RoachClaw: Chatterbox-derived Core ML speech, reference voices and no Python service hiding in the wall.',
     accent: 'magenta',
     machineFit: 'Best on Apple Silicon Macs with comfortable storage and memory headroom',
     includes: [
@@ -587,14 +587,14 @@ const roachVoicePacks = [
   {
     id: 'roachvoice-small-narrator',
     title: 'RoachVoice Small Narrator',
-    subtitle: 'Tiny native narration fallback',
+    subtitle: 'A small read-aloud voice',
     category: 'Voice AI',
     section: 'Voice Packs',
-    size: '87 MB',
+    size: '77 MB',
     status: 'Baseline voice',
     source: 'RoachSpeech Core ML pack',
     summary:
-      'A small Kokoro-derived narrator pack for read-aloud and basic local speech when you do not need full cloning yet. Useful, boring, and hard to kill.',
+      'A small Kokoro-derived narrator for read-aloud and basic local speech, when you don’t need cloning. Useful, boring and hard to kill.',
     accent: 'green',
     machineFit: 'Good on every Apple Silicon Mac and bundled in the baseline desktop build',
     includes: [
@@ -619,14 +619,14 @@ const roachVoicePacks = [
   {
     id: 'roachwhisper-listener',
     title: 'RoachWhisper Listener',
-    subtitle: 'Local STT for transcripts and lyrics',
+    subtitle: 'Speech to text on your Mac, for transcripts and lyrics',
     category: 'Speech AI',
     section: 'Voice Packs',
-    size: '144 MB',
-    status: 'Baseline STT',
+    size: '128 MB',
+    status: 'Baseline speech to text',
     source: 'RoachSpeech Core ML pack',
     summary:
-      'The local listening shelf for RoachSpeech: speech-to-text, transcript sidecars, and lyric extraction for vault media without renting ears from a cloud.',
+      'Local speech to text for RoachSpeech: transcripts saved beside your vault media, and lyric extraction, without renting ears from a cloud.',
     accent: 'cyan',
     machineFit: 'Good on every Apple Silicon Mac and bundled in the baseline desktop build',
     includes: [
@@ -659,9 +659,9 @@ const curatedMapPickSpecs = [
     subtitle: 'One state, coast to Sierra',
     status: 'High-detail state pack',
     accent: 'blue',
-    machineFit: 'When California is the whole trip and the Pacific shelf is more than you need',
+    machineFit: 'When California is the whole trip and the Pacific Region is more than you need',
     summary: 'Every street in California, from the Bay to the desert, in one file.',
-    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the Pacific shelf installs'],
+    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the Pacific Region installs'],
   },
   {
     id: 'map-texas-solo',
@@ -670,9 +670,9 @@ const curatedMapPickSpecs = [
     subtitle: 'One state, a lot of highway',
     status: 'High-detail state pack',
     accent: 'bronze',
-    machineFit: 'When you need Texas without the rest of the South Central shelf',
+    machineFit: 'When you need Texas without the rest of West South Central',
     summary: 'Metro sprawl, border towns and the long empty miles between them, all on your disk.',
-    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the South Central shelf installs'],
+    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file West South Central installs'],
   },
   {
     id: 'map-florida-solo',
@@ -683,7 +683,7 @@ const curatedMapPickSpecs = [
     accent: 'green',
     machineFit: 'For hurricane season, road trips and anyone who has watched a cell tower go dark',
     summary: 'Coast roads, evacuation routes and inland connectors that still load when the network does not.',
-    includes: ['Zoom 0–15, street level', 'Keys and barrier islands included', 'Same file the South Atlantic shelf installs'],
+    includes: ['Zoom 0–15, street level', 'Keys and barrier islands included', 'Same file the South Atlantic region installs'],
   },
   {
     id: 'map-new-york-solo',
@@ -692,9 +692,9 @@ const curatedMapPickSpecs = [
     subtitle: 'One state, city to Adirondacks',
     status: 'Dense corridor pack',
     accent: 'violet',
-    machineFit: 'When you want New York without the whole Mid-Atlantic shelf',
+    machineFit: 'When you want New York without the rest of the Mid-Atlantic',
     summary: 'The five boroughs, the Thruway and the back roads upstate, readable with the Wi-Fi off.',
-    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the Mid-Atlantic shelf installs'],
+    includes: ['Zoom 0–15, street level', 'Clipped to the state line, not a box', 'Same file the Mid-Atlantic region installs'],
   },
   {
     id: 'map-dc-solo',
@@ -724,18 +724,18 @@ const curatedTierPacks = [
   {
     id: 'stack-dev-studio-essentials',
     title: 'Dev Studio Essentials',
-    subtitle: 'Core coding docs for the native Dev lane',
+    subtitle: 'Core coding docs for the Dev workspace',
     categorySlug: 'computing',
     tierSlug: 'computing-essential',
     status: 'Best first dev stack',
     accent: 'violet',
     machineFit: 'Good first install for RoachClaw and the native Dev workspace',
     summary:
-      'Python docs, coding practice, and JavaScript fundamentals in one tier install for a fresh RoachNet Dev lane.',
+      'Python docs, coding practice and JavaScript fundamentals in one install, for a fresh Dev workspace.',
     includes: [
       'Python Docs and Corey Schafer Python tutorials',
       'freeCodeCamp JavaScript algorithms',
-      'Queues through the same desktop education-tier action',
+      'One install queues the whole stack',
     ],
     iconBand: 'Stack',
     iconMonogram: 'DEV',
@@ -751,7 +751,7 @@ const curatedTierPacks = [
     accent: 'cyan',
     machineFit: 'Small enough for most installs and useful beside RoachTail setup',
     summary:
-      'A compact security and privacy stack for threat-model checks, Tor notes, and defensive reference from the Apps lane.',
+      'A compact security and privacy stack for threat-model checks, Tor notes and defensive reference.',
     includes: [
       'Security Q&A',
       'Tor Q&A',
@@ -789,13 +789,13 @@ const curatedTierPacks = [
     tierSlug: 'travel-field-guides-essential',
     status: 'Map companion',
     accent: 'blue',
-    machineFit: 'Light install that belongs beside Base Atlas and Global Mini',
+    machineFit: 'Light install that pairs with the World Atlas and your state maps',
     summary:
       'Wikivoyage Europe staged as a practical travel shelf for checking routes, cities, and field notes offline.',
     includes: [
       'Wikivoyage Europe',
       'Travel notes that pair with RoachAtlas maps',
-      'Desktop installs it through the education-tier lane',
+      'One install, filed under Travel',
     ],
     iconBand: 'Stack',
     iconMonogram: 'TRV',
@@ -829,13 +829,13 @@ const curatedTierPacks = [
     tierSlug: 'games-pop-culture-standard',
     status: 'Arcade side shelf',
     accent: 'magenta',
-    machineFit: 'Good beside RoachArcade when the game lane needs answers, rules, or dev context',
+    machineFit: 'Good beside RoachArcade when you need answers, rules or dev context',
     summary:
       'Gaming Q&A, board-game rules, game-development answers, and chess reference bundled as the offline side shelf for RoachArcade.',
     includes: [
       'Gaming, Board Games, Game Development, and Chess Q&A',
       'Useful beside emulation, mods, cheats, and backlog cleanup',
-      'Installs through the existing games-pop-culture tier action',
+      'One install covers all four',
     ],
     iconBand: 'Stack',
     iconMonogram: 'PLAY',
@@ -844,7 +844,7 @@ const curatedTierPacks = [
   {
     id: 'stack-vault-reader-compact',
     title: 'Vault Reader Compact',
-    subtitle: 'Tiny dictionary shelf for the eBook lane',
+    subtitle: 'Tiny dictionary for the Vault reader',
     categorySlug: 'dictionaries-primary-sources',
     tierSlug: 'dictionaries-primary-sources-essential',
     status: 'Reader helper',
@@ -1191,18 +1191,18 @@ function machineFitForSize(sizeMB) {
   }
 
   if (sizeMB <= 128) {
-    return 'Fast add-on for any supported machine'
+    return 'Any supported Mac. It’s small.'
   }
 
   if (sizeMB <= 1024) {
-    return 'Easy install once the core workspace is already healthy'
+    return 'Any Mac with a gigabyte free'
   }
 
   if (sizeMB <= 4096) {
-    return 'Best on installs with real storage headroom'
+    return 'Macs with a few gigabytes free'
   }
 
-  return 'Large offline shelf best staged after the main runtime is settled'
+  return 'Macs with plenty of free disk and a good connection'
 }
 
 function iconAssetForItem(id) {
@@ -1351,46 +1351,46 @@ function summaryForResource(categorySlug, resource, tierLabel) {
   let lead = ''
 
   if (sourceUrl.includes('/devdocs/')) {
-    lead = 'Offline language and framework docs that fit right into the long Dev Studio session.'
+    lead = 'Language and framework references for the long coding session.'
   } else if (sourceUrl.includes('/stack_exchange/')) {
-    lead = 'Crowd-tested answers, rabbit holes, and practical fixes packed into one named shelf.'
+    lead = 'Real questions, voted answers and practical fixes from people who got there first.'
   } else if (sourceUrl.includes('/phet/')) {
     lead = 'Interactive sims for testing ideas instead of just reading about them.'
   } else if (sourceUrl.includes('/ted/')) {
-    lead = 'Talk libraries and lecture bundles sized like a real shelf instead of a random video binge.'
+    lead = 'Talks and lectures saved as one library, not a scattered video binge.'
   } else if (sourceUrl.includes('/libretexts/')) {
     lead = 'Course-style textbooks laid out like real classes, not a folder full of stray PDFs.'
   } else if (sourceUrl.includes('/gutenberg/')) {
-    lead = 'Public-domain books and long-form reading that belong on the machine, not lost in tabs.'
+    lead = 'Public-domain books for long reading, kept on your Mac instead of in a tab.'
   } else if (sourceUrl.includes('/wikivoyage/')) {
     lead = 'City notes, route context, and practical travel reference in one install.'
   } else if (sourceUrl.includes('/wiktionary/')) {
     lead = 'Fast dictionary lookup and language cross-reference in a compact shelf.'
   } else if (sourceUrl.includes('/wikisource/')) {
-    lead = 'Primary sources, older texts, and quote-heavy reading packed into one lane.'
+    lead = 'Primary sources, older texts and quote-heavy reading in one install.'
   } else if (sourceUrl.includes('/wikiquote/')) {
     lead = 'A tighter quote shelf for writers, sample hunters, and midnight reference dives.'
   } else if (sourceUrl.includes('/other/khanacademy')) {
-    lead = 'Lessons, worked examples, and practice-first study material in one named course app.'
+    lead = 'Lessons, worked examples and practice, in one course library.'
   } else if (sourceUrl.includes('/other/crashcourse')) {
-    lead = 'Fast-moving video courses and explainers for the topics you end up chasing at 2 AM.'
+    lead = 'Quick, well-paced video courses for catching up on a subject.'
   } else if (sourceUrl.includes('/freecodecamp/')) {
-    lead = 'Dev courses and hands-on explainers that feel at home next to the editor.'
+    lead = 'Hands-on coding lessons and challenges to work through at your own pace.'
   } else if (title.includes('wikibooks')) {
-    lead = 'Open textbooks across math, science, computing, and more in one clean shelf.'
+    lead = 'Open textbooks across math, science, computing and more, on one shelf.'
   } else if (title.includes('wikiversity')) {
     lead = 'Community-built courses and guided study paths when you want more than isolated articles.'
   } else if (title.includes('medlineplus')) {
     lead = 'Condition, symptom, and medicine reference that stays readable when you need answers fast.'
   } else if (title.includes('wikipedia medicine')) {
-    lead = 'Medical articles, diagrams, and condition reference in one heavier but useful lane.'
+    lead = 'Medical articles, diagrams and condition reference, in one larger install.'
   } else if (description) {
     lead = `${description}.`
   } else {
     lead = `A named ${bandName} install that keeps the useful material close.`
   }
 
-  return `${lead} ${resource.title} lands as its own ${bandName} app inside RoachNet with a clear shelf, route, and install intent.`
+  return `${lead} ${resource.title} gets its own ${bandName} in RoachNet and works offline.`
 }
 
 function modelPackInstallLabel() {
@@ -1456,10 +1456,11 @@ function toCatalog() {
 
     const mapItems = mapsData.collections.map((collection, index) => {
       const totalSizeMB = collection.resources.reduce((sum, resource) => sum + (resource.size_mb || 0), 0)
-      const regionNames = collection.resources
-        .slice(0, 5)
-        .map((resource) => titleCaseWords(resource.title))
-        .join(', ')
+      const regionTitles = collection.resources.map((resource) => String(resource.title || '').trim()).filter(Boolean)
+      const regionNames =
+        regionTitles.length > 5
+          ? `${regionTitles.slice(0, 4).join(', ')} and ${regionTitles.length - 4} more`
+          : regionTitles.join(', ')
 
       return {
         id: `map-${collection.slug}`,
@@ -1477,7 +1478,7 @@ function toCatalog() {
             ? 'A good first region once the World Atlas is in'
             : 'Big shelf: start it when the Mac can sit on Wi-Fi for a while',
         includes: [
-          `${collection.resources.length} regional map resources`,
+          `${collection.resources.length} maps, one file each`,
           ...resourceHighlights(collection.resources, 2),
         ],
         installLabel: modelPackInstallLabel(),
@@ -1594,18 +1595,18 @@ function toCatalog() {
         status: wikipediaStatusMap[option.id] || 'Ready',
         source: 'Kiwix mirror',
         summary:
-          'Pick the Wikipedia footprint that matches this machine, then let RoachNet stage it as one named reference lane instead of a giant mystery download.',
+          'Pick the size that fits this Mac. RoachNet files it as one named Wikipedia library, not a giant mystery download.',
         accent: option.id.includes('maxi') ? 'magenta' : option.id.includes('all') ? 'violet' : 'blue',
         machineFit:
           option.id === 'top-mini'
-            ? 'Fastest encyclopedia option for first boot'
+            ? 'The quickest Wikipedia to get onto a new Mac'
             : option.id.includes('all')
-              ? 'Best for long-lived offline installs with real storage headroom'
-              : 'Good balance of size and reach for daily offline lookup work',
+              ? 'Best on Macs with plenty of free disk'
+              : 'A good balance of size and reach for everyday lookups',
         includes: [
           option.description,
           `Version ${option.version || 'current mirror'}`,
-          'Queued directly into RoachNet’s Wikipedia lane',
+          'Goes straight into RoachNet’s Wikipedia library',
         ],
         installLabel: modelPackInstallLabel(),
         detailLabel: 'View options',
@@ -1639,11 +1640,11 @@ function toCatalog() {
         source: 'Apps descriptor + Internet Archive mirror',
         summary: `${pack.summary} Installs through Settings › Packs in RoachNet 1.1: the runtime checks the published SHA-256 before anything is unpacked, and Remove keeps your data unless you say otherwise.`,
         accent: voice === 'listener' ? 'cyan' : 'violet',
-        machineFit: bytes > 1_000_000_000 ? 'Large pack — best on Macs with real storage headroom' : 'Fits any supported Apple Silicon Mac',
+        machineFit: bytes > 1_000_000_000 ? 'Large pack — best on Macs with real storage headroom' : 'Any supported Apple Silicon Mac',
         includes: [
           `Pack id ${pack.id}, version ${pack.version}`,
           `Needs the ${pack.dependencies?.map((dependency) => dependency.id).join(', ') || 'core'} feature${(pack.dependencies?.length || 0) > 1 ? 's' : ''} switched on`,
-          'Verified by checksum, installed transactionally, removable from Settings › Packs',
+          'Checked against its SHA-256, installed all-or-nothing, removable from Settings › Packs',
         ],
         minimumRoachNet: pack.requires?.roachnet || '1.1.0',
         installLabel: 'Install with Pack Manager',
@@ -1687,7 +1688,7 @@ function toCatalog() {
           : {}),
         installLabel: modelPackInstallLabel(),
         detailLabel: 'Open RoachClaw',
-        detailUrl: 'https://roachnet.org/#screens',
+        detailUrl: 'https://roachnet.org/home/#screens',
         artifact: {
           provider: 'Contained Ollama runtime',
           bucket: null,
@@ -1704,7 +1705,7 @@ function toCatalog() {
       ...roachVoicePacks.map((item) => ({
         ...item,
         installLabel: modelPackInstallLabel(),
-        detailLabel: 'Open RoachSpeech notes',
+        detailLabel: 'About RoachClaw',
         detailUrl: 'https://roachnet.org/roachclaw/',
         iconAsset: iconAssetForItem(item.id),
       })),

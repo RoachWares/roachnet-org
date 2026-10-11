@@ -887,7 +887,7 @@
               "id": "jeffe.cs.illinois.edu_en_all",
               "version": "2026-09",
               "title": "Algorithms by Jeff Erickson",
-              "description": "A rigorous algorithms shelf that fits naturally beside the deeper math lane",
+              "description": "A rigorous algorithms textbook to read beside the deeper math",
               "url": "https://download.kiwix.org/zim/zimit/jeffe.cs.illinois.edu_en_all_2026-09.zim",
               "size_mb": 517
             },
@@ -1699,7 +1699,7 @@
               "id": "coreyms_en_javascript-tutorials",
               "version": "2026-09",
               "title": "Corey Schafer: JavaScript Tutorials",
-              "description": "A practical JavaScript video lane for fundamentals and browser-side workflows",
+              "description": "Practical JavaScript videos for fundamentals and browser-side work",
               "url": "https://download.kiwix.org/zim/videos/coreyms_en_javascript-tutorials_2026-09.zim",
               "size_mb": 44
             },
@@ -1739,7 +1739,7 @@
               "id": "getbootstrap.com_en_all",
               "version": "2026-06",
               "title": "Bootstrap Docs",
-              "description": "Components, layout patterns, and utility-heavy frontend reference from the Bootstrap docs lane",
+              "description": "Components, layout patterns and utility classes from the Bootstrap docs",
               "url": "https://download.kiwix.org/zim/zimit/getbootstrap.com_en_all_2026-06.zim",
               "size_mb": 49
             },
@@ -2350,7 +2350,7 @@
               "id": "cloudflare.com_en_learning-center",
               "version": "2025-12",
               "title": "Cloudflare Learning Center",
-              "description": "A broad edge, DNS, WAF, and web-security reference shelf from the Cloudflare docs lane",
+              "description": "A broad edge, DNS, WAF and web-security reference from Cloudflare",
               "url": "https://download.kiwix.org/zim/zimit/cloudflare.com_en_learning-center_2025-12.zim",
               "size_mb": 191
             }

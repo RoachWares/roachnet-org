@@ -7,7 +7,7 @@ IOS_BODY = '''
           <p class="nx-overline">RoachNet iOS 0.2.0 · iPhone &amp; iPad</p>
           <h1 class="nx-display nx-display--xl" id="hero-title">RoachNet <span class="nx-accent">in your pocket.</span></h1>
           <p class="nx-lede">
-            Your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
+            Your Mac's RoachClaw, library and vault on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
           </p>
           <div class="nx-actions">
             <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download RoachNet iOS 0.2.0</a>
@@ -16,7 +16,7 @@ IOS_BODY = '''
           <p class="nx-hero__meta">
             <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.6 for Mac</span>
           </p>
-          <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store account, no RoachNet account, nobody in the middle.</p>
+          <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store, no RoachNet account, nobody in the middle.</p>
           <ul class="nx-chips" aria-label="What's in the app">
             <li class="nx-chip nx-chip--mono">Home</li>
             <li class="nx-chip nx-chip--mono">RoachClaw</li>
@@ -63,7 +63,7 @@ IOS_BODY = '''
             </div>
             <p class="nx-card__eyebrow">Home · new</p>
             <h3 class="nx-card__title">Your Mac's vital signs at a glance.</h3>
-            <p class="nx-card__body">Which brain is loaded, what's on the shelves, whether RoachTail is up, and what your agents are waiting on. One look before you put the phone back.</p>
+            <p class="nx-card__body">Which brain is loaded, what's on the shelves, whether RoachTail is up and what your agents are waiting on. One look before you put the phone back.</p>
           </article>
           <article class="nx-card nx-phone-card nx-reveal" role="listitem">
             <div class="nx-screen nx-screen--phone app-screen-shot app-screen-shot--dark">
@@ -111,8 +111,8 @@ IOS_BODY = '''
       <section class="nx-section" id="features" aria-labelledby="features-title">
         <div class="nx-section__head">
           <p class="nx-overline">What's new in 0.2.0</p>
-          <h2 class="nx-h2" id="features-title">A new look, a Home tab, and your agents on call.</h2>
-          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for the agent company coming in 1.1.</p>
+          <h2 class="nx-h2" id="features-title">A new look, a Home tab and your agents on call.</h2>
+          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for RoachClaw Org in 1.1.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--feature nx-reveal" role="listitem">
@@ -165,7 +165,7 @@ IOS_BODY = '''
       <section class="nx-section" id="install" aria-labelledby="install-title">
         <div class="nx-section__head">
           <p class="nx-overline">Install</p>
-          <h2 class="nx-h2" id="install-title">SideStore and AltStore, with the routes labeled.</h2>
+          <h2 class="nx-h2" id="install-title">Install with SideStore or AltStore.</h2>
           <p class="nx-lede">Add the RoachNet source once and updates show up on their own, or grab the IPA directly. Same build either way.</p>
         </div>
         <div class="nx-grid nx-grid--2">
@@ -174,7 +174,7 @@ IOS_BODY = '''
             <h3 class="nx-card__title">Add the source, or hand SideStore the IPA directly.</h3>
             <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to SideStore</a>
+              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
               <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
             </div>
@@ -191,7 +191,7 @@ IOS_BODY = '''
             <h3 class="nx-card__title">Use the same RoachNet source in AltStore.</h3>
             <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add Source to AltStore</a>
+              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
               <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
             </div>
@@ -200,7 +200,7 @@ IOS_BODY = '''
             <ol class="nx-steps nx-mt-16">
               <li class="nx-step"><strong>Install AltStore and keep AltServer available on your Mac.</strong></li>
               <li class="nx-step"><strong>Add the RoachNet source URL, then install RoachNetiOS from AltStore.</strong></li>
-              <li class="nx-step"><strong>Refresh before the 7-day signature runs out, then pair your Mac on first launch.</strong></li>
+              <li class="nx-step"><strong>Pair your Mac on first launch. Refresh before the 7-day signature runs out.</strong></li>
             </ol>
           </article>
         </div>
@@ -210,7 +210,7 @@ IOS_BODY = '''
         <div class="nx-section__head">
           <p class="nx-overline">Pairing</p>
           <h2 class="nx-h2" id="pairing-title">Pair once. The phone stays useful.</h2>
-          <p class="nx-lede">Your Mac keeps the models, the vault and the installs. The phone stays fast because it isn't trying to be a second desktop.</p>
+          <p class="nx-lede">Your Mac keeps the models, the vault and the installs. The phone is fast because it isn't trying to be a second desktop.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--signal nx-reveal" role="listitem">
@@ -221,7 +221,7 @@ IOS_BODY = '''
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Alias</p>
             <h3 class="nx-card__title"><code>https://roachnet.roachtail</code> is the front door.</h3>
-            <p class="nx-card__body">Or just scan the code on your Mac. Either way this device gets its own key.</p>
+            <p class="nx-card__body">Type it in if you'd rather not scan the code.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Fallback</p>
@@ -300,7 +300,7 @@ BREW_BODY = '''
         </ol>
         <div class="nx-actions nx-mt-32">
           <button class="nx-btn nx-btn--primary" data-homebrew-install type="button">Install with Homebrew</button>
-          <a class="nx-btn" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">Use the Setup app instead</a>
+          <a class="nx-btn" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">Download RoachNet Setup instead</a>
         </div>
       </section>
 
@@ -313,7 +313,7 @@ BREW_BODY = '''
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">App bundle</p>
             <h3 class="nx-card__title"><code>~/RoachNet/app/RoachNet.app</code></h3>
-            <p class="nx-card__body">The same app the Setup app installs, cleared so macOS opens it without an argument. The Setup app itself stays in <code>~/RoachNet/setup</code> for repairs.</p>
+            <p class="nx-card__body">The same app the Setup app installs, cleared so macOS opens it without a fight. The Setup app itself stays in <code>~/RoachNet/setup</code> for repairs.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Storage root</p>
@@ -342,7 +342,7 @@ BREW_BODY = '''
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Native installer</p>
             <h3 class="nx-card__title">The cask runs RoachNet's own Swift installer.</h3>
-            <p class="nx-card__body">Preflight checks, a smoke test, and a swap that keeps your storage. No Node, no source tree, nothing global.</p>
+            <p class="nx-card__body">Preflight checks, a smoke test and a swap that keeps your storage. No Node, no source tree, nothing global.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Launch-safe</p>
@@ -366,7 +366,7 @@ BREW_BODY = '''
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Identical either way</p>
-            <h3 class="nx-card__title">Same API and same behaviour as the Setup app install.</h3>
+            <h3 class="nx-card__title">Same API and same behavior as the Setup app install.</h3>
             <p class="nx-card__body">Only the route is different.</p>
           </article>
         </div>
@@ -397,7 +397,7 @@ SITEMAP_BODY = '''
           <h1 class="nx-display" id="hero-title">Everything, <span class="nx-accent">one page.</span></h1>
           <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
           <ul class="nx-status" aria-label="Current versions">
-            <li data-state="online">Desktop v1.0.6</li>
+            <li data-state="online">macOS v1.0.6</li>
             <li data-state="online">iOS v0.2.0</li>
             <li data-state="pending">1.1 in the workshop</li>
           </ul>
@@ -411,8 +411,8 @@ SITEMAP_BODY = '''
             <h2 class="nx-card__title">RoachNet</h2>
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/">Mission</a><p>Why this whole thing exists.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Home</a><p>The desktop tour: screenshots, downloads, and the quick read on what RoachNet does.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://apps.roachnet.org/">Apps</a><p>Libraries, courses, field guides, voice packs and models that land straight in the app.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/home/">Home</a><p>The Mac tour: screenshots, downloads and a quick read on what RoachNet does.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://apps.roachnet.org/">Apps</a><p>Maps, libraries, courses, field guides, voice packs and models that land straight in the app.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/roachclaw/">RoachClaw</a><p>AI chat in the browser, or on your own machine when the question is nobody else's business.</p></li>
             </ul>
           </article>
@@ -422,7 +422,7 @@ SITEMAP_BODY = '''
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">macOS installer</a><p>Start here. Built for Apple Silicon.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/brew/">Homebrew</a><p>Same app, same <code>~/RoachNet</code> folder, one command in Terminal.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet iOS</a><p>SideStore and AltStore for iPhone and iPad.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/ios/">RoachNet iOS</a><p>The iPhone and iPad companion, via SideStore or AltStore.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Shared iOS source</a><p>The AltSource feed used by SideStore and AltStore.</p></li>
             </ul>
           </article>
@@ -430,7 +430,7 @@ SITEMAP_BODY = '''
             <p class="nx-card__eyebrow">On the web</p>
             <h2 class="nx-card__title">Accounts and services</h2>
             <ul class="nx-sitemap__list">
-              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Sign-in and sync settings. Everything heavy stays on your machine.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats and a short device list. The rest stays home.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/about/">About RoachWares</a><p>Who builds it, and the rules it is built by.</p></li>
@@ -442,9 +442,9 @@ SITEMAP_BODY = '''
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet" target="_blank" rel="noreferrer">Source code and releases</a><p>Code, checksums, releases and docs, all readable before you trust any of it.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/releases/latest" target="_blank" rel="noreferrer">Latest release</a><p>What shipped, and when.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/wiki" target="_blank" rel="noreferrer">Wiki</a><p>Install notes, fixes for when things go sideways, and setup docs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet/wiki" target="_blank" rel="noreferrer">Wiki</a><p>Install notes, setup docs and fixes for when things go sideways.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Homebrew tap</a><p>The cask, if you'd rather read it than run it.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10" target="_blank" rel="noreferrer">Map packs</a><p>Every state and territory as an offline map, with the checksum of each file.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://github.com/RoachWares/RoachNet-Maps/releases/tag/maps-2026-10" target="_blank" rel="noreferrer">Map packs</a><p>Offline maps for every state, DC and territory, each with its checksum.</p></li>
             </ul>
           </article>
         </div>
@@ -456,7 +456,7 @@ def build(page):
     page(
         "ios/index.html",
         title="RoachNet iOS: RoachNet in your pocket",
-        description="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library, vault and agent company on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link.",
+        description="RoachNet iOS 0.2.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link.",
         canonical="https://roachnet.org/ios/",
         image="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp",
         rel="../",

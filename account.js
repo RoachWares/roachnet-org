@@ -316,8 +316,8 @@ function setMode(nextMode, { focus = false } = {}) {
   if (formNote) {
     formNote.textContent =
       accountMode === 'signup'
-        ? 'We send a confirmation link before the account works. Use an inbox you can open.'
-        : 'Signing in only links this website to your account. The vault stays out of it.'
+        ? 'You get a confirmation link before the account works. Use an inbox you can open.'
+        : 'Signing in only links this browser to your account. The vault stays out of it.'
   }
 
   if (turnstileShell) {
@@ -338,7 +338,7 @@ function renderStatus() {
 
   if (!enabled) {
     setAuthView('disabled')
-    statusTitle.textContent = 'Sign-in is off on this deploy.'
+    statusTitle.textContent = "Sign-in isn't available here."
     statusBody.textContent = authState.reason
     statusBadge.textContent = 'Off'
     statusBadge.dataset.state = 'disabled'
@@ -346,8 +346,8 @@ function renderStatus() {
     form?.setAttribute('aria-disabled', 'true')
     setFormBusy(true)
     setSnapshot({
-      title: 'Nothing to show on this deploy.',
-      body: 'This copy of the site has no live account keys, so there is no account to read.',
+      title: 'Nothing to show here.',
+      body: "There's no account to read until sign-in is available.",
     })
     rowsEmpty(deviceList, 'Sign-in is off here.')
     rowsEmpty(appList, 'Sign-in is off here.')
@@ -370,13 +370,13 @@ function renderStatus() {
 
   setAuthView('signed-out')
   statusTitle.textContent = 'Not signed in.'
-  statusBody.textContent = 'Sign in to see your devices and saved apps, or make an account in a minute.'
+  statusBody.textContent = 'Sign in to see your devices and RoachClaw threads, or make an account in a minute.'
   statusBadge.textContent = 'Ready'
   statusBadge.dataset.state = 'ready'
   signOutButton.hidden = true
   setSnapshot({
     title: "Sign in to see what's here.",
-    body: 'Your devices, saved apps and RoachClaw threads show up here once you sign in.',
+    body: 'Your devices and RoachClaw threads show up here once you sign in.',
   })
   rowsEmpty(deviceList, 'Nothing to show until you sign in.')
   rowsEmpty(appList, 'Nothing to show until you sign in.')
@@ -512,7 +512,7 @@ async function loadSnapshot() {
 
   if (appList) {
     if (!appRows.length) {
-      rowsEmpty(appList, 'No saved apps yet. Browse apps.roachnet.org and mark the ones you want.')
+      rowsEmpty(appList, "Nothing here yet. The store can't save picks today, so this list stays empty.")
     } else {
       appList.replaceChildren(
         ...appRows.map((app) =>
@@ -581,12 +581,12 @@ async function ensureTurnstile() {
       },
       'error-callback': () => {
         captchaToken = ''
-        setTurnstileState('The human check did not load.', 'error')
+        setTurnstileState("The human check didn't load. Reload the page to try again. Signing in doesn't need it.", 'error')
       },
     })
     setTurnstileState('Finish the human check to create the account.')
   } catch {
-    setTurnstileState('The human check could not load right now.', 'error')
+    setTurnstileState("The human check couldn't load. Reload the page to try again. Signing in doesn't need it.", 'error')
   }
 }
 
@@ -614,7 +614,7 @@ async function registerAccount({ email, password, displayName }) {
   }))
 
   if (!response.ok || result.ok !== true) {
-    throw new Error(result.message || 'Account creation did not go through.')
+    throw new Error(result.message || "Sign-up didn't go through. Try again in a minute.")
   }
 
   return result

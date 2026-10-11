@@ -96,7 +96,7 @@ const sectionDefinitions = [
     key: 'Science & Simulations',
     navLabel: 'Science',
     eyebrow: 'Lab shelf',
-    title: 'Science for the curious machine.',
+    title: 'Physics, chemistry, biology and space.',
     description: 'Physics, astronomy, chemistry, biology and interactive simulations you can poke at offline.',
     icon: 'LAB',
     group: 'Library',
@@ -105,8 +105,8 @@ const sectionDefinitions = [
     key: 'Kids & Family',
     navLabel: 'Kids',
     eyebrow: 'Family shelf',
-    title: 'Shelves for a machine other people use too.',
-    description: 'Story collections, lighter encyclopedias and family reading.',
+    title: 'Reading for kids, answers for parents.',
+    description: 'Picture books, a kid-friendly encyclopedia and parenting Q&A.',
     icon: 'KID',
     group: 'Library',
   },
@@ -143,7 +143,7 @@ const sectionDefinitions = [
     navLabel: 'Words',
     eyebrow: 'Language shelf',
     title: 'Writing, language and quotations.',
-    description: 'Editing, reading, language learning and linguistics shelves for a machine that writes a lot.',
+    description: 'Editing, reading, language learning and linguistics shelves for people who write a lot.',
     icon: 'TXT',
     group: 'Library',
   },
@@ -179,7 +179,7 @@ const sectionDefinitions = [
     navLabel: 'Homestead',
     eyebrow: 'Self-reliance',
     title: 'Energy, growing and building it yourself.',
-    description: 'Longer-lived shelves for sustainability, field fixes and real-world making.',
+    description: 'Sustainability wikis, energy systems and field manuals for fixing and building things yourself.',
     icon: 'HME',
     group: 'Library',
   },
@@ -225,7 +225,7 @@ const sectionDefinitions = [
     navLabel: 'Security',
     eyebrow: 'Defense shelf',
     title: 'Security reference for the machine you trust.',
-    description: 'Threat models, Tor, defensive work and reverse engineering, readable without a tab staying open.',
+    description: 'Threat models, Tor, defensive work and reverse engineering, readable offline.',
     icon: 'SEC',
     group: 'Library',
   },
@@ -252,7 +252,7 @@ const sectionDefinitions = [
     navLabel: 'Infra',
     eyebrow: 'Infra shelf',
     title: 'Networks, servers and operations.',
-    description: 'Docs for operators and builders who expect the machine to keep working when the hosted tools do not.',
+    description: 'Server, database, container and network docs that stay readable when the hosted ones go down.',
     icon: 'NET',
     group: 'Library',
   },
@@ -288,7 +288,7 @@ const sectionDefinitions = [
     navLabel: 'Library',
     eyebrow: 'Deep reference',
     title: 'Dictionaries and primary sources.',
-    description: 'Wordbooks, source texts and very large public-domain archives, for when the vault should feel like a reading room.',
+    description: 'Wordbooks, source texts and very large public-domain archives, for when your Mac should feel like a reading room.',
     icon: 'LIB',
     group: 'Library',
   },
@@ -319,7 +319,7 @@ const sectionDefinitions = [
     eyebrow: 'Settings › Packs',
     title: 'Feature packs for RoachNet 1.1.',
     description:
-      'RoachNet 1.1 ships a core of about 31 MB and installs the rest on demand. Packs are checksum-verified, installed transactionally and removable without losing your data. They need 1.1, which is still in the workshop.',
+      'RoachNet 1.1 ships a core of about 31 MB and installs the rest on demand. Packs are checked against their SHA-256, installed all-or-nothing and removable without losing your data. They need 1.1, which is still in the workshop.',
     short: 'Pieces of RoachNet 1.1 you add when you want them. They need 1.1, which is still in the workshop.',
     rowEyebrow: 'New for 1.1',
     icon: 'PCK',
@@ -368,7 +368,7 @@ const todayRows = [
     ],
   },
   {
-    eyebrow: 'Editors’ picks',
+    eyebrow: 'Hand-picked',
     title: 'Worth the disk space.',
     note: 'Study shelves, deep reference and RoachClaw picks for the second weekend.',
     sections: [
@@ -401,10 +401,10 @@ const searchSuggestions = ['python', 'medicine', 'wikipedia', 'voice', 'linux', 
 const itemCopy = {
   'course-wikibooks_en_all_nopic': {
     blurb:
-      'Open textbooks for math, science, computing, languages, and more, all pulled into one clean study shelf.',
+      'Open textbooks for math, science, computing, languages and more, on one study shelf.',
     detail: [
-      'Good for brushing up on core subjects or wandering into something new at 2 AM without ending up in a maze of tabs.',
-      'Wikibooks installs as its own RoachNet course app, so it shows up in Education as a single named library instead of a mess of separate files.',
+      'Good for brushing up on the basics, or wandering into something new at 2 AM, minus the maze of tabs.',
+      'It installs as one named library in Education, not a pile of separate files.',
     ],
   },
   'course-wikiversity_en_all_maxi': {
@@ -412,23 +412,23 @@ const itemCopy = {
       'Community-built courses and tutorials that feel more like guided paths than isolated articles.',
     detail: [
       'Wikiversity is good when you want the “walk me through it” version instead of a dry reference page.',
-      'It lands in Education as a distinct study shelf with tutorials, course outlines, and practice-oriented material.',
+      'Tutorials, course outlines and practice material, on their own shelf in Education.',
     ],
   },
   'course-ted_mul_ted-ed': {
     blurb:
-      'Short, tightly-produced lessons on specific ideas, from black holes to literary devices and historical weirdness.',
+      'Short, well-made lessons on one idea at a time, from black holes to literary devices to odd corners of history.',
     detail: [
-      'TED-Ed is the quick-hit study shelf: concise explainers, clean pacing, and just enough polish to keep the learning shelf lively.',
-      'It works well as a lightweight watch-later install inside the RoachNet vault.',
+      'The quick-hit shelf: short explainers that suit a coffee break better than a semester.',
+      'A watch-later list that doesn’t need a connection.',
     ],
   },
   'course-openmusictheory.com_en_all': {
     blurb:
-      'Harmony, notation, rhythm, and ear-training in one clean music-theory shelf.',
+      'Harmony, notation, rhythm and ear training, in one music-theory course.',
     detail: [
       'Open Music Theory is useful for production, arranging, scoring, and the occasional “wait, what chord am I actually hearing?” moment.',
-      'It installs as a real course app in the audio/education shelf instead of hiding in a generic provider bundle.',
+      'It gets its own shelf under Audio, not a spot in a generic bundle.',
     ],
   },
   'base-atlas': {
@@ -441,11 +441,11 @@ const itemCopy = {
   },
   'map-pacific': {
     blurb:
-      'A full Pacific rim atlas: West Coast city grids, mountain passes, shoreline routes, and the big empty stretches between them.',
+      'Alaska, California, Hawaii, Oregon and Washington: city grids, mountain passes and the big empty stretches between.',
   },
   'map-mountain': {
     blurb:
-      'Mountain West coverage from ski towns and canyon roads to high-desert connectors and all the strange mileage in between.',
+      'Ski towns, canyon roads and high desert across eight states, Montana down to New Mexico.',
   },
   'map-west-south-central': {
     blurb:
@@ -453,35 +453,35 @@ const itemCopy = {
   },
   'map-east-south-central': {
     blurb:
-      'Backroads, river crossings, and hill-country routes for four linked states that often share the same drives and supply chains.',
+      'Back roads, river crossings and hill country across Alabama, Kentucky, Mississippi and Tennessee.',
   },
   'map-south-atlantic': {
     blurb:
-      'Coastal sprawl, hurricane corridors, and inland connectors running from Delaware down through Florida.',
+      'Coastal sprawl, hurricane routes and inland connectors from Delaware down to Florida, DC included.',
   },
   'map-west-north-central': {
     blurb:
-      'A classic flyover pack: grain routes, rail towns, river cities, and a lot of straight lines done properly.',
+      'Grain routes, rail towns, river cities and some very straight roads across seven states, the Dakotas to Missouri.',
   },
   'map-east-north-central': {
     blurb:
-      'Lake shoreline cities, industrial belts, and the connector towns that hold the middle of the region together.',
+      'Great Lakes cities, factory towns and county roads across Illinois, Indiana, Michigan, Ohio and Wisconsin.',
   },
   'map-mid-atlantic': {
     blurb:
-      'Dense Northeast corridors, upstate routes, and the weird stuff between exits from New Jersey through Pennsylvania.',
+      'Dense corridors, upstate routes and a great many exits, across New Jersey, New York and Pennsylvania.',
   },
   'map-new-england': {
     blurb:
-      'Coastal towns, mountain roads, and small-state border crossings from Connecticut up through northern Maine.',
+      'Coastal towns, mountain roads and a lot of state lines, from Connecticut up to northern Maine.',
   },
   'course-zimgit-medicine_en': {
     blurb:
-      'Field and emergency medicine books and guides: trauma care, assessment checklists, treatment steps, and reference tables in one package.',
+      'Field and emergency medicine books: trauma care, assessment checklists, treatment steps and reference tables.',
   },
   'course-nhs.uk_en_medicines': {
     blurb:
-      'Drug monographs laid out clearly: what each medicine does, when it is used, typical doses, side effects, and interaction notes.',
+      'What each medicine does, when it’s used, typical doses, side effects and interactions, from the NHS.',
   },
   'course-fas-military-medicine_en': {
     blurb:
@@ -493,27 +493,27 @@ const itemCopy = {
   },
   'course-medlineplus.gov_en_all': {
     blurb:
-      'NIH reference on conditions, symptoms, procedures, drugs, supplements, and wellness topics in one encyclopedia-style shelf.',
+      'The NIH’s plain-language encyclopedia of conditions, symptoms, procedures, drugs and supplements.',
   },
   'course-wikipedia_en_medicine_maxi': {
     blurb:
-      'Picked-through Wikipedia medical articles with images kept where they actually help: conditions, anatomy, procedures, and pathologies.',
+      'A curated set of Wikipedia’s medical articles, images included: conditions, anatomy, procedures and pathology.',
   },
   'course-libretexts.org_en_med': {
     blurb:
-      'Course-style medical textbooks on systems, pathophysiology, diagnostics, and treatment chapters laid out like a proper curriculum.',
+      'Medical textbooks on body systems, pathophysiology, diagnostics and treatment, laid out like a curriculum.',
   },
   'course-librepathology_en_all_maxi': {
     blurb:
-      'Microscopic findings, disease patterns, differential tables, and pathology case write-ups in one tight specialist shelf.',
+      'Microscopic findings, disease patterns, differential tables and case write-ups for pathology.',
   },
   'course-canadian_prepper_winterprepping_en': {
     blurb:
-      'A focused cold-weather shelf for layering systems, shelter choices, heating, vehicle prep, and what realistically fails first in deep winter.',
+      'Cold-weather video guides: layering, shelter, heating, vehicle prep and what tends to fail first in deep winter.',
   },
   'course-canadian_prepper_bugoutroll_en': {
     blurb:
-      'A gear-first shelf for packs, pouches, rolls, and how to build a setup where everything has a clear job.',
+      'Gear videos on packs, pouches and rolls, and how to build a kit where everything has a job.',
   },
   'course-canadian_prepper_bugoutconcepts_en': {
     blurb:
@@ -521,19 +521,19 @@ const itemCopy = {
   },
   'course-urban-prepper_en_all': {
     blurb:
-      'City-focused scenarios: outages, supply shocks, protests, elevators that stop, and how to navigate dense environments when systems stutter.',
+      'City scenarios: outages, supply shocks, protests, elevators that stop and getting around when the systems stutter.',
   },
   'course-canadian_prepper_preppingfood_en': {
     blurb:
-      'Storage methods, staple choices, rotation systems, and actual meal ideas built around prep, not restaurant cooking.',
+      'Storage methods, staples, rotation and meal ideas built around the pantry, not the restaurant.',
   },
   'course-gutenberg_en_lcc-u': {
     blurb:
-      'Doctrine-era texts on tactics, campaigns, field craft, and command; more how armies move and think than quote-poster military history.',
+      'Classic texts on tactics, campaigns, fieldcraft and command: how armies move and think, not quote-poster history.',
   },
   'course-libretexts.org_en_math': {
     blurb:
-      'A full math sequence in one shelf: algebra, trig, calculus, linear algebra, stats, and more, laid out like a real course track.',
+      'A full math sequence: algebra, trig, calculus, linear algebra, stats and more, in course order.',
   },
   'course-libretexts.org_en_phys': {
     blurb:
@@ -549,11 +549,11 @@ const itemCopy = {
   },
   'course-wikibooks_en_all_maxi': {
     blurb:
-      'The image-rich Wikibooks shelf, keeping diagrams, figures, and illustrations where they actually teach something.',
+      'Wikibooks with every diagram, figure and illustration left in. Bigger, and better for anything visual.',
   },
   'course-ted_mul_ted-conference': {
     blurb:
-      'Flagship TED talks across science, design, policy, culture, and human stories; a good ideas shelf for background watching.',
+      'The main-stage TED talks: science, design, policy, culture and people. Good for background watching.',
   },
   'course-libretexts.org_en_human': {
     blurb:
@@ -565,7 +565,7 @@ const itemCopy = {
   },
   'course-libretexts.org_en_eng': {
     blurb:
-      'Statics, circuits, fluids, materials, and other engineering fundamentals organized like a proper program track.',
+      'Statics, circuits, fluids, materials and other engineering fundamentals, laid out like a degree program.',
   },
   'course-libretexts.org_en_business': {
     blurb:
@@ -736,7 +736,7 @@ function updateConnectivity() {
   if (!connectivityNode) return
   const isOnline = navigator.onLine
   connectivityNode.dataset.state = isOnline ? 'online' : 'offline'
-  connectivityNode.textContent = isOnline ? 'Online. Installs can start right away.' : 'You are offline. Installs need a connection to download.'
+  connectivityNode.textContent = isOnline ? 'Online. Installs can start right away.' : 'You’re offline. Installs need a connection; what’s installed still works.'
 }
 
 function startTelemetry() {
@@ -813,7 +813,7 @@ function attemptNativeInstall(url) {
   fallbackTimer = window.setTimeout(() => {
     if (completed) return
     clearFallback()
-    window.location.href = 'https://roachnet.org/#downloads'
+    window.location.href = 'https://roachnet.org/home/#downloads'
   }, 1400)
 
   window.location.href = url
@@ -849,17 +849,17 @@ function landingFor(item, section) {
   switch (action) {
     case 'base-map-assets':
     case 'map-collection':
-      return { place: 'Maps', note: 'One file per state in ~/RoachNet/storage/maps, checked against its SHA-256.' }
+      return { place: 'Maps', note: 'One file per state or territory in ~/RoachNet/storage/maps, each checked against its SHA-256.' }
     case 'direct-download':
       return item.installIntent?.filetype === 'map'
         ? { place: 'Maps', note: 'One map file in ~/RoachNet/storage/maps, checked against its SHA-256.' }
         : { place: 'Downloads lane', note: 'Fetched by RoachNet from the descriptor and filed with your other installs.' }
     case 'education-tier':
-      return { place: 'A shelf per pack', note: 'One install queues every shelf in the stack. Each one keeps its own name.' }
+      return { place: 'One shelf each', note: 'One install queues every shelf in the stack. Each one keeps its own name.' }
     case 'education-resource':
       return { place: `${section.navLabel} shelf`, note: 'Lands as its own named shelf you can read offline.' }
     case 'wikipedia-option':
-      return { place: 'Wikipedia', note: 'Queued straight into the RoachNet Wikipedia lane.' }
+      return { place: 'Wikipedia', note: 'Queued straight into RoachNet’s Wikipedia library.' }
     case 'roachclaw-model':
       return { place: 'RoachClaw', note: 'Joins the RoachClaw model list and runs on your Mac.' }
     case 'roachspeech-pack':
@@ -1075,7 +1075,7 @@ function renderHero(item) {
         ${body ? `<p class="st-hero__body">${escapeHtml(body)}</p>` : ''}
         <div class="st-hero__actions">
           ${renderInstallControl(item, 'hero')}
-          <button class="nx-btn st-hero__more" type="button" data-preview-id="${escapeHtml(item.id)}" aria-haspopup="dialog">See what is inside</button>
+          <button class="nx-btn st-hero__more" type="button" data-preview-id="${escapeHtml(item.id)}" aria-haspopup="dialog">See what’s inside</button>
         </div>
       </div>
       <div class="st-hero__art">
@@ -1452,7 +1452,7 @@ function renderDetail(item) {
   const artifact = item.artifact || {}
   const artifactUrl = artifact.url || item.installIntent?.mirrorUrl || item.installIntent?.url || ''
   const detailHref = safeHref(item.detailUrl || item.primaryUrl)
-  const includes = item.includes?.length ? item.includes : ['Direct native install handoff into the right RoachNet section.']
+  const includes = item.includes?.length ? item.includes : ['Installs straight into the right part of RoachNet.']
   // Unavailable / unsupported items explain themselves next to the disabled
   // install control; the notice is only for the 1.1 requirement.
   const notice = item.state === 'ready' && item.minimum
@@ -1508,7 +1508,7 @@ function renderDetail(item) {
           ${factRow('Tier', item.tier)}
           ${factRow('Needs', item.minimumRoachNet ? `RoachNet ${item.minimumRoachNet} or later` : '')}
           ${factRow('Source', item.source || 'RoachNet mirror')}
-          ${factRow('Artifact lane', item.artifactLabel)}
+          ${factRow('How it installs', item.artifactLabel)}
           ${factRow('Provider', artifact.provider || item.installIntent?.artifactProvider || 'RoachNet catalog')}
           ${factRow('Object key', artifact.key || item.installIntent?.artifactKey, { mono: true })}
           ${factRow('Download URL', artifactUrl, { href: artifactUrl, mono: true })}
@@ -1582,7 +1582,7 @@ async function copyItemLink(button) {
       if (label) label.textContent = 'Copy link'
     }, 1800)
   } catch {
-    showToast(`Copy this by hand: ${url}`)
+    showToast(`Couldn’t copy. Here’s the link: ${url}`)
   }
 }
 

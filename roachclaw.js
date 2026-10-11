@@ -496,7 +496,7 @@ if (root) {
 
     if (hint) {
       hint.textContent = !authState?.enabled
-        ? 'Sign-in is off on this deploy'
+        ? "Sign-in isn't available here"
         : session?.user
           ? 'Hosted model'
           : 'Sign in to send'
@@ -673,7 +673,7 @@ if (root) {
       .single()
 
     if (error || !data) {
-      throw new Error(error?.message || 'Could not start a new conversation.')
+      throw new Error(error?.message || "RoachClaw couldn't start a new conversation. Try again in a moment.")
     }
 
     threads = [data, ...threads]
@@ -836,7 +836,7 @@ if (root) {
 
       const payload = await response.json().catch(() => ({}))
       if (!response.ok || payload?.ok !== true) {
-        throw new Error(payload?.message || 'RoachClaw could not finish the request.')
+        throw new Error(payload?.message || "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
       }
 
       activeThreadId = payload.thread?.id || activeThreadId
@@ -875,7 +875,7 @@ if (root) {
       setComposerFeedback(
         /failed to fetch|networkerror|load failed/i.test(reason)
           ? 'Could not reach RoachClaw. Your message is back in the box, so try again in a moment.'
-          : reason || 'RoachClaw could not finish that one. Try again.',
+          : reason || "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.",
         'error'
       )
     } finally {
@@ -895,7 +895,7 @@ if (root) {
       setGateFeedback('Sign-in is not available here yet.', 'error')
       showGate()
       setAuthBusy(true)
-      setComposerFeedback('Sign-in is not switched on for this site yet, so messages cannot be sent.', 'error')
+      setComposerFeedback("Sign-in isn't available here, so messages can't be sent. RoachClaw in the Mac app doesn't need an account.", 'error')
       renderChrome()
       return
     }

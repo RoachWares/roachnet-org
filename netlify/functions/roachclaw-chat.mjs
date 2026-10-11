@@ -155,12 +155,12 @@ async function verifyUserSession({ fetchImpl, supabaseUrl, publishableKey, token
   })
 
   if (!response.ok) {
-    return { user: null, error: 'This account session is not valid anymore.' }
+    return { user: null, error: "RoachClaw couldn't confirm your sign-in. Sign in again, then resend your message." }
   }
 
   const user = await response.json().catch(() => null)
   if (!user?.id) {
-    return { user: null, error: 'Could not resolve the signed-in user.' }
+    return { user: null, error: "RoachClaw couldn't confirm your sign-in. Sign in again, then resend your message." }
   }
 
   return { user, error: '' }
@@ -400,7 +400,7 @@ export function createChatHandler({
     if (!supabaseUrl || !publishableKey) {
       return withEnvCors(
         request,
-        json({ ok: false, message: 'The hosted lane is missing its account backend configuration.' }, 503)
+        json({ ok: false, message: "RoachClaw on the web can't reach its account service. Try again later. RoachClaw in the Mac app isn't affected." }, 503)
       )
     }
 
@@ -411,7 +411,7 @@ export function createChatHandler({
           {
             ok: false,
             code: 'lane_not_armed',
-            message: 'RoachClaw web is not armed on this deploy yet.',
+            message: "RoachClaw on the web is switched off for now. RoachClaw in the Mac app isn't affected.",
           },
           503
         )
@@ -438,7 +438,7 @@ export function createChatHandler({
     try {
       const raw = await request.text()
       if (raw.length > maxBodyBytes) {
-        return withEnvCors(request, json({ ok: false, message: 'That message is too large.' }, 413))
+        return withEnvCors(request, json({ ok: false, message: 'That message is too long. Trim it and send it again.' }, 413))
       }
       payload = JSON.parse(raw)
     } catch {
@@ -456,7 +456,7 @@ export function createChatHandler({
     }
 
     if (threadId && !threadIdPattern.test(threadId)) {
-      return withEnvCors(request, json({ ok: false, message: 'That chat id is not valid.' }, 400))
+      return withEnvCors(request, json({ ok: false, message: "RoachClaw doesn't recognize that conversation. Start a new chat and try again." }, 400))
     }
 
     if (requestedBridgeUrl && !isAllowedBridgeUrl(requestedBridgeUrl, allowedBridgeOrigins)) {
@@ -477,7 +477,7 @@ export function createChatHandler({
           return withEnvCors(
             request,
             new Response(
-              JSON.stringify({ ok: false, code: 'rate_limited', message: 'That is a lot of messages. Give RoachClaw a minute and try again.' }),
+              JSON.stringify({ ok: false, code: 'rate_limited', message: "That's a lot of messages. You've hit the web limit, so wait a while and try again. RoachClaw in the Mac app isn't affected." }),
               {
                 status: 429,
                 headers: {
@@ -492,7 +492,7 @@ export function createChatHandler({
       }
     } catch (error) {
       console.error('RoachClaw chat rate limiter unavailable.', error)
-      return withEnvCors(request, json({ ok: false, code: 'rate_limit_unavailable', message: 'RoachClaw web is busy. Try again shortly.' }, 503))
+      return withEnvCors(request, json({ ok: false, code: 'rate_limit_unavailable', message: "RoachClaw on the web is busy. Try again in a minute. RoachClaw in the Mac app isn't affected." }, 503))
     }
 
     const databaseClient = createDatabaseClient({
@@ -515,7 +515,7 @@ export function createChatHandler({
         const rows = await databaseClient.request('chat_threads', { query: query.toString() })
         thread = rows?.[0] || null
         if (!thread) {
-          return withEnvCors(request, json({ ok: false, message: 'That chat is not yours anymore.' }, 404))
+          return withEnvCors(request, json({ ok: false, message: "That conversation isn't in your account anymore. Start a new chat to keep going." }, 404))
         }
       } else {
         const inserted = await databaseClient.request('chat_threads', {
@@ -672,7 +672,7 @@ export function createChatHandler({
         json(
           {
             ok: false,
-            message: error instanceof PublicError ? error.message : 'RoachClaw could not finish the request.',
+            message: error instanceof PublicError ? error.message : "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.",
           },
           500
         )
