@@ -1,6 +1,8 @@
 // RoachNet API reference (roachnet.org/api/).
 // The route data below is reconciled against the RoachNet 1.0.6 Mac release
 // (tag v1.0.6): native/macos/Sources/RoachNetRuntime/Router.swift and friends.
+// Re-checked for 1.0.7 (tag v1.0.7): the same 84 routes; 1.0.7 only tightens
+// the Host, Origin and JSON checks every route already had.
 // `source` on each route points at the line that answers it.
 // Text fields support `code` spans written with backticks; everything else is
 // escaped before it reaches innerHTML.
@@ -364,13 +366,13 @@ const apiGroups = [
         method: 'GET',
         path: '/api/openclaw/skills/installed',
         title: 'OpenClaw skills',
-        summary: 'Always an empty list in 1.0.6.',
+        summary: 'Always an empty list in 1.0.7.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:164',
         request: ['None.'],
         response: ['`{ workspacePath, skills: [] }`'],
         implementation:
-          'OpenClaw is a migration reference in 1.0.6, not a bundled runtime (RoachClawAgent.swift:110). The workspace path defaults to `storage/RoachClaw`.',
+          'OpenClaw is a migration reference in 1.0.7, not a bundled runtime (RoachClawAgent.swift:110). The workspace path defaults to `storage/RoachClaw`.',
       },
     ],
   },
@@ -425,7 +427,7 @@ const apiGroups = [
           '`runtime: "roachclaw-native-agent"`, `skills`, `policy.defaultExecutionMode: "plan-only"`, `budgets`, `memory`.',
         ],
         implementation:
-          'Its `ready` flag is always false in 1.0.6, because the status is built without model state (RoachClawStatus.swift:171). Read `ready` from /api/roachclaw/status instead.',
+          'Its `ready` flag is always false in 1.0.7, because the status is built without model state (RoachClawStatus.swift:171). Read `ready` from /api/roachclaw/status instead.',
       },
       {
         id: 'roachclaw-agent-run',
@@ -449,7 +451,7 @@ const apiGroups = [
           '500 when `prompt` is empty.',
         ],
         implementation:
-          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so.',
+          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.7, and the reply says so.',
       },
       {
         id: 'roachclaw-operations',
@@ -489,7 +491,7 @@ const apiGroups = [
         source: 'Router.swift:123 (RoachClawStores.swift:1000)',
         request: ['None.'],
         response: ['`localOnly: true`, `approvalRequired: true`, the scope list (`todos:write`, `email:send` and so on) and six endpoints.'],
-        implementation: 'A declaration, not a gate: the loopback API checks no scopes in 1.0.6.',
+        implementation: 'A declaration, not a gate: the loopback API checks no scopes in 1.0.7.',
       },
       {
         id: 'roachclaw-workspace-browse',
@@ -683,7 +685,7 @@ const apiGroups = [
         request: ['JSON body: `name`, `owner`, `scopes` (default `["chat"]`), `isActive`.'],
         response: ['`token`: the raw value. Copy it now; it is never returned again. Also `record` and `state`.'],
         implementation:
-          'Only the SHA-256 is kept. In 1.0.6 tokens are stored for integrations to check; the loopback API itself does not ask for one.',
+          'Only the SHA-256 is kept. In 1.0.7 tokens are stored for integrations to check; the loopback API itself does not ask for one.',
       },
       {
         id: 'roachclaw-tokens-delete',
@@ -1193,7 +1195,7 @@ const apiGroups = [
         source: 'Router.swift:223 (RoachClawStatus.swift:1148)',
         request: ['None.'],
         response: ['`{ archives: [{ slug, title, url, createdAt }] }`'],
-        implementation: 'Reads `storage/site-archives/index.json`. Read-only: 1.0.6 has no create or delete route here.',
+        implementation: 'Reads `storage/site-archives/index.json`. Read-only: 1.0.7 has no create or delete route here.',
       },
       {
         id: 'rag-files',
@@ -1285,7 +1287,7 @@ const apiGroups = [
         method: 'POST',
         path: '/api/benchmark/run',
         title: 'Run a benchmark',
-        summary: 'Returns a benchmark id. No benchmark runs in 1.0.6.',
+        summary: 'Returns a benchmark id. No benchmark runs in 1.0.7.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:257',
         body: { benchmark_type: 'system' },
@@ -1758,7 +1760,7 @@ function renderStats() {
   if (!statsMount) return
   const count = (method) => flattenedRoutes.filter((route) => route.method === method).length
   const items = [
-    [flattenedRoutes.length, 'Routes in 1.0.6'],
+    [flattenedRoutes.length, 'Routes in 1.0.7'],
     [count('GET'), 'GET'],
     [count('POST'), 'POST'],
     [count('DELETE'), 'DELETE'],
@@ -1829,7 +1831,7 @@ function renderRouteList() {
     routeList.innerHTML = `
       <li class="api-empty">
         <p class="api-empty__title">Nothing answers to that.</p>
-        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${escapeHTML(activeMethod)}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
+        <p class="api-empty__text">No 1.0.7 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${escapeHTML(activeMethod)}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
         <button class="nx-btn nx-btn--sm" type="button" data-api-reset>Clear filters</button>
       </li>`
     return
@@ -2102,7 +2104,7 @@ function hydrateFromHash({ initial = false } = {}) {
   const route = routeIndex.get(id)
   if (!route) {
     if (/^[a-z0-9-]+$/.test(id) && !document.getElementById(id)) {
-      showNotice(`No route called “${id}” in 1.0.6. It may have left with the Node runtime. Try the search above.`)
+      showNotice(`No route called “${id}” in 1.0.7. It may have left with the Node runtime. Try the search above.`)
     }
     return
   }

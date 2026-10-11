@@ -1222,8 +1222,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -1249,6 +1249,8 @@ This root is reconciled byte-for-byte from the current production source.
 // RoachNet API reference (roachnet.org/api/).
 // The route data below is reconciled against the RoachNet 1.0.6 Mac release
 // (tag v1.0.6): native/macos/Sources/RoachNetRuntime/Router.swift and friends.
+// Re-checked for 1.0.7 (tag v1.0.7): the same 84 routes; 1.0.7 only tightens
+// the Host, Origin and JSON checks every route already had.
 // `source` on each route points at the line that answers it.
 // Text fields support `code` spans written with backticks; everything else is
 // escaped before it reaches innerHTML.
@@ -1612,13 +1614,13 @@ const apiGroups = [
         method: 'GET',
         path: '/api/openclaw/skills/installed',
         title: 'OpenClaw skills',
-        summary: 'Always an empty list in 1.0.6.',
+        summary: 'Always an empty list in 1.0.7.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:164',
         request: ['None.'],
         response: ['`{ workspacePath, skills: [] }`'],
         implementation:
-          'OpenClaw is a migration reference in 1.0.6, not a bundled runtime (RoachClawAgent.swift:110). The workspace path defaults to `storage/RoachClaw`.',
+          'OpenClaw is a migration reference in 1.0.7, not a bundled runtime (RoachClawAgent.swift:110). The workspace path defaults to `storage/RoachClaw`.',
       },
     ],
   },
@@ -1673,7 +1675,7 @@ const apiGroups = [
           '`runtime: "roachclaw-native-agent"`, `skills`, `policy.defaultExecutionMode: "plan-only"`, `budgets`, `memory`.',
         ],
         implementation:
-          'Its `ready` flag is always false in 1.0.6, because the status is built without model state (RoachClawStatus.swift:171). Read `ready` from /api/roachclaw/status instead.',
+          'Its `ready` flag is always false in 1.0.7, because the status is built without model state (RoachClawStatus.swift:171). Read `ready` from /api/roachclaw/status instead.',
       },
       {
         id: 'roachclaw-agent-run',
@@ -1697,7 +1699,7 @@ const apiGroups = [
           '500 when `prompt` is empty.',
         ],
         implementation:
-          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.6, and the reply says so.',
+          'No model is called and no tool runs. Approval-gated execution is not wired up in 1.0.7, and the reply says so.',
       },
       {
         id: 'roachclaw-operations',
@@ -1737,7 +1739,7 @@ const apiGroups = [
         source: 'Router.swift:123 (RoachClawStores.swift:1000)',
         request: ['None.'],
         response: ['`localOnly: true`, `approvalRequired: true`, the scope list (`todos:write`, `email:send` and so on) and six endpoints.'],
-        implementation: 'A declaration, not a gate: the loopback API checks no scopes in 1.0.6.',
+        implementation: 'A declaration, not a gate: the loopback API checks no scopes in 1.0.7.',
       },
       {
         id: 'roachclaw-workspace-browse',
@@ -1931,7 +1933,7 @@ const apiGroups = [
         request: ['JSON body: `name`, `owner`, `scopes` (default `["chat"]`), `isActive`.'],
         response: ['`token`: the raw value. Copy it now; it is never returned again. Also `record` and `state`.'],
         implementation:
-          'Only the SHA-256 is kept. In 1.0.6 tokens are stored for integrations to check; the loopback API itself does not ask for one.',
+          'Only the SHA-256 is kept. In 1.0.7 tokens are stored for integrations to check; the loopback API itself does not ask for one.',
       },
       {
         id: 'roachclaw-tokens-delete',
@@ -2441,7 +2443,7 @@ const apiGroups = [
         source: 'Router.swift:223 (RoachClawStatus.swift:1148)',
         request: ['None.'],
         response: ['`{ archives: [{ slug, title, url, createdAt }] }`'],
-        implementation: 'Reads `storage/site-archives/index.json`. Read-only: 1.0.6 has no create or delete route here.',
+        implementation: 'Reads `storage/site-archives/index.json`. Read-only: 1.0.7 has no create or delete route here.',
       },
       {
         id: 'rag-files',
@@ -2533,7 +2535,7 @@ const apiGroups = [
         method: 'POST',
         path: '/api/benchmark/run',
         title: 'Run a benchmark',
-        summary: 'Returns a benchmark id. No benchmark runs in 1.0.6.',
+        summary: 'Returns a benchmark id. No benchmark runs in 1.0.7.',
         handler: 'NativeRuntime.route',
         source: 'Router.swift:257',
         body: { benchmark_type: 'system' },
@@ -3006,7 +3008,7 @@ function renderStats() {
   if (!statsMount) return
   const count = (method) => flattenedRoutes.filter((route) => route.method === method).length
   const items = [
-    [flattenedRoutes.length, 'Routes in 1.0.6'],
+    [flattenedRoutes.length, 'Routes in 1.0.7'],
     [count('GET'), 'GET'],
     [count('POST'), 'POST'],
     [count('DELETE'), 'DELETE'],
@@ -3077,7 +3079,7 @@ function renderRouteList() {
     routeList.innerHTML = `
       <li class="api-empty">
         <p class="api-empty__title">Nothing answers to that.</p>
-        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${escapeHTML(activeMethod)}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
+        <p class="api-empty__text">No 1.0.7 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${escapeHTML(activeMethod)}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
         <button class="nx-btn nx-btn--sm" type="button" data-api-reset>Clear filters</button>
       </li>`
     return
@@ -3350,7 +3352,7 @@ function hydrateFromHash({ initial = false } = {}) {
   const route = routeIndex.get(id)
   if (!route) {
     if (/^[a-z0-9-]+$/.test(id) && !document.getElementById(id)) {
-      showNotice(`No route called “${id}” in 1.0.6. It may have left with the Node runtime. Try the search above.`)
+      showNotice(`No route called “${id}” in 1.0.7. It may have left with the Node runtime. Try the search above.`)
     }
     return
   }
@@ -3734,8 +3736,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -3843,7 +3845,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="st-get__kicker" id="apps-get-title">Installs open RoachNet</p>
           <p class="st-get__body">The buttons here hand off to the Mac app. No RoachNet yet? Get it first, then come back for the packs.</p>
           <a class="nx-btn nx-btn--primary st-get__btn" id="apps-primary-download" href="https://github.com/RoachWares/RoachNet/releases/latest/download/RoachNet-Setup-macOS.dmg">
-            Download RoachNet 1.0.6 for macOS
+            Download RoachNet 1.0.7 for macOS
           </a>
           <p class="st-get__meta" id="apps-download-meta">
             <span>376 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>ad-hoc signed, not Apple-notarized</span>
@@ -3969,8 +3971,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -5980,7 +5982,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RoachNet Brew: Three commands to ~/RoachNet</title>
-    <meta name="description" content="Install RoachNet 1.0.6 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
+    <meta name="description" content="Install RoachNet 1.0.7 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/brew/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -5989,12 +5991,12 @@ This root is reconciled byte-for-byte from the current production source.
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="RoachNet Brew: Three commands to ~/RoachNet" />
-    <meta property="og:description" content="Install RoachNet 1.0.6 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
+    <meta property="og:description" content="Install RoachNet 1.0.7 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
     <meta property="og:url" content="https://roachnet.org/brew/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="RoachNet Brew: Three commands to ~/RoachNet" />
-    <meta name="twitter:description" content="Install RoachNet 1.0.6 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
+    <meta name="twitter:description" content="Install RoachNet 1.0.7 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window." />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-home.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="stylesheet" href="../nx.css" />
@@ -6017,7 +6019,7 @@ This root is reconciled byte-for-byte from the current production source.
         <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
           <span class="nx-nav__dot" aria-hidden="true"></span>
           <span>RoachNet</span>
-          <span class="nx-nav__sub">Brew · v1.0.6</span>
+          <span class="nx-nav__sub">Brew · v1.0.7</span>
         </a>
         <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
           <span aria-hidden="true"></span>
@@ -6051,10 +6053,10 @@ This root is reconciled byte-for-byte from the current production source.
             <button class="nx-btn" data-homebrew-copy type="button">Copy brew command</button>
           </div>
           <p class="nx-hero__meta">
-            <span>RoachNet 1.0.6</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>needs <a class="nx-link" href="https://brew.sh" target="_blank" rel="noreferrer">Homebrew</a></span>
+            <span>RoachNet 1.0.7</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>needs <a class="nx-link" href="https://brew.sh" target="_blank" rel="noreferrer">Homebrew</a></span>
           </p>
           <p class="nx-prose" id="homebrew-note">
-            RoachNet v1.0.6 is not Apple-notarized yet, so the cask clears only the macOS flags that would block launch, then runs the same native installer the Setup app uses. It brings its own tools instead of borrowing yours.
+            RoachNet v1.0.7 is not Apple-notarized yet, so the cask clears only the macOS flags that would block launch, then runs the same native installer the Setup app uses. It brings its own tools instead of borrowing yours.
           </p>
         </div>
         <div class="nx-hero__visual" aria-hidden="true">
@@ -6174,13 +6176,13 @@ This root is reconciled byte-for-byte from the current production source.
           <div class="nx-console__bar"><i></i><i></i><i></i> Checksum · RoachNet-Setup-macOS.dmg</div>
           <div class="nx-console__body">
             <span class="nx-console__line">shasum -a 256 ~/Downloads/RoachNet-Setup-macOS.dmg</span>
-            <span class="nx-console__line nx-console__line--out" id="dmg-sha">b6a31dc48faf6a48822bb6770fc8958473c2e0bed460e5ca131f9ab460a90a6f</span>
+            <span class="nx-console__line nx-console__line--out" id="dmg-sha">2ccf51663fa559f3461304c7f2644e697483eccd9543734ee684b87c4c2bf6e3</span>
           </div>
           <div class="nx-console__copy">
             <button class="nx-btn nx-btn--sm nx-btn--mono" data-nx-copy-target="#dmg-sha" data-nx-copied="Checksum copied" type="button">Copy</button>
           </div>
         </div>
-        <p class="nx-prose nx-mt-16">The Setup app and Homebrew pull the exact same file from the public release, and the published <a class="nx-link" href="https://github.com/RoachWares/RoachNet/releases/download/v1.0.6/RoachNet-Setup-macOS.dmg.sha256" target="_blank" rel="noreferrer">checksum sidecar</a> is what the cask verifies against. Check it yourself.</p>
+        <p class="nx-prose nx-mt-16">The Setup app and Homebrew pull the exact same file from the public release, and the published <a class="nx-link" href="https://github.com/RoachWares/RoachNet/releases/download/v1.0.7/RoachNet-Setup-macOS.dmg.sha256" target="_blank" rel="noreferrer">checksum sidecar</a> is what the cask verifies against. Check it yourself.</p>
         <div class="nx-actions nx-mt-24">
           <a class="nx-btn" href="https://roachnet.org/api/">Read the API docs</a>
           <a class="nx-btn" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Read the cask</a>
@@ -6237,8 +6239,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -6268,7 +6270,7 @@ This root is reconciled byte-for-byte from the current production source.
     <title>RoachNet: Offline on purpose.</title>
     <meta
       name="description"
-      content="Local AI, code, maps, docs, games and media in one native Mac app that keeps working when the internet doesn't. Download RoachNet 1.0.6 or install it with Homebrew."
+      content="Local AI, code, maps, docs, games and media in one native Mac app that keeps working when the internet doesn't. Download RoachNet 1.0.7 or install it with Homebrew."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/home/" />
@@ -6313,7 +6315,7 @@ This root is reconciled byte-for-byte from the current production source.
         <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
           <span class="nx-nav__dot" aria-hidden="true"></span>
           <span>RoachNet</span>
-          <span class="nx-nav__sub">Home · v1.0.6</span>
+          <span class="nx-nav__sub">Home · v1.0.7</span>
         </a>
         <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
           <span aria-hidden="true"></span>
@@ -6337,17 +6339,17 @@ This root is reconciled byte-for-byte from the current production source.
     <main id="top" class="nx-main" tabindex="-1">
       <section class="nx-hero" aria-labelledby="hero-title">
         <div class="nx-hero__copy">
-          <p class="nx-overline">RoachNet 1.0.6 for macOS</p>
+          <p class="nx-overline">RoachNet 1.0.7 for macOS</p>
           <h1 class="nx-display nx-display--xl" id="hero-title">Everything you need, <span class="nx-accent">where you left it.</span></h1>
           <p class="nx-lede">
             Local AI, code, maps, media, games and your vault in one native Mac app. Offline on purpose, not by chance.
           </p>
           <div class="nx-actions">
-            <button class="nx-btn nx-btn--primary" id="primary-download" type="button">Download RoachNet 1.0.6 for macOS</button>
+            <button class="nx-btn nx-btn--primary" id="primary-download" type="button">Download RoachNet 1.0.7 for macOS</button>
             <button class="nx-btn" data-homebrew-install type="button">Install with Homebrew</button>
           </div>
           <p class="nx-hero__meta" id="download-meta">
-            <span>v1.0.6</span><span aria-hidden="true">·</span><span>376 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>lands in <code>~/RoachNet</code></span>
+            <span>v1.0.7</span><span aria-hidden="true">·</span><span>376 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>lands in <code>~/RoachNet</code></span>
           </p>
           <p class="nx-prose">
             Not Apple-notarized yet, so macOS asks you to approve it once. The Setup app and Homebrew both put everything in the same folder, so backing up, moving or deleting RoachNet is one drag.
@@ -6583,10 +6585,10 @@ This root is reconciled byte-for-byte from the current production source.
       <section class="nx-section" id="release" aria-labelledby="release-title">
         <div class="nx-section__head">
           <p class="nx-overline">What's new</p>
-          <h2 class="nx-h2" id="release-title">1.0.6: same RoachNet, lighter on its feet.</h2>
-          <p class="nx-lede">The engine underneath was rewritten in Swift. The download shrank, the setup got simpler, and the phone pairs properly again.</p>
+          <h2 class="nx-h2" id="release-title">1.0.7: the 1.0.6 engine, locked down.</h2>
+          <p class="nx-lede">A security patch for 1.0.6, which brought the native Swift engine. The local API stops trusting look-alike addresses and requests from other websites, the library catalog is current again, and the bundled Ollama is 0.40.3. If you run 1.0.6, update.</p>
         </div>
-        <ul class="nx-stats nx-reveal" aria-label="1.0.6 by the numbers">
+        <ul class="nx-stats nx-reveal" aria-label="1.0.7 by the numbers">
           <li class="nx-stat"><span class="nx-stat__value"><span data-count="376" data-suffix=" MB">376 MB</span></span><span class="nx-stat__label">Installer, down from 540</span></li>
           <li class="nx-stat"><span class="nx-stat__value"><span data-count="0">0</span><small>bundled Node</small></span><span class="nx-stat__label">Native Swift runtime</span></li>
           <li class="nx-stat"><span class="nx-stat__value">1<small>folder</small></span><span class="nx-stat__label">~/RoachNet, as always</span></li>
@@ -6599,9 +6601,9 @@ This root is reconciled byte-for-byte from the current production source.
             <p class="nx-card__body">No bundled Node, nothing extra to update behind your back.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
-            <p class="nx-card__eyebrow">Smaller download</p>
-            <h3 class="nx-card__title">376 MB, down from 540 MB in 1.0.5.</h3>
-            <p class="nx-card__body">Same apps, same <code>~/RoachNet</code>.</p>
+            <p class="nx-card__eyebrow">Security patch</p>
+            <h3 class="nx-card__title">Only your own Mac gets in.</h3>
+            <p class="nx-card__body">1.0.6 could be reached through a look-alike <code>127.</code> web address. 1.0.7 accepts real local addresses only and refuses requests from other sites.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Phone pairing</p>
@@ -6625,7 +6627,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="nx-grid nx-grid--2 nx-downloads">
           <button class="nx-card nx-card--feature nx-card--clickable download-hero-card nx-reveal" data-platform="mac" type="button">
             <p class="nx-card__eyebrow">macOS · Apple Silicon</p>
-            <h3 class="nx-card__title">Download RoachNet 1.0.6. It all lands in <code>~/RoachNet</code>.</h3>
+            <h3 class="nx-card__title">Download RoachNet 1.0.7. It all lands in <code>~/RoachNet</code>.</h3>
             <p class="nx-card__body">RoachNet-Setup-macOS.dmg · 376 MB · not Apple-notarized yet, so macOS asks once.</p>
             <p class="nx-card__foot nx-link nx-link--arrow">Download the DMG</p>
           </button>
@@ -6656,7 +6658,7 @@ This root is reconciled byte-for-byte from the current production source.
           Mac only. Browsers can't open Terminal, so Install with Homebrew downloads a small helper that runs there, adds Homebrew if it's missing, then installs RoachNet. Read it before you run it; it's short.
         </p>
         <div class="nx-actions nx-mt-24">
-          <button class="nx-btn nx-btn--primary" id="downloads-primary" type="button">Download RoachNet 1.0.6 for macOS</button>
+          <button class="nx-btn nx-btn--primary" id="downloads-primary" type="button">Download RoachNet 1.0.7 for macOS</button>
           <button class="nx-btn" data-homebrew-install type="button">Install with Homebrew</button>
           <a class="nx-btn" href="https://roachnet.org/ios/">RoachNet iOS</a>
         </div>
@@ -6727,8 +6729,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -6937,7 +6939,7 @@ This root is reconciled byte-for-byte from the current production source.
         <figure class="why-showcase" data-why-showcase>
           <div class="why-showcase__glow" aria-hidden="true"></div>
           <div class="why-showcase__window">
-            <div class="why-showcase__bar" aria-hidden="true"><i></i><i></i><i></i><span>RoachNet 1.0.6</span></div>
+            <div class="why-showcase__bar" aria-hidden="true"><i></i><i></i><i></i><span>RoachNet 1.0.7</span></div>
             <img src="./assets/screens/roachnet-native-home.webp" width="1568" height="1032" alt="RoachNet on macOS: the Home screen with RoachClaw, the vault and the runtime" loading="lazy" decoding="async" />
           </div>
         </figure>
@@ -7035,7 +7037,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="why-cta__status" data-landing-download-status>
             Hit the shortcut and the macOS download starts. We&rsquo;ll drop you at Home right after.
           </p>
-          <p class="why-cta__status why-cta__status--fine">RoachNet v1.0.6 is not Apple-notarized; macOS may ask you to approve it on first launch.</p>
+          <p class="why-cta__status why-cta__status--fine">RoachNet v1.0.7 is not Apple-notarized; macOS may ask you to approve it on first launch.</p>
           <div class="why-cta__buttons">
             <button class="nx-btn nx-btn--primary rn-btn rn-btn-primary" data-landing-download-button type="button">Download now</button>
             <a class="nx-btn rn-btn rn-btn-ghost" href="https://roachnet.org/home/">Skip to Home</a>
@@ -7093,8 +7095,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify rn-netlify-badge" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -7196,7 +7198,7 @@ This root is reconciled byte-for-byte from the current production source.
             <a class="nx-btn" href="#install">Install with SideStore or AltStore</a>
           </div>
           <p class="nx-hero__meta">
-            <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.6 for Mac</span>
+            <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.7 for Mac</span>
           </p>
           <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store, no RoachNet account, nobody in the middle.</p>
           <ul class="nx-chips" aria-label="What's in the app">
@@ -7294,7 +7296,7 @@ This root is reconciled byte-for-byte from the current production source.
         <div class="nx-section__head">
           <p class="nx-overline">What's new in 0.2.0</p>
           <h2 class="nx-h2" id="features-title">A new look, a Home tab and your agents on call.</h2>
-          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for RoachClaw Org in 1.1.</p>
+          <p class="nx-lede">0.2.0 works with RoachNet 1.0.6 and 1.0.7 on the Mac, and is ready for RoachClaw Org in 1.1.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--feature nx-reveal" role="listitem">
@@ -7467,8 +7469,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -16117,13 +16119,13 @@ This root is reconciled byte-for-byte from the current production source.
 ```text {chunk="package-lock-json" file="package-lock.json"}
 {
   "name": "roachnet-org",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
       "name": "roachnet-org",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "dependencies": {
         "@huggingface/transformers": "^3.8.1",
         "@netlify/blobs": "11.0.1",
@@ -18262,7 +18264,7 @@ This root is reconciled byte-for-byte from the current production source.
 {
   "name": "roachnet-org",
   "private": true,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "module",
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
@@ -20813,8 +20815,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -21247,7 +21249,7 @@ This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="site-account-js" file="site-account.js"}
 const defaultSiteConfig = {
-  releaseVersion: '1.0.6',
+  releaseVersion: '1.0.7',
   auth: {
     enabled: false,
     provider: 'supabase',
@@ -21549,7 +21551,7 @@ This root is reconciled byte-for-byte from the current production source.
           <h1 class="nx-display" id="hero-title">Everything, <span class="nx-accent">one page.</span></h1>
           <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
           <ul class="nx-status" aria-label="Current versions">
-            <li data-state="online">macOS v1.0.6</li>
+            <li data-state="online">macOS v1.0.7</li>
             <li data-state="online">iOS v0.2.0</li>
             <li data-state="pending">1.1 in the workshop</li>
           </ul>
@@ -21583,7 +21585,7 @@ This root is reconciled byte-for-byte from the current production source.
             <h2 class="nx-card__title">Accounts and services</h2>
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats, saved apps and a device list. The rest stays home.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.7 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/about/">About RoachWares</a><p>Who builds it, and the rules it is built by.</p></li>
             </ul>
@@ -21652,8 +21654,8 @@ This root is reconciled byte-for-byte from the current production source.
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
@@ -23994,7 +23996,7 @@ assert.match(nxCss, /html\.nx \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*backgro
 assert.match(nxCss, /@media \(prefers-reduced-motion: reduce\)/, 'nx.css must stand decorative motion down')
 assert.match(missionCss, /@media \(prefers-reduced-motion: reduce\)/, 'Mission styles must stand decorative motion down')
 assert.doesNotMatch(landingHtml, /why-blockquote__lines" aria-hidden/, 'the three blockquote lines are content, not decoration')
-assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.6"/, 'release accessible name must include its visible version')
+assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.7"/, 'release accessible name must include its visible version')
 assert.match(landingHtml, /<a class="nx-nav__link is-current" href="#top" aria-current="page">Mission<\/a>/, 'Mission is the current page in the nav')
 const landingLogo = await readFile(path.join(root, 'favicon-32x32.png'))
 assert.equal(landingLogo.readUInt32BE(16), 32, 'favicon width budget')
@@ -24192,7 +24194,7 @@ assert.doesNotMatch(catalogText, /"(?:subtitle|status|summary|machineFit)": "[^"
   assert.ok(iosPage.includes(`data-altstore-source href="altstore://source?url=${sourceJson}"`), 'AltStore button adds the source')
   assert.ok(iosScript.includes('`sidestore://source?url=${sourceURL}`'))
   assert.ok(iosScript.includes('`altstore://source?url=${sourceURL}`'))
-  assert.match(iosScript, new RegExp(`const sourceURL = '${sourceJson.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`))
+  assert.ok(iosScript.includes(`const sourceURL = '${sourceJson}'`), 'the script adds the same source as the page')
 }
 
 console.log('site outcome checks passed')

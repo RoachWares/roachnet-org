@@ -14,7 +14,7 @@ IOS_BODY = '''
             <a class="nx-btn" href="#install">Install with SideStore or AltStore</a>
           </div>
           <p class="nx-hero__meta">
-            <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.6 for Mac</span>
+            <span>v0.2.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.0.7 for Mac</span>
           </p>
           <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store, no RoachNet account, nobody in the middle.</p>
           <ul class="nx-chips" aria-label="What's in the app">
@@ -112,7 +112,7 @@ IOS_BODY = '''
         <div class="nx-section__head">
           <p class="nx-overline">What's new in 0.2.0</p>
           <h2 class="nx-h2" id="features-title">A new look, a Home tab and your agents on call.</h2>
-          <p class="nx-lede">0.2.0 is built for RoachNet 1.0.6 on the Mac, and ready for RoachClaw Org in 1.1.</p>
+          <p class="nx-lede">0.2.0 works with RoachNet 1.0.6 and 1.0.7 on the Mac, and is ready for RoachClaw Org in 1.1.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--feature nx-reveal" role="listitem">
@@ -251,10 +251,10 @@ BREW_BODY = '''
             <button class="nx-btn" data-homebrew-copy type="button">Copy brew command</button>
           </div>
           <p class="nx-hero__meta">
-            <span>RoachNet 1.0.6</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>needs <a class="nx-link" href="https://brew.sh" target="_blank" rel="noreferrer">Homebrew</a></span>
+            <span>RoachNet 1.0.7</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>needs <a class="nx-link" href="https://brew.sh" target="_blank" rel="noreferrer">Homebrew</a></span>
           </p>
           <p class="nx-prose" id="homebrew-note">
-            RoachNet v1.0.6 is not Apple-notarized yet, so the cask clears only the macOS flags that would block launch, then runs the same native installer the Setup app uses. It brings its own tools instead of borrowing yours.
+            RoachNet v1.0.7 is not Apple-notarized yet, so the cask clears only the macOS flags that would block launch, then runs the same native installer the Setup app uses. It brings its own tools instead of borrowing yours.
           </p>
         </div>
         <div class="nx-hero__visual" aria-hidden="true">
@@ -374,13 +374,13 @@ BREW_BODY = '''
           <div class="nx-console__bar"><i></i><i></i><i></i> Checksum · RoachNet-Setup-macOS.dmg</div>
           <div class="nx-console__body">
             <span class="nx-console__line">shasum -a 256 ~/Downloads/RoachNet-Setup-macOS.dmg</span>
-            <span class="nx-console__line nx-console__line--out" id="dmg-sha">b6a31dc48faf6a48822bb6770fc8958473c2e0bed460e5ca131f9ab460a90a6f</span>
+            <span class="nx-console__line nx-console__line--out" id="dmg-sha">2ccf51663fa559f3461304c7f2644e697483eccd9543734ee684b87c4c2bf6e3</span>
           </div>
           <div class="nx-console__copy">
             <button class="nx-btn nx-btn--sm nx-btn--mono" data-nx-copy-target="#dmg-sha" data-nx-copied="Checksum copied" type="button">Copy</button>
           </div>
         </div>
-        <p class="nx-prose nx-mt-16">The Setup app and Homebrew pull the exact same file from the public release, and the published <a class="nx-link" href="https://github.com/RoachWares/RoachNet/releases/download/v1.0.6/RoachNet-Setup-macOS.dmg.sha256" target="_blank" rel="noreferrer">checksum sidecar</a> is what the cask verifies against. Check it yourself.</p>
+        <p class="nx-prose nx-mt-16">The Setup app and Homebrew pull the exact same file from the public release, and the published <a class="nx-link" href="https://github.com/RoachWares/RoachNet/releases/download/v1.0.7/RoachNet-Setup-macOS.dmg.sha256" target="_blank" rel="noreferrer">checksum sidecar</a> is what the cask verifies against. Check it yourself.</p>
         <div class="nx-actions nx-mt-24">
           <a class="nx-btn" href="https://roachnet.org/api/">Read the API docs</a>
           <a class="nx-btn" href="https://github.com/RoachWares/homebrew-roachnet" target="_blank" rel="noreferrer">Read the cask</a>
@@ -397,7 +397,7 @@ SITEMAP_BODY = '''
           <h1 class="nx-display" id="hero-title">Everything, <span class="nx-accent">one page.</span></h1>
           <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
           <ul class="nx-status" aria-label="Current versions">
-            <li data-state="online">macOS v1.0.6</li>
+            <li data-state="online">macOS v1.0.7</li>
             <li data-state="online">iOS v0.2.0</li>
             <li data-state="pending">1.1 in the workshop</li>
           </ul>
@@ -431,7 +431,7 @@ SITEMAP_BODY = '''
             <h2 class="nx-card__title">Accounts and services</h2>
             <ul class="nx-sitemap__list">
               <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats, saved apps and a device list. The rest stays home.</p></li>
-              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.7 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/about/">About RoachWares</a><p>Who builds it, and the rules it is built by.</p></li>
             </ul>
@@ -469,12 +469,12 @@ def build(page):
     page(
         "brew/index.html",
         title="RoachNet Brew: Three commands to ~/RoachNet",
-        description="Install RoachNet 1.0.6 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window.",
+        description="Install RoachNet 1.0.7 with Homebrew. Same app, same ~/RoachNet folder, same checksum as the Setup app, no setup window.",
         canonical="https://roachnet.org/brew/",
         image="https://roachnet.org/assets/screens/roachnet-native-home.webp",
         rel="../",
         current="brew",
-        sub="Brew · v1.0.6",
+        sub="Brew · v1.0.7",
         body=BREW_BODY,
         scripts='    <script src="../site-config.js"></script>\n    <script src="../app.js" type="module"></script>\n    <script src="../nx.js" type="module"></script>\n',
     )

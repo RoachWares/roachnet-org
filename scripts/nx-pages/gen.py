@@ -129,8 +129,8 @@ def footer(home_href="https://roachnet.org/home/", extra_meta=""):
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.6"
-          >v1.0.6</a>
+            aria-label="Latest RoachNet release v1.0.7"
+          >v1.0.7</a>
           <span>© 2026 RoachWares LLC</span>{extra_meta}
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
