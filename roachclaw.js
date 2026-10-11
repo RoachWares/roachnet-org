@@ -822,19 +822,28 @@ if (root) {
       }
       renderMessages()
 
-      const response = await fetch(authState.config?.webChat?.endpoint || '/.netlify/functions/roachclaw-chat', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          threadId: activeThreadId,
-          message,
-        }),
-      })
+      // A cold hosted model answers 503 "warming" before anything is written;
+      // try again twice while it finishes loading.
+      let response
+      let payload
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        response = await fetch(authState.config?.webChat?.endpoint || '/.netlify/functions/roachclaw-chat', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            threadId: activeThreadId,
+            message,
+          }),
+        })
+        payload = await response.json().catch(() => ({}))
+        if (response.status !== 503 || payload?.code !== 'warming' || attempt === 2) break
+        setComposerFeedback('RoachClaw on the web is waking up. Sending again in a few seconds…')
+        await new Promise((resolve) => setTimeout(resolve, 5000))
+      }
 
-      const payload = await response.json().catch(() => ({}))
       if (!response.ok || payload?.ok !== true) {
         throw new Error(payload?.message || "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
       }

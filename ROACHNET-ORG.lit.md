@@ -227,13 +227,21 @@ function rowsLoading(list) {
   )
 }
 
-function renderRow({ title, detail, meta, tag }) {
+function renderRow({ title, detail, meta, tag, href, action }) {
   const item = document.createElement('li')
   item.className = 'ac-row'
   const copy = document.createElement('div')
   copy.className = 'ac-row__copy'
   const strong = document.createElement('strong')
-  strong.textContent = title
+  if (href) {
+    const link = document.createElement('a')
+    link.className = 'ac-row__link'
+    link.href = href
+    link.textContent = title
+    strong.append(link)
+  } else {
+    strong.textContent = title
+  }
   copy.append(strong)
   if (detail) {
     const span = document.createElement('span')
@@ -255,8 +263,37 @@ function renderRow({ title, detail, meta, tag }) {
     time.textContent = meta
     side.append(time)
   }
+  if (action) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'ac-row__action'
+    button.textContent = action.label
+    button.setAttribute('aria-label', action.ariaLabel || action.label)
+    button.addEventListener('click', () => action.run(button))
+    side.append(button)
+  }
   item.append(side)
   return item
+}
+
+// Store links: the id is validated by the store before it is ever saved, but
+// it is still encoded here so a row can only ever link into apps.roachnet.org.
+function storeLinkFor(appId) {
+  return `https://apps.roachnet.org/#app-${encodeURIComponent(String(appId || ''))}`
+}
+
+async function removeSavedApp(client, row, button) {
+  button.disabled = true
+  button.textContent = 'Removing…'
+  const { error } = await client.from('saved_apps').delete().eq('id', row.id)
+  if (error) {
+    button.disabled = false
+    button.textContent = 'Remove'
+    toast("That app didn't come off your list. Try again in a moment.")
+    return
+  }
+  toast(`Removed ${row.title || row.app_id} from your saved apps.`)
+  await syncSnapshot()
 }
 
 function setSnapshot({
@@ -468,13 +505,13 @@ function renderStatus() {
 
   setAuthView('signed-out')
   statusTitle.textContent = 'Not signed in.'
-  statusBody.textContent = 'Sign in to see your devices and RoachClaw threads, or make an account in a minute.'
+  statusBody.textContent = 'Sign in to see your devices, saved apps and RoachClaw threads, or make an account in a minute.'
   statusBadge.textContent = 'Ready'
   statusBadge.dataset.state = 'ready'
   signOutButton.hidden = true
   setSnapshot({
     title: "Sign in to see what's here.",
-    body: 'Your devices and RoachClaw threads show up here once you sign in.',
+    body: 'Your devices, saved apps and RoachClaw threads show up here once you sign in.',
   })
   rowsEmpty(deviceList, 'Nothing to show until you sign in.')
   rowsEmpty(appList, 'Nothing to show until you sign in.')
@@ -531,7 +568,7 @@ async function loadSnapshot() {
       .from('saved_apps')
       .select('id, app_id, title, category, updated_at', { count: 'exact' })
       .order('updated_at', { ascending: false })
-      .limit(8),
+      .limit(12),
     // The thread count is a nice-to-have; a failure here never blocks the snapshot.
     Promise.resolve(client.from('chat_threads').select('id', { count: 'exact', head: true })).catch((error) => ({ error })),
   ])
@@ -610,14 +647,20 @@ async function loadSnapshot() {
 
   if (appList) {
     if (!appRows.length) {
-      rowsEmpty(appList, "Nothing here yet. The store can't save picks today, so this list stays empty.")
+      rowsEmpty(appList, 'Nothing saved yet. Press Save on anything in apps.roachnet.org and it shows up here.')
     } else {
       appList.replaceChildren(
         ...appRows.map((app) =>
           renderRow({
             title: app.title || app.app_id,
+            href: storeLinkFor(app.app_id),
             detail: app.category || '',
             meta: formatRelativeTime(app.updated_at),
+            action: {
+              label: 'Remove',
+              ariaLabel: `Remove ${app.title || app.app_id} from your saved apps`,
+              run: (button) => removeSavedApp(client, app, button),
+            },
           })
         )
       )
@@ -884,7 +927,7 @@ This root is reconciled byte-for-byte from the current production source.
     <title>RoachNet Account</title>
     <meta
       name="description"
-      content="An optional RoachNet account for RoachClaw web conversations and a short list of your devices. Your models, vault and files stay on your Mac."
+      content="An optional RoachNet account for RoachClaw web conversations, apps you save in the store and a short list of your devices. Your models, vault and files stay on your Mac."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://accounts.roachnet.org/" />
@@ -896,7 +939,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta property="og:title" content="RoachNet Account" />
     <meta
       property="og:description"
-      content="The small stuff travels: RoachClaw web threads and a device list. The heavy stuff stays on your Mac."
+      content="The small stuff travels: RoachClaw web threads, saved apps and a device list. The heavy stuff stays on your Mac."
     />
     <meta property="og:url" content="https://accounts.roachnet.org/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
@@ -904,7 +947,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta name="twitter:title" content="RoachNet Account" />
     <meta
       name="twitter:description"
-      content="The small stuff travels: RoachClaw web threads and a device list. The heavy stuff stays on your Mac."
+      content="The small stuff travels: RoachClaw web threads, saved apps and a device list. The heavy stuff stays on your Mac."
     />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-native-roachclaw.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
@@ -954,7 +997,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="nx-overline">RoachNet Account · optional</p>
           <h1 class="nx-display ac-title" id="account-title">The small stuff travels. <span class="nx-accent">The rest stays home.</span></h1>
           <p class="nx-lede">
-            You don't need an account to use RoachNet. Make one and it keeps your RoachClaw web conversations and a short list of the devices you signed in from. Your models, vault and files never leave your Mac.
+            You don't need an account to use RoachNet. Make one and it keeps your RoachClaw web conversations, the apps you save in the store and a short list of the devices you signed in from. Your models, vault and files never leave your Mac.
           </p>
           <div class="nx-actions">
             <a class="nx-btn nx-btn--primary" href="https://roachnet.org/roachclaw/">Open RoachClaw on the web</a>
@@ -1041,7 +1084,7 @@ This root is reconciled byte-for-byte from the current production source.
             <p class="nx-card__eyebrow nx-card__eyebrow--cyan">Syncs with your account</p>
             <ul class="ac-list">
               <li><strong>RoachClaw web conversations</strong><span>The threads and replies you send from a browser.</span></li>
-              <li><strong>Saved app picks</strong><span>Not yet. The store can't save picks today, so nothing goes here.</span></li>
+              <li><strong>Saved app picks</strong><span>Apps you press Save on in the store, so they're there in any browser.</span></li>
               <li><strong>Your device list</strong><span>A name, a platform and a last-seen time for each device you sign in from.</span></li>
               <li><strong>A few web settings</strong><span>Small preferences for the website.</span></li>
             </ul>
@@ -1063,7 +1106,7 @@ This root is reconciled byte-for-byte from the current production source.
           <div>
             <p class="nx-overline">Your account</p>
             <h2 class="nx-h2" id="account-snapshot-title">Sign in to see what's here.</h2>
-            <p class="nx-lede" id="account-snapshot-body">Your devices and RoachClaw threads show up here once you sign in.</p>
+            <p class="nx-lede" id="account-snapshot-body">Your devices, saved apps and RoachClaw threads show up here once you sign in.</p>
           </div>
         </div>
 
@@ -1087,7 +1130,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card ac-panel">
             <div class="ac-panel__head">
               <h3 class="nx-h3">Saved apps</h3>
-              <p class="ac-panel__meta">Not in use yet</p>
+              <p class="ac-panel__meta"><a class="nx-link" href="https://apps.roachnet.org/#saved">Open in the store</a></p>
             </div>
             <ul class="ac-rows" id="account-app-list">
               <li class="ac-rows__empty">Nothing to show until you sign in.</li>
@@ -1138,7 +1181,7 @@ This root is reconciled byte-for-byte from the current production source.
       <div class="nx-foot__grid">
         <div class="nx-foot__brand">
           <strong>RoachNet Account</strong>
-          <span>Optional. It carries RoachClaw web threads and your device list. The heavy lifting stays on your Mac.</span>
+          <span>Optional. It carries RoachClaw web threads, saved apps and your device list. The heavy lifting stays on your Mac.</span>
           <span>Made by <a class="nx-link" href="https://www.roachwares.org/">RoachWares LLC</a>.</span>
         </div>
         <div class="nx-foot__col">
@@ -2791,7 +2834,7 @@ const apiGroups = [
         ],
         response: [
           '`{ ok: true, requiresConfirmation, message, userId }`',
-          '400 `captcha_required`, 403 `captcha_failed`, 409 `user_exists`, 413 over 16 KB. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
+          '400 `captcha_required`, 403 `captcha_failed`, 413 over 16 KB. An address that already has an account gets the same answer as a new one. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
         ],
         implementation:
           'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
@@ -2818,10 +2861,11 @@ const apiGroups = [
         ],
         response: [
           '`{ ok, thread, userMessage, assistantMessage, provider, model }`',
-          '400 for a bad `threadId` or bridge address. 401 without a valid session. 404 for a thread that is not yours. 413 over 64 KB. 429 `rate_limited` after 20 messages in 10 minutes or 200 in a day. 503 when web chat is off or the limiter is down. 500 if the reply fails.',
+          '400 for a bad `threadId` or bridge address. 401 without a valid session. 404 for a thread that is not yours. 413 over 64 KB. 429 `rate_limited` after 20 messages in 10 minutes or 200 in a day. 503 when web chat is off, the limiter is down, or the model is still loading (`warming`; nothing is written, send it again). 500 if the reply fails.',
+          '`GET ?health=runtime` answers without a token: whether this deploy can load the hosted model.',
         ],
         implementation:
-          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: a small open model running inside the function.',
+          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: SmolLM2 135M (Apache-2.0, pinned to one Hugging Face commit), running on ONNX inside the function and downloaded into its /tmp on a cold start.',
       },
     ],
   },
@@ -3955,6 +3999,10 @@ This root is reconciled byte-for-byte from the current production source.
 // installIntent and handed to the native app by attemptNativeInstall.
 // CSP note: the apps CSP is style-src 'self', so nothing here writes a style
 // attribute into markup. Dynamic values go through CSSOM (style.setProperty).
+// Save buttons go through saved-apps.js (account when signed in, this browser
+// otherwise).
+
+import { createSavedApps } from './saved-apps.js'
 
 const owner = 'RoachWares'
 const repo = 'RoachNet'
@@ -3981,6 +4029,15 @@ const sectionDefinitions = [
     group: 'Discover',
   },
   {
+    key: 'Saved',
+    navLabel: 'Saved',
+    eyebrow: 'Saved for later',
+    title: 'Your saved apps.',
+    description: 'Press Save on anything in the store and it waits here.',
+    icon: 'SAV',
+    group: 'Discover',
+  },
+  {
     key: 'Map Regions',
     navLabel: 'Map Regions',
     eyebrow: 'Offline atlas',
@@ -3996,7 +4053,7 @@ const sectionDefinitions = [
     navLabel: 'Map Picks',
     eyebrow: 'Single-file maps',
     title: 'One place, one file.',
-    description: 'One state or territory per file, for when you need California, not the whole Pacific shelf.',
+    description: 'One state or territory per file, for when you need California, not the whole Pacific Region.',
     short: 'One state or territory, one file.',
     icon: 'PIN',
     group: 'Maps',
@@ -4560,6 +4617,8 @@ let animateNextRender = true
 let toastNode = null
 let toastTimer = null
 
+const saved = createSavedApps({ onChange: handleSavedChange })
+
 /* ---------------------------------------------------------------------------
    Small helpers
    ------------------------------------------------------------------------ */
@@ -4652,7 +4711,7 @@ function announce(message) {
   }, 40)
 }
 
-function showToast(message) {
+function showToast(message, { long = false } = {}) {
   if (!toastNode) {
     toastNode = document.createElement('div')
     toastNode.className = 'nx-toast'
@@ -4663,7 +4722,7 @@ function showToast(message) {
   toastNode.textContent = message
   toastNode.classList.add('is-on')
   window.clearTimeout(toastTimer)
-  toastTimer = window.setTimeout(() => toastNode.classList.remove('is-on'), 2200)
+  toastTimer = window.setTimeout(() => toastNode.classList.remove('is-on'), long ? 5200 : 2200)
 }
 
 /* ---------------------------------------------------------------------------
@@ -4912,7 +4971,9 @@ function searchItems(items, query) {
 }
 
 function itemsInSection(sectionKey, items = state.items) {
-  return sectionKey === 'Today' ? items : items.filter((item) => item.section === sectionKey)
+  if (sectionKey === 'Today') return items
+  if (sectionKey === 'Saved') return items.filter((item) => saved.has(item.id))
+  return items.filter((item) => item.section === sectionKey)
 }
 
 function readyFirst(items) {
@@ -4992,6 +5053,56 @@ function renderInstallControl(item, variant = 'card') {
   `
 }
 
+const bookmarkIcon = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 2.5h8v11l-4-2.8-4 2.8z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
+
+/** Save toggles keep one accessible name; aria-pressed carries the state. */
+function renderSaveControl(item, variant = 'card') {
+  const isSaved = saved.has(item.id)
+  const classes = variant === 'card' ? 'st-save' : 'nx-btn st-save st-save--sheet'
+  return `
+    <button class="${classes}" type="button" data-save-id="${escapeHtml(item.id)}" aria-pressed="${isSaved}" aria-label="${escapeHtml(`Save ${item.title}`)}">
+      ${bookmarkIcon}<span class="st-save__label">${isSaved ? 'Saved' : 'Save'}</span>
+    </button>
+  `
+}
+
+function syncSaveButtons() {
+  document.querySelectorAll('[data-save-id]').forEach((button) => {
+    const isSaved = saved.has(button.dataset.saveId || '')
+    button.setAttribute('aria-pressed', String(isSaved))
+    const label = button.querySelector('.st-save__label')
+    if (label) label.textContent = isSaved ? 'Saved' : 'Save'
+  })
+}
+
+function handleSavedChange() {
+  syncSaveButtons()
+  if (!state.catalog) return
+  updateRail()
+  if (state.activeSection === 'Saved') queueRender()
+}
+
+async function toggleSave(button) {
+  const item = findItemById(button.dataset.saveId || '')
+  if (!item || button.getAttribute('aria-busy') === 'true') return
+  button.setAttribute('aria-busy', 'true')
+  try {
+    const result = await saved.toggle(item)
+    if (!result.saved) {
+      showToast(`Removed ${item.title} from your saved apps.`)
+    } else if (result.where === 'account') {
+      showToast(`Saved ${item.title} to your account.`)
+    } else {
+      showToast(`Saved ${item.title} in this browser. Sign in to keep it everywhere.`, { long: true })
+    }
+  } catch (error) {
+    showToast(`Couldn’t save ${item.title}. ${error?.message || 'Try again in a moment.'}`, { long: true })
+  } finally {
+    button.removeAttribute('aria-busy')
+    syncSaveButtons()
+  }
+}
+
 function renderCard(item, { kicker = 'section' } = {}) {
   const kickerText = kicker === 'status' ? item.status || item.sectionMeta.navLabel : item.sectionMeta.navLabel
   return `
@@ -5007,7 +5118,7 @@ function renderCard(item, { kicker = 'section' } = {}) {
       </div>
       <p class="st-card__blurb">${escapeHtml(item.blurb)}</p>
       ${renderBadges(item)}
-      <div class="st-card__foot">${renderInstallControl(item, 'card')}</div>
+      <div class="st-card__foot">${renderInstallControl(item, 'card')}${renderSaveControl(item, 'card')}</div>
     </article>
   `
 }
@@ -5171,6 +5282,19 @@ function renderListView() {
         <button class="nx-chip" type="button" data-clear-search>Clear search</button>
       </div>
     `)
+  } else if (section.key === 'Saved') {
+    renderSectionHead(`
+      <div class="st-section-head__copy">
+        <p class="nx-overline">${escapeHtml(section.eyebrow)}</p>
+        <h2 class="st-section-head__title">${escapeHtml(section.title)}</h2>
+        <p class="st-section-head__lede">${saved.signedIn
+          ? 'Kept in your RoachNet account, so they follow you to any browser.'
+          : 'Kept in this browser. Sign in on your RoachNet account and they move there, so they follow you to any browser.'}</p>
+      </div>
+      <div class="st-section-head__meta">
+        ${saved.signedIn ? '' : '<a class="nx-chip" href="https://accounts.roachnet.org/">Sign in</a>'}
+      </div>
+    `)
   } else {
     renderSectionHead(`
       <div class="st-section-head__copy">
@@ -5184,6 +5308,20 @@ function renderListView() {
       </ul>
       ${renderAvailabilityNotice(items)}
     `)
+  }
+
+  if (!items.length && !query && section.key === 'Saved') {
+    storeStage.innerHTML = `
+      <section class="st-empty" aria-labelledby="apps-empty-title">
+        <span class="st-empty__art" aria-hidden="true"><span>0</span></span>
+        <h2 class="st-empty__title" id="apps-empty-title">Nothing saved yet.</h2>
+        <p class="st-empty__body">Press Save on any card and it waits here until you want it.</p>
+        <div class="st-empty__actions">
+          <button class="nx-btn nx-btn--primary nx-btn--sm" type="button" data-section="Today">Browse the store</button>
+        </div>
+      </section>
+    `
+    return
   }
 
   if (!items.length) {
@@ -5235,7 +5373,7 @@ function updateRail() {
 
   sidebarNav.querySelectorAll('[data-section]').forEach((link) => {
     const key = link.dataset.section
-    const count = key === 'Today' ? pool.length : counts.get(key) || 0
+    const count = key === 'Today' ? pool.length : key === 'Saved' ? pool.filter((item) => saved.has(item.id)).length : counts.get(key) || 0
     const isActive = key === state.activeSection
     const countNode = link.querySelector('[data-rail-count]')
     if (countNode) countNode.textContent = String(count)
@@ -5425,6 +5563,7 @@ function renderDetail(item) {
 
       <div class="st-detail__actions">
         ${renderInstallControl(item, 'sheet')}
+        ${renderSaveControl(item, 'sheet')}
         <button class="nx-btn st-copy" type="button" data-copy-link="${escapeHtml(item.id)}">
           <span class="st-copy__label">Copy link</span>
         </button>
@@ -5699,6 +5838,13 @@ storeContent?.addEventListener('click', (event) => {
     return
   }
 
+  const saveButton = event.target.closest('[data-save-id]')
+  if (saveButton) {
+    event.preventDefault()
+    toggleSave(saveButton)
+    return
+  }
+
   const previewButton = event.target.closest('[data-preview-id]')
   if (previewButton) {
     event.preventDefault()
@@ -5725,6 +5871,11 @@ detailClose?.addEventListener('click', closeDetail)
 detailOverlay?.addEventListener('click', (event) => {
   if (event.target === detailOverlay) {
     closeDetail()
+    return
+  }
+  const saveButton = event.target.closest('[data-save-id]')
+  if (saveButton) {
+    toggleSave(saveButton)
     return
   }
   const copyButton = event.target.closest('[data-copy-link]')
@@ -5815,6 +5966,7 @@ document.addEventListener('visibilitychange', () => {
 setDownloadButton()
 startTelemetry()
 loadCatalog()
+saved.start()
 ```
 
 ## brew/index.html
@@ -7204,11 +7356,11 @@ This root is reconciled byte-for-byte from the current production source.
             <h3 class="nx-card__title">Add the source, or hand SideStore the IPA directly.</h3>
             <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
+              <a class="nx-btn nx-btn--primary" data-sidestore-source href="sidestore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
               <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
             </div>
-            <p class="nx-card__body" data-sidestore-note>Add the RoachNet source in SideStore, or download the IPA and share it to SideStore to install.</p>
+            <p class="nx-card__body" data-sidestore-note>Opens SideStore with the RoachNet source ready to add. Or download the IPA and share it to SideStore.</p>
             <p class="nx-card__body" data-sidestore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
             <ol class="nx-steps nx-mt-16">
               <li class="nx-step"><strong>Add the RoachNet source to SideStore.</strong></li>
@@ -7221,11 +7373,11 @@ This root is reconciled byte-for-byte from the current production source.
             <h3 class="nx-card__title">Use the same RoachNet source in AltStore.</h3>
             <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
+              <a class="nx-btn nx-btn--primary" data-altstore-source href="altstore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
               <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
             </div>
-            <p class="nx-card__body" data-altstore-note>Add the same RoachNet source in AltStore, or download the IPA and import it from Files.</p>
+            <p class="nx-card__body" data-altstore-note>Opens AltStore with the same source ready to add. Or download the IPA and import it from Files.</p>
             <p class="nx-card__body" data-altstore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
             <ol class="nx-steps nx-mt-16">
               <li class="nx-step"><strong>Install AltStore and keep AltServer available on your Mac.</strong></li>
@@ -11833,6 +11985,22 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
 
 .ac-row__meta { color: var(--nx-soft); font: 500 12px/1.3 var(--nx-font-mono); white-space: nowrap; }
 
+.ac-row__link { color: inherit; text-decoration: none; }
+.ac-row__link:hover { color: var(--nx-cyan); text-decoration: underline; text-underline-offset: 3px; }
+
+.ac-row__action {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--nx-border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--nx-muted);
+  font: 600 12.5px/1 var(--nx-font-sans);
+  cursor: pointer;
+}
+.ac-row__action:hover { color: var(--nx-text); border-color: rgba(255, 255, 255, 0.28); }
+.ac-row__action:disabled { opacity: 0.6; cursor: progress; }
+
 .ac-rows__empty {
   padding: 18px 16px;
   border-radius: 12px;
@@ -15081,12 +15249,22 @@ body.app-detail-open {
 .st-card__foot {
   position: relative;
   z-index: 2;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 8px;
-  justify-items: start;
   margin-top: auto;
   padding-top: 4px;
   pointer-events: none;
+}
+
+.st-card__foot > .st-install-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.st-card__foot > .st-save {
+  margin-left: auto;
 }
 
 .st-card__foot > * {
@@ -15619,6 +15797,55 @@ body.app-detail-open {
   min-height: 48px;
 }
 
+/* Save toggle: a quiet pill on cards, a full button in the sheet. */
+.st-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--nx-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-muted);
+  font: 600 13px/1 var(--nx-font-sans);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-save:hover {
+  color: var(--nx-text);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.st-save svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.st-save[aria-pressed="true"] {
+  color: var(--nx-signal);
+  border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
+}
+
+.st-save[aria-pressed="true"] svg path {
+  fill: currentColor;
+}
+
+.st-save[aria-busy="true"] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.st-save--sheet {
+  min-height: 48px;
+  border-radius: var(--nx-r-md);
+  font-size: 14.5px;
+}
+
 .st-copy.is-done {
   color: var(--nx-signal);
   border-color: rgba(54, 255, 132, 0.45);
@@ -15903,6 +16130,7 @@ This root is reconciled byte-for-byte from the current production source.
         "sharp": "file:./vendor/sharp-stub"
       },
       "devDependencies": {
+        "esbuild": "0.28.2",
         "html-validate": "10.9.0",
         "puppeteer-core": "25.8.0"
       }
@@ -15918,6 +16146,448 @@ This root is reconciled byte-for-byte from the current production source.
       },
       "engines": {
         "node": ">=18.0.0"
+      }
+    },
+    "node_modules/@esbuild/aix-ppc64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.28.2.tgz",
+      "integrity": "sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "aix"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-arm": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.28.2.tgz",
+      "integrity": "sha512-kXXoiPVVGQcnIYGOeaovwOURpniDBpSq4A03qkQ+BMQqtGG6HYap3xne9C1O1yo4TR3qxlCX5IqqmX6fFo2Lqg==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.28.2.tgz",
+      "integrity": "sha512-5YfKeeI8qWfBZIX+u2xZC3Zlb3Os/gLS2sbEKM+I4ZOcsWmHS2WLysCcQZDAFRslDUU5Oiq44gf6PYN1vGwG5A==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/android-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.28.2.tgz",
+      "integrity": "sha512-O387ite7SzUyCcy3JQX4P4bLtEA7bLLkx+esve5JHnyYfNTxcVpXZo9jhdB0lTKN44gztELTdU7nS8Nr16Fs1Q==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "android"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/darwin-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.28.2.tgz",
+      "integrity": "sha512-n4KqkOQrraxHJcgjM1RvwbigfQKIKJVpM7xp+KsxiyUSrRdIXnt73VhrPAx0fV44hgfmIVKjxMN9J1t5jySVkw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/darwin-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.28.2.tgz",
+      "integrity": "sha512-uq6suIWYP37qzGddBKPw5QEQPi6HiLGsO7UmkpfyaYNQ3D+rN6w6WfwH+nuqcGXWvawGwxOEroO4YGnFh95azw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "darwin"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/freebsd-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.28.2.tgz",
+      "integrity": "sha512-n+I0BTSRIoy+d6RPKnEVwql5UwBJolytvY4mAOIEJorKlqgPII8ix6slVVrfZ5Tnj7glIZvloylbB/EJPMWEXw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/freebsd-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.28.2.tgz",
+      "integrity": "sha512-78XJTJkvPs0kz2w61301PJjXl4g7q3JqiYMZ/M/yVI73EHBrCRTgkhu9oqG7vPqq+a/yadEW8aD+agKlk5xrmg==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "freebsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-arm": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.28.2.tgz",
+      "integrity": "sha512-XlDnu2q5yoqems+xay6wSAcg9DDD7K9RLKZEBOMZm3ckNpJBvOX20tSfby8KfrrhINDyv9V2YVZKY/SpoGJI8w==",
+      "cpu": [
+        "arm"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.28.2.tgz",
+      "integrity": "sha512-pW4AC0P3it8c7do9MVM4p51FzHzdM/TZrerurgRcHJ2WTa1VQ1CIq18xncfpBJw4ojkiZZrKW2yIBWBP92j6Ug==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-ia32": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.28.2.tgz",
+      "integrity": "sha512-CYbnj78HsIeA+DhgUKgFCfvNsTHFhMMrinUrMZpDXJXKN8T3XViTZ/+wtHeVxEWY8ewSzTFN+nRmSwO2tZaLUQ==",
+      "cpu": [
+        "ia32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-loong64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.28.2.tgz",
+      "integrity": "sha512-buwkd8nsph4R+ajRvw0qM5Hja/TXQow3ptzWO2EbG/cqcIkHloRrdlBtQlshyYGTNFvfkfJ5tpPLVkY4DtsPfQ==",
+      "cpu": [
+        "loong64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-mips64el": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.28.2.tgz",
+      "integrity": "sha512-ZVykbDyk7519VwiNb9Lcj9m8XM6v5V9uKPvrEMkkEedVewf+0itkhahp4HDpgERXhwLRpWFypsGbG/J8s0QjJA==",
+      "cpu": [
+        "mips64el"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-ppc64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.28.2.tgz",
+      "integrity": "sha512-CAXl+Dtd9UUuJd8pKKdwh6MLm3MUMiqMPmhZ3tTSXPqfyQ3vDl6R5hZdZ/kYojK4ofXtdfSv1tFq8XzWx3heNQ==",
+      "cpu": [
+        "ppc64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-riscv64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.28.2.tgz",
+      "integrity": "sha512-GeXCej4IQtU1B+QlDV8W/RRvbzI3O/Stss+/bCXv4lZls5WGRtu2a+3JkA3i4qIUlMXpcHebWpF8AkJhATowuA==",
+      "cpu": [
+        "riscv64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-s390x": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.28.2.tgz",
+      "integrity": "sha512-3H1weTYZPxt/WOhByszQZybS9w5lKzUn1FDMsgEChbHWQwHYQQRfBxgCcZvPhjHfKyJjIievvMmEUawJrdY9Dg==",
+      "cpu": [
+        "s390x"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/linux-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.28.2.tgz",
+      "integrity": "sha512-4xTZr1FUmSoQW4XIWmit3tzQrUTZM+N3P0XV8xROKYF50XfI7xeO90+1bZvNwxIufQ9hDQVRJH5YhgPVF8A/HQ==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "linux"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/netbsd-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.28.2.tgz",
+      "integrity": "sha512-sSATRjPeDBg3pdgHoQfoYBob11Kk1FGa9lui5RIHZCoCkJa9QKlvl3/vKz2usCmYYjs7ymJR/2Nnsqe+Hjt5nw==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "netbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/netbsd-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.28.2.tgz",
+      "integrity": "sha512-lqnzCV+mM0gIADaKihiCg6ifgfU2L3h5E33rNQBN1Y4MaVGnzryzmvvf7UHxprpQdE8hpqLolJ9Rl+SkIRDpyw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "netbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openbsd-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.28.2.tgz",
+      "integrity": "sha512-AL2qJILH7lNjrDmCQDvdxMfAUIv8KMNZOvrwAQ8i8//ntL9FflhOyMJ8OZSMBb8/AWXe3/5v5S20y3zCoZWKoQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openbsd-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.28.2.tgz",
+      "integrity": "sha512-QtiuPytchRyC4rwUKhexJdQKvDuZ6hWloi3igqPQNUJCS1/v9EiO3UTOXR6A3FoMo4fnAKbWJdqaIwhOzh8qEw==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openbsd"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/openharmony-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.28.2.tgz",
+      "integrity": "sha512-WkhYDmpTjLvGlScA1rwjRUmhl4k8oXR3cIbtqWmELgU/dFeHHlEllxDvdWcNJV9rbzCexB5vz8gtNewWLgCT7Q==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "openharmony"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/sunos-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.28.2.tgz",
+      "integrity": "sha512-GPMSkTOtMnv2U2F8gxe4Io6qmVs+YKyp832Etqqxr0hFngmXQ3rzwytelm3GIn7T4VviRUlf3sOgBOiTdvaf7g==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "sunos"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-arm64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.28.2.tgz",
+      "integrity": "sha512-PIhhEkE9uPBleRBrQEJpUn7MBnibZzbGzYWPmY3x+YoVg/95zbjB4CxPPOQ8l5tYYM4mMaCthF8/1DIfBQQyWQ==",
+      "cpu": [
+        "arm64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-ia32": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.28.2.tgz",
+      "integrity": "sha512-YmJbfTlvU7Sdn9BB+4PRES4oB6pxgS37MAONj+hBr/cpXS1aBPKXxNnDbu+QCWPj0o9dgyxeq79g6c5P8KeuYA==",
+      "cpu": [
+        "ia32"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/@esbuild/win32-x64": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.28.2.tgz",
+      "integrity": "sha512-5ebpxr3nWMzrL/rnUI755Jkuee0bHL/Gq0WTF9lvcpv73wAp5eu8MfBUgWK9bhWvZjj7yX8etf/8tI8Ney695g==",
+      "cpu": [
+        "x64"
+      ],
+      "dev": true,
+      "license": "MIT",
+      "optional": true,
+      "os": [
+        "win32"
+      ],
+      "engines": {
+        "node": ">=18"
       }
     },
     "node_modules/@fastify/busboy": {
@@ -16487,13 +17157,6 @@ This root is reconciled byte-for-byte from the current production source.
         "node": "18 || 20 || >=22"
       }
     },
-    "node_modules/boolean": {
-      "version": "3.2.0",
-      "resolved": "https://registry.npmjs.org/boolean/-/boolean-3.2.0.tgz",
-      "integrity": "sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw==",
-      "deprecated": "Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.",
-      "license": "MIT"
-    },
     "node_modules/brace-expansion": {
       "version": "5.0.12",
       "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.12.tgz",
@@ -16655,12 +17318,6 @@ This root is reconciled byte-for-byte from the current production source.
         "url": "https://github.com/sponsors/ljharb"
       }
     },
-    "node_modules/detect-node": {
-      "version": "2.1.0",
-      "resolved": "https://registry.npmjs.org/detect-node/-/detect-node-2.1.0.tgz",
-      "integrity": "sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==",
-      "license": "MIT"
-    },
     "node_modules/dettle": {
       "version": "1.0.5",
       "resolved": "https://registry.npmjs.org/dettle/-/dettle-1.0.5.tgz",
@@ -16753,11 +17410,47 @@ This root is reconciled byte-for-byte from the current production source.
       "integrity": "sha512-poHGpORABojJJucnV9KbOavETW8lBVnphkW77ER5/BQ5Fz7oXSoCNek7IH3vR5nRjdsEz926ibFYX8KtLQmdyw==",
       "license": "MIT"
     },
-    "node_modules/es6-error": {
-      "version": "4.1.1",
-      "resolved": "https://registry.npmjs.org/es6-error/-/es6-error-4.1.1.tgz",
-      "integrity": "sha512-Um/+FxMr9CISWh0bi5Zv0iOD+4cFh5qLeks1qhAopKVAJw3drgKbKySikp7wGhDL0HPeaja0P5ULZrxLkniUVg==",
-      "license": "MIT"
+    "node_modules/esbuild": {
+      "version": "0.28.2",
+      "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz",
+      "integrity": "sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==",
+      "dev": true,
+      "hasInstallScript": true,
+      "license": "MIT",
+      "bin": {
+        "esbuild": "bin/esbuild"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "optionalDependencies": {
+        "@esbuild/aix-ppc64": "0.28.2",
+        "@esbuild/android-arm": "0.28.2",
+        "@esbuild/android-arm64": "0.28.2",
+        "@esbuild/android-x64": "0.28.2",
+        "@esbuild/darwin-arm64": "0.28.2",
+        "@esbuild/darwin-x64": "0.28.2",
+        "@esbuild/freebsd-arm64": "0.28.2",
+        "@esbuild/freebsd-x64": "0.28.2",
+        "@esbuild/linux-arm": "0.28.2",
+        "@esbuild/linux-arm64": "0.28.2",
+        "@esbuild/linux-ia32": "0.28.2",
+        "@esbuild/linux-loong64": "0.28.2",
+        "@esbuild/linux-mips64el": "0.28.2",
+        "@esbuild/linux-ppc64": "0.28.2",
+        "@esbuild/linux-riscv64": "0.28.2",
+        "@esbuild/linux-s390x": "0.28.2",
+        "@esbuild/linux-x64": "0.28.2",
+        "@esbuild/netbsd-arm64": "0.28.2",
+        "@esbuild/netbsd-x64": "0.28.2",
+        "@esbuild/openbsd-arm64": "0.28.2",
+        "@esbuild/openbsd-x64": "0.28.2",
+        "@esbuild/openharmony-arm64": "0.28.2",
+        "@esbuild/sunos-x64": "0.28.2",
+        "@esbuild/win32-arm64": "0.28.2",
+        "@esbuild/win32-ia32": "0.28.2",
+        "@esbuild/win32-x64": "0.28.2"
+      }
     },
     "node_modules/escalade": {
       "version": "3.2.0",
@@ -16853,17 +17546,15 @@ This root is reconciled byte-for-byte from the current production source.
       }
     },
     "node_modules/global-agent": {
-      "version": "3.0.0",
-      "resolved": "https://registry.npmjs.org/global-agent/-/global-agent-3.0.0.tgz",
-      "integrity": "sha512-PT6XReJ+D07JvGoxQMkT6qji/jVNfX/h364XHZOWeRzy64sSFr+xJ5OX7LI3b4MPQzdL4H8Y8M0xzPpsVMwA8Q==",
+      "version": "4.1.3",
+      "resolved": "https://registry.npmjs.org/global-agent/-/global-agent-4.1.3.tgz",
+      "integrity": "sha512-KUJEViiuFT3I97t+GYMikLPJS2Lfo/S2F+DQuBWzuzaMPnvt5yyZePzArx36fBzpGTxZjIpDbXLeySLgh+k76g==",
       "license": "BSD-3-Clause",
       "dependencies": {
-        "boolean": "^3.0.1",
-        "es6-error": "^4.1.1",
-        "matcher": "^3.0.0",
-        "roarr": "^2.15.3",
-        "semver": "^7.3.2",
-        "serialize-error": "^7.0.1"
+        "globalthis": "^1.0.2",
+        "matcher": "^4.0.0",
+        "semver": "^7.3.5",
+        "serialize-error": "^8.1.0"
       },
       "engines": {
         "node": ">=10.0"
@@ -16904,8 +17595,8 @@ This root is reconciled byte-for-byte from the current production source.
       "license": "ISC"
     },
     "node_modules/has-property-descriptors": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/has-property-descriptors/-/has-property-descriptors-1.0.3.tgz",
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/has-property-descriptors/-/has-property-descriptors-1.0.2.tgz",
       "integrity": "sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==",
       "license": "MIT",
       "dependencies": {
@@ -16985,12 +17676,6 @@ This root is reconciled byte-for-byte from the current production source.
       "dev": true,
       "license": "MIT"
     },
-    "node_modules/json-stringify-safe": {
-      "version": "5.0.1",
-      "resolved": "https://registry.npmjs.org/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz",
-      "integrity": "sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==",
-      "license": "ISC"
-    },
     "node_modules/kleur": {
       "version": "4.1.5",
       "resolved": "https://registry.npmjs.org/kleur/-/kleur-4.1.5.tgz",
@@ -17018,15 +17703,18 @@ This root is reconciled byte-for-byte from the current production source.
       }
     },
     "node_modules/matcher": {
-      "version": "3.0.0",
-      "resolved": "https://registry.npmjs.org/matcher/-/matcher-3.0.0.tgz",
-      "integrity": "sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==",
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/matcher/-/matcher-4.0.0.tgz",
+      "integrity": "sha512-S6x5wmcDmsDRRU/c2dkccDwQPXoFczc5+HpQ2lON8pnvHlnvHAHj5WlLVvw6n6vNyHuVugYrFohYxbS+pvFpKQ==",
       "license": "MIT",
       "dependencies": {
         "escape-string-regexp": "^4.0.0"
       },
       "engines": {
         "node": ">=10"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
       }
     },
     "node_modules/minimatch": {
@@ -17290,23 +17978,6 @@ This root is reconciled byte-for-byte from the current production source.
         "node": ">=9.3.0 || >=8.10.0 <9.0.0"
       }
     },
-    "node_modules/roarr": {
-      "version": "2.15.4",
-      "resolved": "https://registry.npmjs.org/roarr/-/roarr-2.15.4.tgz",
-      "integrity": "sha512-CHhPh+UNHD2GTXNYhPWLnU8ONHdI+5DI+4EYIAOaiD63rHeYlZvyh8P+in5999TTSFgUYuKUAjzRI4mdh/p+2A==",
-      "license": "BSD-3-Clause",
-      "dependencies": {
-        "boolean": "^3.0.1",
-        "detect-node": "^2.0.4",
-        "globalthis": "^1.0.1",
-        "json-stringify-safe": "^5.0.1",
-        "semver-compare": "^1.0.0",
-        "sprintf-js": "^1.1.2"
-      },
-      "engines": {
-        "node": ">=8.0"
-      }
-    },
     "node_modules/semver": {
       "version": "7.7.4",
       "resolved": "https://registry.npmjs.org/semver/-/semver-7.7.4.tgz",
@@ -17319,19 +17990,13 @@ This root is reconciled byte-for-byte from the current production source.
         "node": ">=10"
       }
     },
-    "node_modules/semver-compare": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/semver-compare/-/semver-compare-1.0.0.tgz",
-      "integrity": "sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==",
-      "license": "MIT"
-    },
     "node_modules/serialize-error": {
-      "version": "7.0.1",
-      "resolved": "https://registry.npmjs.org/serialize-error/-/serialize-error-7.0.1.tgz",
-      "integrity": "sha512-8I8TjW5KMOKsZQTvoxjuSIa7foAwPWGOts+6o7sgjz41/qMD9VQHEDxi6PBvK2l0MXUmqZyNpUK+T2tQaaElvw==",
+      "version": "8.1.0",
+      "resolved": "https://registry.npmjs.org/serialize-error/-/serialize-error-8.1.0.tgz",
+      "integrity": "sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==",
       "license": "MIT",
       "dependencies": {
-        "type-fest": "^0.13.1"
+        "type-fest": "^0.20.2"
       },
       "engines": {
         "node": ">=10"
@@ -17350,12 +18015,6 @@ This root is reconciled byte-for-byte from the current production source.
       "integrity": "sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==",
       "dev": true,
       "license": "MIT"
-    },
-    "node_modules/sprintf-js": {
-      "version": "1.1.3",
-      "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.1.3.tgz",
-      "integrity": "sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==",
-      "license": "BSD-3-Clause"
     },
     "node_modules/string-width": {
       "version": "8.2.2",
@@ -17428,9 +18087,9 @@ This root is reconciled byte-for-byte from the current production source.
       "license": "0BSD"
     },
     "node_modules/type-fest": {
-      "version": "0.13.1",
-      "resolved": "https://registry.npmjs.org/type-fest/-/type-fest-0.13.1.tgz",
-      "integrity": "sha512-34R7HTnG0XIJcBSn5XhDd7nNFPRcXYRZrBB2O2jdKqYODldSzBAqzsWoZYYvduky73toYS/ESqxPvkDf/F0XMg==",
+      "version": "0.20.2",
+      "resolved": "https://registry.npmjs.org/type-fest/-/type-fest-0.20.2.tgz",
+      "integrity": "sha512-Ne+eE4r0/iWnpAxD852z3A+N0Bt5RN//NjJwRd2VFHEmrywxf5vsZlh4R6lixl6B+wz/8d+maTSAkN1FIkI3LQ==",
       "license": "(MIT OR CC0-1.0)",
       "engines": {
         "node": ">=10"
@@ -17588,7 +18247,8 @@ This root is reconciled byte-for-byte from the current production source.
     },
     "vendor/sharp-stub": {
       "name": "sharp",
-      "version": "0.34.5"
+      "version": "0.35.5",
+      "license": "MIT"
     }
   }
 }
@@ -17610,7 +18270,8 @@ This root is reconciled byte-for-byte from the current production source.
     "sharp": "file:./vendor/sharp-stub"
   },
   "overrides": {
-    "sharp": "file:./vendor/sharp-stub"
+    "sharp": "file:./vendor/sharp-stub",
+    "global-agent": "4.1.3"
   },
   "scripts": {
     "build": "npm run verify && npm run build:main && npm run build:accounts && npm run build:apps",
@@ -17622,16 +18283,18 @@ This root is reconciled byte-for-byte from the current production source.
     "stage:apps-model-packs": "node scripts/stage-apps-model-packs.mjs",
     "publish:apps-model-packs:ia": "node scripts/upload-apps-model-packs-ia.mjs",
     "build:accounts": "node scripts/build-accounts-site.mjs",
-    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs && node --check nx-halloween.js",
+    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs && node --check nx-halloween.js && node --check saved-apps.js && node --check saved-apps-bridge.js && node --check ios/ios-install.js && node --check scripts/build-main-deploy.mjs && node --check scripts/check-main-deploy.mjs",
     "test": "node test/site-outcomes.mjs && node --test test/register-account.test.mjs test/roachclaw-chat.test.mjs",
     "verify": "npm run lint && npm run test && npm run tangle:verify",
     "validate:html": "node scripts/validate-html.mjs",
     "test:browser": "node scripts/site-browser-outcomes.mjs",
     "verify:local": "npm run build && npm run validate:html && npm run test:browser && node scripts/check-links.mjs && npm run tangle:verify && npm audit --omit=dev --audit-level=high",
     "tangle:verify": "node scripts/tangle.mjs --verify",
-    "tangle:write": "node scripts/tangle.mjs --write && node scripts/tangle.mjs --verify"
+    "tangle:write": "node scripts/tangle.mjs --write && node scripts/tangle.mjs --verify",
+    "build:main:prebuilt": "npm run build:main && node scripts/build-main-deploy.mjs && node scripts/check-main-deploy.mjs"
   },
   "devDependencies": {
+    "esbuild": "0.28.2",
     "html-validate": "10.9.0",
     "puppeteer-core": "25.8.0"
   }
@@ -19578,19 +20241,28 @@ if (root) {
       }
       renderMessages()
 
-      const response = await fetch(authState.config?.webChat?.endpoint || '/.netlify/functions/roachclaw-chat', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          threadId: activeThreadId,
-          message,
-        }),
-      })
+      // A cold hosted model answers 503 "warming" before anything is written;
+      // try again twice while it finishes loading.
+      let response
+      let payload
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        response = await fetch(authState.config?.webChat?.endpoint || '/.netlify/functions/roachclaw-chat', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            threadId: activeThreadId,
+            message,
+          }),
+        })
+        payload = await response.json().catch(() => ({}))
+        if (response.status !== 503 || payload?.code !== 'warming' || attempt === 2) break
+        setComposerFeedback('RoachClaw on the web is waking up. Sending again in a few seconds…')
+        await new Promise((resolve) => setTimeout(resolve, 5000))
+      }
 
-      const payload = await response.json().catch(() => ({}))
       if (!response.ok || payload?.ok !== true) {
         throw new Error(payload?.message || "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
       }
@@ -20179,6 +20851,396 @@ Allow: /
 Sitemap: https://apps.roachnet.org/sitemap.xml
 ```
 
+## saved-apps.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="saved-apps-js" file="saved-apps.js"}
+// Saved apps for the store (apps.roachnet.org).
+//
+// Saving always works. If you are signed in on accounts.roachnet.org, picks go
+// to your account through a small bridge page on that site, framed out of
+// sight here: the account session never leaves its own origin, and the bridge
+// only answers this store. If you are signed out (or the bridge can't be
+// reached), picks stay in this browser and move into your account the next
+// time the store sees you signed in.
+
+const storageKey = 'roachnet.apps.saved.v1'
+const storeOrigin = 'https://apps.roachnet.org'
+const bridgeOrigin = 'https://accounts.roachnet.org'
+const bridgeUrl = `${bridgeOrigin}/saved-apps-bridge.html`
+const channel = 'roachnet-saved-apps'
+const idPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/
+const maxLocal = 500
+const readyTimeoutMs = 6000
+const callTimeoutMs = 10000
+
+function cleanText(value, limit) {
+  return String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, limit)
+}
+
+function cleanEntry(raw) {
+  if (!raw || typeof raw !== 'object') return null
+  const appId = String(raw.appId ?? '')
+  if (!idPattern.test(appId)) return null
+  return {
+    appId,
+    title: cleanText(raw.title, 200) || appId,
+    category: cleanText(raw.category, 80),
+    savedAt: typeof raw.savedAt === 'string' ? raw.savedAt.slice(0, 40) : new Date().toISOString(),
+  }
+}
+
+// Browser storage can be missing, full or blocked; saving still works for the
+// visit, it just isn't remembered.
+function readLocal() {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(storageKey) || '[]')
+    const entries = (Array.isArray(parsed) ? parsed : []).map(cleanEntry).filter(Boolean).slice(0, maxLocal)
+    return new Map(entries.map((entry) => [entry.appId, entry]))
+  } catch {
+    return new Map()
+  }
+}
+
+function writeLocal(entries) {
+  try {
+    if (!entries.size) window.localStorage.removeItem(storageKey)
+    else window.localStorage.setItem(storageKey, JSON.stringify([...entries.values()]))
+  } catch {
+    // Storage is a convenience here, never a requirement.
+  }
+}
+
+function entryFor(item) {
+  return cleanEntry({
+    appId: item.id,
+    title: item.title,
+    category: item.section || item.category,
+    savedAt: new Date().toISOString(),
+  })
+}
+
+function payloadFor(entry, item) {
+  const intent = item?.installIntent && typeof item.installIntent === 'object' ? item.installIntent : {}
+  let installIntent = {}
+  try {
+    installIntent = JSON.stringify(intent).length <= 4096 ? JSON.parse(JSON.stringify(intent)) : {}
+  } catch {
+    installIntent = {}
+  }
+  return { appId: entry.appId, title: entry.title, category: entry.category, installIntent }
+}
+
+function createBridge() {
+  if (window.location.origin !== storeOrigin || window.top !== window) return null
+
+  const frame = document.createElement('iframe')
+  frame.src = bridgeUrl
+  frame.hidden = true
+  frame.title = 'Saved apps sync'
+  frame.setAttribute('aria-hidden', 'true')
+  frame.tabIndex = -1
+
+  const pending = new Map()
+  let sequence = 0
+  let ready = false
+  let resolveReady
+  const readyPromise = new Promise((resolve) => {
+    resolveReady = resolve
+  })
+  const readyTimer = window.setTimeout(() => resolveReady(false), readyTimeoutMs)
+
+  window.addEventListener('message', (event) => {
+    if (event.origin !== bridgeOrigin || event.source !== frame.contentWindow) return
+    const data = event.data
+    if (!data || data.channel !== channel || data.v !== 1) return
+    if (data.type === 'ready') {
+      ready = true
+      window.clearTimeout(readyTimer)
+      resolveReady(true)
+      return
+    }
+    const call = pending.get(data.id)
+    if (!call) return
+    pending.delete(data.id)
+    window.clearTimeout(call.timer)
+    if (data.ok) call.resolve(data)
+    else call.reject(new Error(typeof data.error === 'string' ? data.error : 'The account service did not answer.'))
+  })
+
+  document.body.append(frame)
+
+  return {
+    ready: () => readyPromise,
+    call(action, body = {}) {
+      if (!ready || !frame.contentWindow) return Promise.reject(new Error('The account bridge is not ready.'))
+      return new Promise((resolve, reject) => {
+        sequence += 1
+        const id = `s${Date.now().toString(36)}${sequence}`
+        const timer = window.setTimeout(() => {
+          pending.delete(id)
+          reject(new Error('The account service took too long to answer.'))
+        }, callTimeoutMs)
+        pending.set(id, { resolve, reject, timer })
+        frame.contentWindow.postMessage({ channel, v: 1, id, action, ...body }, bridgeOrigin)
+      })
+    },
+  }
+}
+
+export function createSavedApps({ onChange = () => {} } = {}) {
+  const local = readLocal()
+  let account = null // Map of appId -> entry while signed in, otherwise null
+  let bridge = null
+  let lastSync = 0
+
+  const current = () => account || local
+  const notify = () => onChange()
+
+  async function sync() {
+    if (!bridge) return
+    lastSync = Date.now()
+    let listed
+    try {
+      listed = await bridge.call('list')
+    } catch {
+      return
+    }
+    if (!listed.signedIn) {
+      if (account) {
+        account = null
+        notify()
+      }
+      return
+    }
+
+    const fromAccount = new Map(
+      (Array.isArray(listed.items) ? listed.items : [])
+        .map((row) => cleanEntry({ appId: row.appId, title: row.title, category: row.category, savedAt: row.updatedAt }))
+        .filter(Boolean)
+        .map((entry) => [entry.appId, entry])
+    )
+    const waiting = [...local.values()].filter((entry) => !fromAccount.has(entry.appId))
+    if (waiting.length) {
+      try {
+        await bridge.call('merge', { items: waiting.slice(0, 200).map((entry) => payloadFor(entry)) })
+        waiting.slice(0, 200).forEach((entry) => fromAccount.set(entry.appId, entry))
+        waiting.slice(0, 200).forEach((entry) => local.delete(entry.appId))
+        writeLocal(local)
+      } catch {
+        // Keep them in this browser and try again next time.
+        waiting.forEach((entry) => fromAccount.set(entry.appId, entry))
+      }
+    } else if (local.size) {
+      local.clear()
+      writeLocal(local)
+    }
+    account = fromAccount
+    notify()
+  }
+
+  return {
+    has: (id) => current().has(id),
+    count: () => current().size,
+    ids: () => new Set(current().keys()),
+    get signedIn() {
+      return Boolean(account)
+    },
+
+    async start() {
+      bridge = createBridge()
+      if (!bridge) return
+      if (!(await bridge.ready())) {
+        bridge = null
+        return
+      }
+      await sync()
+      // Signing in happens on another tab; check again when you come back.
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && Date.now() - lastSync > 5000) sync()
+      })
+    },
+
+    /** Saves or unsaves an item. Resolves to { saved, where: 'account' | 'browser' }. */
+    async toggle(item) {
+      const entry = entryFor(item)
+      if (!entry) throw new Error('That item cannot be saved.')
+      const saving = !current().has(entry.appId)
+
+      if (account && bridge) {
+        const result = await bridge.call(saving ? 'save' : 'remove', saving ? { item: payloadFor(entry, item) } : { appId: entry.appId })
+        if (result.signedIn === false) {
+          account = null
+        } else {
+          if (saving) account.set(entry.appId, entry)
+          else account.delete(entry.appId)
+          notify()
+          return { saved: saving, where: 'account' }
+        }
+      }
+
+      if (saving) {
+        if (local.size >= maxLocal) throw new Error(`This browser holds ${maxLocal} saved apps at most.`)
+        local.set(entry.appId, entry)
+      } else {
+        local.delete(entry.appId)
+      }
+      writeLocal(local)
+      notify()
+      return { saved: saving, where: 'browser' }
+    },
+  }
+}
+```
+
+## saved-apps-bridge.html
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="saved-apps-bridge-html" file="saved-apps-bridge.html"}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>RoachNet saved apps</title>
+    <script src="/site-config.js"></script>
+    <script src="/saved-apps-bridge.js" type="module"></script>
+  </head>
+  <body>
+    <p>This page lets the RoachNet Apps store save picks to your account. There is nothing to see here; <a href="https://accounts.roachnet.org/">your account page</a> shows what you saved.</p>
+  </body>
+</html>
+```
+
+## saved-apps-bridge.js
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="saved-apps-bridge-js" file="saved-apps-bridge.js"}
+// The account side of the store's Save button (accounts.roachnet.org).
+//
+// apps.roachnet.org frames this page out of sight and asks it, by postMessage,
+// to list, save or remove saved apps. The session stays on this origin: the
+// store never sees a token, only whether you are signed in and which apps you
+// saved. Only the store's origin is answered, and every row goes through
+// Supabase row-level security, so a request can only ever touch your own rows.
+
+import { getSiteAuthState, refreshSiteSession } from './site-account.js'
+
+const channel = 'roachnet-saved-apps'
+const allowedParents = new Set(['https://apps.roachnet.org'])
+const idPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/
+const listLimit = 500
+const mergeLimit = 200
+
+function cleanText(value, limit) {
+  return String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, limit)
+}
+
+function cleanIntent(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+  try {
+    const text = JSON.stringify(value)
+    return text.length <= 4096 ? JSON.parse(text) : {}
+  } catch {
+    return {}
+  }
+}
+
+function rowFor(userId, raw) {
+  if (!raw || typeof raw !== 'object') return null
+  const appId = String(raw.appId ?? '')
+  if (!idPattern.test(appId)) return null
+  return {
+    user_id: userId,
+    app_id: appId,
+    title: cleanText(raw.title, 200) || appId,
+    category: cleanText(raw.category, 80) || null,
+    source: 'apps.roachnet.org',
+    install_intent: cleanIntent(raw.installIntent),
+  }
+}
+
+function reply(origin, id, body) {
+  window.parent.postMessage({ channel, v: 1, id, ...body }, origin)
+}
+
+async function signedInClient() {
+  const auth = await getSiteAuthState()
+  if (!auth.enabled || !auth.client) return null
+  const session = (await refreshSiteSession()) || auth.session
+  return session?.user?.id ? { client: auth.client, userId: session.user.id } : null
+}
+
+async function handle(message) {
+  const account = await signedInClient()
+  if (!account) return { ok: true, signedIn: false }
+  const { client, userId } = account
+
+  switch (message.action) {
+    case 'list': {
+      const { data, error } = await client
+        .from('saved_apps')
+        .select('app_id, title, category, updated_at')
+        .order('updated_at', { ascending: false })
+        .limit(listLimit)
+      if (error) throw error
+      return {
+        ok: true,
+        signedIn: true,
+        items: (data || []).map((row) => ({ appId: row.app_id, title: row.title, category: row.category, updatedAt: row.updated_at })),
+      }
+    }
+    case 'save': {
+      const row = rowFor(userId, message.item)
+      if (!row) return { ok: false, signedIn: true, error: 'That app id is not valid.' }
+      const { error } = await client.from('saved_apps').upsert(row, { onConflict: 'user_id,app_id' })
+      if (error) throw error
+      return { ok: true, signedIn: true }
+    }
+    case 'merge': {
+      const rows = (Array.isArray(message.items) ? message.items : []).slice(0, mergeLimit).map((item) => rowFor(userId, item)).filter(Boolean)
+      if (rows.length) {
+        const { error } = await client.from('saved_apps').upsert(rows, { onConflict: 'user_id,app_id', ignoreDuplicates: true })
+        if (error) throw error
+      }
+      return { ok: true, signedIn: true, merged: rows.length }
+    }
+    case 'remove': {
+      const appId = String(message.appId ?? '')
+      if (!idPattern.test(appId)) return { ok: false, signedIn: true, error: 'That app id is not valid.' }
+      const { error } = await client.from('saved_apps').delete().eq('app_id', appId)
+      if (error) throw error
+      return { ok: true, signedIn: true }
+    }
+    default:
+      return { ok: false, signedIn: true, error: 'Unknown request.' }
+  }
+}
+
+if (window.parent !== window) {
+  window.addEventListener('message', async (event) => {
+    if (!allowedParents.has(event.origin) || event.source !== window.parent) return
+    const message = event.data
+    if (!message || message.channel !== channel || message.v !== 1) return
+    if (typeof message.id !== 'string' || message.id.length > 64) return
+    try {
+      reply(event.origin, message.id, await handle(message))
+    } catch (error) {
+      console.warn('Saved apps request failed.', error?.message || error)
+      reply(event.origin, message.id, { ok: false, error: 'Your account did not answer, so nothing changed. Try again in a moment.' })
+    }
+  })
+
+  for (const origin of allowedParents) {
+    window.parent.postMessage({ channel, v: 1, type: 'ready' }, origin)
+  }
+}
+```
+
 ## site-account.js
 
 This root is reconciled byte-for-byte from the current production source.
@@ -20520,7 +21582,7 @@ This root is reconciled byte-for-byte from the current production source.
             <p class="nx-card__eyebrow">On the web</p>
             <h2 class="nx-card__title">Accounts and services</h2>
             <ul class="nx-sitemap__list">
-              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats and a short device list. The rest stays home.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats, saved apps and a device list. The rest stays home.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/about/">About RoachWares</a><p>Who builds it, and the rules it is built by.</p></li>
@@ -20633,6 +21695,8 @@ async function main() {
     'router.js',
     'site-account.js',
     'site-config.js',
+    'saved-apps-bridge.html',
+    'saved-apps-bridge.js',
     'nx.css',
     'nx-account.css',
     'nx.js',
@@ -20684,12 +21748,16 @@ async function main() {
     'utf8'
   )
 
+  // Only the Apps store may frame these pages: it frames saved-apps-bridge.html
+  // so its Save button can reach your account without the session ever leaving
+  // this origin. Netlify merges header rules, so a per-path exception can't
+  // loosen a site-wide 'none'; the allowance is the store's origin, site-wide.
+  // X-Frame-Options can't name an origin, so CSP frame-ancestors carries it.
   await writeFile(
     path.join(outputRoot, '_headers'),
     [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://roachnet.org https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
-      '  X-Frame-Options: DENY',
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://roachnet.org https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors https://apps.roachnet.org; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',
       '  Strict-Transport-Security: max-age=31536000; includeSubDomains',
@@ -20816,6 +21884,7 @@ async function main() {
 
   const copyTargets = [
     'app-store.js',
+    'saved-apps.js',
     'app-store-catalog.json',
     'site-config.js',
     'nx.css',
@@ -20870,7 +21939,7 @@ async function main() {
     path.join(outputRoot, '_headers'),
     [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://accounts.roachnet.org; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
       '  X-Frame-Options: DENY',
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',
@@ -20887,6 +21956,140 @@ main().catch((error) => {
   console.error(error)
   process.exitCode = 1
 })
+```
+
+## scripts/build-main-deploy.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-build-main-deploy-mjs" file="scripts/build-main-deploy.mjs"}
+#!/usr/bin/env node
+
+// Builds the prebuilt roachnet.org upload in website-main-deploy/.
+//
+// Netlify's own dependency install fails for this repo, so roachnet.org ships
+// as a prebuilt folder: the static site in site/, the two functions bundled
+// with esbuild in netlify/functions/, and the native ONNX runtime the hosted
+// RoachClaw model needs in roachbrain-runtime/ (Linux x64 only, which is what
+// Netlify Functions run on). The functions import that runtime by relative
+// path, and netlify.toml lists it in included_files. Nothing in the upload is
+// called node_modules, so no uploader or bundler default can skip it.
+
+import { build } from 'esbuild'
+import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const out = path.join(root, 'website-main-deploy')
+const runtimeDir = 'roachbrain-runtime'
+const functions = ['register-account', 'roachclaw-chat']
+
+// Packages the hosted model loads at runtime instead of bundling: the native
+// binding has to stay next to its .so, and onnxruntime-common must be the one
+// instance that both transformers and onnxruntime-node see.
+const runtimePackages = {
+  'onnxruntime-node': ['package.json', 'dist', 'bin/napi-v3/linux/x64/onnxruntime_binding.node', 'bin/napi-v3/linux/x64/libonnxruntime.so.1', 'bin/napi-v3/linux/x64/libonnxruntime_providers_shared.so'],
+  'onnxruntime-common': ['package.json', 'dist'],
+  sharp: ['package.json', 'index.js'],
+}
+
+// CommonJS entries, required lazily (see runtimeImports): onnxruntime-node
+// requires the CJS build of onnxruntime-common too, so there is one instance.
+const runtimeEntry = {
+  'onnxruntime-node': 'dist/index.js',
+  'onnxruntime-common': 'dist/cjs/index.js',
+  sharp: 'index.js',
+}
+
+async function exists(target) {
+  try {
+    await stat(target)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function copyRuntime() {
+  for (const [name, entries] of Object.entries(runtimePackages)) {
+    const source = path.join(root, 'node_modules', name)
+    for (const entry of entries) {
+      const from = path.join(source, entry)
+      if (!(await exists(from))) throw new Error(`Missing runtime file ${name}/${entry}. Run npm ci first.`)
+      const to = path.join(out, runtimeDir, name, entry)
+      await mkdir(path.dirname(to), { recursive: true })
+      await cp(from, to, { recursive: true, dereference: true })
+    }
+  }
+  // onnxruntime-node finds onnxruntime-common by package name; point it at the
+  // copy next to it instead.
+  for (const file of ['dist/index.js', 'dist/binding.js']) {
+    const target = path.join(out, runtimeDir, 'onnxruntime-node', file)
+    const source = await readFile(target, 'utf8')
+    const pointed = source.replaceAll('require("onnxruntime-common")', 'require("../../onnxruntime-common/dist/cjs/index.js")')
+    if (pointed === source) throw new Error(`onnxruntime-node/${file} no longer requires onnxruntime-common by name`)
+    await writeFile(target, pointed, 'utf8')
+  }
+  const leftovers = (await readFile(path.join(out, runtimeDir, 'onnxruntime-node/dist/backend.js'), 'utf8')).match(/require\("onnxruntime-common"\)/)
+  if (leftovers) throw new Error('onnxruntime-node/dist/backend.js still requires onnxruntime-common by name')
+}
+
+// The runtime packages become small shims that require roachbrain-runtime/
+// when transformers first runs, not when the function loads. esbuild keeps the
+// dynamic import of transformers lazy, so a cold function that never answers
+// with the hosted model (sign-in errors, rate limits, a bad request) never
+// touches the native binding, and the bundle loads on any platform.
+const runtimeImports = {
+  name: 'roachbrain-runtime',
+  setup(builder) {
+    builder.onResolve({ filter: /^(onnxruntime-node|onnxruntime-common|sharp)$/ }, (args) => ({ path: args.path, namespace: 'roachbrain-runtime' }))
+    builder.onLoad({ filter: /.*/, namespace: 'roachbrain-runtime' }, (args) => ({
+      contents: `module.exports = __roachnetRuntimeRequire(${JSON.stringify(`../../${runtimeDir}/${args.path}/${runtimeEntry[args.path]}`)})`,
+      loader: 'js',
+    }))
+  },
+}
+
+async function bundleFunctions() {
+  const banner = "import { createRequire as __roachnetCreateRequire } from 'node:module'; const require = __roachnetCreateRequire(import.meta.url); const __roachnetRuntimeRequire = require;"
+  for (const name of functions) {
+    await build({
+      entryPoints: [path.join(root, 'netlify/functions', `${name}.mjs`)],
+      outfile: path.join(out, 'netlify/functions', `${name}.mjs`),
+      bundle: true,
+      platform: 'node',
+      format: 'esm',
+      target: 'node20',
+      banner: { js: banner },
+      logLevel: 'warning',
+      plugins: [runtimeImports],
+    })
+  }
+}
+
+async function writeNetlifyToml() {
+  const source = await readFile(path.join(root, 'netlify.toml'), 'utf8')
+  const head = '[build]\npublish = "website-main-dist"\ncommand = "npm run build:main:deploy"\n'
+  if (!source.startsWith(head)) throw new Error('netlify.toml no longer starts with the expected [build] block')
+  const functionsBlock = '[functions]\ndirectory = "netlify/functions"\n'
+  if (!source.includes(functionsBlock)) throw new Error('netlify.toml no longer has the expected [functions] block')
+  const prebuilt = source
+    .replace(head, '[build]\n# Prebuilt upload made by scripts/build-main-deploy.mjs.\npublish = "site"\ncommand = "echo prebuilt"\n')
+    .replace(
+      functionsBlock,
+      `${functionsBlock}node_bundler = "nft"\n\n[functions.roachclaw-chat]\nincluded_files = ["${runtimeDir}/**"]\n`
+    )
+  await writeFile(path.join(out, 'netlify.toml'), prebuilt, 'utf8')
+}
+
+await rm(out, { recursive: true, force: true })
+await mkdir(out, { recursive: true })
+await cp(path.join(root, 'website-main-dist'), path.join(out, 'site'), { recursive: true })
+await copyRuntime()
+await bundleFunctions()
+await writeNetlifyToml()
+console.log(`Built the roachnet.org upload in ${out}`)
 ```
 
 ## scripts/build-main-site.mjs
@@ -21098,6 +22301,86 @@ for (const url of urls) {
 
 if (failures.length) throw new Error(`External link check failed:\n${failures.join('\n')}`)
 console.log(`Verified ${urls.size} external links`)
+```
+
+## scripts/check-main-deploy.mjs
+
+This root is reconciled byte-for-byte from the current production source.
+
+```text {chunk="scripts-check-main-deploy-mjs" file="scripts/check-main-deploy.mjs"}
+#!/usr/bin/env node
+
+// Checks website-main-deploy/ (made by build-main-deploy.mjs) before it is
+// uploaded: the layout Netlify expects, the native runtime files, the function
+// tests run against the bundled functions, and, on Linux x64, that the bundled
+// chat function really loads its runtime.
+
+import assert from 'node:assert/strict'
+import { execFile } from 'node:child_process'
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { promisify } from 'node:util'
+
+const run = promisify(execFile)
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const out = path.join(root, 'website-main-deploy')
+
+async function size(file) {
+  return (await stat(path.join(out, file))).size
+}
+
+const toml = await readFile(path.join(out, 'netlify.toml'), 'utf8')
+assert.match(toml, /^\[build\]\n# Prebuilt upload made by scripts\/build-main-deploy\.mjs\.\npublish = "site"\ncommand = "echo prebuilt"\n/)
+assert.match(toml, /\[functions\.roachclaw-chat\]\nincluded_files = \["roachbrain-runtime\/\*\*"\]/)
+assert.ok((await size('site/index.html')) > 0, 'site/index.html')
+assert.ok((await size('site/home/index.html')) > 0, 'site/home/index.html')
+for (const file of [
+  'roachbrain-runtime/onnxruntime-node/bin/napi-v3/linux/x64/onnxruntime_binding.node',
+  'roachbrain-runtime/onnxruntime-node/bin/napi-v3/linux/x64/libonnxruntime.so.1',
+  'roachbrain-runtime/onnxruntime-node/dist/index.js',
+  'roachbrain-runtime/onnxruntime-common/dist/esm/index.js',
+  'roachbrain-runtime/sharp/index.js',
+]) {
+  assert.ok((await size(file)) > 0, file)
+}
+const { execFileSync } = await import('node:child_process')
+const named = execFileSync('find', [out, '-name', 'node_modules'], { encoding: 'utf8' }).trim()
+assert.equal(named, '', 'nothing in the upload is called node_modules')
+const chat = await readFile(path.join(out, 'netlify/functions/roachclaw-chat.mjs'), 'utf8')
+assert.doesNotMatch(chat, /from ["'][^"']*onnxruntime|from ["']sharp["']|from ["'][^"']*roachbrain-runtime/, 'the runtime is never imported when the function loads')
+assert.match(chat, /__roachnetRuntimeRequire\("\.\.\/\.\.\/roachbrain-runtime\/onnxruntime-node\/dist\/index\.js"\)/)
+assert.doesNotMatch(chat, /transformers\.web\.js/, 'the Node build of transformers is bundled, not the web build')
+
+// The function tests, pointed at the bundles.
+const scratch = await mkdtemp(path.join(os.tmpdir(), 'roachnet-deploy-check-'))
+try {
+  await mkdir(path.join(scratch, 'test'), { recursive: true })
+  for (const name of ['register-account', 'roachclaw-chat']) {
+    const testSource = await readFile(path.join(root, 'test', `${name}.test.mjs`), 'utf8')
+    const bundled = pathToFileURL(path.join(out, 'netlify/functions', `${name}.mjs`)).href
+    const pointed = testSource.replace(`'../netlify/functions/${name}.mjs'`, `'${bundled}'`)
+    assert.notEqual(pointed, testSource, `${name} test imports its function`)
+    await writeFile(path.join(scratch, 'test', `${name}.test.mjs`), pointed)
+  }
+  const { stdout } = await run(process.execPath, ['--test', '--test-reporter=tap', 'test/register-account.test.mjs', 'test/roachclaw-chat.test.mjs'], { cwd: scratch })
+  const passed = /# pass (\d+)/.exec(stdout)?.[1]
+  assert.match(stdout, /# fail 0/)
+  console.log(`Bundled function tests: ${passed} passed`)
+} finally {
+  await rm(scratch, { recursive: true, force: true })
+}
+
+if (process.platform === 'linux' && process.arch === 'x64') {
+  const bundle = await import(pathToFileURL(path.join(out, 'netlify/functions/roachclaw-chat.mjs')).href)
+  const response = await bundle.default(new Request('https://roachnet.org/.netlify/functions/roachclaw-chat?health=runtime'))
+  assert.equal(response.status, 200, 'the bundled chat function loads its native runtime')
+  console.log('Bundled chat runtime loads on Linux x64')
+} else {
+  console.log(`Skipped the runtime load check: the bundle carries Linux x64 binaries and this is ${process.platform}-${process.arch}`)
+}
+console.log('roachnet.org deploy folder checks passed')
 ```
 
 ## scripts/site-browser-outcomes.mjs
@@ -21453,6 +22736,139 @@ async function checkSignupHumanCheck(browser, baseUrl) {
   }
 }
 
+// The store's Save button, served under the real hostnames (request
+// interception answers apps.roachnet.org and accounts.roachnet.org from the
+// built folders, with the headers each one ships) and a stand-in for the
+// Supabase saved_apps table. Signed out, picks stay in the store's browser
+// storage; signed in on accounts.roachnet.org, the hidden bridge lists them,
+// merges the local ones up, and saves and removes rows.
+async function headersFor(directory) {
+  const source = await readFile(path.join(root, directory, '_headers'), 'utf8')
+  return Object.fromEntries(source.split('\n').filter((line) => /^\s+\S+: /.test(line)).map((line) => {
+    const [name, ...rest] = line.trim().split(': ')
+    return [name.toLowerCase(), rest.join(': ')]
+  }))
+}
+
+async function checkSavedApps(browser) {
+  const sitesByOrigin = {
+    'https://apps.roachnet.org': { directory: path.join(root, 'website-apps-dist'), headers: await headersFor('website-apps-dist') },
+    'https://accounts.roachnet.org': { directory: path.join(root, 'website-accounts-dist'), headers: await headersFor('website-accounts-dist') },
+  }
+  const supabaseOrigin = 'https://yaiynvuvnnwbxaeoaseb.supabase.co'
+  const userId = '0f9d7c1e-2b3a-4c5d-8e9f-a0b1c2d3e4f5'
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url')
+  const exp = Math.floor(Date.now() / 1000) + 3600
+  const accessToken = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: userId, role: 'authenticated', aud: 'authenticated', exp })}.signature`
+  const session = { access_token: accessToken, refresh_token: 'refresh-token', token_type: 'bearer', expires_in: 3600, expires_at: exp, user: { id: userId, aud: 'authenticated', role: 'authenticated', email: 'person@example.com' } }
+
+  async function scenario({ signedIn, localPicks = [], rows = [] }, run) {
+    const context = await browser.createBrowserContext()
+    const page = await context.newPage()
+    const table = new Map(rows.map((row) => [row.app_id, row]))
+    const problems = []
+    page.on('console', (message) => {
+      if (message.type() === 'error') problems.push(`console: ${message.text()}`)
+    })
+    page.on('pageerror', (error) => problems.push(`pageerror: ${error.message}`))
+    await page.evaluateOnNewDocument((signedInNow, sessionJson, picksJson) => {
+      try {
+        if (location.origin === 'https://accounts.roachnet.org' && signedInNow) localStorage.setItem('sb-yaiynvuvnnwbxaeoaseb-auth-token', sessionJson)
+        if (location.origin === 'https://apps.roachnet.org' && picksJson !== '[]' && !sessionStorage.getItem('seeded')) {
+          localStorage.setItem('roachnet.apps.saved.v1', picksJson)
+          sessionStorage.setItem('seeded', '1')
+        }
+      } catch {}
+    }, signedIn, JSON.stringify(session), JSON.stringify(localPicks))
+    await page.setRequestInterception(true)
+    page.on('request', async (request) => {
+      const url = new URL(request.url())
+      const site = sitesByOrigin[url.origin]
+      if (site) {
+        const file = await localFile(site.directory, url.pathname)
+        const target = file || path.join(site.directory, '404.html')
+        let body
+        try {
+          body = await readFile(target)
+        } catch {
+          body = await readFile(path.join(site.directory, '404.html'))
+        }
+        const headers = { ...site.headers, 'cache-control': 'no-store' }
+        return request.respond({ status: file ? 200 : 404, contentType: mime.get(path.extname(target)) || 'application/octet-stream', headers, body })
+      }
+      if (url.origin === supabaseOrigin) {
+        const cors = { 'access-control-allow-origin': 'https://accounts.roachnet.org', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET, POST, PATCH, DELETE, OPTIONS', 'access-control-expose-headers': 'content-range' }
+        if (request.method() === 'OPTIONS') return request.respond({ status: 204, headers: cors })
+        if (url.pathname === '/rest/v1/saved_apps') {
+          const authorized = (request.headers().authorization || '') === `Bearer ${accessToken}`
+          if (!authorized) return request.respond({ status: 401, headers: cors, contentType: 'application/json', body: '{"message":"JWT expired"}' })
+          if (request.method() === 'GET') {
+            const list = [...table.values()].map(({ app_id, title, category, updated_at }) => ({ app_id, title, category, updated_at }))
+            return request.respond({ status: 200, headers: cors, contentType: 'application/json', body: JSON.stringify(list) })
+          }
+          if (request.method() === 'POST') {
+            const payload = JSON.parse(request.postData() || '[]')
+            for (const row of Array.isArray(payload) ? payload : [payload]) {
+              if (row.user_id !== userId) return request.respond({ status: 403, headers: cors, contentType: 'application/json', body: '{"message":"row-level security"}' })
+              table.set(row.app_id, { ...row, updated_at: new Date().toISOString() })
+            }
+            return request.respond({ status: 201, headers: cors, contentType: 'application/json', body: '[]' })
+          }
+          if (request.method() === 'DELETE') {
+            table.delete((url.searchParams.get('app_id') || '').replace(/^eq\./, ''))
+            return request.respond({ status: 204, headers: cors })
+          }
+        }
+        return request.respond({ status: 200, headers: cors, contentType: 'application/json', body: '{}' })
+      }
+      return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : '/* third-party script stubbed for the test */' })
+    })
+    try {
+      await page.goto('https://apps.roachnet.org/', { waitUntil: 'domcontentloaded', timeout: 20_000 })
+      await page.waitForFunction(() => document.querySelectorAll('[data-save-id]').length > 0, { timeout: 15_000 })
+      await run({ page, table })
+      assert.deepEqual(problems, [], 'the store and the bridge run without console errors')
+    } finally {
+      await context.close()
+    }
+  }
+
+  const savedOn = (page) => page.evaluate(() => [...new Set([...document.querySelectorAll('[data-save-id][aria-pressed="true"]')].map((button) => button.dataset.saveId))])
+
+  // Signed out: the pick stays in this browser and the rail counts it.
+  await scenario({ signedIn: false }, async ({ page, table }) => {
+    const id = await page.$eval('.st-card [data-save-id]', (button) => button.dataset.saveId)
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    await page.click(`.st-card [data-save-id="${id}"]`)
+    await page.waitForFunction((target) => document.querySelector(`[data-save-id="${target}"]`)?.getAttribute('aria-pressed') === 'true', { timeout: 5_000 }, id)
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('roachnet.apps.saved.v1') || '[]').map((entry) => entry.appId))
+    assert.deepEqual(stored, [id], 'a signed-out save lands in this browser')
+    assert.equal(table.size, 0, 'nothing reaches the account while signed out')
+    const toast = await page.$eval('.nx-toast', (node) => node.textContent)
+    assert.match(toast, /in this browser/)
+    const railCount = await page.$eval('[data-section="Saved"] [data-rail-count]', (node) => node.textContent)
+    assert.equal(railCount, '1')
+  })
+
+  // Signed in: local picks merge into the account, and Save/Remove hit the table.
+  const ids = await readFile(path.join(root, 'website-apps-dist/app-store-catalog.json'), 'utf8').then((text) => JSON.parse(text).items.slice(0, 3).map((item) => item.id))
+  await scenario({
+    signedIn: true,
+    localPicks: [{ appId: ids[1], title: 'From this browser', category: 'Maps', savedAt: '2026-10-01T00:00:00.000Z' }],
+    rows: [{ app_id: ids[0], title: 'From the account', category: 'Maps', user_id: userId, updated_at: '2026-10-02T00:00:00.000Z' }],
+  }, async ({ page, table }) => {
+    await page.waitForFunction(() => !localStorage.getItem('roachnet.apps.saved.v1'), { timeout: 10_000 })
+    assert.deepEqual([...table.keys()].sort(), [ids[0], ids[1]].sort(), 'the local pick moved into the account')
+    await page.waitForFunction((expected) => expected.every((id) => document.querySelector(`[data-save-id="${CSS.escape(id)}"]`)?.getAttribute('aria-pressed') === 'true'), { timeout: 5_000 }, [ids[0], ids[1]])
+    await page.evaluate(() => window.location.hash = 'saved')
+    await page.waitForFunction(() => document.querySelectorAll('.st-grid [data-save-id]').length === 2, { timeout: 5_000 })
+    await page.click(`.st-grid [data-save-id="${ids[0]}"]`)
+    await page.waitForFunction(() => document.querySelectorAll('.st-grid [data-save-id]').length === 1, { timeout: 5_000 })
+    assert.equal(table.has(ids[0]), false, 'Remove deletes the row')
+    assert.deepEqual(await savedOn(page), [ids[1]])
+  })
+}
+
 async function checkScreenshotsReveal(browser, baseUrl, pathname) {
   // The motion layer clips screenshots shut and wipes them open on entry; every
   // one of them has to end up visible once scrolled to (it once stayed clipped).
@@ -21637,6 +23053,7 @@ try {
       }
       if (site.name === 'apps') {
         await checkAppDetailKeyboardFlow(browser, baseUrl)
+        await checkSavedApps(browser)
       }
     } finally {
       await close(server)
@@ -21900,8 +23317,8 @@ function expand(name, chunks, stack = []) {
 
 const sourceFiles = [
   '404.html', 'account.js', 'account/index.html', 'api.js', 'api/index.html', 'app-store.html', 'app-store.js', 'brew/index.html', 'home/index.html', 'html-validate.json', 'index.html', 'ios/index.html', 'landing-script.js', 'landing-dither.js', 'netlify.toml',
-  'nx.css', 'nx.js', 'nx-halloween.js', 'nx-halloween.css', 'nx-account.css', 'nx-docs.css', 'nx-mission.css', 'nx-store.css', 'package-lock.json', 'package.json', 'roachclaw-web.css', 'roachclaw.js', 'roachclaw/index.html', 'robots-accounts.txt', 'robots-apps.txt', 'site-account.js', 'sitemap/index.html',
-  'scripts/build-accounts-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-main-site.mjs', 'scripts/check-links.mjs',
+  'nx.css', 'nx.js', 'nx-halloween.js', 'nx-halloween.css', 'nx-account.css', 'nx-docs.css', 'nx-mission.css', 'nx-store.css', 'package-lock.json', 'package.json', 'roachclaw-web.css', 'roachclaw.js', 'roachclaw/index.html', 'robots-accounts.txt', 'robots-apps.txt', 'saved-apps.js', 'saved-apps-bridge.html', 'saved-apps-bridge.js', 'site-account.js', 'sitemap/index.html',
+  'scripts/build-accounts-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-main-deploy.mjs', 'scripts/build-main-site.mjs', 'scripts/check-links.mjs', 'scripts/check-main-deploy.mjs',
   'scripts/site-browser-outcomes.mjs', 'scripts/snapshot-live-sites.mjs', 'scripts/tangle.mjs', 'scripts/validate-html.mjs',
   'sitemap-accounts.xml', 'sitemap-apps.xml', 'test/register-account.test.mjs', 'test/roachclaw-chat.test.mjs', 'test/site-outcomes.mjs', 'netlify/functions/register-account.mjs', 'netlify/functions/roachclaw-chat.mjs',
 ]
@@ -22258,6 +23675,23 @@ test('registration uses public Supabase signup and returns confirmation semantic
   })
   assert.equal(calls.some(({ url }) => url.includes('/auth/v1/admin/users')), false)
 })
+
+test('an address that already has an account gets the same answer as a new one', async () => {
+  const { handler } = createHarness({
+    fetchImpl: async (url) => {
+      if (new URL(String(url)).hostname === 'challenges.cloudflare.com') {
+        return Response.json({ success: true, hostname: 'accounts.roachnet.org' })
+      }
+      return Response.json({ code: 422, error_code: 'user_already_exists', msg: 'User already registered' }, { status: 422 })
+    },
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 200)
+  const result = await response.json()
+  assert.equal(result.ok, true)
+  assert.equal(result.requiresConfirmation, true)
+  assert.doesNotMatch(JSON.stringify(result), /exists|already/i)
+})
 ```
 
 ## test/roachclaw-chat.test.mjs
@@ -22310,7 +23744,7 @@ function chatRequest({ origin = 'https://roachnet.org', token = 'user-token', bo
   })
 }
 
-function createHarness({ env = armedEnv, store = new MemoryRateLimitStore(), database } = {}) {
+function createHarness({ env = armedEnv, store = new MemoryRateLimitStore(), database, prepareReply = async () => ({}), modelWait, loadRuntime = async () => ({}) } = {}) {
   const calls = []
   const fetchImpl = async (url, options = {}) => {
     const href = String(url)
@@ -22328,6 +23762,9 @@ function createHarness({ env = armedEnv, store = new MemoryRateLimitStore(), dat
     fetchImpl,
     getRateLimitStore: () => store,
     generateReply: async () => ({ text: 'Hi there.', provider: 'RoachBrain Cloud', model: 'test', remoteSessionId: null, remoteSessionTitle: '' }),
+    prepareReply,
+    loadRuntime,
+    ...(modelWait === undefined ? {} : { modelWait }),
     now: () => Date.parse('2026-10-11T12:00:00.000Z'),
   })
   return { calls, handler, store }
@@ -22404,6 +23841,40 @@ test('database error details stay on the server', async () => {
   assert.equal(result.message, "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
   assert.doesNotMatch(JSON.stringify(result), /secret_column/)
 })
+
+test('a cold model answers "waking up" and writes nothing', async () => {
+  let release
+  const loading = new Promise((resolve) => {
+    release = resolve
+  })
+  const kept = []
+  const { calls, handler } = createHarness({ prepareReply: () => loading, modelWait: 20 })
+  const response = await handler(chatRequest(), { waitUntil: (promise) => kept.push(promise) })
+  assert.equal(response.status, 503)
+  assert.equal((await response.json()).code, 'warming')
+  assert.equal(restCalls(calls).length, 0, 'nothing is written while the model loads')
+  assert.equal(kept.length, 1, 'the load keeps going after the reply')
+  release({})
+})
+
+test('a model that cannot load says so and writes nothing', async () => {
+  const { calls, handler } = createHarness({ prepareReply: () => Promise.reject(new Error('download failed')) })
+  const response = await handler(chatRequest())
+  assert.equal(response.status, 503)
+  assert.equal((await response.json()).code, 'model_unavailable')
+  assert.equal(restCalls(calls).length, 0)
+})
+
+test('the runtime health check needs no sign-in and touches no database', async () => {
+  const { calls, handler } = createHarness()
+  const ok = await handler(new Request('https://roachnet.org/.netlify/functions/roachclaw-chat?health=runtime'))
+  assert.equal(ok.status, 200)
+  assert.equal((await ok.json()).runtime, 'ready')
+  const broken = createHarness({ loadRuntime: async () => { throw new Error('no binding') } })
+  const missing = await broken.handler(new Request('https://roachnet.org/.netlify/functions/roachclaw-chat?health=runtime'))
+  assert.equal(missing.status, 503)
+  assert.equal(calls.length + broken.calls.length, 0)
+})
 ```
 
 ## test/site-outcomes.mjs
@@ -22454,10 +23925,27 @@ for (const build of [appsBuild, accountsBuild]) {
   assert.match(build, /'robots\.txt'/)
   assert.match(build, /'sitemap\.xml'/)
   assert.match(build, /'_headers'/)
-  assert.match(build, /X-Frame-Options: DENY/)
   assert.match(build, /Permissions-Policy:/)
   assert.match(build, /Content-Security-Policy:/)
-  assert.match(build, /frame-ancestors 'none'/)
+}
+// The store can't be framed at all. Accounts can be framed by the store only,
+// which is how its Save button reaches the saved-apps bridge.
+assert.match(appsBuild, /X-Frame-Options: DENY/)
+assert.match(appsBuild, /frame-ancestors 'none'/)
+assert.match(appsBuild, /frame-src https:\/\/accounts\.roachnet\.org;/)
+assert.match(accountsBuild, /frame-ancestors https:\/\/apps\.roachnet\.org;/)
+assert.doesNotMatch(accountsBuild, /frame-ancestors [^;\n]*(?:\*|'self'|http:)/)
+assert.match(accountsBuild, /'saved-apps-bridge\.html'/)
+assert.match(appsBuild, /'saved-apps\.js'/)
+{
+  const bridge = await source('saved-apps-bridge.js')
+  assert.match(bridge, /allowedParents = new Set\(\['https:\/\/apps\.roachnet\.org'\]\)/, 'the bridge answers the store only')
+  assert.match(bridge, /event\.source !== window\.parent/)
+  assert.doesNotMatch(bridge, /access_token|refresh_token|postMessage\([^)]*session/, 'the bridge never hands out a token')
+  assert.doesNotMatch(bridge, /postMessage\([^)]*'\*'\)/, 'the bridge never posts to any origin')
+  const store = await source('saved-apps.js')
+  assert.match(store, /event\.origin !== bridgeOrigin/)
+  assert.match(store, /bridgeOrigin = 'https:\/\/accounts\.roachnet\.org'/)
 }
 assert.doesNotMatch(accountsBuild, /^\s*'assets',$/m)
 assert.doesNotMatch(appsBuild, /^\s*'assets',$/m)
@@ -22696,6 +24184,16 @@ assert.doesNotMatch(await source('app.js'), /free \(approx\.\)/, 'a browser cann
 const catalogText = await source('app-store-catalog.json')
 assert.doesNotMatch(catalogText, /District Of Columbia|Of The Northern/)
 assert.doesNotMatch(catalogText, /"(?:subtitle|status|summary|machineFit)": "[^"]*\blane\b/i, 'store cards skip the internal "lane" jargon')
+
+// "Add source" on iOS uses each app's documented add-source link.
+{
+  const sourceJson = 'https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json'
+  assert.ok(iosPage.includes(`data-sidestore-source href="sidestore://source?url=${sourceJson}"`), 'SideStore button adds the source')
+  assert.ok(iosPage.includes(`data-altstore-source href="altstore://source?url=${sourceJson}"`), 'AltStore button adds the source')
+  assert.ok(iosScript.includes('`sidestore://source?url=${sourceURL}`'))
+  assert.ok(iosScript.includes('`altstore://source?url=${sourceURL}`'))
+  assert.match(iosScript, new RegExp(`const sourceURL = '${sourceJson.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`))
+}
 
 console.log('site outcome checks passed')
 ```
@@ -23112,10 +24610,13 @@ export function createRegistrationHandler({
       const message = String(responseBody?.msg || responseBody?.message || responseBody?.error || '')
       const lowered = `${code} ${message}`.toLowerCase()
 
+      // Answer an existing address exactly like a new one, so sign-up can't be
+      // used to find out who has an account. Supabase does the same when email
+      // confirmation is on; this covers the case where it is switched off.
       if (lowered.includes('user_already_exists') || lowered.includes('already registered')) {
         return withCors(
           request,
-          json({ ok: false, code: 'user_exists', message: 'That email already has a RoachNet account. Sign in instead.' }, 409)
+          json({ ok: true, requiresConfirmation: true, message: 'Check your email to confirm your account, then sign in.', userId: null })
         )
       }
 
@@ -23193,16 +24694,19 @@ function isAllowedRequestOrigin(request, env) {
 const defaultSystemPrompt =
   'You are RoachClaw on the RoachNet web lane. Answer clearly, keep user data isolated to the authenticated account lane, never claim access to a local machine you cannot see, and prefer practical help over filler.'
 const roachBrainCacheDir = '/tmp/roachbrain-cloud-cache'
-const roachBrainCandidates = [
-  {
-    id: 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA',
-    label: 'SmolLM2 135M',
-  },
-  {
-    id: 'onnx-community/gemma-3-270m-it-ONNX',
-    label: 'Gemma 3 270M',
-  },
-]
+// The hosted model is pinned to one Hugging Face commit, so a change upstream
+// can't swap what answers. SmolLM2 is Apache-2.0. q8 (137 MB) downloads faster
+// than q4 (182 MB, unquantized embeddings) and answers about as quickly on CPU.
+const roachBrainModel = {
+  id: 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA',
+  revision: '5b6682c7c9df18f004bfb7e635cba3f3d98537d8',
+  label: 'SmolLM2 135M',
+  dtypes: ['q8', 'q4'],
+}
+// A cold function downloads and loads the model before it can answer. Netlify
+// stops a synchronous function at 30 seconds, so a reply waits this long for
+// the model and otherwise says the lane is still waking up.
+const modelWaitMs = 20_000
 
 let roachBrainPipelinePromise = null
 
@@ -23414,36 +24918,37 @@ function extractGeneratedReply(result) {
   return ''
 }
 
-async function getRoachBrainPipeline() {
+export function getRoachBrainPipeline() {
   if (roachBrainPipelinePromise) {
     return roachBrainPipelinePromise
   }
 
   roachBrainPipelinePromise = (async () => {
-    // Force the web runtime build so Netlify does not bundle the heavyweight
-    // native ONNX binaries for every platform into this function artifact.
-    const { env, pipeline } = await import('../../node_modules/@huggingface/transformers/dist/transformers.web.js')
+    // The Node build runs ONNX natively (onnxruntime-node, Linux x64 only in
+    // the deploy bundle; see scripts/build-functions-deploy.mjs) and caches the
+    // model files in /tmp. The web build can't do either in Node: it has no
+    // file cache and its WebGPU runtime has no InferenceSession there, so every
+    // reply failed before this.
+    const { env, pipeline } = await import('@huggingface/transformers')
     await mkdir(roachBrainCacheDir, { recursive: true })
     env.cacheDir = roachBrainCacheDir
     env.allowLocalModels = false
     env.allowRemoteModels = true
-    env.useFSCache = true
 
     let lastError = null
-    for (const candidate of roachBrainCandidates) {
-      for (const dtype of ['q4', 'q8']) {
-        try {
-          const generator = await pipeline('text-generation', candidate.id, {
-            dtype,
-          })
-          return {
-            generator,
-            modelLabel: candidate.label,
-          }
-        } catch (error) {
-          lastError = error
-          console.warn(`RoachBrain Cloud model attempt failed for ${candidate.label} (${dtype}).`, error)
+    for (const dtype of roachBrainModel.dtypes) {
+      try {
+        const generator = await pipeline('text-generation', roachBrainModel.id, {
+          dtype,
+          revision: roachBrainModel.revision,
+        })
+        return {
+          generator,
+          modelLabel: roachBrainModel.label,
         }
+      } catch (error) {
+        lastError = error
+        console.warn(`RoachBrain Cloud could not load ${roachBrainModel.label} (${dtype}).`, error)
       }
     }
 
@@ -23519,18 +25024,47 @@ async function consumeRateLimit({ store, key, limit, windowMs, now }) {
   throw new Error('Chat rate-limit contention did not settle.')
 }
 
+// Resolves to 'ready', 'failed' or 'waiting' without ever rejecting.
+function settleWithin(promise, ms) {
+  let timer
+  return Promise.race([
+    promise.then(
+      () => 'ready',
+      () => 'failed'
+    ),
+    new Promise((resolve) => {
+      timer = setTimeout(() => resolve('waiting'), ms)
+    }),
+  ]).finally(() => clearTimeout(timer))
+}
+
 export function createChatHandler({
   env = process.env,
   fetchImpl = globalThis.fetch,
   getRateLimitStore = () => getStore('roachclaw-chat-rate-limits'),
   generateReply = generateRoachBrainReply,
+  prepareReply = getRoachBrainPipeline,
+  modelWait = modelWaitMs,
+  loadRuntime = () => import('@huggingface/transformers'),
   now = Date.now,
 } = {}) {
-  return async (request) => {
+  return async (request, context) => {
     const withEnvCors = (req, response) => withCors(req, response, env)
 
     if (!isAllowedRequestOrigin(request, env)) {
       return json({ ok: false, message: 'Origin not allowed.' }, 403)
+    }
+
+    // A cheap, signed-out check that the deploy carries the native runtime the
+    // hosted model needs. It loads code only: no model download, no database.
+    if (request.method === 'GET' && new URL(request.url).searchParams.get('health') === 'runtime') {
+      try {
+        await loadRuntime()
+        return json({ ok: true, runtime: 'ready', model: roachBrainModel.label, revision: roachBrainModel.revision.slice(0, 12) })
+      } catch (error) {
+        console.error('RoachBrain Cloud runtime did not load.', error)
+        return json({ ok: false, runtime: 'missing' }, 503)
+      }
     }
 
     if (request.method === 'OPTIONS') {
@@ -23649,6 +25183,27 @@ export function createChatHandler({
     } catch (error) {
       console.error('RoachClaw chat rate limiter unavailable.', error)
       return withEnvCors(request, json({ ok: false, code: 'rate_limit_unavailable', message: "RoachClaw on the web is busy. Try again in a minute. RoachClaw in the Mac app isn't affected." }, 503))
+    }
+
+    // The hosted model answers unless the request carries a paired-Mac relay
+    // token. Load it before anything is written, so a cold start or a failed
+    // download leaves the conversation exactly as it was.
+    if (!bridgeToken) {
+      const loading = prepareReply()
+      const state = await settleWithin(loading, modelWait)
+      if (state === 'waiting') {
+        context?.waitUntil?.(loading.catch(() => {}))
+        return withEnvCors(
+          request,
+          json({ ok: false, code: 'warming', message: 'RoachClaw on the web is waking up. Send your message again in a few seconds. Nothing was lost.' }, 503)
+        )
+      }
+      if (state === 'failed') {
+        return withEnvCors(
+          request,
+          json({ ok: false, code: 'model_unavailable', message: "RoachClaw on the web can't load its model right now, so nothing was sent. Try again later. RoachClaw in the Mac app isn't affected." }, 503)
+        )
+      }
     }
 
     const databaseClient = createDatabaseClient({
@@ -23837,5 +25392,5 @@ export function createChatHandler({
   }
 }
 
-export default async (request) => createChatHandler()(request)
+export default async (request, context) => createChatHandler()(request, context)
 ```

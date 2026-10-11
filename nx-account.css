@@ -536,6 +536,22 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
 
 .ac-row__meta { color: var(--nx-soft); font: 500 12px/1.3 var(--nx-font-mono); white-space: nowrap; }
 
+.ac-row__link { color: inherit; text-decoration: none; }
+.ac-row__link:hover { color: var(--nx-cyan); text-decoration: underline; text-underline-offset: 3px; }
+
+.ac-row__action {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--nx-border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--nx-muted);
+  font: 600 12.5px/1 var(--nx-font-sans);
+  cursor: pointer;
+}
+.ac-row__action:hover { color: var(--nx-text); border-color: rgba(255, 255, 255, 0.28); }
+.ac-row__action:disabled { opacity: 0.6; cursor: progress; }
+
 .ac-rows__empty {
   padding: 18px 16px;
   border-radius: 12px;

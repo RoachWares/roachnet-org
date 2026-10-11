@@ -405,10 +405,13 @@ export function createRegistrationHandler({
       const message = String(responseBody?.msg || responseBody?.message || responseBody?.error || '')
       const lowered = `${code} ${message}`.toLowerCase()
 
+      // Answer an existing address exactly like a new one, so sign-up can't be
+      // used to find out who has an account. Supabase does the same when email
+      // confirmation is on; this covers the case where it is switched off.
       if (lowered.includes('user_already_exists') || lowered.includes('already registered')) {
         return withCors(
           request,
-          json({ ok: false, code: 'user_exists', message: 'That email already has a RoachNet account. Sign in instead.' }, 409)
+          json({ ok: true, requiresConfirmation: true, message: 'Check your email to confirm your account, then sign in.', userId: null })
         )
       }
 

@@ -247,3 +247,20 @@ test('registration uses public Supabase signup and returns confirmation semantic
   })
   assert.equal(calls.some(({ url }) => url.includes('/auth/v1/admin/users')), false)
 })
+
+test('an address that already has an account gets the same answer as a new one', async () => {
+  const { handler } = createHarness({
+    fetchImpl: async (url) => {
+      if (new URL(String(url)).hostname === 'challenges.cloudflare.com') {
+        return Response.json({ success: true, hostname: 'accounts.roachnet.org' })
+      }
+      return Response.json({ code: 422, error_code: 'user_already_exists', msg: 'User already registered' }, { status: 422 })
+    },
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 200)
+  const result = await response.json()
+  assert.equal(result.ok, true)
+  assert.equal(result.requiresConfirmation, true)
+  assert.doesNotMatch(JSON.stringify(result), /exists|already/i)
+})

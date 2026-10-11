@@ -41,10 +41,27 @@ for (const build of [appsBuild, accountsBuild]) {
   assert.match(build, /'robots\.txt'/)
   assert.match(build, /'sitemap\.xml'/)
   assert.match(build, /'_headers'/)
-  assert.match(build, /X-Frame-Options: DENY/)
   assert.match(build, /Permissions-Policy:/)
   assert.match(build, /Content-Security-Policy:/)
-  assert.match(build, /frame-ancestors 'none'/)
+}
+// The store can't be framed at all. Accounts can be framed by the store only,
+// which is how its Save button reaches the saved-apps bridge.
+assert.match(appsBuild, /X-Frame-Options: DENY/)
+assert.match(appsBuild, /frame-ancestors 'none'/)
+assert.match(appsBuild, /frame-src https:\/\/accounts\.roachnet\.org;/)
+assert.match(accountsBuild, /frame-ancestors https:\/\/apps\.roachnet\.org;/)
+assert.doesNotMatch(accountsBuild, /frame-ancestors [^;\n]*(?:\*|'self'|http:)/)
+assert.match(accountsBuild, /'saved-apps-bridge\.html'/)
+assert.match(appsBuild, /'saved-apps\.js'/)
+{
+  const bridge = await source('saved-apps-bridge.js')
+  assert.match(bridge, /allowedParents = new Set\(\['https:\/\/apps\.roachnet\.org'\]\)/, 'the bridge answers the store only')
+  assert.match(bridge, /event\.source !== window\.parent/)
+  assert.doesNotMatch(bridge, /access_token|refresh_token|postMessage\([^)]*session/, 'the bridge never hands out a token')
+  assert.doesNotMatch(bridge, /postMessage\([^)]*'\*'\)/, 'the bridge never posts to any origin')
+  const store = await source('saved-apps.js')
+  assert.match(store, /event\.origin !== bridgeOrigin/)
+  assert.match(store, /bridgeOrigin = 'https:\/\/accounts\.roachnet\.org'/)
 }
 assert.doesNotMatch(accountsBuild, /^\s*'assets',$/m)
 assert.doesNotMatch(appsBuild, /^\s*'assets',$/m)
@@ -283,5 +300,15 @@ assert.doesNotMatch(await source('app.js'), /free \(approx\.\)/, 'a browser cann
 const catalogText = await source('app-store-catalog.json')
 assert.doesNotMatch(catalogText, /District Of Columbia|Of The Northern/)
 assert.doesNotMatch(catalogText, /"(?:subtitle|status|summary|machineFit)": "[^"]*\blane\b/i, 'store cards skip the internal "lane" jargon')
+
+// "Add source" on iOS uses each app's documented add-source link.
+{
+  const sourceJson = 'https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json'
+  assert.ok(iosPage.includes(`data-sidestore-source href="sidestore://source?url=${sourceJson}"`), 'SideStore button adds the source')
+  assert.ok(iosPage.includes(`data-altstore-source href="altstore://source?url=${sourceJson}"`), 'AltStore button adds the source')
+  assert.ok(iosScript.includes('`sidestore://source?url=${sourceURL}`'))
+  assert.ok(iosScript.includes('`altstore://source?url=${sourceURL}`'))
+  assert.match(iosScript, new RegExp(`const sourceURL = '${sourceJson.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`))
+}
 
 console.log('site outcome checks passed')

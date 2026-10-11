@@ -5,6 +5,10 @@
 // installIntent and handed to the native app by attemptNativeInstall.
 // CSP note: the apps CSP is style-src 'self', so nothing here writes a style
 // attribute into markup. Dynamic values go through CSSOM (style.setProperty).
+// Save buttons go through saved-apps.js (account when signed in, this browser
+// otherwise).
+
+import { createSavedApps } from './saved-apps.js'
 
 const owner = 'RoachWares'
 const repo = 'RoachNet'
@@ -31,6 +35,15 @@ const sectionDefinitions = [
     group: 'Discover',
   },
   {
+    key: 'Saved',
+    navLabel: 'Saved',
+    eyebrow: 'Saved for later',
+    title: 'Your saved apps.',
+    description: 'Press Save on anything in the store and it waits here.',
+    icon: 'SAV',
+    group: 'Discover',
+  },
+  {
     key: 'Map Regions',
     navLabel: 'Map Regions',
     eyebrow: 'Offline atlas',
@@ -46,7 +59,7 @@ const sectionDefinitions = [
     navLabel: 'Map Picks',
     eyebrow: 'Single-file maps',
     title: 'One place, one file.',
-    description: 'One state or territory per file, for when you need California, not the whole Pacific shelf.',
+    description: 'One state or territory per file, for when you need California, not the whole Pacific Region.',
     short: 'One state or territory, one file.',
     icon: 'PIN',
     group: 'Maps',
@@ -610,6 +623,8 @@ let animateNextRender = true
 let toastNode = null
 let toastTimer = null
 
+const saved = createSavedApps({ onChange: handleSavedChange })
+
 /* ---------------------------------------------------------------------------
    Small helpers
    ------------------------------------------------------------------------ */
@@ -702,7 +717,7 @@ function announce(message) {
   }, 40)
 }
 
-function showToast(message) {
+function showToast(message, { long = false } = {}) {
   if (!toastNode) {
     toastNode = document.createElement('div')
     toastNode.className = 'nx-toast'
@@ -713,7 +728,7 @@ function showToast(message) {
   toastNode.textContent = message
   toastNode.classList.add('is-on')
   window.clearTimeout(toastTimer)
-  toastTimer = window.setTimeout(() => toastNode.classList.remove('is-on'), 2200)
+  toastTimer = window.setTimeout(() => toastNode.classList.remove('is-on'), long ? 5200 : 2200)
 }
 
 /* ---------------------------------------------------------------------------
@@ -962,7 +977,9 @@ function searchItems(items, query) {
 }
 
 function itemsInSection(sectionKey, items = state.items) {
-  return sectionKey === 'Today' ? items : items.filter((item) => item.section === sectionKey)
+  if (sectionKey === 'Today') return items
+  if (sectionKey === 'Saved') return items.filter((item) => saved.has(item.id))
+  return items.filter((item) => item.section === sectionKey)
 }
 
 function readyFirst(items) {
@@ -1042,6 +1059,56 @@ function renderInstallControl(item, variant = 'card') {
   `
 }
 
+const bookmarkIcon = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 2.5h8v11l-4-2.8-4 2.8z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
+
+/** Save toggles keep one accessible name; aria-pressed carries the state. */
+function renderSaveControl(item, variant = 'card') {
+  const isSaved = saved.has(item.id)
+  const classes = variant === 'card' ? 'st-save' : 'nx-btn st-save st-save--sheet'
+  return `
+    <button class="${classes}" type="button" data-save-id="${escapeHtml(item.id)}" aria-pressed="${isSaved}" aria-label="${escapeHtml(`Save ${item.title}`)}">
+      ${bookmarkIcon}<span class="st-save__label">${isSaved ? 'Saved' : 'Save'}</span>
+    </button>
+  `
+}
+
+function syncSaveButtons() {
+  document.querySelectorAll('[data-save-id]').forEach((button) => {
+    const isSaved = saved.has(button.dataset.saveId || '')
+    button.setAttribute('aria-pressed', String(isSaved))
+    const label = button.querySelector('.st-save__label')
+    if (label) label.textContent = isSaved ? 'Saved' : 'Save'
+  })
+}
+
+function handleSavedChange() {
+  syncSaveButtons()
+  if (!state.catalog) return
+  updateRail()
+  if (state.activeSection === 'Saved') queueRender()
+}
+
+async function toggleSave(button) {
+  const item = findItemById(button.dataset.saveId || '')
+  if (!item || button.getAttribute('aria-busy') === 'true') return
+  button.setAttribute('aria-busy', 'true')
+  try {
+    const result = await saved.toggle(item)
+    if (!result.saved) {
+      showToast(`Removed ${item.title} from your saved apps.`)
+    } else if (result.where === 'account') {
+      showToast(`Saved ${item.title} to your account.`)
+    } else {
+      showToast(`Saved ${item.title} in this browser. Sign in to keep it everywhere.`, { long: true })
+    }
+  } catch (error) {
+    showToast(`Couldn’t save ${item.title}. ${error?.message || 'Try again in a moment.'}`, { long: true })
+  } finally {
+    button.removeAttribute('aria-busy')
+    syncSaveButtons()
+  }
+}
+
 function renderCard(item, { kicker = 'section' } = {}) {
   const kickerText = kicker === 'status' ? item.status || item.sectionMeta.navLabel : item.sectionMeta.navLabel
   return `
@@ -1057,7 +1124,7 @@ function renderCard(item, { kicker = 'section' } = {}) {
       </div>
       <p class="st-card__blurb">${escapeHtml(item.blurb)}</p>
       ${renderBadges(item)}
-      <div class="st-card__foot">${renderInstallControl(item, 'card')}</div>
+      <div class="st-card__foot">${renderInstallControl(item, 'card')}${renderSaveControl(item, 'card')}</div>
     </article>
   `
 }
@@ -1221,6 +1288,19 @@ function renderListView() {
         <button class="nx-chip" type="button" data-clear-search>Clear search</button>
       </div>
     `)
+  } else if (section.key === 'Saved') {
+    renderSectionHead(`
+      <div class="st-section-head__copy">
+        <p class="nx-overline">${escapeHtml(section.eyebrow)}</p>
+        <h2 class="st-section-head__title">${escapeHtml(section.title)}</h2>
+        <p class="st-section-head__lede">${saved.signedIn
+          ? 'Kept in your RoachNet account, so they follow you to any browser.'
+          : 'Kept in this browser. Sign in on your RoachNet account and they move there, so they follow you to any browser.'}</p>
+      </div>
+      <div class="st-section-head__meta">
+        ${saved.signedIn ? '' : '<a class="nx-chip" href="https://accounts.roachnet.org/">Sign in</a>'}
+      </div>
+    `)
   } else {
     renderSectionHead(`
       <div class="st-section-head__copy">
@@ -1234,6 +1314,20 @@ function renderListView() {
       </ul>
       ${renderAvailabilityNotice(items)}
     `)
+  }
+
+  if (!items.length && !query && section.key === 'Saved') {
+    storeStage.innerHTML = `
+      <section class="st-empty" aria-labelledby="apps-empty-title">
+        <span class="st-empty__art" aria-hidden="true"><span>0</span></span>
+        <h2 class="st-empty__title" id="apps-empty-title">Nothing saved yet.</h2>
+        <p class="st-empty__body">Press Save on any card and it waits here until you want it.</p>
+        <div class="st-empty__actions">
+          <button class="nx-btn nx-btn--primary nx-btn--sm" type="button" data-section="Today">Browse the store</button>
+        </div>
+      </section>
+    `
+    return
   }
 
   if (!items.length) {
@@ -1285,7 +1379,7 @@ function updateRail() {
 
   sidebarNav.querySelectorAll('[data-section]').forEach((link) => {
     const key = link.dataset.section
-    const count = key === 'Today' ? pool.length : counts.get(key) || 0
+    const count = key === 'Today' ? pool.length : key === 'Saved' ? pool.filter((item) => saved.has(item.id)).length : counts.get(key) || 0
     const isActive = key === state.activeSection
     const countNode = link.querySelector('[data-rail-count]')
     if (countNode) countNode.textContent = String(count)
@@ -1475,6 +1569,7 @@ function renderDetail(item) {
 
       <div class="st-detail__actions">
         ${renderInstallControl(item, 'sheet')}
+        ${renderSaveControl(item, 'sheet')}
         <button class="nx-btn st-copy" type="button" data-copy-link="${escapeHtml(item.id)}">
           <span class="st-copy__label">Copy link</span>
         </button>
@@ -1749,6 +1844,13 @@ storeContent?.addEventListener('click', (event) => {
     return
   }
 
+  const saveButton = event.target.closest('[data-save-id]')
+  if (saveButton) {
+    event.preventDefault()
+    toggleSave(saveButton)
+    return
+  }
+
   const previewButton = event.target.closest('[data-preview-id]')
   if (previewButton) {
     event.preventDefault()
@@ -1775,6 +1877,11 @@ detailClose?.addEventListener('click', closeDetail)
 detailOverlay?.addEventListener('click', (event) => {
   if (event.target === detailOverlay) {
     closeDetail()
+    return
+  }
+  const saveButton = event.target.closest('[data-save-id]')
+  if (saveButton) {
+    toggleSave(saveButton)
     return
   }
   const copyButton = event.target.closest('[data-copy-link]')
@@ -1865,3 +1972,4 @@ document.addEventListener('visibilitychange', () => {
 setDownloadButton()
 startTelemetry()
 loadCatalog()
+saved.start()

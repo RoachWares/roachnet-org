@@ -596,7 +596,7 @@ const roachVoicePacks = [
     summary:
       'A small Kokoro-derived narrator for read-aloud and basic local speech, when you don’t need cloning. Useful, boring and hard to kill.',
     accent: 'green',
-    machineFit: 'Good on every Apple Silicon Mac and bundled in the baseline desktop build',
+    machineFit: 'Any Apple Silicon Mac. RoachNet 1.0.6 already ships with it built in',
     includes: [
       'Compact Core ML narrator model',
       'Local read-aloud voice table',
@@ -628,7 +628,7 @@ const roachVoicePacks = [
     summary:
       'Local speech to text for RoachSpeech: transcripts saved beside your vault media, and lyric extraction, without renting ears from a cloud.',
     accent: 'cyan',
-    machineFit: 'Good on every Apple Silicon Mac and bundled in the baseline desktop build',
+    machineFit: 'Any Apple Silicon Mac. RoachNet 1.0.6 already ships with it built in',
     includes: [
       'RoachWhisper Core ML encoder and decoder',
       'Transcript sidecars for vault audio and video',

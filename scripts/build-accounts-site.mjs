@@ -18,6 +18,8 @@ async function main() {
     'router.js',
     'site-account.js',
     'site-config.js',
+    'saved-apps-bridge.html',
+    'saved-apps-bridge.js',
     'nx.css',
     'nx-account.css',
     'nx.js',
@@ -69,12 +71,16 @@ async function main() {
     'utf8'
   )
 
+  // Only the Apps store may frame these pages: it frames saved-apps-bridge.html
+  // so its Save button can reach your account without the session ever leaving
+  // this origin. Netlify merges header rules, so a per-path exception can't
+  // loosen a site-wide 'none'; the allowance is the store's origin, site-wide.
+  // X-Frame-Options can't name an origin, so CSP frame-ancestors carries it.
   await writeFile(
     path.join(outputRoot, '_headers'),
     [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://roachnet.org https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
-      '  X-Frame-Options: DENY',
+      "  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://roachnet.org https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; form-action 'self'; frame-ancestors https://apps.roachnet.org; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self'; worker-src 'self' blob:; upgrade-insecure-requests",
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',
       '  Strict-Transport-Security: max-age=31536000; includeSubDomains',

@@ -37,16 +37,19 @@ function isAllowedRequestOrigin(request, env) {
 const defaultSystemPrompt =
   'You are RoachClaw on the RoachNet web lane. Answer clearly, keep user data isolated to the authenticated account lane, never claim access to a local machine you cannot see, and prefer practical help over filler.'
 const roachBrainCacheDir = '/tmp/roachbrain-cloud-cache'
-const roachBrainCandidates = [
-  {
-    id: 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA',
-    label: 'SmolLM2 135M',
-  },
-  {
-    id: 'onnx-community/gemma-3-270m-it-ONNX',
-    label: 'Gemma 3 270M',
-  },
-]
+// The hosted model is pinned to one Hugging Face commit, so a change upstream
+// can't swap what answers. SmolLM2 is Apache-2.0. q8 (137 MB) downloads faster
+// than q4 (182 MB, unquantized embeddings) and answers about as quickly on CPU.
+const roachBrainModel = {
+  id: 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA',
+  revision: '5b6682c7c9df18f004bfb7e635cba3f3d98537d8',
+  label: 'SmolLM2 135M',
+  dtypes: ['q8', 'q4'],
+}
+// A cold function downloads and loads the model before it can answer. Netlify
+// stops a synchronous function at 30 seconds, so a reply waits this long for
+// the model and otherwise says the lane is still waking up.
+const modelWaitMs = 20_000
 
 let roachBrainPipelinePromise = null
 
@@ -258,36 +261,37 @@ function extractGeneratedReply(result) {
   return ''
 }
 
-async function getRoachBrainPipeline() {
+export function getRoachBrainPipeline() {
   if (roachBrainPipelinePromise) {
     return roachBrainPipelinePromise
   }
 
   roachBrainPipelinePromise = (async () => {
-    // Force the web runtime build so Netlify does not bundle the heavyweight
-    // native ONNX binaries for every platform into this function artifact.
-    const { env, pipeline } = await import('../../node_modules/@huggingface/transformers/dist/transformers.web.js')
+    // The Node build runs ONNX natively (onnxruntime-node, Linux x64 only in
+    // the deploy bundle; see scripts/build-functions-deploy.mjs) and caches the
+    // model files in /tmp. The web build can't do either in Node: it has no
+    // file cache and its WebGPU runtime has no InferenceSession there, so every
+    // reply failed before this.
+    const { env, pipeline } = await import('@huggingface/transformers')
     await mkdir(roachBrainCacheDir, { recursive: true })
     env.cacheDir = roachBrainCacheDir
     env.allowLocalModels = false
     env.allowRemoteModels = true
-    env.useFSCache = true
 
     let lastError = null
-    for (const candidate of roachBrainCandidates) {
-      for (const dtype of ['q4', 'q8']) {
-        try {
-          const generator = await pipeline('text-generation', candidate.id, {
-            dtype,
-          })
-          return {
-            generator,
-            modelLabel: candidate.label,
-          }
-        } catch (error) {
-          lastError = error
-          console.warn(`RoachBrain Cloud model attempt failed for ${candidate.label} (${dtype}).`, error)
+    for (const dtype of roachBrainModel.dtypes) {
+      try {
+        const generator = await pipeline('text-generation', roachBrainModel.id, {
+          dtype,
+          revision: roachBrainModel.revision,
+        })
+        return {
+          generator,
+          modelLabel: roachBrainModel.label,
         }
+      } catch (error) {
+        lastError = error
+        console.warn(`RoachBrain Cloud could not load ${roachBrainModel.label} (${dtype}).`, error)
       }
     }
 
@@ -363,18 +367,47 @@ async function consumeRateLimit({ store, key, limit, windowMs, now }) {
   throw new Error('Chat rate-limit contention did not settle.')
 }
 
+// Resolves to 'ready', 'failed' or 'waiting' without ever rejecting.
+function settleWithin(promise, ms) {
+  let timer
+  return Promise.race([
+    promise.then(
+      () => 'ready',
+      () => 'failed'
+    ),
+    new Promise((resolve) => {
+      timer = setTimeout(() => resolve('waiting'), ms)
+    }),
+  ]).finally(() => clearTimeout(timer))
+}
+
 export function createChatHandler({
   env = process.env,
   fetchImpl = globalThis.fetch,
   getRateLimitStore = () => getStore('roachclaw-chat-rate-limits'),
   generateReply = generateRoachBrainReply,
+  prepareReply = getRoachBrainPipeline,
+  modelWait = modelWaitMs,
+  loadRuntime = () => import('@huggingface/transformers'),
   now = Date.now,
 } = {}) {
-  return async (request) => {
+  return async (request, context) => {
     const withEnvCors = (req, response) => withCors(req, response, env)
 
     if (!isAllowedRequestOrigin(request, env)) {
       return json({ ok: false, message: 'Origin not allowed.' }, 403)
+    }
+
+    // A cheap, signed-out check that the deploy carries the native runtime the
+    // hosted model needs. It loads code only: no model download, no database.
+    if (request.method === 'GET' && new URL(request.url).searchParams.get('health') === 'runtime') {
+      try {
+        await loadRuntime()
+        return json({ ok: true, runtime: 'ready', model: roachBrainModel.label, revision: roachBrainModel.revision.slice(0, 12) })
+      } catch (error) {
+        console.error('RoachBrain Cloud runtime did not load.', error)
+        return json({ ok: false, runtime: 'missing' }, 503)
+      }
     }
 
     if (request.method === 'OPTIONS') {
@@ -493,6 +526,27 @@ export function createChatHandler({
     } catch (error) {
       console.error('RoachClaw chat rate limiter unavailable.', error)
       return withEnvCors(request, json({ ok: false, code: 'rate_limit_unavailable', message: "RoachClaw on the web is busy. Try again in a minute. RoachClaw in the Mac app isn't affected." }, 503))
+    }
+
+    // The hosted model answers unless the request carries a paired-Mac relay
+    // token. Load it before anything is written, so a cold start or a failed
+    // download leaves the conversation exactly as it was.
+    if (!bridgeToken) {
+      const loading = prepareReply()
+      const state = await settleWithin(loading, modelWait)
+      if (state === 'waiting') {
+        context?.waitUntil?.(loading.catch(() => {}))
+        return withEnvCors(
+          request,
+          json({ ok: false, code: 'warming', message: 'RoachClaw on the web is waking up. Send your message again in a few seconds. Nothing was lost.' }, 503)
+        )
+      }
+      if (state === 'failed') {
+        return withEnvCors(
+          request,
+          json({ ok: false, code: 'model_unavailable', message: "RoachClaw on the web can't load its model right now, so nothing was sent. Try again later. RoachClaw in the Mac app isn't affected." }, 503)
+        )
+      }
     }
 
     const databaseClient = createDatabaseClient({
@@ -681,4 +735,4 @@ export function createChatHandler({
   }
 }
 
-export default async (request) => createChatHandler()(request)
+export default async (request, context) => createChatHandler()(request, context)

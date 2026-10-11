@@ -1228,12 +1228,22 @@ body.app-detail-open {
 .st-card__foot {
   position: relative;
   z-index: 2;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 8px;
-  justify-items: start;
   margin-top: auto;
   padding-top: 4px;
   pointer-events: none;
+}
+
+.st-card__foot > .st-install-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.st-card__foot > .st-save {
+  margin-left: auto;
 }
 
 .st-card__foot > * {
@@ -1764,6 +1774,55 @@ body.app-detail-open {
 
 .st-copy {
   min-height: 48px;
+}
+
+/* Save toggle: a quiet pill on cards, a full button in the sheet. */
+.st-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--nx-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nx-muted);
+  font: 600 13px/1 var(--nx-font-sans);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-save:hover {
+  color: var(--nx-text);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.st-save svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.st-save[aria-pressed="true"] {
+  color: var(--nx-signal);
+  border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
+}
+
+.st-save[aria-pressed="true"] svg path {
+  fill: currentColor;
+}
+
+.st-save[aria-busy="true"] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.st-save--sheet {
+  min-height: 48px;
+  border-radius: var(--nx-r-md);
+  font-size: 14.5px;
 }
 
 .st-copy.is-done {

@@ -346,6 +346,139 @@ async function checkSignupHumanCheck(browser, baseUrl) {
   }
 }
 
+// The store's Save button, served under the real hostnames (request
+// interception answers apps.roachnet.org and accounts.roachnet.org from the
+// built folders, with the headers each one ships) and a stand-in for the
+// Supabase saved_apps table. Signed out, picks stay in the store's browser
+// storage; signed in on accounts.roachnet.org, the hidden bridge lists them,
+// merges the local ones up, and saves and removes rows.
+async function headersFor(directory) {
+  const source = await readFile(path.join(root, directory, '_headers'), 'utf8')
+  return Object.fromEntries(source.split('\n').filter((line) => /^\s+\S+: /.test(line)).map((line) => {
+    const [name, ...rest] = line.trim().split(': ')
+    return [name.toLowerCase(), rest.join(': ')]
+  }))
+}
+
+async function checkSavedApps(browser) {
+  const sitesByOrigin = {
+    'https://apps.roachnet.org': { directory: path.join(root, 'website-apps-dist'), headers: await headersFor('website-apps-dist') },
+    'https://accounts.roachnet.org': { directory: path.join(root, 'website-accounts-dist'), headers: await headersFor('website-accounts-dist') },
+  }
+  const supabaseOrigin = 'https://yaiynvuvnnwbxaeoaseb.supabase.co'
+  const userId = '0f9d7c1e-2b3a-4c5d-8e9f-a0b1c2d3e4f5'
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url')
+  const exp = Math.floor(Date.now() / 1000) + 3600
+  const accessToken = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: userId, role: 'authenticated', aud: 'authenticated', exp })}.signature`
+  const session = { access_token: accessToken, refresh_token: 'refresh-token', token_type: 'bearer', expires_in: 3600, expires_at: exp, user: { id: userId, aud: 'authenticated', role: 'authenticated', email: 'person@example.com' } }
+
+  async function scenario({ signedIn, localPicks = [], rows = [] }, run) {
+    const context = await browser.createBrowserContext()
+    const page = await context.newPage()
+    const table = new Map(rows.map((row) => [row.app_id, row]))
+    const problems = []
+    page.on('console', (message) => {
+      if (message.type() === 'error') problems.push(`console: ${message.text()}`)
+    })
+    page.on('pageerror', (error) => problems.push(`pageerror: ${error.message}`))
+    await page.evaluateOnNewDocument((signedInNow, sessionJson, picksJson) => {
+      try {
+        if (location.origin === 'https://accounts.roachnet.org' && signedInNow) localStorage.setItem('sb-yaiynvuvnnwbxaeoaseb-auth-token', sessionJson)
+        if (location.origin === 'https://apps.roachnet.org' && picksJson !== '[]' && !sessionStorage.getItem('seeded')) {
+          localStorage.setItem('roachnet.apps.saved.v1', picksJson)
+          sessionStorage.setItem('seeded', '1')
+        }
+      } catch {}
+    }, signedIn, JSON.stringify(session), JSON.stringify(localPicks))
+    await page.setRequestInterception(true)
+    page.on('request', async (request) => {
+      const url = new URL(request.url())
+      const site = sitesByOrigin[url.origin]
+      if (site) {
+        const file = await localFile(site.directory, url.pathname)
+        const target = file || path.join(site.directory, '404.html')
+        let body
+        try {
+          body = await readFile(target)
+        } catch {
+          body = await readFile(path.join(site.directory, '404.html'))
+        }
+        const headers = { ...site.headers, 'cache-control': 'no-store' }
+        return request.respond({ status: file ? 200 : 404, contentType: mime.get(path.extname(target)) || 'application/octet-stream', headers, body })
+      }
+      if (url.origin === supabaseOrigin) {
+        const cors = { 'access-control-allow-origin': 'https://accounts.roachnet.org', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET, POST, PATCH, DELETE, OPTIONS', 'access-control-expose-headers': 'content-range' }
+        if (request.method() === 'OPTIONS') return request.respond({ status: 204, headers: cors })
+        if (url.pathname === '/rest/v1/saved_apps') {
+          const authorized = (request.headers().authorization || '') === `Bearer ${accessToken}`
+          if (!authorized) return request.respond({ status: 401, headers: cors, contentType: 'application/json', body: '{"message":"JWT expired"}' })
+          if (request.method() === 'GET') {
+            const list = [...table.values()].map(({ app_id, title, category, updated_at }) => ({ app_id, title, category, updated_at }))
+            return request.respond({ status: 200, headers: cors, contentType: 'application/json', body: JSON.stringify(list) })
+          }
+          if (request.method() === 'POST') {
+            const payload = JSON.parse(request.postData() || '[]')
+            for (const row of Array.isArray(payload) ? payload : [payload]) {
+              if (row.user_id !== userId) return request.respond({ status: 403, headers: cors, contentType: 'application/json', body: '{"message":"row-level security"}' })
+              table.set(row.app_id, { ...row, updated_at: new Date().toISOString() })
+            }
+            return request.respond({ status: 201, headers: cors, contentType: 'application/json', body: '[]' })
+          }
+          if (request.method() === 'DELETE') {
+            table.delete((url.searchParams.get('app_id') || '').replace(/^eq\./, ''))
+            return request.respond({ status: 204, headers: cors })
+          }
+        }
+        return request.respond({ status: 200, headers: cors, contentType: 'application/json', body: '{}' })
+      }
+      return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : '/* third-party script stubbed for the test */' })
+    })
+    try {
+      await page.goto('https://apps.roachnet.org/', { waitUntil: 'domcontentloaded', timeout: 20_000 })
+      await page.waitForFunction(() => document.querySelectorAll('[data-save-id]').length > 0, { timeout: 15_000 })
+      await run({ page, table })
+      assert.deepEqual(problems, [], 'the store and the bridge run without console errors')
+    } finally {
+      await context.close()
+    }
+  }
+
+  const savedOn = (page) => page.evaluate(() => [...new Set([...document.querySelectorAll('[data-save-id][aria-pressed="true"]')].map((button) => button.dataset.saveId))])
+
+  // Signed out: the pick stays in this browser and the rail counts it.
+  await scenario({ signedIn: false }, async ({ page, table }) => {
+    const id = await page.$eval('.st-card [data-save-id]', (button) => button.dataset.saveId)
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    await page.click(`.st-card [data-save-id="${id}"]`)
+    await page.waitForFunction((target) => document.querySelector(`[data-save-id="${target}"]`)?.getAttribute('aria-pressed') === 'true', { timeout: 5_000 }, id)
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('roachnet.apps.saved.v1') || '[]').map((entry) => entry.appId))
+    assert.deepEqual(stored, [id], 'a signed-out save lands in this browser')
+    assert.equal(table.size, 0, 'nothing reaches the account while signed out')
+    const toast = await page.$eval('.nx-toast', (node) => node.textContent)
+    assert.match(toast, /in this browser/)
+    const railCount = await page.$eval('[data-section="Saved"] [data-rail-count]', (node) => node.textContent)
+    assert.equal(railCount, '1')
+  })
+
+  // Signed in: local picks merge into the account, and Save/Remove hit the table.
+  const ids = await readFile(path.join(root, 'website-apps-dist/app-store-catalog.json'), 'utf8').then((text) => JSON.parse(text).items.slice(0, 3).map((item) => item.id))
+  await scenario({
+    signedIn: true,
+    localPicks: [{ appId: ids[1], title: 'From this browser', category: 'Maps', savedAt: '2026-10-01T00:00:00.000Z' }],
+    rows: [{ app_id: ids[0], title: 'From the account', category: 'Maps', user_id: userId, updated_at: '2026-10-02T00:00:00.000Z' }],
+  }, async ({ page, table }) => {
+    await page.waitForFunction(() => !localStorage.getItem('roachnet.apps.saved.v1'), { timeout: 10_000 })
+    assert.deepEqual([...table.keys()].sort(), [ids[0], ids[1]].sort(), 'the local pick moved into the account')
+    await page.waitForFunction((expected) => expected.every((id) => document.querySelector(`[data-save-id="${CSS.escape(id)}"]`)?.getAttribute('aria-pressed') === 'true'), { timeout: 5_000 }, [ids[0], ids[1]])
+    await page.evaluate(() => window.location.hash = 'saved')
+    await page.waitForFunction(() => document.querySelectorAll('.st-grid [data-save-id]').length === 2, { timeout: 5_000 })
+    await page.click(`.st-grid [data-save-id="${ids[0]}"]`)
+    await page.waitForFunction(() => document.querySelectorAll('.st-grid [data-save-id]').length === 1, { timeout: 5_000 })
+    assert.equal(table.has(ids[0]), false, 'Remove deletes the row')
+    assert.deepEqual(await savedOn(page), [ids[1]])
+  })
+}
+
 async function checkScreenshotsReveal(browser, baseUrl, pathname) {
   // The motion layer clips screenshots shut and wipes them open on entry; every
   // one of them has to end up visible once scrolled to (it once stayed clipped).
@@ -530,6 +663,7 @@ try {
       }
       if (site.name === 'apps') {
         await checkAppDetailKeyboardFlow(browser, baseUrl)
+        await checkSavedApps(browser)
       }
     } finally {
       await close(server)

@@ -129,13 +129,21 @@ function rowsLoading(list) {
   )
 }
 
-function renderRow({ title, detail, meta, tag }) {
+function renderRow({ title, detail, meta, tag, href, action }) {
   const item = document.createElement('li')
   item.className = 'ac-row'
   const copy = document.createElement('div')
   copy.className = 'ac-row__copy'
   const strong = document.createElement('strong')
-  strong.textContent = title
+  if (href) {
+    const link = document.createElement('a')
+    link.className = 'ac-row__link'
+    link.href = href
+    link.textContent = title
+    strong.append(link)
+  } else {
+    strong.textContent = title
+  }
   copy.append(strong)
   if (detail) {
     const span = document.createElement('span')
@@ -157,8 +165,37 @@ function renderRow({ title, detail, meta, tag }) {
     time.textContent = meta
     side.append(time)
   }
+  if (action) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'ac-row__action'
+    button.textContent = action.label
+    button.setAttribute('aria-label', action.ariaLabel || action.label)
+    button.addEventListener('click', () => action.run(button))
+    side.append(button)
+  }
   item.append(side)
   return item
+}
+
+// Store links: the id is validated by the store before it is ever saved, but
+// it is still encoded here so a row can only ever link into apps.roachnet.org.
+function storeLinkFor(appId) {
+  return `https://apps.roachnet.org/#app-${encodeURIComponent(String(appId || ''))}`
+}
+
+async function removeSavedApp(client, row, button) {
+  button.disabled = true
+  button.textContent = 'Removing…'
+  const { error } = await client.from('saved_apps').delete().eq('id', row.id)
+  if (error) {
+    button.disabled = false
+    button.textContent = 'Remove'
+    toast("That app didn't come off your list. Try again in a moment.")
+    return
+  }
+  toast(`Removed ${row.title || row.app_id} from your saved apps.`)
+  await syncSnapshot()
 }
 
 function setSnapshot({
@@ -370,13 +407,13 @@ function renderStatus() {
 
   setAuthView('signed-out')
   statusTitle.textContent = 'Not signed in.'
-  statusBody.textContent = 'Sign in to see your devices and RoachClaw threads, or make an account in a minute.'
+  statusBody.textContent = 'Sign in to see your devices, saved apps and RoachClaw threads, or make an account in a minute.'
   statusBadge.textContent = 'Ready'
   statusBadge.dataset.state = 'ready'
   signOutButton.hidden = true
   setSnapshot({
     title: "Sign in to see what's here.",
-    body: 'Your devices and RoachClaw threads show up here once you sign in.',
+    body: 'Your devices, saved apps and RoachClaw threads show up here once you sign in.',
   })
   rowsEmpty(deviceList, 'Nothing to show until you sign in.')
   rowsEmpty(appList, 'Nothing to show until you sign in.')
@@ -433,7 +470,7 @@ async function loadSnapshot() {
       .from('saved_apps')
       .select('id, app_id, title, category, updated_at', { count: 'exact' })
       .order('updated_at', { ascending: false })
-      .limit(8),
+      .limit(12),
     // The thread count is a nice-to-have; a failure here never blocks the snapshot.
     Promise.resolve(client.from('chat_threads').select('id', { count: 'exact', head: true })).catch((error) => ({ error })),
   ])
@@ -512,14 +549,20 @@ async function loadSnapshot() {
 
   if (appList) {
     if (!appRows.length) {
-      rowsEmpty(appList, "Nothing here yet. The store can't save picks today, so this list stays empty.")
+      rowsEmpty(appList, 'Nothing saved yet. Press Save on anything in apps.roachnet.org and it shows up here.')
     } else {
       appList.replaceChildren(
         ...appRows.map((app) =>
           renderRow({
             title: app.title || app.app_id,
+            href: storeLinkFor(app.app_id),
             detail: app.category || '',
             meta: formatRelativeTime(app.updated_at),
+            action: {
+              label: 'Remove',
+              ariaLabel: `Remove ${app.title || app.app_id} from your saved apps`,
+              run: (button) => removeSavedApp(client, app, button),
+            },
           })
         )
       )

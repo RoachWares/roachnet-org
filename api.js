@@ -1586,7 +1586,7 @@ const apiGroups = [
         ],
         response: [
           '`{ ok: true, requiresConfirmation, message, userId }`',
-          '400 `captcha_required`, 403 `captcha_failed`, 409 `user_exists`, 413 over 16 KB. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
+          '400 `captcha_required`, 403 `captcha_failed`, 413 over 16 KB. An address that already has an account gets the same answer as a new one. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
         ],
         implementation:
           'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
@@ -1613,10 +1613,11 @@ const apiGroups = [
         ],
         response: [
           '`{ ok, thread, userMessage, assistantMessage, provider, model }`',
-          '400 for a bad `threadId` or bridge address. 401 without a valid session. 404 for a thread that is not yours. 413 over 64 KB. 429 `rate_limited` after 20 messages in 10 minutes or 200 in a day. 503 when web chat is off or the limiter is down. 500 if the reply fails.',
+          '400 for a bad `threadId` or bridge address. 401 without a valid session. 404 for a thread that is not yours. 413 over 64 KB. 429 `rate_limited` after 20 messages in 10 minutes or 200 in a day. 503 when web chat is off, the limiter is down, or the model is still loading (`warming`; nothing is written, send it again). 500 if the reply fails.',
+          '`GET ?health=runtime` answers without a token: whether this deploy can load the hosted model.',
         ],
         implementation:
-          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: a small open model running inside the function.',
+          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: SmolLM2 135M (Apache-2.0, pinned to one Hugging Face commit), running on ONNX inside the function and downloaded into its /tmp on a cold start.',
       },
     ],
   },

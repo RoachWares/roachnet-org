@@ -174,11 +174,11 @@ IOS_BODY = '''
             <h3 class="nx-card__title">Add the source, or hand SideStore the IPA directly.</h3>
             <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-sidestore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
+              <a class="nx-btn nx-btn--primary" data-sidestore-source href="sidestore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
               <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
             </div>
-            <p class="nx-card__body" data-sidestore-note>Add the RoachNet source in SideStore, or download the IPA and share it to SideStore to install.</p>
+            <p class="nx-card__body" data-sidestore-note>Opens SideStore with the RoachNet source ready to add. Or download the IPA and share it to SideStore.</p>
             <p class="nx-card__body" data-sidestore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
             <ol class="nx-steps nx-mt-16">
               <li class="nx-step"><strong>Add the RoachNet source to SideStore.</strong></li>
@@ -191,11 +191,11 @@ IOS_BODY = '''
             <h3 class="nx-card__title">Use the same RoachNet source in AltStore.</h3>
             <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
             <div class="nx-actions nx-mt-16">
-              <a class="nx-btn nx-btn--primary" data-altstore-source href="https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
+              <a class="nx-btn nx-btn--primary" data-altstore-source href="altstore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
               <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.2.0-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
             </div>
-            <p class="nx-card__body" data-altstore-note>Add the same RoachNet source in AltStore, or download the IPA and import it from Files.</p>
+            <p class="nx-card__body" data-altstore-note>Opens AltStore with the same source ready to add. Or download the IPA and import it from Files.</p>
             <p class="nx-card__body" data-altstore-desktop hidden>Open this page on your iPhone or iPad, or AirDrop the IPA first.</p>
             <ol class="nx-steps nx-mt-16">
               <li class="nx-step"><strong>Install AltStore and keep AltServer available on your Mac.</strong></li>
@@ -430,7 +430,7 @@ SITEMAP_BODY = '''
             <p class="nx-card__eyebrow">On the web</p>
             <h2 class="nx-card__title">Accounts and services</h2>
             <ul class="nx-sitemap__list">
-              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats and a short device list. The rest stays home.</p></li>
+              <li><a class="nx-link nx-link--arrow" href="https://accounts.roachnet.org/">Account</a><p>Optional. Holds your web RoachClaw chats, saved apps and a device list. The rest stays home.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://roachnet.org/api/">API</a><p>The v1.0.6 reference for setup, runtime, RoachTail, RoachClaw and model packs.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/">RoachWares</a><p>The company behind the software.</p></li>
               <li><a class="nx-link nx-link--arrow" href="https://www.roachwares.org/about/">About RoachWares</a><p>Who builds it, and the rules it is built by.</p></li>

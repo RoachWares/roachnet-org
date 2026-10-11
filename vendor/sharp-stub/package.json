@@ -1,5 +1,7 @@
 {
   "name": "sharp",
-  "version": "0.34.5",
-  "main": "index.js"
+  "version": "0.35.5",
+  "description": "RoachNet stand-in for sharp. Contains no libvips, libheif or librsvg and throws if called; RoachClaw on the web is text only. The version tracks the first sharp release with no known advisories, so npm audit reflects what ships.",
+  "main": "index.js",
+  "license": "MIT"
 }

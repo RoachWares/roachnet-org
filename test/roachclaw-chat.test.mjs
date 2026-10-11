@@ -43,7 +43,7 @@ function chatRequest({ origin = 'https://roachnet.org', token = 'user-token', bo
   })
 }
 
-function createHarness({ env = armedEnv, store = new MemoryRateLimitStore(), database } = {}) {
+function createHarness({ env = armedEnv, store = new MemoryRateLimitStore(), database, prepareReply = async () => ({}), modelWait, loadRuntime = async () => ({}) } = {}) {
   const calls = []
   const fetchImpl = async (url, options = {}) => {
     const href = String(url)
@@ -61,6 +61,9 @@ function createHarness({ env = armedEnv, store = new MemoryRateLimitStore(), dat
     fetchImpl,
     getRateLimitStore: () => store,
     generateReply: async () => ({ text: 'Hi there.', provider: 'RoachBrain Cloud', model: 'test', remoteSessionId: null, remoteSessionTitle: '' }),
+    prepareReply,
+    loadRuntime,
+    ...(modelWait === undefined ? {} : { modelWait }),
     now: () => Date.parse('2026-10-11T12:00:00.000Z'),
   })
   return { calls, handler, store }
@@ -136,4 +139,38 @@ test('database error details stay on the server', async () => {
   const result = await response.json()
   assert.equal(result.message, "RoachClaw couldn't finish that reply. Your earlier messages are fine. Try again in a moment.")
   assert.doesNotMatch(JSON.stringify(result), /secret_column/)
+})
+
+test('a cold model answers "waking up" and writes nothing', async () => {
+  let release
+  const loading = new Promise((resolve) => {
+    release = resolve
+  })
+  const kept = []
+  const { calls, handler } = createHarness({ prepareReply: () => loading, modelWait: 20 })
+  const response = await handler(chatRequest(), { waitUntil: (promise) => kept.push(promise) })
+  assert.equal(response.status, 503)
+  assert.equal((await response.json()).code, 'warming')
+  assert.equal(restCalls(calls).length, 0, 'nothing is written while the model loads')
+  assert.equal(kept.length, 1, 'the load keeps going after the reply')
+  release({})
+})
+
+test('a model that cannot load says so and writes nothing', async () => {
+  const { calls, handler } = createHarness({ prepareReply: () => Promise.reject(new Error('download failed')) })
+  const response = await handler(chatRequest())
+  assert.equal(response.status, 503)
+  assert.equal((await response.json()).code, 'model_unavailable')
+  assert.equal(restCalls(calls).length, 0)
+})
+
+test('the runtime health check needs no sign-in and touches no database', async () => {
+  const { calls, handler } = createHarness()
+  const ok = await handler(new Request('https://roachnet.org/.netlify/functions/roachclaw-chat?health=runtime'))
+  assert.equal(ok.status, 200)
+  assert.equal((await ok.json()).runtime, 'ready')
+  const broken = createHarness({ loadRuntime: async () => { throw new Error('no binding') } })
+  const missing = await broken.handler(new Request('https://roachnet.org/.netlify/functions/roachclaw-chat?health=runtime'))
+  assert.equal(missing.status, 503)
+  assert.equal(calls.length + broken.calls.length, 0)
 })
