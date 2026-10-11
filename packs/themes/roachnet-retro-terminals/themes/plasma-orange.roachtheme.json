@@ -1,0 +1,50 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "retro.plasma-orange",
+  "name": "Plasma Orange",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "The orange gas-plasma screen of an old luggable. Everything glows a little.",
+  "tags": [
+    "dark",
+    "retro",
+    "mono",
+    "warm"
+  ],
+  "dark": {
+    "palette": {
+      "background": "#0C0400",
+      "backgroundRaised": "#110600",
+      "panel": "#160800",
+      "panelRaised": "#1F0C02",
+      "panelSoft": "#2A1204",
+      "text": "#FFB070",
+      "muted": "rgba(255,176,112,0.72)",
+      "accent": "#FF7A1A",
+      "accentSecondary": "#FFA347",
+      "accentTertiary": "#FFD08A",
+      "accentInfo": "#FFC07A",
+      "success": "#FFC56B",
+      "warning": "#FF9A2E",
+      "danger": "#FF5A3D",
+      "ink": "#FFB070",
+      "border": "rgba(255,122,26,0.16)",
+      "borderStrong": "rgba(255,122,26,0.30)"
+    },
+    "background": {
+      "style": "scanlines",
+      "intensity": 1
+    }
+  },
+  "typography": {
+    "display": "system-mono",
+    "body": "system-mono",
+    "mono": "system-mono"
+  },
+  "shape": {
+    "radiusScale": 0.3
+  },
+  "effects": {
+    "glow": 1.4
+  }
+}

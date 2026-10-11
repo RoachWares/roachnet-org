@@ -1,0 +1,41 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "halloween.witch-light",
+  "name": "Witch Light",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "Cauldron green and violet smoke, curling slowly up the window.",
+  "tags": [
+    "dark",
+    "seasonal",
+    "halloween",
+    "vivid"
+  ],
+  "dark": {
+    "palette": {
+      "background": "#0B0710",
+      "backgroundRaised": "#100A16",
+      "panel": "#150D1C",
+      "panelRaised": "#1D1327",
+      "panelSoft": "#281A35",
+      "text": "#F1E9F5",
+      "accent": "#7CFF6B",
+      "accentSecondary": "#C77DFF",
+      "accentTertiary": "#FFB347",
+      "accentInfo": "#6FE3D4"
+    },
+    "background": {
+      "style": "aurora",
+      "intensity": 1.1,
+      "speed": 0.8,
+      "colors": [
+        "#7CFF6B",
+        "#C77DFF",
+        "#6FE3D4"
+      ]
+    }
+  },
+  "effects": {
+    "glow": 1.3
+  }
+}

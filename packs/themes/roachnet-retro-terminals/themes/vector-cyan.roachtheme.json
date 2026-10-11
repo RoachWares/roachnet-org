@@ -1,0 +1,42 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "retro.vector-cyan",
+  "name": "Vector Cyan",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "Arcade vector lines on black: cyan, magenta and a horizon grid.",
+  "tags": [
+    "dark",
+    "retro",
+    "vivid"
+  ],
+  "dark": {
+    "palette": {
+      "background": "#000508",
+      "backgroundRaised": "#01080C",
+      "panel": "#020C12",
+      "panelRaised": "#04141C",
+      "panelSoft": "#071C26",
+      "text": "#BFF8FF",
+      "muted": "rgba(191,248,255,0.70)",
+      "accent": "#2DF0FF",
+      "accentSecondary": "#FF3DF2",
+      "accentTertiary": "#FFE45C",
+      "accentInfo": "#7DFFB0",
+      "ink": "#BFF8FF"
+    },
+    "background": {
+      "style": "grid",
+      "intensity": 1.3,
+      "speed": 1.1
+    }
+  },
+  "typography": {
+    "display": "system-mono",
+    "body": "system",
+    "mono": "system-mono"
+  },
+  "effects": {
+    "glow": 1.5
+  }
+}

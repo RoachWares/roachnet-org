@@ -1,0 +1,44 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "retro.teletype-paper",
+  "name": "Teletype Paper",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "Fanfold paper and a ribbon running low. A light theme in monospace.",
+  "tags": [
+    "light",
+    "retro",
+    "mono",
+    "warm"
+  ],
+  "light": {
+    "palette": {
+      "background": "#F1EDE0",
+      "backgroundRaised": "#E8E2D1",
+      "panel": "#FAF7EE",
+      "panelRaised": "#FFFDF6",
+      "panelSoft": "#E6E0CD",
+      "text": "#1E1C17",
+      "accent": "#7A2E00",
+      "accentSecondary": "#20406A",
+      "accentTertiary": "#6B5300",
+      "accentInfo": "#1F5F5F"
+    },
+    "background": {
+      "style": "paper",
+      "intensity": 1.2
+    }
+  },
+  "typography": {
+    "display": "system-mono",
+    "body": "system-mono",
+    "mono": "system-mono"
+  },
+  "shape": {
+    "radiusScale": 0.2
+  },
+  "effects": {
+    "glass": 0.3,
+    "glow": 0
+  }
+}

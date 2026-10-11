@@ -1,0 +1,40 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "retro.mainframe-blue",
+  "name": "Mainframe Blue",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "A blue-screen terminal from the machine room. Monospaced, bright, unhurried.",
+  "tags": [
+    "dark",
+    "retro",
+    "mono",
+    "cool"
+  ],
+  "dark": {
+    "palette": {
+      "background": "#000A1A",
+      "backgroundRaised": "#010E22",
+      "panel": "#021230",
+      "panelRaised": "#041A40",
+      "panelSoft": "#082452",
+      "text": "#CFE3FF",
+      "accent": "#5FB3FF",
+      "accentSecondary": "#FFD15C",
+      "accentTertiary": "#7CFFB2",
+      "accentInfo": "#9CC9FF"
+    },
+    "background": {
+      "style": "scanlines",
+      "intensity": 0.8
+    }
+  },
+  "typography": {
+    "display": "system-mono",
+    "body": "system-mono",
+    "mono": "system-mono"
+  },
+  "shape": {
+    "radiusScale": 0.3
+  }
+}

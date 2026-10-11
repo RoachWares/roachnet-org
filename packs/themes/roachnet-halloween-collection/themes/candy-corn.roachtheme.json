@@ -1,0 +1,42 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "halloween.candy-corn",
+  "name": "Candy Corn",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "The light one: cream, orange and a little purple, with sprinkles falling.",
+  "tags": [
+    "light",
+    "seasonal",
+    "halloween",
+    "warm"
+  ],
+  "light": {
+    "palette": {
+      "background": "#FFF6E8",
+      "backgroundRaised": "#FBEBD4",
+      "panel": "#FFFFFF",
+      "panelRaised": "#FFFBF3",
+      "panelSoft": "#F5E6CF",
+      "text": "#2A1A0E",
+      "accent": "#B93C08",
+      "accentSecondary": "#6B2FA0",
+      "accentTertiary": "#875800",
+      "accentInfo": "#1F6F8B"
+    },
+    "background": {
+      "style": "particles",
+      "intensity": 0.6,
+      "speed": 0.6,
+      "rise": false,
+      "colors": [
+        "#F97316",
+        "#FACC15",
+        "#7C3AED"
+      ]
+    }
+  },
+  "shape": {
+    "radiusScale": 1.4
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-11T13:58:15.650Z",
+  "updatedAt": "2026-10-11T18:08:21.349Z",
   "featuredId": "base-atlas",
   "artifactOrigin": {
     "provider": "Apps.RoachNet.org",
@@ -12473,6 +12473,90 @@
       "iconMonogram": "RCF",
       "iconFamily": "voice",
       "iconAsset": "./assets/app-icons/pack-roachvoice-chatterbox-coreml.svg"
+    },
+    {
+      "id": "pack-roachnet-halloween-collection",
+      "title": "Halloween Collection",
+      "subtitle": "Four extra themes for October: Hollow Moon, Witch Light, Candy Corn (a light one) and Haunted Static.",
+      "category": "Themes",
+      "section": "Themes",
+      "size": "2 KB",
+      "status": "RoachNet 1.1 or later",
+      "source": "RoachWares theme pack",
+      "summary": "Four extra themes for October: Hollow Moon, Witch Light, Candy Corn (a light one) and Haunted Static. Installs through Settings › Packs in RoachNet 1.1, then shows up in Settings › Appearance next to the built-in themes. Themes are plain JSON: nothing in a pack runs code.",
+      "accent": "magenta",
+      "machineFit": "Every Mac that runs RoachNet 1.1",
+      "includes": [
+        "4 themes: Candy Corn, Haunted Static, Hollow Moon, Witch Light",
+        "Pack id roachnet-halloween-collection, version 1.0.0",
+        "Checked against its SHA-256, removable from Settings › Packs"
+      ],
+      "minimumRoachNet": "1.1.0",
+      "installLabel": "Install with Pack Manager",
+      "detailLabel": "Open pack catalog",
+      "detailUrl": "./collections/packs.json",
+      "installIntent": {
+        "action": "pack",
+        "pack": "roachnet-halloween-collection"
+      },
+      "artifact": {
+        "provider": "Apps.RoachNet.org",
+        "bucket": null,
+        "key": "roachnet-halloween-collection-1.0.0.zip",
+        "url": "https://apps.roachnet.org/downloads/packs/roachnet-halloween-collection-1.0.0.zip",
+        "status": "direct-zip",
+        "sourceUrl": "https://apps.roachnet.org/downloads/packs/roachnet-halloween-collection-1.0.0.zip",
+        "checksumUrl": null,
+        "sha256": "b65298c625651bba6ccd97ccef04ed7ae5f85155fec51abb1e8af9309ea8798b",
+        "bytes": 2273,
+        "note": "Theme packs are small zips served from apps.roachnet.org; the catalog entry carries the SHA-256 the runtime checks before it unpacks anything."
+      },
+      "iconBand": "THEME",
+      "iconMonogram": "HC",
+      "iconFamily": "themes",
+      "iconAsset": "./assets/app-icons/pack-roachnet-halloween-collection.svg"
+    },
+    {
+      "id": "pack-roachnet-retro-terminals",
+      "title": "Retro Terminals",
+      "subtitle": "Four old screens: Mainframe Blue, Teletype Paper (a light one), Plasma Orange and Vector Cyan.",
+      "category": "Themes",
+      "section": "Themes",
+      "size": "2 KB",
+      "status": "RoachNet 1.1 or later",
+      "source": "RoachWares theme pack",
+      "summary": "Four old screens: Mainframe Blue, Teletype Paper (a light one), Plasma Orange and Vector Cyan. Installs through Settings › Packs in RoachNet 1.1, then shows up in Settings › Appearance next to the built-in themes. Themes are plain JSON: nothing in a pack runs code.",
+      "accent": "magenta",
+      "machineFit": "Every Mac that runs RoachNet 1.1",
+      "includes": [
+        "4 themes: Mainframe Blue, Plasma Orange, Teletype Paper, Vector Cyan",
+        "Pack id roachnet-retro-terminals, version 1.0.0",
+        "Checked against its SHA-256, removable from Settings › Packs"
+      ],
+      "minimumRoachNet": "1.1.0",
+      "installLabel": "Install with Pack Manager",
+      "detailLabel": "Open pack catalog",
+      "detailUrl": "./collections/packs.json",
+      "installIntent": {
+        "action": "pack",
+        "pack": "roachnet-retro-terminals"
+      },
+      "artifact": {
+        "provider": "Apps.RoachNet.org",
+        "bucket": null,
+        "key": "roachnet-retro-terminals-1.0.0.zip",
+        "url": "https://apps.roachnet.org/downloads/packs/roachnet-retro-terminals-1.0.0.zip",
+        "status": "direct-zip",
+        "sourceUrl": "https://apps.roachnet.org/downloads/packs/roachnet-retro-terminals-1.0.0.zip",
+        "checksumUrl": null,
+        "sha256": "3a6e1f9ac35653f9cb93fe132756584459c4657ab7b95bfcf14fcb5a8d49e9c2",
+        "bytes": 2433,
+        "note": "Theme packs are small zips served from apps.roachnet.org; the catalog entry carries the SHA-256 the runtime checks before it unpacks anything."
+      },
+      "iconBand": "THEME",
+      "iconMonogram": "RT",
+      "iconFamily": "themes",
+      "iconAsset": "./assets/app-icons/pack-roachnet-retro-terminals.svg"
     },
     {
       "id": "roachclaw-quickstart",

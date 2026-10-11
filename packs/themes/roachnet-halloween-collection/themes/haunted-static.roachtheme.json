@@ -1,0 +1,41 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "halloween.haunted-static",
+  "name": "Haunted Static",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "A television left on in an empty house. Gray snow, a ghost-blue glow.",
+  "tags": [
+    "dark",
+    "seasonal",
+    "halloween",
+    "retro"
+  ],
+  "dark": {
+    "palette": {
+      "background": "#08090A",
+      "backgroundRaised": "#0C0D0F",
+      "panel": "#101214",
+      "panelRaised": "#171A1D",
+      "panelSoft": "#20242A",
+      "text": "#E8ECEF",
+      "accent": "#8FF3FF",
+      "accentSecondary": "#B8B8C8",
+      "accentTertiary": "#FF7A7A",
+      "accentInfo": "#A0E7FF"
+    },
+    "background": {
+      "style": "scanlines",
+      "intensity": 0.8,
+      "speed": 0.6,
+      "colors": [
+        "#8FF3FF",
+        "#E8ECEF",
+        "#B8B8C8"
+      ]
+    }
+  },
+  "effects": {
+    "glow": 0.8
+  }
+}

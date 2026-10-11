@@ -1,0 +1,34 @@
+{
+  "schema": "org.roachnet.theme.v1",
+  "id": "halloween.hollow-moon",
+  "name": "Hollow Moon",
+  "author": "RoachWares",
+  "version": "1.0.0",
+  "description": "A full moon over a sleeping town: indigo night, moon-pale light, a few stars.",
+  "tags": [
+    "dark",
+    "seasonal",
+    "halloween",
+    "cool"
+  ],
+  "dark": {
+    "palette": {
+      "background": "#0A0A16",
+      "backgroundRaised": "#0E0E1E",
+      "panel": "#12122A",
+      "panelRaised": "#1A1A38",
+      "panelSoft": "#24244A",
+      "text": "#EEEAF8",
+      "accent": "#F2E28C",
+      "accentSecondary": "#A88BFF",
+      "accentTertiary": "#FF9F43",
+      "accentInfo": "#7FD1E8"
+    },
+    "background": {
+      "style": "starfield",
+      "intensity": 1,
+      "speed": 0.5,
+      "vignette": 0.6
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema": "org.roachnet.packs-catalog.v1",
-  "description": "Optional packs RoachWares publishes for RoachNet. Capability packs ship inside the app; everything here is a resource pack the Pack Manager (Settings › Packs) can install on demand. Download URLs point at the signed descriptors on apps.roachnet.org, which name the public mirrors and the SHA-256 the runtime verifies before anything is unpacked. The digests below are those of the published archives, not of a local rebuild.",
-  "updatedAt": "2026-10-10T04:45:00Z",
+  "description": "Optional packs RoachWares publishes for RoachNet. Capability packs ship inside the app; everything here is a resource or theme pack the Pack Manager (Settings › Packs) can install on demand. Resource pack URLs point at the signed descriptors on apps.roachnet.org, which name the public mirrors and the SHA-256 the runtime verifies before anything is unpacked. Theme pack URLs point straight at their zips on apps.roachnet.org. The digests below are those of the published archives, not of a local rebuild.",
+  "updatedAt": "2026-10-11T18:00:00Z",
   "packs": [
     {
       "schema": "org.roachnet.pack.v1",
@@ -11,9 +11,21 @@
       "name": "RoachWhisper Listener",
       "summary": "On-device speech to text (Whisper base.en, Core ML). Needed for dictation and transcripts.",
       "publisher": "RoachWares LLC",
-      "requires": { "roachnet": "1.1.0", "platforms": ["macos"] },
-      "dependencies": [{ "id": "speech", "minimumVersion": "1.1.0" }],
-      "capabilities": ["microphone"],
+      "requires": {
+        "roachnet": "1.1.0",
+        "platforms": [
+          "macos"
+        ]
+      },
+      "dependencies": [
+        {
+          "id": "speech",
+          "minimumVersion": "1.1.0"
+        }
+      ],
+      "capabilities": [
+        "microphone"
+      ],
       "resources": [
         {
           "path": "roachwhisper-openai-whisper-base-en-coreml.zip",
@@ -24,7 +36,10 @@
         }
       ],
       "dataRoots": [],
-      "install": { "handler": "roachspeech-pack", "kind": "roachWhisper" }
+      "install": {
+        "handler": "roachspeech-pack",
+        "kind": "roachWhisper"
+      }
     },
     {
       "schema": "org.roachnet.pack.v1",
@@ -34,9 +49,21 @@
       "name": "RoachVoice Small Narrator",
       "summary": "On-device text to speech (Kokoro 82M, int8, Core ML). Needed for read-aloud and spoken replies.",
       "publisher": "RoachWares LLC",
-      "requires": { "roachnet": "1.1.0", "platforms": ["macos"] },
-      "dependencies": [{ "id": "speech", "minimumVersion": "1.1.0" }],
-      "capabilities": ["speaker"],
+      "requires": {
+        "roachnet": "1.1.0",
+        "platforms": [
+          "macos"
+        ]
+      },
+      "dependencies": [
+        {
+          "id": "speech",
+          "minimumVersion": "1.1.0"
+        }
+      ],
+      "capabilities": [
+        "speaker"
+      ],
       "resources": [
         {
           "path": "roachvoice-kokoro-82m-int8-coreml.zip",
@@ -47,7 +74,10 @@
         }
       ],
       "dataRoots": [],
-      "install": { "handler": "roachspeech-pack", "kind": "roachVoice" }
+      "install": {
+        "handler": "roachspeech-pack",
+        "kind": "roachVoice"
+      }
     },
     {
       "schema": "org.roachnet.pack.v1",
@@ -57,9 +87,21 @@
       "name": "RoachVoice Cloner Forge",
       "summary": "Voice cloning text to speech (Chatterbox, Core ML). Large; only for people who want cloned voices.",
       "publisher": "RoachWares LLC",
-      "requires": { "roachnet": "1.1.0", "platforms": ["macos"] },
-      "dependencies": [{ "id": "speech", "minimumVersion": "1.1.0" }],
-      "capabilities": ["speaker"],
+      "requires": {
+        "roachnet": "1.1.0",
+        "platforms": [
+          "macos"
+        ]
+      },
+      "dependencies": [
+        {
+          "id": "speech",
+          "minimumVersion": "1.1.0"
+        }
+      ],
+      "capabilities": [
+        "speaker"
+      ],
       "resources": [
         {
           "path": "roachvoice-chatterbox-coreml.zip",
@@ -70,7 +112,76 @@
         }
       ],
       "dataRoots": [],
-      "install": { "handler": "roachspeech-pack", "kind": "roachVoice" }
+      "install": {
+        "handler": "roachspeech-pack",
+        "kind": "roachVoice"
+      }
+    },
+    {
+      "schema": "org.roachnet.pack.v1",
+      "id": "roachnet-halloween-collection",
+      "version": "1.0.0",
+      "kind": "theme",
+      "name": "Halloween Collection",
+      "summary": "Four extra themes for October: Hollow Moon, Witch Light, Candy Corn (a light one) and Haunted Static.",
+      "publisher": "RoachWares LLC",
+      "requires": {
+        "roachnet": "1.1.0",
+        "platforms": [
+          "macos"
+        ]
+      },
+      "dependencies": [],
+      "capabilities": [],
+      "resources": [
+        {
+          "path": "roachnet-halloween-collection-1.0.0.zip",
+          "url": "https://apps.roachnet.org/downloads/packs/roachnet-halloween-collection-1.0.0.zip",
+          "sha256": "b65298c625651bba6ccd97ccef04ed7ae5f85155fec51abb1e8af9309ea8798b",
+          "bytes": 2273,
+          "archive": "zip"
+        }
+      ],
+      "dataRoots": [],
+      "themes": [
+        "Candy Corn",
+        "Haunted Static",
+        "Hollow Moon",
+        "Witch Light"
+      ]
+    },
+    {
+      "schema": "org.roachnet.pack.v1",
+      "id": "roachnet-retro-terminals",
+      "version": "1.0.0",
+      "kind": "theme",
+      "name": "Retro Terminals",
+      "summary": "Four old screens: Mainframe Blue, Teletype Paper (a light one), Plasma Orange and Vector Cyan.",
+      "publisher": "RoachWares LLC",
+      "requires": {
+        "roachnet": "1.1.0",
+        "platforms": [
+          "macos"
+        ]
+      },
+      "dependencies": [],
+      "capabilities": [],
+      "resources": [
+        {
+          "path": "roachnet-retro-terminals-1.0.0.zip",
+          "url": "https://apps.roachnet.org/downloads/packs/roachnet-retro-terminals-1.0.0.zip",
+          "sha256": "3a6e1f9ac35653f9cb93fe132756584459c4657ab7b95bfcf14fcb5a8d49e9c2",
+          "bytes": 2433,
+          "archive": "zip"
+        }
+      ],
+      "dataRoots": [],
+      "themes": [
+        "Mainframe Blue",
+        "Plasma Orange",
+        "Teletype Paper",
+        "Vector Cyan"
+      ]
     }
   ]
 }

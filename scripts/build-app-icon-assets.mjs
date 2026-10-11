@@ -158,6 +158,7 @@ function familyLabel(family, section) {
     science: 'SIM SHELF',
     security: 'SECURITY',
     survival: 'FIELD KIT',
+    themes: 'THEME PACK',
     systems: 'SYSTEMS',
     travel: 'FIELD MAP',
     voice: 'VOICE CORE',
@@ -182,6 +183,19 @@ function materialMarkup(family, palette) {
         <rect x="196" y="258" width="18" height="82" rx="9" fill="${palette.glow}" fill-opacity="0.22"/>
         <path d="M250 294C292 238 334 236 380 292" ${glowStroke}/>
         <path d="M250 324C302 276 344 270 404 310" ${softStroke}/>
+      </g>
+    `
+  }
+
+  if (family === 'themes') {
+    return `
+      <g opacity="0.84">
+        <rect x="282" y="150" width="86" height="150" rx="22" transform="rotate(-14 325 225)" fill="${palette.band}" fill-opacity="0.2" stroke="${palette.edge}" stroke-opacity="0.24" stroke-width="2"/>
+        <rect x="306" y="146" width="86" height="150" rx="22" fill="${palette.glow}" fill-opacity="0.22" stroke="${palette.edge}" stroke-opacity="0.28" stroke-width="2"/>
+        <rect x="330" y="150" width="86" height="150" rx="22" transform="rotate(14 373 225)" fill="${palette.edge}" fill-opacity="0.14" stroke="${palette.edge}" stroke-opacity="0.32" stroke-width="2"/>
+        <circle cx="349" cy="182" r="10" ${dot}/>
+        <circle cx="349" cy="212" r="10" fill="${palette.glow}" fill-opacity="0.5"/>
+        <path d="M94 336H232M94 362H196M94 388H252" ${softStroke}/>
       </g>
     `
   }

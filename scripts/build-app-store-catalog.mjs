@@ -941,6 +941,11 @@ function formatSizeFromBytes(sizeBytes) {
     return 'Unknown size'
   }
 
+  // Theme packs are a few KB; "0 MB" would read as empty.
+  if (sizeBytes < 1024 * 1024) {
+    return `${Math.max(1, Math.round(sizeBytes / 1024))} KB`
+  }
+
   return formatSizeFromMB(sizeBytes / (1024 * 1024))
 }
 
@@ -1625,7 +1630,59 @@ function toCatalog() {
         iconAsset: iconAssetForItem(`wiki-${option.id}`),
       }))
 
+    // Theme packs (kind "theme", built by scripts/build-theme-packs.py) are
+    // plain zips of theme JSON on this site; everything else is a resource
+    // pack behind a signed descriptor.
+    const themePackItem = (pack) => {
+      const resource = pack.resources?.[0] || {}
+      const bytes = (pack.resources || []).reduce((sum, entry) => sum + (entry.bytes || 0), 0)
+      const themes = pack.themes || []
+      return {
+        id: `pack-${pack.id}`,
+        title: pack.name,
+        subtitle: pack.summary,
+        category: 'Themes',
+        section: 'Themes',
+        size: formatSizeFromBytes(bytes),
+        status: 'RoachNet 1.1 or later',
+        source: 'RoachWares theme pack',
+        summary: `${pack.summary} Installs through Settings › Packs in RoachNet 1.1, then shows up in Settings › Appearance next to the built-in themes. Themes are plain JSON: nothing in a pack runs code.`,
+        accent: 'magenta',
+        machineFit: 'Every Mac that runs RoachNet 1.1',
+        includes: [
+          ...(themes.length ? [`${themes.length} themes: ${themes.join(', ')}`] : []),
+          `Pack id ${pack.id}, version ${pack.version}`,
+          'Checked against its SHA-256, removable from Settings › Packs',
+        ],
+        minimumRoachNet: pack.requires?.roachnet || '1.1.0',
+        installLabel: 'Install with Pack Manager',
+        detailLabel: 'Open pack catalog',
+        detailUrl: './collections/packs.json',
+        installIntent: {
+          action: 'pack',
+          pack: pack.id,
+        },
+        artifact: {
+          provider: artifactOrigin.provider,
+          bucket: null,
+          key: resource.path || null,
+          url: resource.url || null,
+          status: 'direct-zip',
+          sourceUrl: resource.url || null,
+          checksumUrl: null,
+          sha256: resource.sha256 || null,
+          bytes,
+          note: 'Theme packs are small zips served from apps.roachnet.org; the catalog entry carries the SHA-256 the runtime checks before it unpacks anything.',
+        },
+        iconBand: 'THEME',
+        iconMonogram: shortMonogram(pack.name),
+        iconFamily: 'themes',
+        iconAsset: iconAssetForItem(`pack-${pack.id}`),
+      }
+    }
+
     const packItems = packsData.packs.map((pack) => {
+      if (pack.kind === 'theme') return themePackItem(pack)
       const resource = pack.resources?.[0] || {}
       const bytes = (pack.resources || []).reduce((sum, entry) => sum + (entry.bytes || 0), 0)
       const voice = pack.install?.kind === 'roachWhisper' ? 'listener' : 'narrator'

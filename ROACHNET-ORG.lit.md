@@ -4335,6 +4335,18 @@ const sectionDefinitions = [
     group: 'RoachClaw',
   },
   {
+    key: 'Themes',
+    navLabel: 'Themes',
+    eyebrow: 'Settings › Appearance',
+    title: 'Theme packs for RoachNet 1.1.',
+    description:
+      'RoachNet 1.1 ships with 31 built-in themes. These packs add more: plain JSON themes that install through Settings › Packs and show up in Settings › Appearance. Nothing in a theme pack runs code.',
+    short: 'More looks for RoachNet 1.1, on top of the 31 it ships with.',
+    rowEyebrow: 'New for 1.1',
+    icon: 'THM',
+    group: 'RoachClaw',
+  },
+  {
     key: 'Voice Packs',
     navLabel: 'Voice',
     eyebrow: 'RoachSpeech packs',
@@ -4372,6 +4384,7 @@ const todayRows = [
       'Software Development',
       'Agriculture & Food',
       'Feature Packs',
+      'Themes',
       'Model Packs',
       'Voice Packs',
     ],
@@ -4397,6 +4410,7 @@ const todayRows = [
 // Whole-section shelves on Today, each with a "See all" jump.
 const todaySectionRows = [
   'Feature Packs',
+  'Themes',
   'Model Packs',
   'Voice Packs',
   'Medicine',
@@ -4838,6 +4852,9 @@ function getArtifactLabel(item) {
   const artifact = item.artifact || {}
 
   if (artifact.provider === 'Apps.RoachNet.org') {
+    if (artifact.status === 'direct-zip') {
+      return 'Zip on apps.roachnet.org'
+    }
     if (artifact.status === 'published' || artifact.status === 'descriptor-backed') {
       return 'Apps descriptor'
     }
@@ -4876,6 +4893,12 @@ function landingFor(item, section) {
     case 'roachspeech-pack':
       return { place: 'RoachSpeech', note: 'Adds a voice or a listener to RoachSpeech, on your Mac.' }
     case 'pack':
+      if (item.section === 'Themes') {
+        return {
+          place: 'Settings › Appearance',
+          note: 'The Pack Manager checks the SHA-256 and unpacks the themes; then pick one in Settings › Appearance. Remove the pack and its themes go with it.',
+        }
+      }
       return {
         place: 'Settings › Packs',
         note: 'The Pack Manager checks the published SHA-256 before anything is unpacked. Remove keeps your data unless you say otherwise.',
