@@ -65,7 +65,7 @@ function createHarness({ env = productionEnv, store = new MemoryRateLimitStore()
   const calls = []
   const fetchStub = fetchImpl || (async (url, options) => {
     calls.push({ url: String(url), options })
-    if (String(url).includes('challenges.cloudflare.com')) {
+    if (new URL(String(url)).hostname === 'challenges.cloudflare.com') {
       return Response.json({ success: true })
     }
     return Response.json({ id: 'user-1' })
@@ -177,7 +177,7 @@ test('registration refuses oversized bodies and over-long passwords before exter
 test('a Turnstile pass from another hostname does not count', async () => {
   const { handler } = createHarness({
     fetchImpl: async (url) =>
-      String(url).includes('challenges.cloudflare.com')
+      new URL(String(url)).hostname === 'challenges.cloudflare.com'
         ? Response.json({ success: true, hostname: 'evil.example' })
         : Response.json({ id: 'user-1' }),
   })

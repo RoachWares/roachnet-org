@@ -652,10 +652,13 @@ function loadTurnstileScript() {
 
 async function ensureTurnstile() {
   const turnstileConfig = authState?.config?.turnstile
+  // setMode() can run before the auth state arrives, so the shell's visibility is
+  // settled again here; otherwise the widget renders inside a hidden shell and
+  // nobody can finish the check.
+  if (turnstileShell) {
+    turnstileShell.hidden = accountMode !== 'signup' || !turnstileConfig?.enabled
+  }
   if (!turnstileConfig?.enabled || !turnstileConfig?.siteKey || !turnstileMount || turnstileWidgetId !== null) {
-    if (turnstileShell) {
-      turnstileShell.hidden = accountMode !== 'signup' || !turnstileConfig?.enabled
-    }
     return
   }
 
@@ -3029,7 +3032,7 @@ function renderRouteList() {
     routeList.innerHTML = `
       <li class="api-empty">
         <p class="api-empty__title">Nothing answers to that.</p>
-        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${activeMethod}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
+        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${escapeHTML(activeMethod)}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
         <button class="nx-btn nx-btn--sm" type="button" data-api-reset>Clear filters</button>
       </li>`
     return
@@ -21474,6 +21477,31 @@ async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = 
   }
 }
 
+// With Turnstile switched on, sign-up must show the human check (it once rendered
+// inside a shell that stayed hidden, which made sign-up impossible).
+async function checkSignupHumanCheck(browser, baseUrl) {
+  const page = await browser.newPage()
+  try {
+    await page.setRequestInterception(true)
+    page.on('request', (request) => {
+      const url = new URL(request.url())
+      if (url.origin === baseUrl) return request.continue()
+      return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : '/* third-party script stubbed for the test */' })
+    })
+    await page.goto(`${baseUrl}/?mode=signup`, { waitUntil: 'domcontentloaded' })
+    const turnstileOn = await page.evaluate(() => Boolean(window.__ROACHNET_SITE_CONFIG__?.turnstile?.enabled))
+    if (!turnstileOn) return
+    await page.waitForFunction(() => {
+      const shell = document.querySelector('#account-turnstile-shell')
+      return shell && !shell.hidden && getComputedStyle(shell).display !== 'none'
+    }, { timeout: 10_000 })
+    await page.click('[data-account-mode="signin"]')
+    assert.equal(await page.evaluate(() => document.querySelector('#account-turnstile-shell').hidden), true, 'the human check hides again for sign-in')
+  } finally {
+    await page.close()
+  }
+}
+
 async function checkScreenshotsReveal(browser, baseUrl, pathname) {
   // The motion layer clips screenshots shut and wipes them open on entry; every
   // one of them has to end up visible once scrolled to (it once stayed clipped).
@@ -21652,6 +21680,9 @@ try {
       if (site.name === 'main') {
         await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)
         for (const pathname of ['/home/', '/ios/', '/brew/']) await checkScreenshotsReveal(browser, baseUrl, pathname)
+      }
+      if (site.name === 'accounts') {
+        await checkSignupHumanCheck(browser, baseUrl)
       }
       if (site.name === 'apps') {
         await checkAppDetailKeyboardFlow(browser, baseUrl)
@@ -22094,7 +22125,7 @@ function createHarness({ env = productionEnv, store = new MemoryRateLimitStore()
   const calls = []
   const fetchStub = fetchImpl || (async (url, options) => {
     calls.push({ url: String(url), options })
-    if (String(url).includes('challenges.cloudflare.com')) {
+    if (new URL(String(url)).hostname === 'challenges.cloudflare.com') {
       return Response.json({ success: true })
     }
     return Response.json({ id: 'user-1' })
@@ -22206,7 +22237,7 @@ test('registration refuses oversized bodies and over-long passwords before exter
 test('a Turnstile pass from another hostname does not count', async () => {
   const { handler } = createHarness({
     fetchImpl: async (url) =>
-      String(url).includes('challenges.cloudflare.com')
+      new URL(String(url)).hostname === 'challenges.cloudflare.com'
         ? Response.json({ success: true, hostname: 'evil.example' })
         : Response.json({ id: 'user-1' }),
   })

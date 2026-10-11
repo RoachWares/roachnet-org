@@ -1827,7 +1827,7 @@ function renderRouteList() {
     routeList.innerHTML = `
       <li class="api-empty">
         <p class="api-empty__title">Nothing answers to that.</p>
-        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${activeMethod}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
+        <p class="api-empty__text">No 1.0.6 route matches${searchQuery ? ` “${escapeHTML(searchQuery)}”` : ''}${activeMethod !== 'ALL' ? ` with ${escapeHTML(activeMethod)}` : ''}${activeGroup !== 'all' ? ' in this group' : ''}.</p>
         <button class="nx-btn nx-btn--sm" type="button" data-api-reset>Clear filters</button>
       </li>`
     return

@@ -321,6 +321,31 @@ async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = 
   }
 }
 
+// With Turnstile switched on, sign-up must show the human check (it once rendered
+// inside a shell that stayed hidden, which made sign-up impossible).
+async function checkSignupHumanCheck(browser, baseUrl) {
+  const page = await browser.newPage()
+  try {
+    await page.setRequestInterception(true)
+    page.on('request', (request) => {
+      const url = new URL(request.url())
+      if (url.origin === baseUrl) return request.continue()
+      return request.respond({ status: 200, contentType: request.resourceType() === 'fetch' ? 'application/json' : 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: request.resourceType() === 'fetch' ? '{}' : '/* third-party script stubbed for the test */' })
+    })
+    await page.goto(`${baseUrl}/?mode=signup`, { waitUntil: 'domcontentloaded' })
+    const turnstileOn = await page.evaluate(() => Boolean(window.__ROACHNET_SITE_CONFIG__?.turnstile?.enabled))
+    if (!turnstileOn) return
+    await page.waitForFunction(() => {
+      const shell = document.querySelector('#account-turnstile-shell')
+      return shell && !shell.hidden && getComputedStyle(shell).display !== 'none'
+    }, { timeout: 10_000 })
+    await page.click('[data-account-mode="signin"]')
+    assert.equal(await page.evaluate(() => document.querySelector('#account-turnstile-shell').hidden), true, 'the human check hides again for sign-in')
+  } finally {
+    await page.close()
+  }
+}
+
 async function checkScreenshotsReveal(browser, baseUrl, pathname) {
   // The motion layer clips screenshots shut and wipes them open on entry; every
   // one of them has to end up visible once scrolled to (it once stayed clipped).
@@ -499,6 +524,9 @@ try {
       if (site.name === 'main') {
         await checkRuntimeMarkdownHeadingHierarchy(browser, baseUrl)
         for (const pathname of ['/home/', '/ios/', '/brew/']) await checkScreenshotsReveal(browser, baseUrl, pathname)
+      }
+      if (site.name === 'accounts') {
+        await checkSignupHumanCheck(browser, baseUrl)
       }
       if (site.name === 'apps') {
         await checkAppDetailKeyboardFlow(browser, baseUrl)

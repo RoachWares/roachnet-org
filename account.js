@@ -554,10 +554,13 @@ function loadTurnstileScript() {
 
 async function ensureTurnstile() {
   const turnstileConfig = authState?.config?.turnstile
+  // setMode() can run before the auth state arrives, so the shell's visibility is
+  // settled again here; otherwise the widget renders inside a hidden shell and
+  // nobody can finish the check.
+  if (turnstileShell) {
+    turnstileShell.hidden = accountMode !== 'signup' || !turnstileConfig?.enabled
+  }
   if (!turnstileConfig?.enabled || !turnstileConfig?.siteKey || !turnstileMount || turnstileWidgetId !== null) {
-    if (turnstileShell) {
-      turnstileShell.hidden = accountMode !== 'signup' || !turnstileConfig?.enabled
-    }
     return
   }
 
