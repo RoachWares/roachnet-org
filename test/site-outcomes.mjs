@@ -308,7 +308,7 @@ assert.doesNotMatch(catalogText, /"(?:subtitle|status|summary|machineFit)": "[^"
   assert.ok(iosPage.includes(`data-altstore-source href="altstore://source?url=${sourceJson}"`), 'AltStore button adds the source')
   assert.ok(iosScript.includes('`sidestore://source?url=${sourceURL}`'))
   assert.ok(iosScript.includes('`altstore://source?url=${sourceURL}`'))
-  assert.match(iosScript, new RegExp(`const sourceURL = '${sourceJson.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`))
+  assert.ok(iosScript.includes(`const sourceURL = '${sourceJson}'`), 'the script adds the same source as the page')
 }
 
 console.log('site outcome checks passed')
