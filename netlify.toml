@@ -30,24 +30,6 @@ status = 301
 force = true
 
 [[redirects]]
-from = "/brew"
-to = "/brew/"
-status = 301
-force = true
-
-[[redirects]]
-from = "/brew/*"
-to = "/brew/:splat"
-status = 301
-force = true
-
-[[redirects]]
-from = "/sitemap"
-to = "/sitemap/"
-status = 301
-force = true
-
-[[redirects]]
 from = "/sitemap.html"
 to = "/sitemap/"
 status = 301

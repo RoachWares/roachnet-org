@@ -8052,24 +8052,6 @@ status = 301
 force = true
 
 [[redirects]]
-from = "/brew"
-to = "/brew/"
-status = 301
-force = true
-
-[[redirects]]
-from = "/brew/*"
-to = "/brew/:splat"
-status = 301
-force = true
-
-[[redirects]]
-from = "/sitemap"
-to = "/sitemap/"
-status = 301
-force = true
-
-[[redirects]]
 from = "/sitemap.html"
 to = "/sitemap/"
 status = 301
@@ -21213,6 +21195,12 @@ const netlify = await source('netlify.toml')
 assert.match(netlify, /\[build\]\s+publish = "website-main-dist"\s+command = "npm run build:main:deploy"/)
 assert.match(netlify, /\[functions\]\s+directory = "netlify\/functions"/)
 assert.match(netlify, /from = "\/apps"\s+to = "https:\/\/apps\.roachnet\.org\/"\s+status = 301/s)
+// Netlify matches redirect paths with or without a trailing slash, so a forced rule from a
+// page to the same path plus "/" (or "/x/*" to "/x/:splat") redirects that page to itself forever.
+for (const [, from, to] of netlify.matchAll(/from = "([^"]+)"\s+to = "([^"]+)"/g)) {
+  const bare = (value) => value.replace(/\/(\*|:splat)?$/, '')
+  if (!/^https?:/.test(to)) assert.notEqual(bare(from), bare(to), `redirect ${from} -> ${to} loops on Netlify`)
+}
 assert.match(netlify, /Strict-Transport-Security/)
 assert.match(netlify, /Permissions-Policy/)
 assert.match(netlify, /Content-Security-Policy/)
