@@ -2362,10 +2362,10 @@ const apiGroups = [
         ],
         response: [
           '`{ ok: true, requiresConfirmation, message, userId }`',
-          '400 `captcha_required`, 403 `captcha_failed`, 413 over 16 KB. An address that already has an account gets the same answer as a new one. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
+          '400 `captcha_required`, 403 `captcha_failed`, 400 `password_breached` when the password appears in a known breach, 413 over 16 KB. An address that already has an account gets the same answer as a new one. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
         ],
         implementation:
-          'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
+          'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited. The password is checked against Have I Been Pwned’s range API: only the first 5 characters of its SHA-1 hash leave, and if that service is down the sign-up goes ahead. Each sign-up carries a ticket that expires in 10 minutes; once the project’s Before User Created hook is on, sign-ups without one are refused.',
       },
       {
         id: 'roachclaw-web-chat',
@@ -2393,7 +2393,7 @@ const apiGroups = [
           '`GET ?health=runtime` answers without a token: whether this deploy can load the hosted model.',
         ],
         implementation:
-          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: SmolLM2 135M (Apache-2.0, pinned to one Hugging Face commit), running on ONNX inside the function and downloaded into its /tmp on a cold start.',
+          'Every lookup is scoped to your user id and made with your own session token, so the database’s Row Level Security applies; the function never uses a service-role key. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: SmolLM2 135M (Apache-2.0, pinned to one Hugging Face commit), running on ONNX inside the function and downloaded into its /tmp on a cold start.',
       },
     ],
   },

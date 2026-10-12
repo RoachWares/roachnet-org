@@ -264,3 +264,54 @@ test('an address that already has an account gets the same answer as a new one',
   assert.equal(result.requiresConfirmation, true)
   assert.doesNotMatch(JSON.stringify(result), /exists|already/i)
 })
+
+test('a password found in a breach is refused before sign-up, and only a hash prefix leaves the function', async () => {
+  const { createHash } = await import('node:crypto')
+  const digest = createHash('sha1').update('long-enough-password').digest('hex').toUpperCase()
+  const calls = []
+  const { handler } = createHarness({
+    fetchImpl: async (url, options) => {
+      calls.push({ url: String(url), options })
+      const host = new URL(String(url)).hostname
+      if (host === 'challenges.cloudflare.com') return Response.json({ success: true })
+      if (host === 'api.pwnedpasswords.com') return new Response(`0000000000000000000000000000000000A:0\r\n${digest.slice(5)}:42\r\n`)
+      return Response.json({ id: 'user-1' })
+    },
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 400)
+  assert.equal((await body(response)).code, 'password_breached')
+  const range = calls.find(({ url }) => url.includes('api.pwnedpasswords.com'))
+  assert.equal(range.url, `https://api.pwnedpasswords.com/range/${digest.slice(0, 5)}`)
+  assert.equal(range.options.headers['add-padding'], 'true')
+  assert.equal(calls.some(({ url }) => url.includes('/auth/v1/signup')), false)
+  assert.equal(calls.some(({ url, options }) => url.includes(digest.slice(5)) || String(options?.body || '').includes('long-enough-password') && url.includes('pwned')), false)
+})
+
+test('sign-up carries on when the breach check is unavailable', async () => {
+  const { handler } = createHarness({
+    fetchImpl: async (url) => {
+      const host = new URL(String(url)).hostname
+      if (host === 'challenges.cloudflare.com') return Response.json({ success: true })
+      if (host === 'api.pwnedpasswords.com') return new Response('busy', { status: 503 })
+      return Response.json({ id: 'user-1' })
+    },
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 200)
+})
+
+test('with a ticket secret, sign-up sends a ticket the database hook can verify', async () => {
+  const { createHmac } = await import('node:crypto')
+  const secret = 'ticket-secret-for-tests-0123456789abcdef'
+  const { calls, handler } = createHarness({ env: { ...productionEnv, ROACHNET_SIGNUP_TICKET_SECRET: secret } })
+  const response = await handler(registrationRequest({ email: 'Person@Example.com' }))
+  assert.equal(response.status, 200)
+  const signup = calls.find(({ url }) => url.includes('/auth/v1/signup'))
+  const { data } = JSON.parse(signup.options.body)
+  const [version, expires, mac] = data.signup_ticket.split('.')
+  assert.equal(version, 'v1')
+  assert.equal(Number(expires), Math.floor(Date.parse('2026-08-22T12:00:00.000Z') / 1000) + 600)
+  assert.equal(mac, createHmac('sha256', secret).update(`v1|person@example.com|${expires}`).digest('hex'))
+  assert.equal(data.display_name, 'Person')
+})

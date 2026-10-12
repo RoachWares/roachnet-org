@@ -3610,10 +3610,10 @@ const apiGroups = [
         ],
         response: [
           '`{ ok: true, requiresConfirmation, message, userId }`',
-          '400 `captcha_required`, 403 `captcha_failed`, 413 over 16 KB. An address that already has an account gets the same answer as a new one. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
+          '400 `captcha_required`, 403 `captcha_failed`, 400 `password_breached` when the password appears in a known breach, 413 over 16 KB. An address that already has an account gets the same answer as a new one. 429 when sent too fast or too often (5 tries per address in 15 minutes, 3 per email in an hour). 503 when the backend or rate limiter is down.',
         ],
         implementation:
-          'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited.',
+          'Signs up through Supabase `/auth/v1/signup` with the public key. The confirmation email links back to accounts.roachnet.org. No admin API, no service-role key. Sign-ups are rate-limited. The password is checked against Have I Been Pwned’s range API: only the first 5 characters of its SHA-1 hash leave, and if that service is down the sign-up goes ahead. Each sign-up carries a ticket that expires in 10 minutes; once the project’s Before User Created hook is on, sign-ups without one are refused.',
       },
       {
         id: 'roachclaw-web-chat',
@@ -3641,7 +3641,7 @@ const apiGroups = [
           '`GET ?health=runtime` answers without a token: whether this deploy can load the hosted model.',
         ],
         implementation:
-          'Every lookup is scoped to your user id. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: SmolLM2 135M (Apache-2.0, pinned to one Hugging Face commit), running on ONNX inside the function and downloaded into its /tmp on a cold start.',
+          'Every lookup is scoped to your user id and made with your own session token, so the database’s Row Level Security applies; the function never uses a service-role key. With a bridge URL and token, the prompt goes to your Mac’s /api/companion/chat/send (ten-second timeout, redirects refused). Without one, RoachBrain Cloud answers: SmolLM2 135M (Apache-2.0, pinned to one Hugging Face commit), running on ONNX inside the function and downloaded into its /tmp on a cold start.',
       },
     ],
   },
@@ -24514,6 +24514,57 @@ test('an address that already has an account gets the same answer as a new one',
   assert.equal(result.requiresConfirmation, true)
   assert.doesNotMatch(JSON.stringify(result), /exists|already/i)
 })
+
+test('a password found in a breach is refused before sign-up, and only a hash prefix leaves the function', async () => {
+  const { createHash } = await import('node:crypto')
+  const digest = createHash('sha1').update('long-enough-password').digest('hex').toUpperCase()
+  const calls = []
+  const { handler } = createHarness({
+    fetchImpl: async (url, options) => {
+      calls.push({ url: String(url), options })
+      const host = new URL(String(url)).hostname
+      if (host === 'challenges.cloudflare.com') return Response.json({ success: true })
+      if (host === 'api.pwnedpasswords.com') return new Response(`0000000000000000000000000000000000A:0\r\n${digest.slice(5)}:42\r\n`)
+      return Response.json({ id: 'user-1' })
+    },
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 400)
+  assert.equal((await body(response)).code, 'password_breached')
+  const range = calls.find(({ url }) => url.includes('api.pwnedpasswords.com'))
+  assert.equal(range.url, `https://api.pwnedpasswords.com/range/${digest.slice(0, 5)}`)
+  assert.equal(range.options.headers['add-padding'], 'true')
+  assert.equal(calls.some(({ url }) => url.includes('/auth/v1/signup')), false)
+  assert.equal(calls.some(({ url, options }) => url.includes(digest.slice(5)) || String(options?.body || '').includes('long-enough-password') && url.includes('pwned')), false)
+})
+
+test('sign-up carries on when the breach check is unavailable', async () => {
+  const { handler } = createHarness({
+    fetchImpl: async (url) => {
+      const host = new URL(String(url)).hostname
+      if (host === 'challenges.cloudflare.com') return Response.json({ success: true })
+      if (host === 'api.pwnedpasswords.com') return new Response('busy', { status: 503 })
+      return Response.json({ id: 'user-1' })
+    },
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 200)
+})
+
+test('with a ticket secret, sign-up sends a ticket the database hook can verify', async () => {
+  const { createHmac } = await import('node:crypto')
+  const secret = 'ticket-secret-for-tests-0123456789abcdef'
+  const { calls, handler } = createHarness({ env: { ...productionEnv, ROACHNET_SIGNUP_TICKET_SECRET: secret } })
+  const response = await handler(registrationRequest({ email: 'Person@Example.com' }))
+  assert.equal(response.status, 200)
+  const signup = calls.find(({ url }) => url.includes('/auth/v1/signup'))
+  const { data } = JSON.parse(signup.options.body)
+  const [version, expires, mac] = data.signup_ticket.split('.')
+  assert.equal(version, 'v1')
+  assert.equal(Number(expires), Math.floor(Date.parse('2026-08-22T12:00:00.000Z') / 1000) + 600)
+  assert.equal(mac, createHmac('sha256', secret).update(`v1|person@example.com|${expires}`).digest('hex'))
+  assert.equal(data.display_name, 'Person')
+})
 ```
 
 ## test/roachclaw-chat.test.mjs
@@ -24912,6 +24963,10 @@ assert.match(chat, /function isAllowedRequestOrigin/)
 assert.equal([...chat.matchAll(/!isAllowedBridgeUrl/g)].length, 2)
 assert.match(chat, /redirect: 'error'/)
 assert.match(chat, /signal: AbortSignal\.timeout/)
+// The chat function acts as the signed-in person so Row Level Security applies.
+// It must never pick up the service role key, even if one is set in the site env.
+assert.doesNotMatch(chat, /SERVICE_ROLE/)
+assert.match(chat, /authToken: token/)
 
 const registration = await source('netlify/functions/register-account.mjs')
 assert.match(registration, /function isAllowedRequestOrigin/)
@@ -24919,6 +24974,11 @@ assert.match(registration, /ROACHNET_TURNSTILE_SECRET_KEY/)
 assert.match(registration, /getStore\('roachnet-registration-rate-limits'\)/)
 assert.match(registration, /\/auth\/v1\/signup/)
 assert.doesNotMatch(registration, /\/auth\/v1\/admin\/users|SERVICE_ROLE|email_confirm/)
+// Free-tier stand-ins for Pro features: the breached-password check (k-anonymity
+// range API, only a 5-character hash prefix leaves) and the signup ticket that
+// the Before User Created hook checks.
+assert.match(registration, /api\.pwnedpasswords\.com\/range\//)
+assert.match(registration, /signup_ticket/)
 
 const accountClient = await source('account.js')
 assert.match(
@@ -25025,7 +25085,7 @@ console.log('site outcome checks passed')
 This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="netlify-functions-register-account-mjs" file="netlify/functions/register-account.mjs"}
-import { createHmac } from 'node:crypto'
+import { createHash, createHmac } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 
 // Browsers on these origins may call the function. The localhost origins only
@@ -25185,6 +25245,44 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
     success,
     message: success ? '' : "The human check didn't pass. Do it again, then press Create account.",
   }
+}
+
+// Supabase's own breached-password check needs the Pro plan, so the function
+// does it: the k-anonymity range API only ever sees the first five hex digits
+// of the password's SHA-1, and padded answers hide which suffix matched.
+// Returns true (breached), false (not found) or null (couldn't check).
+export async function passwordIsBreached({ fetchImpl, password, timeoutMs = 2500 }) {
+  const digest = createHash('sha1').update(password, 'utf8').digest('hex').toUpperCase()
+  const prefix = digest.slice(0, 5)
+  const suffix = digest.slice(5)
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const response = await fetchImpl(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { 'add-padding': 'true', 'user-agent': 'roachnet-register-account' },
+      signal: controller.signal,
+    })
+    if (!response.ok) return null
+    const text = await response.text()
+    for (const line of text.split('\n')) {
+      const [hash, count] = line.trim().split(':')
+      if (hash === suffix && Number(count) > 0) return true
+    }
+    return false
+  } catch {
+    return null
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+// A ticket the database's before-user-created hook checks, so a sign-up that
+// skipped this function (and its human check, rate limits and breach check)
+// is refused. Bound to the email address, good for ten minutes.
+export function signupTicket(secret, email, nowMs) {
+  const expires = Math.floor(nowMs / 1000) + 600
+  const mac = createHmac('sha256', secret).update(`v1|${email}|${expires}`).digest('hex')
+  return `v1.${expires}.${mac}`
 }
 
 function confirmationRedirect(env) {
@@ -25398,6 +25496,29 @@ export function createRegistrationHandler({
       )
     }
 
+    const breached = await passwordIsBreached({ fetchImpl, password })
+    if (breached === true) {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            code: 'password_breached',
+            message: "That password has turned up in a data breach, so it isn't safe to use. Pick a different one.",
+          },
+          400
+        )
+      )
+    }
+    if (breached === null) {
+      console.warn('register-account: the breached-password check was unavailable; sign-up continued without it.')
+    }
+
+    const userData = { display_name: displayName || email.split('@')[0] }
+    if (env.ROACHNET_SIGNUP_TICKET_SECRET) {
+      userData.signup_ticket = signupTicket(env.ROACHNET_SIGNUP_TICKET_SECRET, email, now())
+    }
+
     const signupUrl = new URL(`${supabaseUrl}/auth/v1/signup`)
     signupUrl.searchParams.set('redirect_to', confirmationRedirect(env))
 
@@ -25413,9 +25534,7 @@ export function createRegistrationHandler({
         body: JSON.stringify({
           email,
           password,
-          data: {
-            display_name: displayName || email.split('@')[0],
-          },
+          data: userData,
         }),
       })
     } catch {
@@ -25899,7 +26018,6 @@ export function createChatHandler({
 
     const supabaseUrl = env.ROACHNET_SUPABASE_URL || ''
     const publishableKey = env.ROACHNET_SUPABASE_ANON_KEY || ''
-    const serviceRoleKey = env.ROACHNET_SUPABASE_SERVICE_ROLE_KEY || ''
     const chatEnabled = env.ROACHNET_WEB_CHAT_ENABLED === '1'
     const model = env.ROACHNET_WEB_CHAT_MODEL || 'RoachClaw relay'
     const allowedBridgeOrigins = new Set(
@@ -26028,11 +26146,14 @@ export function createChatHandler({
       }
     }
 
+    // Every row this function reads or writes belongs to the signed-in person,
+    // so it uses their own token and Row Level Security applies. The service
+    // role key is never used, even when it is set.
     const databaseClient = createDatabaseClient({
       fetchImpl,
       supabaseUrl,
-      apiKey: serviceRoleKey || publishableKey,
-      authToken: serviceRoleKey || token,
+      apiKey: publishableKey,
+      authToken: token,
     })
 
     try {

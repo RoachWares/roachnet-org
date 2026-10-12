@@ -420,7 +420,6 @@ export function createChatHandler({
 
     const supabaseUrl = env.ROACHNET_SUPABASE_URL || ''
     const publishableKey = env.ROACHNET_SUPABASE_ANON_KEY || ''
-    const serviceRoleKey = env.ROACHNET_SUPABASE_SERVICE_ROLE_KEY || ''
     const chatEnabled = env.ROACHNET_WEB_CHAT_ENABLED === '1'
     const model = env.ROACHNET_WEB_CHAT_MODEL || 'RoachClaw relay'
     const allowedBridgeOrigins = new Set(
@@ -549,11 +548,14 @@ export function createChatHandler({
       }
     }
 
+    // Every row this function reads or writes belongs to the signed-in person,
+    // so it uses their own token and Row Level Security applies. The service
+    // role key is never used, even when it is set.
     const databaseClient = createDatabaseClient({
       fetchImpl,
       supabaseUrl,
-      apiKey: serviceRoleKey || publishableKey,
-      authToken: serviceRoleKey || token,
+      apiKey: publishableKey,
+      authToken: token,
     })
 
     try {

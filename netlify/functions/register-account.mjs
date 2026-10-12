@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto'
+import { createHash, createHmac } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 
 // Browsers on these origins may call the function. The localhost origins only
@@ -158,6 +158,44 @@ async function verifyTurnstile({ fetchImpl, secret, token, remoteip }) {
     success,
     message: success ? '' : "The human check didn't pass. Do it again, then press Create account.",
   }
+}
+
+// Supabase's own breached-password check needs the Pro plan, so the function
+// does it: the k-anonymity range API only ever sees the first five hex digits
+// of the password's SHA-1, and padded answers hide which suffix matched.
+// Returns true (breached), false (not found) or null (couldn't check).
+export async function passwordIsBreached({ fetchImpl, password, timeoutMs = 2500 }) {
+  const digest = createHash('sha1').update(password, 'utf8').digest('hex').toUpperCase()
+  const prefix = digest.slice(0, 5)
+  const suffix = digest.slice(5)
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const response = await fetchImpl(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { 'add-padding': 'true', 'user-agent': 'roachnet-register-account' },
+      signal: controller.signal,
+    })
+    if (!response.ok) return null
+    const text = await response.text()
+    for (const line of text.split('\n')) {
+      const [hash, count] = line.trim().split(':')
+      if (hash === suffix && Number(count) > 0) return true
+    }
+    return false
+  } catch {
+    return null
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+// A ticket the database's before-user-created hook checks, so a sign-up that
+// skipped this function (and its human check, rate limits and breach check)
+// is refused. Bound to the email address, good for ten minutes.
+export function signupTicket(secret, email, nowMs) {
+  const expires = Math.floor(nowMs / 1000) + 600
+  const mac = createHmac('sha256', secret).update(`v1|${email}|${expires}`).digest('hex')
+  return `v1.${expires}.${mac}`
 }
 
 function confirmationRedirect(env) {
@@ -371,6 +409,29 @@ export function createRegistrationHandler({
       )
     }
 
+    const breached = await passwordIsBreached({ fetchImpl, password })
+    if (breached === true) {
+      return withCors(
+        request,
+        json(
+          {
+            ok: false,
+            code: 'password_breached',
+            message: "That password has turned up in a data breach, so it isn't safe to use. Pick a different one.",
+          },
+          400
+        )
+      )
+    }
+    if (breached === null) {
+      console.warn('register-account: the breached-password check was unavailable; sign-up continued without it.')
+    }
+
+    const userData = { display_name: displayName || email.split('@')[0] }
+    if (env.ROACHNET_SIGNUP_TICKET_SECRET) {
+      userData.signup_ticket = signupTicket(env.ROACHNET_SIGNUP_TICKET_SECRET, email, now())
+    }
+
     const signupUrl = new URL(`${supabaseUrl}/auth/v1/signup`)
     signupUrl.searchParams.set('redirect_to', confirmationRedirect(env))
 
@@ -386,9 +447,7 @@ export function createRegistrationHandler({
         body: JSON.stringify({
           email,
           password,
-          data: {
-            display_name: displayName || email.split('@')[0],
-          },
+          data: userData,
         }),
       })
     } catch {

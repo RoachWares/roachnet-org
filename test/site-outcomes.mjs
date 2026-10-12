@@ -206,6 +206,10 @@ assert.match(chat, /function isAllowedRequestOrigin/)
 assert.equal([...chat.matchAll(/!isAllowedBridgeUrl/g)].length, 2)
 assert.match(chat, /redirect: 'error'/)
 assert.match(chat, /signal: AbortSignal\.timeout/)
+// The chat function acts as the signed-in person so Row Level Security applies.
+// It must never pick up the service role key, even if one is set in the site env.
+assert.doesNotMatch(chat, /SERVICE_ROLE/)
+assert.match(chat, /authToken: token/)
 
 const registration = await source('netlify/functions/register-account.mjs')
 assert.match(registration, /function isAllowedRequestOrigin/)
@@ -213,6 +217,11 @@ assert.match(registration, /ROACHNET_TURNSTILE_SECRET_KEY/)
 assert.match(registration, /getStore\('roachnet-registration-rate-limits'\)/)
 assert.match(registration, /\/auth\/v1\/signup/)
 assert.doesNotMatch(registration, /\/auth\/v1\/admin\/users|SERVICE_ROLE|email_confirm/)
+// Free-tier stand-ins for Pro features: the breached-password check (k-anonymity
+// range API, only a 5-character hash prefix leaves) and the signup ticket that
+// the Before User Created hook checks.
+assert.match(registration, /api\.pwnedpasswords\.com\/range\//)
+assert.match(registration, /signup_ticket/)
 
 const accountClient = await source('account.js')
 assert.match(
