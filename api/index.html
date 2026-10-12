@@ -6,7 +6,7 @@
     <title>RoachNet API: every route in 1.0.6</title>
     <meta
       name="description"
-      content="Reference for the RoachNet 1.0.6 native runtime: the loopback API, the companion bridge your phone uses, the setup service, and the two roachnet.org functions. Methods, bodies, responses and source lines."
+      content="Reference for the RoachNet 1.1 native runtime: the loopback API, the companion bridge your phone uses, the setup service, and the two roachnet.org functions. Methods, bodies, responses and source lines."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/api/" />
@@ -74,15 +74,15 @@
     <main id="top" class="nx-main api" tabindex="-1">
       <section class="api-hero" aria-labelledby="api-title">
         <div class="api-hero__copy">
-          <p class="nx-overline">API reference · RoachNet 1.0.6</p>
+          <p class="nx-overline">API reference · RoachNet 1.1</p>
           <h1 class="nx-display api-hero__title" id="api-title">Every route your Mac answers.</h1>
           <p class="nx-lede">
-            RoachNet 1.0.6 runs one native Swift helper, <code>roachnet-runtime</code>. It gives the app a loopback API, your phone a token-gated bridge, and the installer a setup service. All three listen on 127.0.0.1 and nowhere else. Below is every route they answer, plus the two functions roachnet.org runs.
+            RoachNet 1.1 runs one native Swift helper, <code>roachnet-runtime</code>. It gives the app a loopback API, your phone a token-gated bridge, the installer a setup service, and every Ollama, OpenAI or Anthropic client a model server. All four listen on 127.0.0.1 and nowhere else. Below is every route they answer, plus the two functions roachnet.org runs.
           </p>
-          <p class="api-hero__hint">Examples use <code>$ROACHNET</code> and <code>$BRIDGE</code>. <a class="nx-link" href="#before-you-call">Here is where they come from.</a></p>
+          <p class="api-hero__hint">Examples use <code>$ROACHNET</code>, <code>$MODELS</code> and <code>$BRIDGE</code>. <a class="nx-link" href="#before-you-call">Here is where they come from.</a></p>
         </div>
         <ul class="nx-stats api-hero__stats" id="api-stats" aria-label="Route counts">
-          <li class="nx-stat"><span class="nx-stat__value">106</span><span class="nx-stat__label">Routes in 1.0.6</span></li>
+          <li class="nx-stat"><span class="nx-stat__value">161</span><span class="nx-stat__label">Routes in 1.1</span></li>
         </ul>
       </section>
 
@@ -90,7 +90,7 @@
         <nav class="api-rail" aria-label="Route groups">
           <p class="api-rail__head">Groups</p>
           <ul class="api-rail__list" id="api-group-nav"></ul>
-          <p class="api-rail__foot">Checked against <code>Router.swift</code> at tag v1.0.6.</p>
+          <p class="api-rail__foot">Checked against <code>Router.swift</code> at tag v1.1.0.</p>
         </nav>
 
         <div class="api-work">
@@ -133,21 +133,37 @@
       <section class="api-start" id="before-you-call" aria-labelledby="api-start-title">
         <div class="api-start__head">
           <p class="nx-overline nx-overline--cyan">Before you call</p>
-          <h2 class="nx-h2" id="api-start-title">Find the port. Bring JSON.</h2>
+          <h2 class="nx-h2" id="api-start-title">Find the port. Bring the token and JSON.</h2>
         </div>
         <div class="api-start__grid">
           <article class="api-start__card">
             <h3 class="nx-h3">Loopback API</h3>
-            <p class="nx-prose">It takes a fresh port on every launch and writes it to a state file. The first line below sets <code>$ROACHNET</code> for every example on this page.</p>
+            <p class="nx-prose">It takes a fresh port and, since 1.1, a fresh token on every launch, and writes both to a file only you can read. The first lines below set <code>$ROACHNET</code> and <code>$TOKEN</code> for every example on this page.</p>
             <div class="nx-console api-console">
               <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
               <div class="nx-console__body">
-                <span class="nx-console__line">ROACHNET=$(sed -n 's/.*"baseUrl" *: *"\([^"]*\)".*/\1/p' ~/RoachNet/storage/.runtime/roachnet-native-api-state.json)</span>
-                <span class="nx-console__line">curl -s "$ROACHNET/api/health"</span>
-                <span class="nx-console__line nx-console__line--out">{"status":"ok"}</span>
+                <span class="nx-console__line">INFO=~/RoachNet/storage/state/runtime-state/native-server-info.json</span>
+                <span class="nx-console__line">ROACHNET=$(sed -n 's/.*"webUrl" *: *"\([^"]*\)".*/\1/p' "$INFO")</span>
+                <span class="nx-console__line">TOKEN=$(sed -n 's/.*"apiToken" *: *"\([^"]*\)".*/\1/p' "$INFO")</span>
+                <span class="nx-console__line">curl -s "$ROACHNET/api/system/info" -H "authorization: Bearer $TOKEN"</span>
               </div>
               <div class="nx-console__copy">
-                <button class="nx-btn nx-btn--sm nx-btn--mono" type="button" data-api-copy="ROACHNET=$(sed -n 's/.*&quot;baseUrl&quot; *: *&quot;\([^&quot;]*\)&quot;.*/\1/p' ~/RoachNet/storage/.runtime/roachnet-native-api-state.json)&#10;curl -s &quot;$ROACHNET/api/health&quot;" data-api-copied="Commands copied">Copy</button>
+                <button class="nx-btn nx-btn--sm nx-btn--mono" type="button" data-api-copy="INFO=~/RoachNet/storage/state/runtime-state/native-server-info.json&#10;ROACHNET=$(sed -n 's/.*&quot;webUrl&quot; *: *&quot;\([^&quot;]*\)&quot;.*/\1/p' &quot;$INFO&quot;)&#10;TOKEN=$(sed -n 's/.*&quot;apiToken&quot; *: *&quot;\([^&quot;]*\)&quot;.*/\1/p' &quot;$INFO&quot;)&#10;curl -s &quot;$ROACHNET/api/system/info&quot; -H &quot;authorization: Bearer $TOKEN&quot;" data-api-copied="Commands copied">Copy</button>
+              </div>
+            </div>
+            <p class="nx-prose">For a script you keep, make a RoachClaw API token in Settings › RoachClaw instead: it survives restarts, you choose its scope (<code>chat</code>, <code>read</code> or <code>admin</code>), and you can revoke it.</p>
+          </article>
+          <article class="api-start__card">
+            <h3 class="nx-h3">Model server</h3>
+            <p class="nx-prose">RoachInference listens on port 36434 unless you set <code>OLLAMA_BASE_URL</code>, so Ollama’s own 11434 stays free for an Ollama you run yourself. Like Ollama, it wants no token; it refuses other Hosts and other websites instead. Point any Ollama, OpenAI or Anthropic client at it.</p>
+            <div class="nx-console api-console">
+              <div class="nx-console__bar"><i></i><i></i><i></i> zsh · ~</div>
+              <div class="nx-console__body">
+                <span class="nx-console__line">MODELS=http://127.0.0.1:36434</span>
+                <span class="nx-console__line">curl -s "$MODELS/v1/models"</span>
+              </div>
+              <div class="nx-console__copy">
+                <button class="nx-btn nx-btn--sm nx-btn--mono" type="button" data-api-copy="MODELS=http://127.0.0.1:36434&#10;curl -s &quot;$MODELS/v1/models&quot;" data-api-copied="Commands copied">Copy</button>
               </div>
             </div>
           </article>
@@ -170,8 +186,10 @@
             <h3 class="nx-h3">House rules</h3>
             <ul class="api-rules">
               <li><strong>JSON means JSON.</strong> Bodies must say <code>content-type: application/json</code>. Anything else gets a 415. That is CSRF protection, not pedantry.</li>
-              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a page using DNS rebinding can’t read your Mac.</li>
+              <li><strong>Loopback only.</strong> A Host header that is not a loopback name gets a 403, so a page using DNS rebinding can’t read your Mac. A request whose Origin is another website gets a 403 too.</li>
+              <li><strong>Token, since 1.1.</strong> When RoachNet.app started the runtime, every route except <code>GET /api/health</code> wants the launch token or a RoachClaw API token: 401 without one, 403 when a RoachClaw token lacks the scope (the reply names it). Org calls that bring their own <code>x-roachnet-org-key</code> skip it. A runtime you start yourself with <code>npm start</code> asks for nothing unless you set <code>ROACHNET_API_TOKEN</code>.</li>
               <li><strong>Errors are boring.</strong> <code>{ "error": "…" }</code> with a real status code.</li>
+              <li><strong>The model server is Ollama-shaped.</strong> No token, no JSON content type required, and errors in each API’s own shape: OpenAI’s on <code>/v1/…</code>, Anthropic’s on <code>/v1/messages</code>, Ollama’s elsewhere.</li>
               <li><strong>Small bodies.</strong> 1 MB on the loopback API, 2 MB through the bridge.</li>
               <li><strong>Setup keeps to itself.</strong> Its service runs only while Setup is open, on a port only Setup knows. To try it by hand, start <code>roachnet-runtime --setup</code> with <code>ROACHNET_SETUP_PORT=38080</code> and set <code>SETUP=http://127.0.0.1:38080</code>.</li>
             </ul>
