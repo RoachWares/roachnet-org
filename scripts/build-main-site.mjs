@@ -118,6 +118,7 @@ const copyList = [
   "nx.js",
   "nx-halloween.js",
   "nx-halloween.css",
+  "nx-halloween-themes.css",
   "nx-mission.css",
   "nx-docs.css",
   "vendor/supabase-js",

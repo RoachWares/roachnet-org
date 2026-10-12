@@ -6,10 +6,14 @@
 // the DOM. Out of season the script returns at once and loads nothing.
 //
 // The switch is offered from 1 October to 2 November and starts on from
-// 24 October to 1 November. A visitor's choice is kept in one first-party cookie
-// shared by the roachnet.org hosts (rn_halloween=on|off, 45 days); nothing else is
-// stored or sent anywhere. ?halloween=on|off sets it from a link, and
-// ?halloween=on previews the theme out of season without saving anything.
+// 24 October to 1 November. A visitor's choices are kept in two first-party
+// cookies shared by the roachnet.org hosts (rn_halloween=on|off and
+// rn_halloween_theme=<palette>, 45 days); nothing else is stored or sent
+// anywhere. ?halloween=on|off and ?halloween-theme=<palette> set them from a
+// link, and ?halloween=on previews the theme out of season without saving anything.
+//
+// The palettes are RoachNet's Halloween themes, the same ones the app offers;
+// the effects layer (moon, bats, fog, webs, the spider) is the same for all of them.
 //
 // CSP: no inline script or style. Styles change through classes, attributes and
 // CSSOM only. Motion stands down under prefers-reduced-motion, while the tab is
@@ -26,28 +30,56 @@
   var inSeason = month === 9 || (month === 10 && day <= 2)
   var startsOn = (month === 9 && day >= 24) || (month === 10 && day <= 1)
 
+  // The palettes are RoachNet's own Halloween themes (the app's Pumpkin Patch and
+  // the Halloween Collection pack), turned into these sites' tokens by
+  // scripts/build-halloween-themes.mjs. Keep this list in step with that script;
+  // test/site-outcomes.mjs checks it.
+  var themes = [
+    { slug: 'pumpkin-patch', name: 'Pumpkin Patch' },
+    { slug: 'witch-light', name: 'Witch Light' },
+    { slug: 'hollow-moon', name: 'Hollow Moon' },
+    { slug: 'haunted-static', name: 'Haunted Static' },
+  ]
+  var themeCookie = 'rn_halloween_theme'
+  function knownTheme(slug) {
+    for (var i = 0; i < themes.length; i += 1) if (themes[i].slug === slug) return themes[i]
+    return null
+  }
+
   var asked = null
+  var askedTheme = null
   try {
-    asked = new URLSearchParams(window.location.search).get('halloween')
+    var params = new URLSearchParams(window.location.search)
+    asked = params.get('halloween')
+    askedTheme = params.get('halloween-theme')
   } catch (error) {
     asked = null
   }
   if (asked !== 'on' && asked !== 'off') asked = null
+  if (!knownTheme(askedTheme)) askedTheme = null
   if (!inSeason && asked !== 'on') return
 
-  // The stylesheet loads only while the switch is offered, next to this script.
-  // blocking="render" keeps Chromium from painting before it arrives; WebKit
-  // already waits for stylesheets added to <head> before the body.
+  // The stylesheets load only while the switch is offered, next to this script:
+  // the palettes first, then the effects that use them. blocking="render" keeps
+  // Chromium from painting before they arrive; WebKit already waits for
+  // stylesheets added to <head> before the body.
   var script = document.currentScript
   try {
-    var sheet = document.createElement('link')
-    sheet.rel = 'stylesheet'
-    sheet.href = new URL('nx-halloween.css', script && script.src ? script.src : window.location.href).href
-    sheet.setAttribute('blocking', 'render')
-    if (script && script.parentNode) script.parentNode.insertBefore(sheet, script.nextSibling)
-    else document.head.appendChild(sheet)
+    var anchor = script && script.parentNode ? script : null
+    ;['nx-halloween-themes.css', 'nx-halloween.css'].forEach(function (file) {
+      var sheet = document.createElement('link')
+      sheet.rel = 'stylesheet'
+      sheet.href = new URL(file, script && script.src ? script.src : window.location.href).href
+      sheet.setAttribute('blocking', 'render')
+      if (anchor) {
+        anchor.parentNode.insertBefore(sheet, anchor.nextSibling)
+        anchor = sheet
+      } else {
+        document.head.appendChild(sheet)
+      }
+    })
   } catch (error) {
-    // Without the stylesheet the switch still works; it just looks plain.
+    // Without the stylesheets the switch still works; it just looks plain.
   }
 
   function readChoice() {
@@ -59,25 +91,41 @@
     }
   }
 
-  function saveChoice(value) {
+  function saveCookie(name, value) {
     if (!inSeason) return
     try {
       var shared = /(^|\.)roachnet\.org$/.test(window.location.hostname) ? '; domain=roachnet.org' : ''
       var secure = window.location.protocol === 'https:' ? '; secure' : ''
       document.cookie =
-        cookieName + '=' + value + '; max-age=' + cookieDays * 86400 + '; path=/; samesite=lax' + shared + secure
+        name + '=' + value + '; max-age=' + cookieDays * 86400 + '; path=/; samesite=lax' + shared + secure
     } catch (error) {
       // Cookies blocked: the switch still works for this page view.
     }
   }
+  function saveChoice(value) {
+    saveCookie(cookieName, value)
+  }
+
+  function readTheme() {
+    try {
+      var match = document.cookie.match(/(?:^|;\s*)rn_halloween_theme=([a-z-]+)(?:;|$)/)
+      return match && knownTheme(match[1]) ? match[1] : null
+    } catch (error) {
+      return null
+    }
+  }
 
   if (asked) saveChoice(asked)
+  if (askedTheme) saveCookie(themeCookie, askedTheme)
   var choice = asked || readChoice()
   var on = choice ? choice === 'on' : startsOn
+  var theme = askedTheme || readTheme() || themes[0].slug
+  root.setAttribute('data-halloween-theme', theme)
 
   var themeMeta = null
   var normalThemeColor = ''
   var switches = []
+  var pickers = []
   var layer = null
   var moon = null
   var spider = null
@@ -89,11 +137,31 @@
     return !reduced.matches
   }
 
+  function paletteBackground() {
+    try {
+      return getComputedStyle(root).getPropertyValue('--nx-bg').trim() || '#110904'
+    } catch (error) {
+      return '#110904'
+    }
+  }
+
+  function applyTheme(slug) {
+    theme = slug
+    root.setAttribute('data-halloween-theme', slug)
+    if (themeMeta && on) themeMeta.setAttribute('content', paletteBackground())
+    pickers.forEach(function (picker) {
+      picker.value = slug
+    })
+  }
+
   function apply(state) {
     on = state
     if (state) root.setAttribute('data-halloween', 'on')
     else root.removeAttribute('data-halloween')
-    if (themeMeta) themeMeta.setAttribute('content', state ? '#070409' : normalThemeColor)
+    if (themeMeta) themeMeta.setAttribute('content', state ? paletteBackground() : normalThemeColor)
+    pickers.forEach(function (picker) {
+      picker.parentNode.hidden = !state
+    })
     switches.forEach(function (control) {
       control.setAttribute('aria-pressed', String(state))
       var label = control.querySelector('[data-spook-label]')
@@ -359,6 +427,35 @@
     return control
   }
 
+  // The palette picker sits beside the footer switch while Halloween mode is on.
+  function makePicker() {
+    var label = document.createElement('label')
+    label.className = 'nx-spook-palette'
+    var text = document.createElement('span')
+    text.className = 'nx-spook-palette__label'
+    text.textContent = 'Palette'
+    var picker = document.createElement('select')
+    picker.className = 'nx-spook-palette__select'
+    themes.forEach(function (item) {
+      var option = document.createElement('option')
+      option.value = item.slug
+      option.textContent = item.name
+      picker.appendChild(option)
+    })
+    picker.value = theme
+    picker.addEventListener('change', function () {
+      var next = knownTheme(picker.value)
+      if (!next) return
+      saveCookie(themeCookie, next.slug)
+      applyTheme(next.slug)
+      announce('Palette: ' + next.name + '.')
+    })
+    label.appendChild(text)
+    label.appendChild(picker)
+    pickers.push(picker)
+    return label
+  }
+
   function mount() {
     themeMeta = document.querySelector('meta[name="theme-color"]')
     normalThemeColor = themeMeta ? themeMeta.getAttribute('content') || '#05060a' : '#05060a'
@@ -366,7 +463,10 @@
     var actions = document.querySelector('.nx-nav__actions')
     if (actions) actions.insertBefore(makeSwitch('nav'), actions.firstChild)
     var meta = document.querySelector('.nx-foot__meta-group')
-    if (meta) meta.appendChild(makeSwitch('foot'))
+    if (meta) {
+      meta.appendChild(makeSwitch('foot'))
+      meta.appendChild(makePicker())
+    }
 
     liveRegion = span('nx-spook-sr')
     liveRegion.setAttribute('role', 'status')

@@ -223,6 +223,12 @@ async function halloweenPage(browser, baseUrl, pathname, { iso, viewport = { wid
       })(),
       bats: document.querySelectorAll('.nx-spook__bat').length,
       sheet: [...document.styleSheets].some((sheet) => /nx-halloween\.css$/.test(sheet.href || '') && sheet.cssRules.length > 0),
+      themesSheet: [...document.styleSheets].some((sheet) => /nx-halloween-themes\.css$/.test(sheet.href || '') && sheet.cssRules.length > 0),
+      palette: document.documentElement.getAttribute('data-halloween-theme'),
+      paletteCookie: (/(?:^|;\s*)rn_halloween_theme=([a-z-]+)/.exec(document.cookie) || [])[1] || null,
+      pickerShown: Boolean(document.querySelector('.nx-spook-palette:not([hidden]) select')),
+      signal: getComputedStyle(document.documentElement).getPropertyValue('--nx-signal').trim().toLowerCase(),
+      themeColor: document.querySelector('meta[name="theme-color"]')?.getAttribute('content')?.toLowerCase() || null,
       spider: Boolean(document.querySelector('.nx-spook-spider')),
       overflow: document.documentElement.scrollWidth > window.innerWidth,
     }
@@ -247,6 +253,20 @@ async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = 
       assert.equal(now.cookie, 'on', `${label}: the choice is kept`)
       assert.equal(now.moonVisible, true, `${label}: the moon is up`)
       assert.equal(now.sheet, true, `${label}: the Halloween stylesheet is loaded`)
+      assert.equal(now.themesSheet, true, `${label}: the Halloween palettes are loaded`)
+      assert.equal(now.palette, 'pumpkin-patch', `${label}: Pumpkin Patch is the default palette`)
+      assert.equal(now.signal, '#ff8c1a', `${label}: the signal color is Pumpkin Patch's accent`)
+      assert.equal(now.themeColor, '#110904', `${label}: the browser chrome follows the palette`)
+      assert.equal(now.pickerShown, true, `${label}: the palette picker shows while Halloween mode is on`)
+      await page.select('.nx-spook-palette select', 'witch-light')
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-halloween-theme') === 'witch-light', { timeout: 5_000 })
+      now = await state()
+      assert.equal(now.signal, '#7cff6b', `${label}: Witch Light recolors the page`)
+      assert.equal(now.themeColor, '#0b0710', `${label}: and the browser chrome`)
+      assert.equal(now.paletteCookie, 'witch-light', `${label}: the palette is kept`)
+      await page.select('.nx-spook-palette select', 'pumpkin-patch')
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-halloween-theme') === 'pumpkin-patch', { timeout: 5_000 })
+      now = await state()
       assert.equal(now.moonClear, true, `${label}: the moon never sits behind the first heading`)
       assert.equal(now.bats, 4, `${label}: bats fly when motion is allowed`)
       assert.equal(now.overflow, false, `${label}: no horizontal overflow in Halloween mode`)
@@ -259,6 +279,12 @@ async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = 
       }
       await go()
       assert.equal((await state()).on, true, `${label}: on before first paint after a reload`)
+      assert.equal((await state()).palette, 'pumpkin-patch', `${label}: the last palette chosen comes back after a reload`)
+      await go('?halloween-theme=haunted-static')
+      now = await state()
+      assert.equal(now.palette, 'haunted-static', `${label}: ?halloween-theme= picks a palette from a link`)
+      assert.equal(now.signal, '#8ff3ff', `${label}: Haunted Static recolors the page`)
+      await go('?halloween-theme=pumpkin-patch')
       await page.click('.nx-spook-switch--foot')
       await page.waitForFunction(() => !document.documentElement.hasAttribute('data-halloween'), { timeout: 5_000 })
       assert.equal((await state()).cookie, 'off', `${label}: turning it off is kept too`)

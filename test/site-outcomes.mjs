@@ -164,7 +164,7 @@ const halloween = await source('nx-halloween.js')
 assert.doesNotMatch(halloween, /innerHTML|insertAdjacentHTML|setAttribute\(\s*['"]style|cssText|eval\(|new Function/, 'Halloween mode builds nodes, never HTML strings or inline styles')
 assert.match(halloween, /prefers-reduced-motion: reduce/)
 assert.match(halloween, /samesite=lax/)
-assert.doesNotMatch(halloween, /localStorage|fetch\(|XMLHttpRequest|sendBeacon/, 'Halloween mode keeps one cookie and talks to nobody')
+assert.doesNotMatch(halloween, /localStorage|fetch\(|XMLHttpRequest|sendBeacon/, 'Halloween mode keeps its two cookies and talks to nobody')
 const halloweenCss = await source('nx-halloween.css')
 assert.doesNotMatch(await source('nx.css'), /data-halloween/, 'the Halloween theme stays out of nx.css, so it costs nothing out of season')
 assert.match(halloween, /blocking', 'render'/, 'the Halloween stylesheet blocks render, so there is no flash of the normal theme')
@@ -174,6 +174,22 @@ for (const query of ['prefers-reduced-motion: reduce', 'forced-colors: active', 
 for (const build of ['scripts/build-main-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-accounts-site.mjs']) {
   assert.match(await source(build), /nx-halloween\.js/, `${build} ships nx-halloween.js`)
   assert.match(await source(build), /nx-halloween\.css/, `${build} ships nx-halloween.css`)
+  assert.match(await source(build), /nx-halloween-themes\.css/, `${build} ships nx-halloween-themes.css`)
+}
+
+// Halloween palettes come from RoachNet's themes: the picker in nx-halloween.js
+// lists exactly the themes the generator turns into tokens, in the same order,
+// and the effects CSS uses the tokens rather than fixed pumpkin colors.
+{
+  const { themeList } = await import('../scripts/build-halloween-themes.mjs')
+  const listed = [...halloween.matchAll(/\{ slug: '([a-z-]+)', name: '([^']+)' \}/g)].map((match) => ({ slug: match[1], name: match[2] }))
+  assert.deepEqual(listed, themeList().map(({ slug, name }) => ({ slug, name })), 'the palette picker matches the generated themes')
+  assert.equal(themeList()[0].slug, 'pumpkin-patch', "the default palette is the app's built-in Pumpkin Patch")
+  assert.doesNotMatch(halloweenCss, /--nx-bg:/, 'nx-halloween.css sets no palette of its own')
+  assert.doesNotMatch(halloweenCss, /rgba\(255, 138, 31/, 'nx-halloween.css follows --nx-signal instead of a fixed orange')
+  const themesCss = await source('nx-halloween-themes.css')
+  for (const { slug } of themeList()) assert.match(themesCss, new RegExp(`data-halloween-theme="${slug}"`), `${slug} has tokens`)
+  assert.match(halloween, /rn_halloween_theme/)
 }
 
 // The landing download is a plain navigation handed to Home, not a hidden iframe

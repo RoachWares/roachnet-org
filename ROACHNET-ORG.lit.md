@@ -997,7 +997,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="nx-overline">RoachNet Account · optional</p>
           <h1 class="nx-display ac-title" id="account-title">The small stuff travels. <span class="nx-accent">The rest stays home.</span></h1>
           <p class="nx-lede">
-            You don't need an account to use RoachNet. Make one and it keeps your RoachClaw web conversations, the apps you save in the store and a short list of the devices you signed in from. Your models, vault and files never leave your Mac.
+            You don't need an account to use RoachNet. Make one and it keeps your RoachClaw web conversations, the apps you save in the store and a short list of the devices you signed in from. Your models, vault and files stay on your Mac, and the account never holds them.
           </p>
           <div class="nx-actions">
             <a class="nx-btn nx-btn--primary" href="https://roachnet.org/roachclaw/">Open RoachClaw on the web</a>
@@ -7840,6 +7840,59 @@ This root is reconciled byte-for-byte from the current production source.
         </div>
       </section>
 
+      <section class="why-section why-section--principles" id="principles" data-reveal aria-labelledby="principles-title">
+        <div class="why-section__inner">
+          <h2 class="why-heading" id="principles-title">What RoachNet stands for</h2>
+          <p class="why-prose">
+            Seven promises about how RoachNet is built. Each one is something
+            you can check on your own Mac.
+          </p>
+        </div>
+        <ol class="why-principles">
+          <li class="why-principle nx-card" data-reveal>
+            <span class="why-principle__index" aria-hidden="true">01</span>
+            <h3>Your data stays in your custody</h3>
+            <p>Your files, models, chats and settings live on your Mac, in folders you can open in Finder, back up or move. RoachNet collects no analytics. It goes online to fetch what you ask for, and to check GitHub for its own updates.</p>
+          </li>
+          <li class="why-principle nx-card" data-reveal>
+            <span class="why-principle__index" aria-hidden="true">02</span>
+            <h3>Local first, offline first</h3>
+            <p>Downloaded models, the Vault, offline maps, saved archives and Dev Studio keep working with no internet at all. The network is for downloads and for the features you switch on.</p>
+          </li>
+          <li class="why-principle nx-card" data-reveal>
+            <span class="why-principle__index" aria-hidden="true">03</span>
+            <h3>AI that works for you</h3>
+            <p>Models run on your Mac&rsquo;s own GPU with RoachNet&rsquo;s engine, and agents in your Org work under the rules and approvals you set. A Claude or ChatGPT plan is an option you add with your own account, never a requirement.</p>
+          </li>
+          <li class="why-principle nx-card" data-reveal>
+            <span class="why-principle__index" aria-hidden="true">04</span>
+            <h3>Private by design</h3>
+            <p>What leaves your Mac is opt-in and labeled, like a RoachNet account, web chat, or RoachTail between your own devices. The RoachNet API asks anything other than RoachNet for a token, and its local servers refuse requests from web pages.</p>
+          </li>
+          <li class="why-principle nx-card" data-reveal>
+            <span class="why-principle__index" aria-hidden="true">05</span>
+            <h3>Plays well with others</h3>
+            <p>The model server speaks the Ollama, OpenAI and Anthropic APIs, so the tools you already use can point at it. Your files stay ordinary files: Markdown, PDFs, GGUF models, ZIM archives.</p>
+          </li>
+          <li class="why-principle nx-card" data-reveal>
+            <span class="why-principle__index" aria-hidden="true">06</span>
+            <h3>Built to be extended</h3>
+            <p>Feature packs add what you need and leave out what you don&rsquo;t. Bring your own themes and agents, and build on <a href="https://roachnet.org/api/">the documented API</a>.</p>
+          </li>
+          <li class="why-principle nx-card" data-reveal>
+            <span class="why-principle__index" aria-hidden="true">07</span>
+            <h3>Your hardware, your call</h3>
+            <p>RoachNet runs on the Mac you have. With RoachNet Cluster, your other Macs can share a model too big for one, over your own network, paired with a code only you hold.</p>
+          </li>
+        </ol>
+        <div class="why-section__inner">
+          <p class="why-prose why-principles__note">
+            If RoachNet ever falls short of one of these, that&rsquo;s a bug.
+            <a href="https://github.com/RoachWares/RoachNet/issues" target="_blank" rel="noreferrer">Tell us on GitHub</a>.
+          </p>
+        </div>
+      </section>
+
       <section class="why-section why-section--final" data-reveal>
         <div class="why-section__inner">
           <p class="why-final-line">
@@ -8162,7 +8215,7 @@ This root is reconciled byte-for-byte from the current production source.
           <article class="nx-card nx-reveal" role="listitem">
             <p class="nx-card__eyebrow">Nobody in the middle</p>
             <h3 class="nx-card__title">Phone and Mac talk over your own network.</h3>
-            <p class="nx-card__body">No RoachNet server, no account, no relay.</p>
+            <p class="nx-card__body">No RoachNet server and no account in between. If you add a relay, it&rsquo;s one you run.</p>
           </article>
         </div>
       </section>
@@ -9175,8 +9228,8 @@ This root is reconciled byte-for-byte from the current production source.
   --nx-gutter: clamp(16px, 4vw, 40px);
   --nx-shadow-card: 0 18px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.055);
   --nx-shadow-capsule: 0 20px 58px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.09);
-  --nx-shadow-primary: 0 12px 32px rgba(145, 56, 216, 0.35);
-  --nx-glow-signal: 0 0 24px rgba(54, 255, 132, 0.12), inset 0 0 0 1px rgba(54, 255, 132, 0.22);
+  --nx-shadow-primary: 0 12px 32px color-mix(in srgb, var(--nx-purple) 35%, transparent);
+  --nx-glow-signal: 0 0 24px color-mix(in srgb, var(--nx-signal) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--nx-signal) 22%, transparent);
   --nx-gradient-signal: linear-gradient(90deg, var(--nx-purple) 0%, var(--nx-blue) 50%, var(--nx-signal) 100%);
   --nx-mx: 50%;
   --nx-my: 50%;
@@ -9215,7 +9268,7 @@ html.nx body::after {
 }
 
 html.nx ::selection {
-  background: rgba(145, 56, 216, 0.45);
+  background: color-mix(in srgb, var(--nx-purple) 45%, transparent);
   color: #fff;
 }
 
@@ -9306,7 +9359,7 @@ html.nx .rn-skip-link:focus-visible {
 .nx-atmos__blob--purple {
   top: -28vmax;
   left: -16vmax;
-  background: radial-gradient(circle, rgba(145, 56, 216, 0.42), transparent 62%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--nx-purple) 42%, transparent), transparent 62%);
   animation: nx-drift-a 34s ease-in-out infinite alternate;
 }
 
@@ -9320,14 +9373,14 @@ html.nx .rn-skip-link:focus-visible {
 .nx-atmos__blob--signal {
   bottom: -30vmax;
   left: 24vmax;
-  background: radial-gradient(circle, rgba(54, 255, 132, 0.16), transparent 60%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--nx-signal) 16%, transparent), transparent 60%);
   animation: nx-drift-c 51s ease-in-out infinite alternate;
 }
 
 .nx-atmos__scan {
   position: absolute;
   inset: -20% 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(72, 230, 255, 0.05) 48%, rgba(72, 230, 255, 0.11) 50%, rgba(72, 230, 255, 0.05) 52%, transparent 100%);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--nx-cyan) 5%, transparent) 48%, color-mix(in srgb, var(--nx-cyan) 11%, transparent) 50%, color-mix(in srgb, var(--nx-cyan) 5%, transparent) 52%, transparent 100%);
   background-size: 100% 36%;
   background-repeat: no-repeat;
   animation: nx-scan 18s linear infinite;
@@ -9450,7 +9503,7 @@ html.nx .rn-skip-link:focus-visible {
   position: absolute;
   inset: -5px;
   border-radius: 50%;
-  border: 1px solid rgba(54, 255, 132, 0.6);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 60%, transparent);
   animation: nx-ping 2.4s var(--nx-ease) infinite;
 }
 
@@ -9487,7 +9540,7 @@ html.nx .rn-skip-link:focus-visible {
   height: calc(100% - 6px);
   width: 0;
   border-radius: 999px;
-  background: rgba(54, 255, 132, 0.14);
+  background: color-mix(in srgb, var(--nx-signal) 14%, transparent);
   box-shadow: var(--nx-glow-signal);
   opacity: 0;
   transition: transform 420ms var(--nx-spring), width 420ms var(--nx-spring), opacity 200ms ease;
@@ -9522,7 +9575,7 @@ html.nx .rn-skip-link:focus-visible {
 }
 
 .nx-nav__links:not(.has-ind) .nx-nav__link.is-current {
-  background: rgba(54, 255, 132, 0.14);
+  background: color-mix(in srgb, var(--nx-signal) 14%, transparent);
   box-shadow: var(--nx-glow-signal);
 }
 
@@ -9548,8 +9601,8 @@ html.nx .rn-skip-link:focus-visible {
 
 .nx-nav__ghost.is-current {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.34);
-  background: rgba(54, 255, 132, 0.1);
+  border-color: color-mix(in srgb, var(--nx-signal) 34%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 10%, transparent);
   box-shadow: var(--nx-glow-signal);
 }
 
@@ -9563,7 +9616,7 @@ html.nx .rn-skip-link:focus-visible {
   color: #fff;
   background: var(--nx-purple);
   border-color: transparent;
-  box-shadow: 0 8px 22px rgba(145, 56, 216, 0.35);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--nx-purple) 35%, transparent);
 }
 
 .nx-nav__cta:hover {
@@ -9660,7 +9713,7 @@ html.nx .rn-skip-link:focus-visible {
   .nx-nav__ind { display: none; }
 
   .nx-nav__links .nx-nav__link.is-current {
-    background: rgba(54, 255, 132, 0.14);
+    background: color-mix(in srgb, var(--nx-signal) 14%, transparent);
     box-shadow: var(--nx-glow-signal);
   }
 }
@@ -9919,14 +9972,14 @@ html.nx .rn-skip-link:focus-visible {
 
 .nx-btn--primary:hover {
   background: linear-gradient(180deg, #ad5cf0 0%, #9a40e2 100%);
-  box-shadow: 0 16px 40px rgba(145, 56, 216, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--nx-purple) 48%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .nx-btn--signal {
   color: var(--nx-on-signal);
   background: var(--nx-signal);
   border-color: transparent;
-  box-shadow: 0 12px 32px rgba(54, 255, 132, 0.25);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--nx-signal) 25%, transparent);
 }
 
 .nx-btn--mono {
@@ -9991,7 +10044,7 @@ html.nx .rn-skip-link:focus-visible {
   z-index: -1;
   border-radius: inherit;
   padding: 1px;
-  background: radial-gradient(300px circle at var(--nx-mx) var(--nx-my), rgba(54, 255, 132, 0.55), rgba(145, 56, 216, 0.35) 40%, transparent 70%);
+  background: radial-gradient(300px circle at var(--nx-mx) var(--nx-my), color-mix(in srgb, var(--nx-signal) 55%, transparent), color-mix(in srgb, var(--nx-purple) 35%, transparent) 40%, transparent 70%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -10071,12 +10124,12 @@ html.nx .rn-skip-link:focus-visible {
 .nx-card--feature {
   padding: clamp(24px, 3vw, 36px);
   background:
-    radial-gradient(520px circle at var(--nx-mx) var(--nx-my), rgba(145, 56, 216, 0.16), transparent 46%),
+    radial-gradient(520px circle at var(--nx-mx) var(--nx-my), color-mix(in srgb, var(--nx-purple) 16%, transparent), transparent 46%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
 }
 
 .nx-card--signal {
-  border-color: rgba(54, 255, 132, 0.22);
+  border-color: color-mix(in srgb, var(--nx-signal) 22%, transparent);
   box-shadow: var(--nx-glow-signal), var(--nx-shadow-card);
 }
 
@@ -10087,8 +10140,8 @@ html.nx .rn-skip-link:focus-visible {
   height: 44px;
   border-radius: 12px;
   color: var(--nx-signal);
-  background: rgba(54, 255, 132, 0.08);
-  border: 1px solid rgba(54, 255, 132, 0.18);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 18%, transparent);
 }
 
 .nx-card__icon svg { width: 22px; height: 22px; }
@@ -10131,8 +10184,8 @@ html.nx .rn-skip-link:focus-visible {
 
 .nx-chip--live {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.3);
-  background: rgba(54, 255, 132, 0.08);
+  border-color: color-mix(in srgb, var(--nx-signal) 30%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
 }
 
 .nx-chip--live::before {
@@ -10145,7 +10198,7 @@ html.nx .rn-skip-link:focus-visible {
 }
 
 .nx-chip--amber { color: var(--nx-amber); border-color: rgba(255, 154, 69, 0.3); background: rgba(255, 154, 69, 0.08); }
-.nx-chip--purple { color: var(--nx-purple-ink); border-color: rgba(176, 108, 240, 0.3); background: rgba(145, 56, 216, 0.1); }
+.nx-chip--purple { color: var(--nx-purple-ink); border-color: rgba(176, 108, 240, 0.3); background: color-mix(in srgb, var(--nx-purple) 10%, transparent); }
 
 /* --------------------------------------------------------------------------
    Hero
@@ -10254,7 +10307,7 @@ html.nx .rn-skip-link:focus-visible {
   position: absolute;
   inset: 10% -10% -20%;
   z-index: -1;
-  background: radial-gradient(60% 60% at 50% 60%, rgba(145, 56, 216, 0.35), transparent 70%);
+  background: radial-gradient(60% 60% at 50% 60%, color-mix(in srgb, var(--nx-purple) 35%, transparent), transparent 70%);
   filter: blur(40px);
   pointer-events: none;
 }
@@ -10391,7 +10444,7 @@ html.nx .rn-skip-link:focus-visible {
   font: 500 12px/1 var(--nx-font-mono);
 }
 
-.nx-status li[data-state="online"] { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.3); }
+.nx-status li[data-state="online"] { color: var(--nx-signal); border-color: color-mix(in srgb, var(--nx-signal) 30%, transparent); }
 .nx-status li[data-state="offline"] { color: var(--nx-amber); border-color: rgba(255, 154, 69, 0.3); }
 .nx-status li[data-state="pending"] { color: var(--nx-cyan); }
 
@@ -10543,7 +10596,7 @@ html.nx .rn-skip-link:focus-visible {
 
 .nx-key.is-down {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.5);
+  border-color: color-mix(in srgb, var(--nx-signal) 50%, transparent);
 }
 
 .nx-steps {
@@ -10604,7 +10657,7 @@ html.nx .rn-skip-link:focus-visible {
 }
 
 .nx-step.is-active {
-  border-color: rgba(54, 255, 132, 0.3);
+  border-color: color-mix(in srgb, var(--nx-signal) 30%, transparent);
   box-shadow: var(--nx-glow-signal);
 }
 
@@ -10618,7 +10671,7 @@ html.nx .rn-skip-link:focus-visible {
   border-radius: var(--nx-r-2xl);
   border: 1px solid var(--nx-border);
   background:
-    radial-gradient(80% 120% at 50% 120%, rgba(145, 56, 216, 0.22), transparent 60%),
+    radial-gradient(80% 120% at 50% 120%, color-mix(in srgb, var(--nx-purple) 22%, transparent), transparent 60%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
   text-align: center;
   overflow: hidden;
@@ -10634,7 +10687,7 @@ html.nx .rn-skip-link:focus-visible {
   height: 2px;
   transform: translateX(-50%);
   background: var(--nx-gradient-signal);
-  filter: drop-shadow(0 0 10px rgba(54, 255, 132, 0.6));
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--nx-signal) 60%, transparent));
 }
 
 .nx-callout {
@@ -10651,8 +10704,8 @@ html.nx .rn-skip-link:focus-visible {
   line-height: 1.55;
 }
 
-.nx-callout--signal { border-color: rgba(54, 255, 132, 0.28); background: rgba(54, 255, 132, 0.06); }
-.nx-callout--purple { border-color: rgba(176, 108, 240, 0.32); background: rgba(145, 56, 216, 0.09); }
+.nx-callout--signal { border-color: color-mix(in srgb, var(--nx-signal) 28%, transparent); background: color-mix(in srgb, var(--nx-signal) 6%, transparent); }
+.nx-callout--purple { border-color: rgba(176, 108, 240, 0.32); background: color-mix(in srgb, var(--nx-purple) 9%, transparent); }
 
 .nx-callout strong { color: var(--nx-text); }
 
@@ -10699,7 +10752,7 @@ html.nx .rn-skip-link:focus-visible {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 40px rgba(145, 56, 216, 0.45));
+  filter: drop-shadow(0 0 40px color-mix(in srgb, var(--nx-purple) 45%, transparent));
   user-select: none;
 }
 
@@ -10803,8 +10856,8 @@ html.nx .rn-skip-link:focus-visible {
   min-height: 30px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(54, 255, 132, 0.3);
-  background: rgba(54, 255, 132, 0.08);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 30%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
   color: var(--nx-signal);
   font: 700 12px/1 var(--nx-font-mono);
   transition: box-shadow 200ms ease, transform 200ms var(--nx-ease);
@@ -10867,7 +10920,7 @@ html.nx.nx-no-observer .nx-reveal {
   padding: 12px 18px;
   border-radius: 999px;
   background: rgba(8, 9, 14, 0.92);
-  border: 1px solid rgba(54, 255, 132, 0.35);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 35%, transparent);
   box-shadow: var(--nx-shadow-capsule), var(--nx-glow-signal);
   color: var(--nx-text);
   font: 600 13.5px/1 var(--nx-font-sans);
@@ -10893,7 +10946,7 @@ html.nx.nx-no-observer .nx-reveal {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid rgba(54, 255, 132, 0.7);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 70%, transparent);
   pointer-events: none;
   transform: translate(-50%, -50%) translate3d(var(--nx-cx, -100px), var(--nx-cy, -100px), 0) scale(var(--nx-cs, 1));
   transition: transform 90ms linear, opacity 200ms ease, border-color 200ms ease;
@@ -11025,7 +11078,7 @@ button.nx-card {
 
 /* 404 */
 .nx-404 { min-height: calc(100vh - 160px); display: grid; place-items: center; text-align: center; padding: 48px 0; }
-.nx-404__code { display: block; font: 800 clamp(96px, 22vw, 240px)/0.9 var(--nx-font-mono); letter-spacing: -0.08em; background: linear-gradient(180deg, #d7b4ff, var(--nx-purple) 60%, #2a0f45); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 40px rgba(145, 56, 216, 0.4)); }
+.nx-404__code { display: block; font: 800 clamp(96px, 22vw, 240px)/0.9 var(--nx-font-mono); letter-spacing: -0.08em; background: linear-gradient(180deg, #d7b4ff, var(--nx-purple) 60%, #2a0f45); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 40px color-mix(in srgb, var(--nx-purple) 40%, transparent)); }
 
 /* Phones: let long commands wrap instead of hiding behind a sideways scroll. */
 @media (max-width: 640px) {
@@ -11428,10 +11481,14 @@ This root is reconciled byte-for-byte from the current production source.
 // the DOM. Out of season the script returns at once and loads nothing.
 //
 // The switch is offered from 1 October to 2 November and starts on from
-// 24 October to 1 November. A visitor's choice is kept in one first-party cookie
-// shared by the roachnet.org hosts (rn_halloween=on|off, 45 days); nothing else is
-// stored or sent anywhere. ?halloween=on|off sets it from a link, and
-// ?halloween=on previews the theme out of season without saving anything.
+// 24 October to 1 November. A visitor's choices are kept in two first-party
+// cookies shared by the roachnet.org hosts (rn_halloween=on|off and
+// rn_halloween_theme=<palette>, 45 days); nothing else is stored or sent
+// anywhere. ?halloween=on|off and ?halloween-theme=<palette> set them from a
+// link, and ?halloween=on previews the theme out of season without saving anything.
+//
+// The palettes are RoachNet's Halloween themes, the same ones the app offers;
+// the effects layer (moon, bats, fog, webs, the spider) is the same for all of them.
 //
 // CSP: no inline script or style. Styles change through classes, attributes and
 // CSSOM only. Motion stands down under prefers-reduced-motion, while the tab is
@@ -11448,28 +11505,56 @@ This root is reconciled byte-for-byte from the current production source.
   var inSeason = month === 9 || (month === 10 && day <= 2)
   var startsOn = (month === 9 && day >= 24) || (month === 10 && day <= 1)
 
+  // The palettes are RoachNet's own Halloween themes (the app's Pumpkin Patch and
+  // the Halloween Collection pack), turned into these sites' tokens by
+  // scripts/build-halloween-themes.mjs. Keep this list in step with that script;
+  // test/site-outcomes.mjs checks it.
+  var themes = [
+    { slug: 'pumpkin-patch', name: 'Pumpkin Patch' },
+    { slug: 'witch-light', name: 'Witch Light' },
+    { slug: 'hollow-moon', name: 'Hollow Moon' },
+    { slug: 'haunted-static', name: 'Haunted Static' },
+  ]
+  var themeCookie = 'rn_halloween_theme'
+  function knownTheme(slug) {
+    for (var i = 0; i < themes.length; i += 1) if (themes[i].slug === slug) return themes[i]
+    return null
+  }
+
   var asked = null
+  var askedTheme = null
   try {
-    asked = new URLSearchParams(window.location.search).get('halloween')
+    var params = new URLSearchParams(window.location.search)
+    asked = params.get('halloween')
+    askedTheme = params.get('halloween-theme')
   } catch (error) {
     asked = null
   }
   if (asked !== 'on' && asked !== 'off') asked = null
+  if (!knownTheme(askedTheme)) askedTheme = null
   if (!inSeason && asked !== 'on') return
 
-  // The stylesheet loads only while the switch is offered, next to this script.
-  // blocking="render" keeps Chromium from painting before it arrives; WebKit
-  // already waits for stylesheets added to <head> before the body.
+  // The stylesheets load only while the switch is offered, next to this script:
+  // the palettes first, then the effects that use them. blocking="render" keeps
+  // Chromium from painting before they arrive; WebKit already waits for
+  // stylesheets added to <head> before the body.
   var script = document.currentScript
   try {
-    var sheet = document.createElement('link')
-    sheet.rel = 'stylesheet'
-    sheet.href = new URL('nx-halloween.css', script && script.src ? script.src : window.location.href).href
-    sheet.setAttribute('blocking', 'render')
-    if (script && script.parentNode) script.parentNode.insertBefore(sheet, script.nextSibling)
-    else document.head.appendChild(sheet)
+    var anchor = script && script.parentNode ? script : null
+    ;['nx-halloween-themes.css', 'nx-halloween.css'].forEach(function (file) {
+      var sheet = document.createElement('link')
+      sheet.rel = 'stylesheet'
+      sheet.href = new URL(file, script && script.src ? script.src : window.location.href).href
+      sheet.setAttribute('blocking', 'render')
+      if (anchor) {
+        anchor.parentNode.insertBefore(sheet, anchor.nextSibling)
+        anchor = sheet
+      } else {
+        document.head.appendChild(sheet)
+      }
+    })
   } catch (error) {
-    // Without the stylesheet the switch still works; it just looks plain.
+    // Without the stylesheets the switch still works; it just looks plain.
   }
 
   function readChoice() {
@@ -11481,25 +11566,41 @@ This root is reconciled byte-for-byte from the current production source.
     }
   }
 
-  function saveChoice(value) {
+  function saveCookie(name, value) {
     if (!inSeason) return
     try {
       var shared = /(^|\.)roachnet\.org$/.test(window.location.hostname) ? '; domain=roachnet.org' : ''
       var secure = window.location.protocol === 'https:' ? '; secure' : ''
       document.cookie =
-        cookieName + '=' + value + '; max-age=' + cookieDays * 86400 + '; path=/; samesite=lax' + shared + secure
+        name + '=' + value + '; max-age=' + cookieDays * 86400 + '; path=/; samesite=lax' + shared + secure
     } catch (error) {
       // Cookies blocked: the switch still works for this page view.
     }
   }
+  function saveChoice(value) {
+    saveCookie(cookieName, value)
+  }
+
+  function readTheme() {
+    try {
+      var match = document.cookie.match(/(?:^|;\s*)rn_halloween_theme=([a-z-]+)(?:;|$)/)
+      return match && knownTheme(match[1]) ? match[1] : null
+    } catch (error) {
+      return null
+    }
+  }
 
   if (asked) saveChoice(asked)
+  if (askedTheme) saveCookie(themeCookie, askedTheme)
   var choice = asked || readChoice()
   var on = choice ? choice === 'on' : startsOn
+  var theme = askedTheme || readTheme() || themes[0].slug
+  root.setAttribute('data-halloween-theme', theme)
 
   var themeMeta = null
   var normalThemeColor = ''
   var switches = []
+  var pickers = []
   var layer = null
   var moon = null
   var spider = null
@@ -11511,11 +11612,31 @@ This root is reconciled byte-for-byte from the current production source.
     return !reduced.matches
   }
 
+  function paletteBackground() {
+    try {
+      return getComputedStyle(root).getPropertyValue('--nx-bg').trim() || '#110904'
+    } catch (error) {
+      return '#110904'
+    }
+  }
+
+  function applyTheme(slug) {
+    theme = slug
+    root.setAttribute('data-halloween-theme', slug)
+    if (themeMeta && on) themeMeta.setAttribute('content', paletteBackground())
+    pickers.forEach(function (picker) {
+      picker.value = slug
+    })
+  }
+
   function apply(state) {
     on = state
     if (state) root.setAttribute('data-halloween', 'on')
     else root.removeAttribute('data-halloween')
-    if (themeMeta) themeMeta.setAttribute('content', state ? '#070409' : normalThemeColor)
+    if (themeMeta) themeMeta.setAttribute('content', state ? paletteBackground() : normalThemeColor)
+    pickers.forEach(function (picker) {
+      picker.parentNode.hidden = !state
+    })
     switches.forEach(function (control) {
       control.setAttribute('aria-pressed', String(state))
       var label = control.querySelector('[data-spook-label]')
@@ -11781,6 +11902,35 @@ This root is reconciled byte-for-byte from the current production source.
     return control
   }
 
+  // The palette picker sits beside the footer switch while Halloween mode is on.
+  function makePicker() {
+    var label = document.createElement('label')
+    label.className = 'nx-spook-palette'
+    var text = document.createElement('span')
+    text.className = 'nx-spook-palette__label'
+    text.textContent = 'Palette'
+    var picker = document.createElement('select')
+    picker.className = 'nx-spook-palette__select'
+    themes.forEach(function (item) {
+      var option = document.createElement('option')
+      option.value = item.slug
+      option.textContent = item.name
+      picker.appendChild(option)
+    })
+    picker.value = theme
+    picker.addEventListener('change', function () {
+      var next = knownTheme(picker.value)
+      if (!next) return
+      saveCookie(themeCookie, next.slug)
+      applyTheme(next.slug)
+      announce('Palette: ' + next.name + '.')
+    })
+    label.appendChild(text)
+    label.appendChild(picker)
+    pickers.push(picker)
+    return label
+  }
+
   function mount() {
     themeMeta = document.querySelector('meta[name="theme-color"]')
     normalThemeColor = themeMeta ? themeMeta.getAttribute('content') || '#05060a' : '#05060a'
@@ -11788,7 +11938,10 @@ This root is reconciled byte-for-byte from the current production source.
     var actions = document.querySelector('.nx-nav__actions')
     if (actions) actions.insertBefore(makeSwitch('nav'), actions.firstChild)
     var meta = document.querySelector('.nx-foot__meta-group')
-    if (meta) meta.appendChild(makeSwitch('foot'))
+    if (meta) {
+      meta.appendChild(makeSwitch('foot'))
+      meta.appendChild(makePicker())
+    }
 
     liveRegion = span('nx-spook-sr')
     liveRegion.setAttribute('role', 'status')
@@ -11828,84 +11981,67 @@ This root is reconciled byte-for-byte from the current production source.
    Pumpkin orange takes the signal role, slime green the cyan, witch purple stays.
    ========================================================================== */
 
-html[data-halloween="on"] {
-  --nx-bg: #070409;
-  --nx-bg-raised: #0c060f;
-  --nx-panel: #0f0913;
-  --nx-panel-raised: #170d1c;
-  --nx-panel-soft: #211327;
-  --nx-border: rgba(255, 200, 160, 0.09);
-  --nx-border-strong: rgba(255, 170, 110, 0.18);
-  --nx-signal: #ff8a1f;
-  --nx-signal-deep: #2a1104;
-  --nx-on-signal: #1a0800;
-  --nx-purple: #8f3bdc;
-  --nx-purple-ink: #c592ff;
-  --nx-cyan: #b9ff5a;
-  --nx-amber: #ffb547;
-  --nx-glow-signal: 0 0 26px rgba(255, 138, 31, 0.16), inset 0 0 0 1px rgba(255, 138, 31, 0.3);
-  --nx-shadow-primary: 0 12px 32px rgba(255, 110, 20, 0.3);
-  --nx-gradient-signal: linear-gradient(90deg, #8f3bdc 0%, #ff8a1f 55%, #b9ff5a 100%);
-}
+/* The palette (the --nx-* tokens) comes from nx-halloween-themes.css, generated from
+   RoachNet's Halloween themes; everything below follows those tokens. */
 
-html[data-halloween="on"] .nx-atmos__blob--purple { background: radial-gradient(circle, rgba(143, 59, 220, 0.46), transparent 62%); }
-html[data-halloween="on"] .nx-atmos__blob--blue { background: radial-gradient(circle, rgba(255, 112, 16, 0.22), transparent 62%); }
-html[data-halloween="on"] .nx-atmos__blob--signal { background: radial-gradient(circle, rgba(160, 255, 70, 0.1), transparent 60%); }
+html[data-halloween="on"] .nx-atmos__blob--purple { background: radial-gradient(circle, color-mix(in srgb, var(--nx-purple) 46%, transparent), transparent 62%); }
+html[data-halloween="on"] .nx-atmos__blob--blue { background: radial-gradient(circle, color-mix(in srgb, var(--nx-signal) 22%, transparent), transparent 62%); }
+html[data-halloween="on"] .nx-atmos__blob--signal { background: radial-gradient(circle, color-mix(in srgb, var(--nx-cyan) 10%, transparent), transparent 60%); }
 html[data-halloween="on"] .nx-atmos__scan { opacity: 0.3; }
 
-html[data-halloween="on"] .nx-nav__bar { background: rgba(12, 6, 14, 0.76); }
+html[data-halloween="on"] .nx-nav__bar { background: color-mix(in srgb, var(--nx-bg-raised) 76%, transparent); }
 html[data-halloween="on"] .nx-nav__dot {
-  background: #ff8a1f;
-  box-shadow: 0 0 10px #ff8a1f, 0 0 2px #ffd27a;
+  background: var(--nx-signal);
+  box-shadow: 0 0 10px var(--nx-signal), 0 0 2px var(--nx-amber);
   animation: nx-spook-candle-dot 5s steps(1, end) infinite;
 }
-html[data-halloween="on"] .nx-nav__dot::after { border-color: rgba(255, 138, 31, 0.6); }
+html[data-halloween="on"] .nx-nav__dot::after { border-color: color-mix(in srgb, var(--nx-signal) 60%, transparent); }
 html[data-halloween="on"] .nx-nav__ind,
 html[data-halloween="on"] .nx-nav__links:not(.has-ind) .nx-nav__link.is-current {
-  background: rgba(255, 138, 31, 0.14);
+  background: color-mix(in srgb, var(--nx-signal) 14%, transparent);
 }
 html[data-halloween="on"] .nx-nav__ghost.is-current {
-  border-color: rgba(255, 138, 31, 0.34);
-  background: rgba(255, 138, 31, 0.1);
+  border-color: color-mix(in srgb, var(--nx-signal) 34%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 10%, transparent);
 }
 html[data-halloween="on"] .nx-nav__cta {
-  color: #1a0800;
-  background: #ff7a12;
-  box-shadow: 0 8px 22px rgba(255, 110, 20, 0.32);
+  color: var(--nx-on-signal);
+  background: var(--nx-signal);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--nx-signal) 32%, transparent);
 }
-html[data-halloween="on"] .nx-nav__cta:hover { background: #ff9238; }
+html[data-halloween="on"] .nx-nav__cta:hover { background: color-mix(in srgb, var(--nx-signal), white 16%); }
 
 @media (max-width: 860px) {
-  html[data-halloween="on"] .nx-nav__links .nx-nav__link.is-current { background: rgba(255, 138, 31, 0.14); }
+  html[data-halloween="on"] .nx-nav__links .nx-nav__link.is-current { background: color-mix(in srgb, var(--nx-signal) 14%, transparent); }
 }
 
 html[data-halloween="on"] .nx-btn--primary {
-  color: #1a0800;
-  background: linear-gradient(180deg, #ffab55 0%, #ff7a12 100%);
-  border-color: rgba(255, 220, 170, 0.32);
+  color: var(--nx-on-signal);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nx-signal), white 26%) 0%, var(--nx-signal) 100%);
+  border-color: color-mix(in srgb, var(--nx-signal), white 70%);
 }
 html[data-halloween="on"] .nx-btn--primary:hover {
-  background: linear-gradient(180deg, #ffbb70 0%, #ff8a26 100%);
-  box-shadow: 0 16px 40px rgba(255, 110, 20, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nx-signal), white 36%) 0%, color-mix(in srgb, var(--nx-signal), white 8%) 100%);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--nx-signal) 42%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
-html[data-halloween="on"] .nx-btn--signal { box-shadow: 0 12px 32px rgba(255, 138, 31, 0.25); }
+html[data-halloween="on"] .nx-btn--signal { box-shadow: 0 12px 32px color-mix(in srgb, var(--nx-signal) 25%, transparent); }
 
-html[data-halloween="on"] .nx-display { text-shadow: 0 0 28px rgba(255, 128, 24, 0.26), 0 0 2px rgba(255, 210, 122, 0.2); }
+html[data-halloween="on"] .nx-display { text-shadow: 0 0 28px color-mix(in srgb, var(--nx-signal) 26%, transparent), 0 0 2px color-mix(in srgb, var(--nx-amber) 20%, transparent); }
 html[data-halloween="on"] .nx-accent {
-  background-image: linear-gradient(92deg, #c592ff 0%, #ff8a1f 48%, #ffc36b 74%, #b9ff5a 100%);
+  background-image: linear-gradient(92deg, var(--nx-purple-ink) 0%, var(--nx-signal) 48%, var(--nx-amber) 74%, var(--nx-cyan) 100%);
   text-shadow: none;
-  filter: drop-shadow(0 0 14px rgba(255, 138, 31, 0.28));
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--nx-signal) 28%, transparent));
 }
 
 html[data-halloween="on"] .nx-foot__word {
-  background: linear-gradient(180deg, #ffd9a0 0%, #ff8a1f 52%, #3b1405 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nx-signal), white 60%) 0%, var(--nx-signal) 52%, color-mix(in srgb, var(--nx-signal), black 78%) 100%);
   -webkit-background-clip: text;
   background-clip: text;
 }
 
-html[data-halloween="on"] .nx-toast { border-color: rgba(255, 138, 31, 0.4); }
-html[data-halloween="on"] .nx-cursor { border-color: rgba(255, 138, 31, 0.7); }
-html[data-halloween="on"] ::selection { background: rgba(255, 138, 31, 0.36); color: #fff; }
+html[data-halloween="on"] .nx-toast { border-color: color-mix(in srgb, var(--nx-signal) 40%, transparent); }
+html[data-halloween="on"] .nx-cursor { border-color: color-mix(in srgb, var(--nx-signal) 70%, transparent); }
+html[data-halloween="on"] ::selection { background: color-mix(in srgb, var(--nx-signal) 36%, transparent); color: #fff; }
 
 /* The switches: a pumpkin in the nav, a labelled pill in the footer. */
 
@@ -11933,10 +12069,33 @@ html[data-halloween="on"] ::selection { background: rgba(255, 138, 31, 0.36); co
 
 .nx-spook-switch[aria-pressed="true"] {
   color: var(--nx-text);
-  border-color: rgba(255, 138, 31, 0.45);
-  background: rgba(255, 138, 31, 0.1);
-  box-shadow: 0 0 18px rgba(255, 138, 31, 0.16);
+  border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 10%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--nx-signal) 16%, transparent);
 }
+
+/* The palette picker: the app's Halloween themes, next to the footer switch. */
+.nx-spook-palette {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  color: var(--nx-soft);
+  font: 500 12px/1 var(--nx-font-sans);
+}
+.nx-spook-palette[hidden] { display: none; }
+.nx-spook-palette__select {
+  min-height: 28px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--nx-border-strong);
+  border-radius: 999px;
+  background-color: var(--nx-panel);
+  color: var(--nx-text);
+  font: inherit;
+  cursor: pointer;
+}
+.nx-spook-palette__select:hover { border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent); }
+.nx-spook-palette__select:focus-visible { outline: 2px solid var(--nx-signal); outline-offset: 2px; }
 
 .nx-spook-pumpkin { display: block; flex: none; width: 18px; height: 18px; overflow: visible; }
 .nx-spook-pumpkin__body,
@@ -11982,9 +12141,9 @@ html[data-halloween="on"] ::selection { background: rgba(255, 138, 31, 0.36); co
   max-width: calc(100vw - 32px);
   padding: 10px 18px 10px 12px;
   border-radius: 999px;
-  background: rgba(14, 7, 16, 0.94);
-  border: 1px solid rgba(255, 138, 31, 0.45);
-  box-shadow: var(--nx-shadow-capsule), 0 0 30px rgba(255, 138, 31, 0.18);
+  background: color-mix(in srgb, var(--nx-bg) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 45%, transparent);
+  box-shadow: var(--nx-shadow-capsule), 0 0 30px color-mix(in srgb, var(--nx-signal) 18%, transparent);
   color: var(--nx-text);
   font: 600 13.5px/1.3 var(--nx-font-sans);
   transform: translate(-50%, 24px);
@@ -12001,7 +12160,7 @@ html[data-halloween="on"] ::selection { background: rgba(255, 138, 31, 0.36); co
    <html> so a negative layer can show at all. */
 
 html.nx[data-halloween="on"] { background: var(--nx-bg); }
-html.nx.nx-mission[data-halloween="on"] { background: #050207; }
+html.nx.nx-mission[data-halloween="on"] { background: color-mix(in srgb, var(--nx-bg), black 40%); }
 html.nx[data-halloween="on"] body { background: transparent; }
 
 .nx-spook {
@@ -12028,7 +12187,7 @@ html.nx[data-halloween="on"] body { background: transparent; }
     radial-gradient(circle at 63% 57%, rgba(150, 112, 50, 0.28) 0 13%, transparent 14%),
     radial-gradient(circle at 42% 72%, rgba(150, 112, 50, 0.22) 0 6%, transparent 7%),
     radial-gradient(circle at 38% 36%, #fff8e1 0%, #f5dc9b 46%, #d9ad55 100%);
-  box-shadow: 0 0 40px rgba(255, 214, 140, 0.32), 0 0 140px rgba(255, 160, 70, 0.16);
+  box-shadow: 0 0 40px rgba(255, 214, 140, 0.32), 0 0 140px color-mix(in srgb, var(--nx-signal) 16%, transparent);
   opacity: 0.88;
 }
 
@@ -12039,13 +12198,13 @@ html.nx[data-halloween="on"] body { background: transparent; }
   width: 240%;
   height: 26%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(24, 14, 30, 0.62), rgba(24, 14, 30, 0));
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nx-panel-soft) 62%, transparent), transparent);
   animation: nx-spook-cloud 30s linear infinite;
 }
 
 .nx-spook__web { position: absolute; width: clamp(120px, 15vw, 220px); aspect-ratio: 1; opacity: 0.6; }
 .nx-spook__web svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.nx-spook__web path { fill: none; stroke: rgba(236, 226, 255, 0.3); stroke-width: 0.9; vector-effect: non-scaling-stroke; }
+.nx-spook__web path { fill: none; stroke: color-mix(in srgb, var(--nx-text) 30%, transparent); stroke-width: 0.9; vector-effect: non-scaling-stroke; }
 .nx-spook__web--right { top: 0; right: 0; transform: scaleX(-1); }
 .nx-spook__web--left { bottom: 0; left: 0; transform: scaleY(-1); }
 
@@ -12063,7 +12222,7 @@ html.nx[data-halloween="on"] body { background: transparent; }
   width: 100%;
   height: auto;
   fill: currentColor;
-  filter: drop-shadow(0 0 1.5px rgba(255, 166, 80, 0.8)) drop-shadow(0 0 9px rgba(255, 120, 30, 0.28));
+  filter: drop-shadow(0 0 1.5px color-mix(in srgb, var(--nx-signal) 80%, transparent)) drop-shadow(0 0 9px color-mix(in srgb, var(--nx-signal) 28%, transparent));
 }
 .nx-spook__wings { display: block; transform-origin: 50% 40%; animation: nx-spook-flap 240ms ease-in-out infinite alternate; }
 .nx-spook__bat--1 { animation: nx-spook-fly-1 24s linear 2s infinite; }
@@ -12088,9 +12247,9 @@ html.nx[data-halloween="on"] body { background: transparent; }
   position: absolute;
   inset: 0 -40%;
   background:
-    radial-gradient(38% 60% at 22% 82%, rgba(176, 156, 210, 0.15), transparent 70%),
-    radial-gradient(34% 50% at 68% 92%, rgba(160, 140, 196, 0.13), transparent 70%),
-    radial-gradient(30% 44% at 46% 100%, rgba(255, 150, 70, 0.05), transparent 70%);
+    radial-gradient(38% 60% at 22% 82%, color-mix(in srgb, var(--nx-purple-ink) 15%, transparent), transparent 70%),
+    radial-gradient(34% 50% at 68% 92%, color-mix(in srgb, var(--nx-purple-ink) 13%, transparent), transparent 70%),
+    radial-gradient(30% 44% at 46% 100%, color-mix(in srgb, var(--nx-signal) 5%, transparent), transparent 70%);
   animation: nx-spook-drift 52s ease-in-out infinite alternate;
 }
 .nx-spook__fog-b { animation-duration: 71s; animation-direction: alternate-reverse; opacity: 0.8; }
@@ -12130,7 +12289,7 @@ html[data-halloween="on"] .nx-spook-ghost {
   bottom: 0;
   width: 1px;
   height: calc(var(--nx-spider-drop, 120px) + 120px);
-  background: linear-gradient(180deg, rgba(236, 226, 255, 0), rgba(236, 226, 255, 0.45));
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--nx-text) 45%, transparent));
 }
 .nx-spook-spider__bob {
   position: absolute;
@@ -12144,7 +12303,7 @@ html[data-halloween="on"] .nx-spook-ghost {
 .nx-spook-spider__bob svg { display: block; width: 100%; height: auto; overflow: visible; }
 .nx-spook-spider__legs { fill: none; stroke: #1b0d22; stroke-width: 1.5; stroke-linecap: round; }
 .nx-spook-spider__body { fill: #1b0d22; stroke: rgba(255, 150, 60, 0.5); stroke-width: 0.6; }
-.nx-spook-spider__eye { fill: #ff8a1f; }
+.nx-spook-spider__eye { fill: var(--nx-signal); }
 
 /* Lights out: a short flicker while the theme changes (two dips, well under the
    three-flashes-a-second limit, and skipped under reduced motion). */
@@ -12335,7 +12494,7 @@ This root is reconciled byte-for-byte from the current production source.
   border-radius: var(--nx-r-2xl);
   border: 1px solid var(--nx-border-strong);
   background:
-    radial-gradient(120% 70% at 100% 0%, rgba(145, 56, 216, 0.2), transparent 60%),
+    radial-gradient(120% 70% at 100% 0%, color-mix(in srgb, var(--nx-purple) 20%, transparent), transparent 60%),
     linear-gradient(180deg, rgba(16, 15, 24, 0.94), rgba(9, 10, 15, 0.94));
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   -webkit-backdrop-filter: blur(16px);
@@ -12406,10 +12565,10 @@ This root is reconciled byte-for-byte from the current production source.
   background: currentColor;
 }
 
-.ac-badge[data-state="loading"] { color: var(--nx-cyan); border-color: rgba(72, 230, 255, 0.3); }
+.ac-badge[data-state="loading"] { color: var(--nx-cyan); border-color: color-mix(in srgb, var(--nx-cyan) 30%, transparent); }
 .ac-badge[data-state="loading"]::before { animation: ac-pulse 1.2s ease-in-out infinite; }
-.ac-badge[data-state="ready"] { color: var(--nx-purple-ink); border-color: rgba(176, 108, 240, 0.38); background: rgba(145, 56, 216, 0.1); }
-.ac-badge[data-state="live"] { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.34); background: rgba(54, 255, 132, 0.08); }
+.ac-badge[data-state="ready"] { color: var(--nx-purple-ink); border-color: rgba(176, 108, 240, 0.38); background: color-mix(in srgb, var(--nx-purple) 10%, transparent); }
+.ac-badge[data-state="live"] { color: var(--nx-signal); border-color: color-mix(in srgb, var(--nx-signal) 34%, transparent); background: color-mix(in srgb, var(--nx-signal) 8%, transparent); }
 .ac-badge[data-state="live"]::before { box-shadow: 0 0 8px currentColor; }
 .ac-badge[data-state="disabled"] { color: var(--nx-amber); border-color: rgba(255, 154, 69, 0.34); background: rgba(255, 154, 69, 0.08); }
 
@@ -12454,9 +12613,9 @@ This root is reconciled byte-for-byte from the current production source.
   left: 4px;
   width: calc(50% - 4px);
   border-radius: 9px;
-  background: linear-gradient(180deg, rgba(160, 74, 232, 0.4), rgba(145, 56, 216, 0.26));
+  background: linear-gradient(180deg, rgba(160, 74, 232, 0.4), color-mix(in srgb, var(--nx-purple) 26%, transparent));
   border: 1px solid rgba(176, 108, 240, 0.45);
-  box-shadow: 0 8px 24px rgba(145, 56, 216, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--nx-purple) 28%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: transform 420ms var(--nx-spring);
   pointer-events: none;
 }
@@ -12521,13 +12680,13 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
   outline: 2px solid var(--nx-purple-ink);
   outline-offset: 1px;
   border-color: transparent;
-  box-shadow: 0 0 0 5px rgba(145, 56, 216, 0.2);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--nx-purple) 20%, transparent);
   background: rgba(0, 0, 0, 0.52);
 }
 
 .ac-field input:disabled { opacity: 0.6; cursor: not-allowed; }
 .ac-field.is-invalid input { border-color: rgba(255, 90, 54, 0.72); }
-.ac-field.is-valid input { border-color: rgba(54, 255, 132, 0.45); }
+.ac-field.is-valid input { border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent); }
 
 .ac-field__hint {
   margin: 0;
@@ -12595,7 +12754,7 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
 
 .ac-form__feedback:empty { display: none; }
 .ac-form__feedback[data-tone="error"] { color: #ffd0c4; border-color: rgba(255, 90, 54, 0.4); background: rgba(255, 90, 54, 0.08); }
-.ac-form__feedback[data-tone="live"] { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.3); background: rgba(54, 255, 132, 0.06); }
+.ac-form__feedback[data-tone="live"] { color: var(--nx-signal); border-color: color-mix(in srgb, var(--nx-signal) 30%, transparent); background: color-mix(in srgb, var(--nx-signal) 6%, transparent); }
 
 .ac-form__feedback[data-tone="confirm"] {
   display: grid;
@@ -12603,8 +12762,8 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
   gap: 12px;
   align-items: start;
   color: var(--nx-text);
-  border-color: rgba(54, 255, 132, 0.34);
-  background: rgba(54, 255, 132, 0.07);
+  border-color: color-mix(in srgb, var(--nx-signal) 34%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 7%, transparent);
   animation: ac-arrive 520ms var(--nx-ease) both;
 }
 
@@ -12615,7 +12774,7 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: rgba(54, 255, 132, 0.14);
+  background: color-mix(in srgb, var(--nx-signal) 14%, transparent);
   color: var(--nx-signal);
   font: 800 14px/1 var(--nx-font-mono);
 }
@@ -12635,8 +12794,8 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
 }
 
 .ac-ledger__card { gap: 18px; padding: clamp(22px, 3vw, 32px); }
-.ac-ledger__card--syncs { border-color: rgba(72, 230, 255, 0.2); }
-.ac-ledger__card--home { border-color: rgba(54, 255, 132, 0.22); box-shadow: var(--nx-glow-signal), var(--nx-shadow-card); }
+.ac-ledger__card--syncs { border-color: color-mix(in srgb, var(--nx-cyan) 20%, transparent); }
+.ac-ledger__card--home { border-color: color-mix(in srgb, var(--nx-signal) 22%, transparent); box-shadow: var(--nx-glow-signal), var(--nx-shadow-card); }
 
 .ac-list {
   display: grid;
@@ -12672,11 +12831,11 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
 .ac-ledger__card--home .ac-list li { color: var(--nx-signal); }
 
 .ac-ledger__card--syncs .ac-list li::before {
-  background: rgba(72, 230, 255, 0.08) linear-gradient(transparent 45%, currentColor 45%, currentColor 55%, transparent 55%) center / 10px 10px no-repeat;
+  background: color-mix(in srgb, var(--nx-cyan) 8%, transparent) linear-gradient(transparent 45%, currentColor 45%, currentColor 55%, transparent 55%) center / 10px 10px no-repeat;
 }
 
 .ac-ledger__card--home .ac-list li::before {
-  background: rgba(54, 255, 132, 0.08) radial-gradient(circle, currentColor 0 3px, transparent 3.5px) center / 100% 100% no-repeat;
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent) radial-gradient(circle, currentColor 0 3px, transparent 3.5px) center / 100% 100% no-repeat;
 }
 
 .ac-list strong { color: var(--nx-text); font-size: 16px; font-weight: 650; letter-spacing: -0.015em; }
@@ -12797,8 +12956,8 @@ html.nx .ac-tab:focus-visible { outline-offset: 1px; }
   min-height: 22px;
   padding: 0 8px;
   border-radius: 999px;
-  border: 1px solid rgba(54, 255, 132, 0.3);
-  background: rgba(54, 255, 132, 0.08);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 30%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
   color: var(--nx-signal);
   font: 700 10.5px/1 var(--nx-font-mono);
   letter-spacing: 0.06em;
@@ -12893,10 +13052,10 @@ This root is reconciled byte-for-byte from the current production source.
   --api-top: 76px;
   --api-toolbar-h: 64px;
   --api-get: var(--nx-signal);
-  --api-get-bg: rgba(54, 255, 132, 0.1);
-  --api-get-line: rgba(54, 255, 132, 0.34);
+  --api-get-bg: color-mix(in srgb, var(--nx-signal) 10%, transparent);
+  --api-get-line: color-mix(in srgb, var(--nx-signal) 34%, transparent);
   --api-post: var(--nx-purple-ink);
-  --api-post-bg: rgba(145, 56, 216, 0.16);
+  --api-post-bg: color-mix(in srgb, var(--nx-purple) 16%, transparent);
   --api-post-line: rgba(176, 108, 240, 0.42);
   --api-put: var(--nx-amber);
   --api-put-bg: rgba(255, 154, 69, 0.1);
@@ -12909,8 +13068,8 @@ This root is reconciled byte-for-byte from the current production source.
 /* Utility pill marked current in the nav capsule. */
 .nx-nav__ghost.is-current {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.34);
-  background: rgba(54, 255, 132, 0.1);
+  border-color: color-mix(in srgb, var(--nx-signal) 34%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 10%, transparent);
   box-shadow: var(--nx-glow-signal);
 }
 
@@ -13041,7 +13200,7 @@ This root is reconciled byte-for-byte from the current production source.
   height: 7px;
   border-radius: 2px;
   background: var(--nx-cyan);
-  box-shadow: 0 0 10px rgba(72, 230, 255, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--nx-cyan) 50%, transparent);
 }
 
 .api-rules strong {
@@ -13135,8 +13294,8 @@ This root is reconciled byte-for-byte from the current production source.
 
 .api-rail__item.is-active {
   color: var(--nx-text);
-  border-color: rgba(54, 255, 132, 0.28);
-  background: rgba(54, 255, 132, 0.07);
+  border-color: color-mix(in srgb, var(--nx-signal) 28%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 7%, transparent);
 }
 
 .api-rail__item.is-active .api-rail__count {
@@ -13214,9 +13373,9 @@ This root is reconciled byte-for-byte from the current production source.
 
 .api-search input:focus {
   outline: none;
-  border-color: rgba(54, 255, 132, 0.55);
+  border-color: color-mix(in srgb, var(--nx-signal) 55%, transparent);
   background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 3px rgba(54, 255, 132, 0.16);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nx-signal) 16%, transparent);
 }
 
 .api-search input::-webkit-search-cancel-button {
@@ -13427,7 +13586,7 @@ This root is reconciled byte-for-byte from the current production source.
   width: 3px;
   border-radius: 0 3px 3px 0;
   background: var(--nx-signal);
-  box-shadow: 0 0 12px rgba(54, 255, 132, 0.6);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--nx-signal) 60%, transparent);
   opacity: 0;
   transform: scaleY(0.4);
   transition: opacity 200ms ease, transform 320ms var(--nx-spring);
@@ -13468,7 +13627,7 @@ This root is reconciled byte-for-byte from the current production source.
 .api-route mark {
   padding: 0 1px;
   border-radius: 3px;
-  background: rgba(72, 230, 255, 0.22);
+  background: color-mix(in srgb, var(--nx-cyan) 22%, transparent);
   color: var(--nx-text);
 }
 
@@ -13507,8 +13666,8 @@ This root is reconciled byte-for-byte from the current production source.
 }
 
 .api-route.is-active {
-  border-color: rgba(54, 255, 132, 0.36);
-  background: linear-gradient(90deg, rgba(54, 255, 132, 0.08), rgba(54, 255, 132, 0.02) 70%);
+  border-color: color-mix(in srgb, var(--nx-signal) 36%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--nx-signal) 8%, transparent), color-mix(in srgb, var(--nx-signal) 2%, transparent) 70%);
   box-shadow: var(--nx-glow-signal);
 }
 
@@ -13591,7 +13750,7 @@ This root is reconciled byte-for-byte from the current production source.
   border-radius: var(--nx-r-xl);
   border: 1px solid var(--nx-border-strong);
   background:
-    radial-gradient(600px circle at 100% 0%, rgba(145, 56, 216, 0.1), transparent 55%),
+    radial-gradient(600px circle at 100% 0%, color-mix(in srgb, var(--nx-purple) 10%, transparent), transparent 55%),
     linear-gradient(180deg, rgba(15, 16, 23, 0.96), rgba(9, 10, 15, 0.96));
   box-shadow: var(--nx-shadow-card);
 }
@@ -13709,8 +13868,8 @@ html.nx .api-detail__title:focus-visible {
 
 .api-copy.is-done {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.45);
-  background: rgba(54, 255, 132, 0.08);
+  border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
 }
 
 .api-detail__facts {
@@ -14166,7 +14325,7 @@ This root is reconciled byte-for-byte from the current production source.
 
 html.nx [data-reveal].is-visible { opacity: 1; transform: none; filter: none; }
 
-.nx-mission body { background: #030306; }
+.nx-mission body { background: color-mix(in srgb, var(--nx-bg), black 40%); }
 
 /* Dither field (landing-dither.js) sits under the aurora. */
 .dither-bg {
@@ -14202,7 +14361,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   width: 0;
   height: 2px;
   background: var(--nx-gradient-signal);
-  box-shadow: 0 0 12px rgba(54, 255, 132, 0.5);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--nx-signal) 50%, transparent);
   pointer-events: none;
 }
 
@@ -14259,7 +14418,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   animation-timing-function: var(--nx-ease), cubic-bezier(0.16, 1, 0.3, 1);
   animation-iteration-count: 1, infinite;
   animation-fill-mode: both, none;
-  background: linear-gradient(100deg, #f0f0f0 0%, #f0f0f0 36%, #d8b4ff 46%, #8affc1 54%, #f0f0f0 64%, #f0f0f0 100%);
+  background: linear-gradient(100deg, var(--nx-text) 0%, var(--nx-text) 36%, color-mix(in srgb, var(--nx-purple-ink), white 40%) 46%, color-mix(in srgb, var(--nx-signal), white 45%) 54%, var(--nx-text) 64%, var(--nx-text) 100%);
   background-size: 260% 100%;
   background-position: 100% 0;
   -webkit-background-clip: text;
@@ -14299,21 +14458,21 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   position: absolute;
   border-radius: 999px;
   border: 1px solid rgba(176, 108, 240, 0.35);
-  box-shadow: inset 0 0 24px rgba(145, 56, 216, 0.22), 0 0 30px rgba(145, 56, 216, 0.12);
+  box-shadow: inset 0 0 24px color-mix(in srgb, var(--nx-purple) 22%, transparent), 0 0 30px color-mix(in srgb, var(--nx-purple) 12%, transparent);
   pointer-events: none;
 }
 
 .why-hero__signal-core-ring:nth-child(1) { width: 200px; height: 74px; animation: why-ring 5.6s ease-in-out infinite; }
 .why-hero__signal-core-ring:nth-child(2) { width: 150px; height: 50px; border-color: rgba(77, 141, 255, 0.4); animation: why-ring 5.6s 0.7s ease-in-out infinite; }
-.why-hero__signal-core-ring:nth-child(3) { width: 260px; height: 104px; border-color: rgba(54, 255, 132, 0.18); animation: why-ring 5.6s 1.4s ease-in-out infinite; }
+.why-hero__signal-core-ring:nth-child(3) { width: 260px; height: 104px; border-color: color-mix(in srgb, var(--nx-signal) 18%, transparent); animation: why-ring 5.6s 1.4s ease-in-out infinite; }
 
 .why-hero__signal-core-dot {
   position: relative;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f3e6ff, #b06cf0 45%, #6a1cb0 100%);
-  box-shadow: 0 0 22px rgba(176, 108, 240, 0.9), 0 0 70px rgba(145, 56, 216, 0.6);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--nx-purple-ink), white 80%), var(--nx-purple-ink) 45%, color-mix(in srgb, var(--nx-purple), black 25%) 100%);
+  box-shadow: 0 0 22px rgba(176, 108, 240, 0.9), 0 0 70px color-mix(in srgb, var(--nx-purple) 60%, transparent);
   animation: why-breathe 3.2s ease-in-out infinite;
 }
 
@@ -14340,7 +14499,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
 .why-hero__signal-rails span {
   display: block;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(145, 56, 216, 0.6) 30%, rgba(77, 141, 255, 0.8) 50%, rgba(54, 255, 132, 0.6) 70%, transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--nx-purple) 60%, transparent) 30%, rgba(77, 141, 255, 0.8) 50%, color-mix(in srgb, var(--nx-signal) 60%, transparent) 70%, transparent);
   background-size: 200% 100%;
   animation: why-rail 6s linear infinite;
   opacity: 0.8;
@@ -14498,7 +14657,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   border-radius: var(--nx-r-2xl);
   border: 1px solid var(--nx-border);
   background:
-    radial-gradient(90% 120% at 0% 0%, rgba(145, 56, 216, 0.16), transparent 60%),
+    radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--nx-purple) 16%, transparent), transparent 60%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
   box-shadow: var(--nx-shadow-card);
 }
@@ -14567,7 +14726,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
 .why-showcase__glow {
   position: absolute;
   inset: 12% 6% -10%;
-  background: radial-gradient(60% 60% at 50% 50%, rgba(145, 56, 216, 0.45), rgba(77, 141, 255, 0.18) 45%, transparent 70%);
+  background: radial-gradient(60% 60% at 50% 50%, color-mix(in srgb, var(--nx-purple) 45%, transparent), rgba(77, 141, 255, 0.18) 45%, transparent 70%);
   filter: blur(60px);
   opacity: calc(0.35 + var(--p) * 0.65);
 }
@@ -14633,13 +14792,80 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   height: 52px;
   border-radius: 14px;
   color: var(--nx-signal);
-  background: rgba(54, 255, 132, 0.07);
-  border: 1px solid rgba(54, 255, 132, 0.2);
-  box-shadow: 0 0 30px rgba(54, 255, 132, 0.08);
+  background: color-mix(in srgb, var(--nx-signal) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 20%, transparent);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--nx-signal) 8%, transparent);
   transition: transform 400ms var(--nx-spring), box-shadow 300ms ease;
 }
 
-.why-cap-card:hover .why-cap-card__icon { transform: translateY(-3px) rotate(-4deg); box-shadow: 0 0 40px rgba(54, 255, 132, 0.2); }
+.why-cap-card:hover .why-cap-card__icon { transform: translateY(-3px) rotate(-4deg); box-shadow: 0 0 40px color-mix(in srgb, var(--nx-signal) 20%, transparent); }
+
+/* Principles: seven numbered cards in a grid that settles to one column on phones. */
+.why-principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 16px;
+  width: min(1080px, 100%);
+  margin: 8px auto 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.why-principle {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 26px 26px 28px;
+  transition: border-color 260ms ease, transform 320ms var(--nx-ease), box-shadow 320ms ease;
+}
+
+.why-principle:hover,
+.why-principle:focus-within {
+  border-color: color-mix(in srgb, var(--nx-signal) 28%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--nx-signal) 10%, transparent), var(--nx-shadow-card);
+  transform: translateY(-2px);
+}
+
+.why-principle__index {
+  font-family: var(--nx-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--nx-signal);
+}
+
+.why-principle h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.why-principle p { margin: 0; color: var(--nx-muted); font-size: 15.5px; line-height: 1.6; }
+
+.why-principle a,
+.why-principles__note a {
+  color: var(--nx-text);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--nx-signal) 60%, transparent);
+  text-underline-offset: 3px;
+}
+.why-principle a:hover,
+.why-principles__note a:hover { text-decoration-color: var(--nx-signal); }
+.why-principle a:focus-visible,
+.why-principles__note a:focus-visible { outline: 2px solid var(--nx-signal); outline-offset: 2px; border-radius: 2px; }
+
+.why-principles__note { margin-top: 28px; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .why-principle { transition: none; }
+  .why-principle:hover,
+  .why-principle:focus-within { transform: none; }
+}
 
 /* Accent statement */
 .why-accent-line {
@@ -14649,7 +14875,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   line-height: 1.12;
   letter-spacing: -0.04em;
   text-wrap: balance;
-  background: linear-gradient(92deg, var(--nx-text) 0%, #d8b4ff 45%, var(--nx-signal) 100%);
+  background: linear-gradient(92deg, var(--nx-text) 0%, color-mix(in srgb, var(--nx-purple-ink), white 40%) 45%, var(--nx-signal) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -14684,7 +14910,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   font-weight: 800;
 }
 
-.why-list li:hover { border-color: rgba(54, 255, 132, 0.3); background: rgba(54, 255, 132, 0.04); transform: translateX(4px); }
+.why-list li:hover { border-color: color-mix(in srgb, var(--nx-signal) 30%, transparent); background: color-mix(in srgb, var(--nx-signal) 4%, transparent); transform: translateX(4px); }
 
 .why-final-line {
   margin: 0;
@@ -14711,7 +14937,7 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   border-radius: var(--nx-r-2xl);
   border: 1px solid var(--nx-border);
   background:
-    radial-gradient(80% 120% at 50% 120%, rgba(145, 56, 216, 0.28), transparent 60%),
+    radial-gradient(80% 120% at 50% 120%, color-mix(in srgb, var(--nx-purple) 28%, transparent), transparent 60%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
   box-shadow: var(--nx-shadow-card);
   text-align: center;
@@ -14737,8 +14963,8 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
 .why-cta__key[data-active="true"] {
   transform: translateY(5px);
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.6);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.7), 0 0 30px rgba(54, 255, 132, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border-color: color-mix(in srgb, var(--nx-signal) 60%, transparent);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.7), 0 0 30px color-mix(in srgb, var(--nx-signal) 35%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .why-cta__text {
@@ -14792,11 +15018,11 @@ body.rn-body.is-pointer-live .dither-bg { opacity: 0.72; filter: saturate(1.25) 
   font-size: clamp(72px, 17vw, 240px);
   line-height: 0.84;
   letter-spacing: -0.08em;
-  background: linear-gradient(180deg, #e3c8ff 0%, var(--nx-purple) 55%, #2a0f45 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nx-purple-ink), white 55%) 0%, var(--nx-purple) 55%, color-mix(in srgb, var(--nx-purple), black 70%) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 50px rgba(145, 56, 216, 0.5));
+  filter: drop-shadow(0 0 50px color-mix(in srgb, var(--nx-purple) 50%, transparent));
   transform: translateY(calc((1 - var(--landing-scroll-ratio, 1)) * 40px));
   user-select: none;
 }
@@ -14916,7 +15142,7 @@ body.app-detail-open {
   border-radius: var(--nx-r-xl);
   border: 1px solid var(--nx-border);
   background:
-    radial-gradient(120% 90% at 100% 0%, rgba(145, 56, 216, 0.18), transparent 60%),
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--nx-purple) 18%, transparent), transparent 60%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
   box-shadow: var(--nx-shadow-card);
 }
@@ -15045,7 +15271,7 @@ body.app-detail-open {
 .st-search__input:focus {
   outline: none;
   border-color: rgba(176, 108, 240, 0.7);
-  background: rgba(145, 56, 216, 0.08);
+  background: color-mix(in srgb, var(--nx-purple) 8%, transparent);
 }
 
 .st-search__input:focus-visible {
@@ -15131,8 +15357,8 @@ body.app-detail-open {
 
 .st-rail__item.is-active {
   color: var(--nx-text);
-  background: rgba(54, 255, 132, 0.09);
-  box-shadow: inset 0 0 0 1px rgba(54, 255, 132, 0.26);
+  background: color-mix(in srgb, var(--nx-signal) 9%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nx-signal) 26%, transparent);
 }
 
 .st-rail__item.is-empty {
@@ -15304,7 +15530,7 @@ body.app-detail-open {
   }
 
   .st-rail__item.is-active {
-    border-color: rgba(54, 255, 132, 0.4);
+    border-color: color-mix(in srgb, var(--nx-signal) 40%, transparent);
   }
 
   .st-rail__code {
@@ -15481,7 +15707,7 @@ body.app-detail-open {
   border: 1px solid var(--nx-border);
   background:
     radial-gradient(520px circle at var(--nx-mx) var(--nx-my), rgba(var(--st-accent), 0.14), transparent 55%),
-    radial-gradient(90% 80% at 0% 100%, rgba(145, 56, 216, 0.14), transparent 60%),
+    radial-gradient(90% 80% at 0% 100%, color-mix(in srgb, var(--nx-purple) 14%, transparent), transparent 60%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
   box-shadow: var(--nx-shadow-card);
   overflow: hidden;
@@ -15825,7 +16051,7 @@ body.app-detail-open {
 
 .st-row__all:hover {
   border-color: rgba(176, 108, 240, 0.6);
-  background: rgba(145, 56, 216, 0.12);
+  background: color-mix(in srgb, var(--nx-purple) 12%, transparent);
 }
 
 .st-arrow {
@@ -15944,7 +16170,7 @@ body.app-detail-open {
   z-index: -1;
   border-radius: inherit;
   padding: 1px;
-  background: radial-gradient(280px circle at var(--nx-mx) var(--nx-my), rgba(54, 255, 132, 0.5), rgba(145, 56, 216, 0.35) 42%, transparent 70%);
+  background: radial-gradient(280px circle at var(--nx-mx) var(--nx-my), color-mix(in srgb, var(--nx-signal) 50%, transparent), color-mix(in srgb, var(--nx-purple) 35%, transparent) 42%, transparent 70%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -16138,7 +16364,7 @@ body.app-detail-open {
 .st-badge--needs {
   color: var(--nx-purple-ink);
   border-color: rgba(176, 108, 240, 0.4);
-  background: rgba(145, 56, 216, 0.12);
+  background: color-mix(in srgb, var(--nx-purple) 12%, transparent);
 }
 
 .st-badge--unavailable {
@@ -16167,7 +16393,7 @@ body.app-detail-open {
   border-radius: var(--nx-r-md);
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: linear-gradient(180deg, #a04ae8 0%, var(--nx-purple) 100%);
-  box-shadow: 0 10px 26px rgba(145, 56, 216, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--nx-purple) 32%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   color: #fff;
   font: 700 14px/1 var(--nx-font-sans);
   letter-spacing: -0.005em;
@@ -16181,7 +16407,7 @@ body.app-detail-open {
 
 .st-install:hover {
   background: linear-gradient(180deg, #ad5cf0 0%, #9a40e2 100%);
-  box-shadow: 0 14px 34px rgba(145, 56, 216, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--nx-purple) 46%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
 .st-install:active {
@@ -16289,7 +16515,7 @@ body.app-detail-open {
   padding: clamp(40px, 8vw, 88px) 20px;
   border-radius: var(--nx-r-2xl);
   border: 1px dashed var(--nx-border-strong);
-  background: radial-gradient(60% 80% at 50% 0%, rgba(72, 230, 255, 0.07), transparent 70%), rgba(255, 255, 255, 0.015);
+  background: radial-gradient(60% 80% at 50% 0%, color-mix(in srgb, var(--nx-cyan) 7%, transparent), transparent 70%), rgba(255, 255, 255, 0.015);
   text-align: center;
 }
 
@@ -16487,7 +16713,7 @@ body.app-detail-open {
   border-radius: var(--nx-r-2xl);
   border: 1px solid var(--nx-border-strong);
   background:
-    radial-gradient(80% 50% at 0% 0%, rgba(145, 56, 216, 0.14), transparent 60%),
+    radial-gradient(80% 50% at 0% 0%, color-mix(in srgb, var(--nx-purple) 14%, transparent), transparent 60%),
     linear-gradient(180deg, #0f1017, #090a0f);
   box-shadow: 0 50px 140px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   opacity: 0;
@@ -16671,8 +16897,8 @@ body.app-detail-open {
 
 .st-copy.is-done {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.45);
-  background: rgba(54, 255, 132, 0.08);
+  border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
 }
 
 .st-detail__grid {
@@ -16732,8 +16958,8 @@ body.app-detail-open {
   gap: 10px;
   padding: 20px;
   border-radius: var(--nx-r-lg);
-  border: 1px solid rgba(54, 255, 132, 0.2);
-  background: radial-gradient(120% 100% at 100% 0%, rgba(54, 255, 132, 0.08), transparent 60%), rgba(255, 255, 255, 0.02);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 20%, transparent);
+  background: radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--nx-signal) 8%, transparent), transparent 60%), rgba(255, 255, 255, 0.02);
 }
 
 .st-land .st-detail__h {
@@ -19106,8 +19332,9 @@ This root is reconciled byte-for-byte from the current production source.
     "stage:apps-model-packs": "node scripts/stage-apps-model-packs.mjs",
     "publish:apps-model-packs:ia": "node scripts/upload-apps-model-packs-ia.mjs",
     "build:accounts": "node scripts/build-accounts-site.mjs",
-    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs && node --check nx-halloween.js && node --check saved-apps.js && node --check saved-apps-bridge.js && node --check ios/ios-install.js && node --check scripts/build-main-deploy.mjs && node --check scripts/check-main-deploy.mjs",
-    "test": "node test/site-outcomes.mjs && node --test test/register-account.test.mjs test/roachclaw-chat.test.mjs",
+    "build:halloween-themes": "node scripts/build-halloween-themes.mjs",
+    "lint": "node --check app.js && node --check app-store.js && node --check account.js && node --check roachclaw.js && node --check scripts/build-main-site.mjs && node --check scripts/build-apps-site.mjs && node --check scripts/build-accounts-site.mjs && node --check netlify/functions/register-account.mjs && node --check netlify/functions/roachclaw-chat.mjs && node --check nx-halloween.js && node --check scripts/build-halloween-themes.mjs && node --check saved-apps.js && node --check saved-apps-bridge.js && node --check ios/ios-install.js && node --check scripts/build-main-deploy.mjs && node --check scripts/check-main-deploy.mjs",
+    "test": "node scripts/build-halloween-themes.mjs --check && node test/site-outcomes.mjs && node --test test/register-account.test.mjs test/roachclaw-chat.test.mjs",
     "verify": "npm run lint && npm run test && npm run tangle:verify",
     "validate:html": "node scripts/validate-html.mjs",
     "test:browser": "node scripts/site-browser-outcomes.mjs",
@@ -19235,7 +19462,7 @@ This root is reconciled byte-for-byte from the current production source.
 .rc-sidebar__new-btn > span:not(.rc-kbd-group) { flex: 1; text-align: left; }
 
 .rc-sidebar__new-btn:hover {
-  background: rgba(145, 56, 216, 0.14);
+  background: color-mix(in srgb, var(--nx-purple) 14%, transparent);
   border-color: rgba(176, 108, 240, 0.4);
 }
 
@@ -19304,7 +19531,7 @@ This root is reconciled byte-for-byte from the current production source.
   width: 2px;
   border-radius: 2px;
   background: var(--nx-signal);
-  box-shadow: 0 0 8px rgba(54, 255, 132, 0.6);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--nx-signal) 60%, transparent);
   transform: scaleY(0);
   transition: transform 260ms var(--nx-spring);
 }
@@ -19369,17 +19596,17 @@ This root is reconciled byte-for-byte from the current production source.
   background: var(--nx-soft);
 }
 
-.rc-lane[data-state="live"] { border-color: rgba(54, 255, 132, 0.28); background: rgba(54, 255, 132, 0.05); }
+.rc-lane[data-state="live"] { border-color: color-mix(in srgb, var(--nx-signal) 28%, transparent); background: color-mix(in srgb, var(--nx-signal) 5%, transparent); }
 .rc-lane[data-state="live"] .rc-lane__copy span { color: var(--nx-signal); }
 .rc-lane[data-state="live"] .rc-lane__dot,
-.rc-lane[data-state="ready"] .rc-lane__dot { background: var(--nx-signal); box-shadow: 0 0 10px rgba(54, 255, 132, 0.7); }
+.rc-lane[data-state="ready"] .rc-lane__dot { background: var(--nx-signal); box-shadow: 0 0 10px color-mix(in srgb, var(--nx-signal) 70%, transparent); }
 
 .rc-lane[data-state="live"] .rc-lane__dot::after {
   content: "";
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 1px solid rgba(54, 255, 132, 0.6);
+  border: 1px solid color-mix(in srgb, var(--nx-signal) 60%, transparent);
   animation: nx-ping 2.4s var(--nx-ease) infinite;
 }
 
@@ -19497,24 +19724,24 @@ This root is reconciled byte-for-byte from the current production source.
   transition: background 260ms ease, box-shadow 260ms ease;
 }
 
-.rc-model-badge[data-state="live"] { color: var(--nx-text); border-color: rgba(72, 230, 255, 0.28); }
-.rc-model-badge[data-state="live"] .rc-model-badge__dot { background: var(--nx-cyan); box-shadow: 0 0 10px rgba(72, 230, 255, 0.8); }
-.rc-model-badge[data-relay="mac"][data-state="live"] { border-color: rgba(54, 255, 132, 0.3); }
-.rc-model-badge[data-relay="mac"][data-state="live"] .rc-model-badge__dot { background: var(--nx-signal); box-shadow: 0 0 10px rgba(54, 255, 132, 0.8); }
+.rc-model-badge[data-state="live"] { color: var(--nx-text); border-color: color-mix(in srgb, var(--nx-cyan) 28%, transparent); }
+.rc-model-badge[data-state="live"] .rc-model-badge__dot { background: var(--nx-cyan); box-shadow: 0 0 10px color-mix(in srgb, var(--nx-cyan) 80%, transparent); }
+.rc-model-badge[data-relay="mac"][data-state="live"] { border-color: color-mix(in srgb, var(--nx-signal) 30%, transparent); }
+.rc-model-badge[data-relay="mac"][data-state="live"] .rc-model-badge__dot { background: var(--nx-signal); box-shadow: 0 0 10px color-mix(in srgb, var(--nx-signal) 80%, transparent); }
 
 .rc-account-chip {
   min-height: 32px;
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid rgba(176, 108, 240, 0.45);
-  background: rgba(145, 56, 216, 0.16);
+  background: color-mix(in srgb, var(--nx-purple) 16%, transparent);
   color: #fff;
   font: 700 12.5px/1 var(--nx-font-sans);
   cursor: pointer;
   transition: background 200ms ease, border-color 200ms ease, transform 160ms var(--rc-ease);
 }
 
-.rc-account-chip:hover { background: rgba(145, 56, 216, 0.28); }
+.rc-account-chip:hover { background: color-mix(in srgb, var(--nx-purple) 28%, transparent); }
 .rc-account-chip:active { transform: scale(0.97); }
 .rc-account-chip[data-state="live"] { border-color: var(--nx-border-strong); background: rgba(255, 255, 255, 0.04); color: var(--nx-muted); }
 .rc-account-chip[data-state="live"]:hover { color: var(--nx-text); background: rgba(255, 255, 255, 0.08); }
@@ -19600,7 +19827,7 @@ This root is reconciled byte-for-byte from the current production source.
   border-radius: var(--nx-r-xl);
   border: 1px solid rgba(176, 108, 240, 0.34);
   background:
-    radial-gradient(120% 80% at 100% 0%, rgba(145, 56, 216, 0.2), transparent 60%),
+    radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--nx-purple) 20%, transparent), transparent 60%),
     linear-gradient(180deg, rgba(20, 14, 32, 0.92), rgba(10, 10, 16, 0.92));
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   opacity: 0;
@@ -19658,7 +19885,7 @@ This root is reconciled byte-for-byte from the current production source.
   outline: 2px solid var(--nx-purple-ink);
   outline-offset: 1px;
   border-color: transparent;
-  box-shadow: 0 0 0 5px rgba(145, 56, 216, 0.2);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--nx-purple) 20%, transparent);
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -19744,12 +19971,12 @@ This root is reconciled byte-for-byte from the current production source.
   margin-bottom: 4px;
   border-radius: 9px;
   color: var(--nx-purple-ink);
-  background: rgba(145, 56, 216, 0.12);
+  background: color-mix(in srgb, var(--nx-purple) 12%, transparent);
   border: 1px solid rgba(176, 108, 240, 0.24);
   transition: color 200ms ease, background 200ms ease;
 }
 
-.rc-starter-card:hover .rc-starter-card__icon { color: var(--nx-signal); background: rgba(54, 255, 132, 0.08); border-color: rgba(54, 255, 132, 0.24); }
+.rc-starter-card:hover .rc-starter-card__icon { color: var(--nx-signal); background: color-mix(in srgb, var(--nx-signal) 8%, transparent); border-color: color-mix(in srgb, var(--nx-signal) 24%, transparent); }
 
 .rc-starter-card strong { font-size: 15px; font-weight: 650; letter-spacing: -0.015em; }
 .rc-starter-card > span:last-child { color: var(--nx-muted); font-size: 13.5px; line-height: 1.5; }
@@ -19776,7 +20003,7 @@ This root is reconciled byte-for-byte from the current production source.
   background: var(--rc-surface-2);
 }
 
-.rc-relay__card[data-state="live"] { border-color: rgba(72, 230, 255, 0.22); background: rgba(72, 230, 255, 0.035); }
+.rc-relay__card[data-state="live"] { border-color: color-mix(in srgb, var(--nx-cyan) 22%, transparent); background: color-mix(in srgb, var(--nx-cyan) 3.5%, transparent); }
 
 .rc-relay__card h3 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
 .rc-relay__card p { margin: 0; color: var(--nx-muted); font-size: 14.5px; line-height: 1.55; }
@@ -19847,7 +20074,7 @@ This root is reconciled byte-for-byte from the current production source.
   background:
     radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 40%),
     linear-gradient(135deg, var(--nx-purple), var(--nx-cyan));
-  box-shadow: 0 0 14px rgba(145, 56, 216, 0.45);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--nx-purple) 45%, transparent);
 }
 
 .rc-message--user {
@@ -19860,7 +20087,7 @@ This root is reconciled byte-for-byte from the current production source.
   padding: 12px 16px;
   border-radius: 18px 18px 6px 18px;
   border: 1px solid rgba(176, 108, 240, 0.3);
-  background: linear-gradient(180deg, rgba(145, 56, 216, 0.22), rgba(145, 56, 216, 0.12));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nx-purple) 22%, transparent), color-mix(in srgb, var(--nx-purple) 12%, transparent));
 }
 
 .rc-message--assistant .rc-message__content,
@@ -19944,7 +20171,7 @@ This root is reconciled byte-for-byte from the current production source.
 }
 
 .rc-code__copy:hover { color: var(--nx-text); border-color: var(--nx-border-strong); }
-.rc-code__copy.is-done { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.4); }
+.rc-code__copy.is-done { color: var(--nx-signal); border-color: color-mix(in srgb, var(--nx-signal) 40%, transparent); }
 
 .rc-code pre {
   margin: 0;
@@ -19965,7 +20192,7 @@ html.nx .rc-code pre code {
   white-space: pre;
 }
 
-.rc-md-block[data-open-fence="true"] .rc-code { border-color: rgba(72, 230, 255, 0.3); }
+.rc-md-block[data-open-fence="true"] .rc-code { border-color: color-mix(in srgb, var(--nx-cyan) 30%, transparent); }
 
 /* Pending reply: a quiet shimmer on the placeholder plus three dots. */
 .rc-message--assistant.is-pending .rc-message__content {
@@ -20011,7 +20238,7 @@ html.nx .rc-code pre code {
 .rc-composer__inner:focus-within {
   border-color: rgba(176, 108, 240, 0.7);
   background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 0 4px rgba(145, 56, 216, 0.2), 0 12px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--nx-purple) 20%, transparent), 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
 .rc-composer__textarea {
@@ -20080,7 +20307,7 @@ html.nx .rc-composer__textarea:focus-visible { outline: none; }
 
 .rc-composer__keys > span { display: inline-flex; align-items: center; gap: 4px; }
 .rc-page .rc-composer__keys .nx-key.rc-kbd { height: 20px; min-width: 20px; font-size: 10.5px; }
-.rc-page .rc-composer__keys .nx-key.is-down { color: var(--nx-signal); border-color: rgba(54, 255, 132, 0.5); transform: translateY(1px); }
+.rc-page .rc-composer__keys .nx-key.is-down { color: var(--nx-signal); border-color: color-mix(in srgb, var(--nx-signal) 50%, transparent); transform: translateY(1px); }
 
 .rc-composer__hint {
   margin: 0;
@@ -22524,6 +22751,7 @@ async function main() {
     'nx.js',
     'nx-halloween.js',
     'nx-halloween.css',
+    'nx-halloween-themes.css',
     'fonts',
     'vendor/supabase-js',
     'favicon.ico',
@@ -22714,6 +22942,7 @@ async function main() {
     'nx.js',
     'nx-halloween.js',
     'nx-halloween.css',
+    'nx-halloween-themes.css',
     'fonts',
     'collections',
     'downloads',
@@ -23039,6 +23268,7 @@ const copyList = [
   "nx.js",
   "nx-halloween.js",
   "nx-halloween.css",
+  "nx-halloween-themes.css",
   "nx-mission.css",
   "nx-docs.css",
   "vendor/supabase-js",
@@ -23435,6 +23665,12 @@ async function halloweenPage(browser, baseUrl, pathname, { iso, viewport = { wid
       })(),
       bats: document.querySelectorAll('.nx-spook__bat').length,
       sheet: [...document.styleSheets].some((sheet) => /nx-halloween\.css$/.test(sheet.href || '') && sheet.cssRules.length > 0),
+      themesSheet: [...document.styleSheets].some((sheet) => /nx-halloween-themes\.css$/.test(sheet.href || '') && sheet.cssRules.length > 0),
+      palette: document.documentElement.getAttribute('data-halloween-theme'),
+      paletteCookie: (/(?:^|;\s*)rn_halloween_theme=([a-z-]+)/.exec(document.cookie) || [])[1] || null,
+      pickerShown: Boolean(document.querySelector('.nx-spook-palette:not([hidden]) select')),
+      signal: getComputedStyle(document.documentElement).getPropertyValue('--nx-signal').trim().toLowerCase(),
+      themeColor: document.querySelector('meta[name="theme-color"]')?.getAttribute('content')?.toLowerCase() || null,
       spider: Boolean(document.querySelector('.nx-spook-spider')),
       overflow: document.documentElement.scrollWidth > window.innerWidth,
     }
@@ -23459,6 +23695,20 @@ async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = 
       assert.equal(now.cookie, 'on', `${label}: the choice is kept`)
       assert.equal(now.moonVisible, true, `${label}: the moon is up`)
       assert.equal(now.sheet, true, `${label}: the Halloween stylesheet is loaded`)
+      assert.equal(now.themesSheet, true, `${label}: the Halloween palettes are loaded`)
+      assert.equal(now.palette, 'pumpkin-patch', `${label}: Pumpkin Patch is the default palette`)
+      assert.equal(now.signal, '#ff8c1a', `${label}: the signal color is Pumpkin Patch's accent`)
+      assert.equal(now.themeColor, '#110904', `${label}: the browser chrome follows the palette`)
+      assert.equal(now.pickerShown, true, `${label}: the palette picker shows while Halloween mode is on`)
+      await page.select('.nx-spook-palette select', 'witch-light')
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-halloween-theme') === 'witch-light', { timeout: 5_000 })
+      now = await state()
+      assert.equal(now.signal, '#7cff6b', `${label}: Witch Light recolors the page`)
+      assert.equal(now.themeColor, '#0b0710', `${label}: and the browser chrome`)
+      assert.equal(now.paletteCookie, 'witch-light', `${label}: the palette is kept`)
+      await page.select('.nx-spook-palette select', 'pumpkin-patch')
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-halloween-theme') === 'pumpkin-patch', { timeout: 5_000 })
+      now = await state()
       assert.equal(now.moonClear, true, `${label}: the moon never sits behind the first heading`)
       assert.equal(now.bats, 4, `${label}: bats fly when motion is allowed`)
       assert.equal(now.overflow, false, `${label}: no horizontal overflow in Halloween mode`)
@@ -23471,6 +23721,12 @@ async function checkHalloween(browser, baseUrl, pathname, label, { spiderPage = 
       }
       await go()
       assert.equal((await state()).on, true, `${label}: on before first paint after a reload`)
+      assert.equal((await state()).palette, 'pumpkin-patch', `${label}: the last palette chosen comes back after a reload`)
+      await go('?halloween-theme=haunted-static')
+      now = await state()
+      assert.equal(now.palette, 'haunted-static', `${label}: ?halloween-theme= picks a palette from a link`)
+      assert.equal(now.signal, '#8ff3ff', `${label}: Haunted Static recolors the page`)
+      await go('?halloween-theme=pumpkin-patch')
       await page.click('.nx-spook-switch--foot')
       await page.waitForFunction(() => !document.documentElement.hasAttribute('data-halloween'), { timeout: 5_000 })
       assert.equal((await state()).cookie, 'off', `${label}: turning it off is kept too`)
@@ -24921,7 +25177,7 @@ const halloween = await source('nx-halloween.js')
 assert.doesNotMatch(halloween, /innerHTML|insertAdjacentHTML|setAttribute\(\s*['"]style|cssText|eval\(|new Function/, 'Halloween mode builds nodes, never HTML strings or inline styles')
 assert.match(halloween, /prefers-reduced-motion: reduce/)
 assert.match(halloween, /samesite=lax/)
-assert.doesNotMatch(halloween, /localStorage|fetch\(|XMLHttpRequest|sendBeacon/, 'Halloween mode keeps one cookie and talks to nobody')
+assert.doesNotMatch(halloween, /localStorage|fetch\(|XMLHttpRequest|sendBeacon/, 'Halloween mode keeps its two cookies and talks to nobody')
 const halloweenCss = await source('nx-halloween.css')
 assert.doesNotMatch(await source('nx.css'), /data-halloween/, 'the Halloween theme stays out of nx.css, so it costs nothing out of season')
 assert.match(halloween, /blocking', 'render'/, 'the Halloween stylesheet blocks render, so there is no flash of the normal theme')
@@ -24931,6 +25187,22 @@ for (const query of ['prefers-reduced-motion: reduce', 'forced-colors: active', 
 for (const build of ['scripts/build-main-site.mjs', 'scripts/build-apps-site.mjs', 'scripts/build-accounts-site.mjs']) {
   assert.match(await source(build), /nx-halloween\.js/, `${build} ships nx-halloween.js`)
   assert.match(await source(build), /nx-halloween\.css/, `${build} ships nx-halloween.css`)
+  assert.match(await source(build), /nx-halloween-themes\.css/, `${build} ships nx-halloween-themes.css`)
+}
+
+// Halloween palettes come from RoachNet's themes: the picker in nx-halloween.js
+// lists exactly the themes the generator turns into tokens, in the same order,
+// and the effects CSS uses the tokens rather than fixed pumpkin colors.
+{
+  const { themeList } = await import('../scripts/build-halloween-themes.mjs')
+  const listed = [...halloween.matchAll(/\{ slug: '([a-z-]+)', name: '([^']+)' \}/g)].map((match) => ({ slug: match[1], name: match[2] }))
+  assert.deepEqual(listed, themeList().map(({ slug, name }) => ({ slug, name })), 'the palette picker matches the generated themes')
+  assert.equal(themeList()[0].slug, 'pumpkin-patch', "the default palette is the app's built-in Pumpkin Patch")
+  assert.doesNotMatch(halloweenCss, /--nx-bg:/, 'nx-halloween.css sets no palette of its own')
+  assert.doesNotMatch(halloweenCss, /rgba\(255, 138, 31/, 'nx-halloween.css follows --nx-signal instead of a fixed orange')
+  const themesCss = await source('nx-halloween-themes.css')
+  for (const { slug } of themeList()) assert.match(themesCss, new RegExp(`data-halloween-theme="${slug}"`), `${slug} has tokens`)
+  assert.match(halloween, /rn_halloween_theme/)
 }
 
 // The landing download is a plain navigation handed to Home, not a hidden iframe

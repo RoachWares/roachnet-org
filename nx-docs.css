@@ -9,10 +9,10 @@
   --api-top: 76px;
   --api-toolbar-h: 64px;
   --api-get: var(--nx-signal);
-  --api-get-bg: rgba(54, 255, 132, 0.1);
-  --api-get-line: rgba(54, 255, 132, 0.34);
+  --api-get-bg: color-mix(in srgb, var(--nx-signal) 10%, transparent);
+  --api-get-line: color-mix(in srgb, var(--nx-signal) 34%, transparent);
   --api-post: var(--nx-purple-ink);
-  --api-post-bg: rgba(145, 56, 216, 0.16);
+  --api-post-bg: color-mix(in srgb, var(--nx-purple) 16%, transparent);
   --api-post-line: rgba(176, 108, 240, 0.42);
   --api-put: var(--nx-amber);
   --api-put-bg: rgba(255, 154, 69, 0.1);
@@ -25,8 +25,8 @@
 /* Utility pill marked current in the nav capsule. */
 .nx-nav__ghost.is-current {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.34);
-  background: rgba(54, 255, 132, 0.1);
+  border-color: color-mix(in srgb, var(--nx-signal) 34%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 10%, transparent);
   box-shadow: var(--nx-glow-signal);
 }
 
@@ -157,7 +157,7 @@
   height: 7px;
   border-radius: 2px;
   background: var(--nx-cyan);
-  box-shadow: 0 0 10px rgba(72, 230, 255, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--nx-cyan) 50%, transparent);
 }
 
 .api-rules strong {
@@ -251,8 +251,8 @@
 
 .api-rail__item.is-active {
   color: var(--nx-text);
-  border-color: rgba(54, 255, 132, 0.28);
-  background: rgba(54, 255, 132, 0.07);
+  border-color: color-mix(in srgb, var(--nx-signal) 28%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 7%, transparent);
 }
 
 .api-rail__item.is-active .api-rail__count {
@@ -330,9 +330,9 @@
 
 .api-search input:focus {
   outline: none;
-  border-color: rgba(54, 255, 132, 0.55);
+  border-color: color-mix(in srgb, var(--nx-signal) 55%, transparent);
   background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 3px rgba(54, 255, 132, 0.16);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nx-signal) 16%, transparent);
 }
 
 .api-search input::-webkit-search-cancel-button {
@@ -543,7 +543,7 @@
   width: 3px;
   border-radius: 0 3px 3px 0;
   background: var(--nx-signal);
-  box-shadow: 0 0 12px rgba(54, 255, 132, 0.6);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--nx-signal) 60%, transparent);
   opacity: 0;
   transform: scaleY(0.4);
   transition: opacity 200ms ease, transform 320ms var(--nx-spring);
@@ -584,7 +584,7 @@
 .api-route mark {
   padding: 0 1px;
   border-radius: 3px;
-  background: rgba(72, 230, 255, 0.22);
+  background: color-mix(in srgb, var(--nx-cyan) 22%, transparent);
   color: var(--nx-text);
 }
 
@@ -623,8 +623,8 @@
 }
 
 .api-route.is-active {
-  border-color: rgba(54, 255, 132, 0.36);
-  background: linear-gradient(90deg, rgba(54, 255, 132, 0.08), rgba(54, 255, 132, 0.02) 70%);
+  border-color: color-mix(in srgb, var(--nx-signal) 36%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--nx-signal) 8%, transparent), color-mix(in srgb, var(--nx-signal) 2%, transparent) 70%);
   box-shadow: var(--nx-glow-signal);
 }
 
@@ -707,7 +707,7 @@
   border-radius: var(--nx-r-xl);
   border: 1px solid var(--nx-border-strong);
   background:
-    radial-gradient(600px circle at 100% 0%, rgba(145, 56, 216, 0.1), transparent 55%),
+    radial-gradient(600px circle at 100% 0%, color-mix(in srgb, var(--nx-purple) 10%, transparent), transparent 55%),
     linear-gradient(180deg, rgba(15, 16, 23, 0.96), rgba(9, 10, 15, 0.96));
   box-shadow: var(--nx-shadow-card);
 }
@@ -825,8 +825,8 @@ html.nx .api-detail__title:focus-visible {
 
 .api-copy.is-done {
   color: var(--nx-signal);
-  border-color: rgba(54, 255, 132, 0.45);
-  background: rgba(54, 255, 132, 0.08);
+  border-color: color-mix(in srgb, var(--nx-signal) 45%, transparent);
+  background: color-mix(in srgb, var(--nx-signal) 8%, transparent);
 }
 
 .api-detail__facts {

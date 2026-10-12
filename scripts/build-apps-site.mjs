@@ -110,6 +110,7 @@ async function main() {
     'nx.js',
     'nx-halloween.js',
     'nx-halloween.css',
+    'nx-halloween-themes.css',
     'fonts',
     'collections',
     'downloads',
