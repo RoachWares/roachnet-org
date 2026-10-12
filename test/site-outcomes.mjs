@@ -110,7 +110,7 @@ assert.match(nxCss, /html\.nx \.rn-skip-link\s*\{[^}]*color:\s*#fff;[^}]*backgro
 assert.match(nxCss, /@media \(prefers-reduced-motion: reduce\)/, 'nx.css must stand decorative motion down')
 assert.match(missionCss, /@media \(prefers-reduced-motion: reduce\)/, 'Mission styles must stand decorative motion down')
 assert.doesNotMatch(landingHtml, /why-blockquote__lines" aria-hidden/, 'the three blockquote lines are content, not decoration')
-assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.0\.7"/, 'release accessible name must include its visible version')
+assert.match(landingHtml, /aria-label="Latest RoachNet release v1\.1\.0"/, 'release accessible name must include its visible version')
 assert.match(landingHtml, /<a class="nx-nav__link is-current" href="#top" aria-current="page">Mission<\/a>/, 'Mission is the current page in the nav')
 const landingLogo = await readFile(path.join(root, 'favicon-32x32.png'))
 assert.equal(landingLogo.readUInt32BE(16), 32, 'favicon width budget')
@@ -254,7 +254,7 @@ const iosScript = await source('ios/ios-install.js')
 const pageIpas = new Set([...iosPage.matchAll(/data-ipa-download href="([^"]+)"/g)].map(([, href]) => href))
 assert.equal(pageIpas.size, 1, 'every IPA button on the iOS page uses one URL')
 const [pageIpa] = pageIpas
-assert.match(pageIpa, /RoachNetiOS-v0\.2\.0-unsigned\.ipa$/)
+assert.match(pageIpa, /RoachNetiOS-v0\.3\.0-unsigned\.ipa$/)
 for (const [ipa] of iosScript.matchAll(/https:\/\/[^'"\s]+\.ipa/g)) {
   assert.equal(ipa, pageIpa, 'ios-install.js must not override the page with a different IPA')
 }

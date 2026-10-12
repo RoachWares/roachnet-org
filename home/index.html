@@ -6,7 +6,7 @@
     <title>RoachNet: Offline on purpose.</title>
     <meta
       name="description"
-      content="Local AI, code, maps, docs, games and media in one native Mac app that keeps working when the internet doesn't. Download RoachNet 1.0.7 or install it with Homebrew."
+      content="Local AI, code, maps, docs, games and media in one native Mac app that keeps working when the internet doesn't. Download RoachNet 1.1 or install it with Homebrew."
     />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/home/" />
@@ -51,7 +51,7 @@
         <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
           <span class="nx-nav__dot" aria-hidden="true"></span>
           <span>RoachNet</span>
-          <span class="nx-nav__sub">Home · v1.0.7</span>
+          <span class="nx-nav__sub">Home · v1.1.0</span>
         </a>
         <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
           <span aria-hidden="true"></span>
@@ -75,17 +75,17 @@
     <main id="top" class="nx-main" tabindex="-1">
       <section class="nx-hero" aria-labelledby="hero-title">
         <div class="nx-hero__copy">
-          <p class="nx-overline">RoachNet 1.0.7 for macOS</p>
+          <p class="nx-overline">RoachNet 1.1 for macOS</p>
           <h1 class="nx-display nx-display--xl" id="hero-title">Everything you need, <span class="nx-accent">where you left it.</span></h1>
           <p class="nx-lede">
             Local AI, code, maps, media, games and your vault in one native Mac app. Offline on purpose, not by chance.
           </p>
           <div class="nx-actions">
-            <button class="nx-btn nx-btn--primary" id="primary-download" type="button">Download RoachNet 1.0.7 for macOS</button>
+            <button class="nx-btn nx-btn--primary" id="primary-download" type="button">Download RoachNet 1.1 for macOS</button>
             <button class="nx-btn" data-homebrew-install type="button">Install with Homebrew</button>
           </div>
           <p class="nx-hero__meta" id="download-meta">
-            <span>v1.0.7</span><span aria-hidden="true">·</span><span>376 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>lands in <code>~/RoachNet</code></span>
+            <span>v1.1.0</span><span aria-hidden="true">·</span><span>221 MB</span><span aria-hidden="true">·</span><span>Apple Silicon</span><span aria-hidden="true">·</span><span>lands in <code>~/RoachNet</code></span>
           </p>
           <p class="nx-prose">
             Not Apple-notarized yet, so macOS asks you to approve it once. The Setup app and Homebrew both put everything in the same folder, so backing up, moving or deleting RoachNet is one drag.
@@ -321,35 +321,45 @@
       <section class="nx-section" id="release" aria-labelledby="release-title">
         <div class="nx-section__head">
           <p class="nx-overline">What's new</p>
-          <h2 class="nx-h2" id="release-title">1.0.7: the 1.0.6 engine, locked down.</h2>
-          <p class="nx-lede">A security patch for 1.0.6, which brought the native Swift engine. The local API stops trusting look-alike addresses and requests from other websites, the library catalog is current again, and the bundled Ollama is 0.40.3. If you run 1.0.6, update.</p>
+          <h2 class="nx-h2" id="release-title">1.1: its own engine, and your own agents.</h2>
+          <p class="nx-lede">RoachClaw runs on RoachNet's own Metal engine with no Ollama inside, and any Ollama, OpenAI or Anthropic client can talk to it. Claude Code, Codex and other agents you already use can join your Org, every run is traced on your Mac, and a model too big for one Mac can be split across several. The app learns themes, and the local API asks for a fresh token every launch.</p>
         </div>
-        <ul class="nx-stats nx-reveal" aria-label="1.0.7 by the numbers">
-          <li class="nx-stat"><span class="nx-stat__value"><span data-count="376" data-suffix=" MB">376 MB</span></span><span class="nx-stat__label">Installer, down from 540</span></li>
-          <li class="nx-stat"><span class="nx-stat__value"><span data-count="0">0</span><small>bundled Node</small></span><span class="nx-stat__label">Native Swift runtime</span></li>
-          <li class="nx-stat"><span class="nx-stat__value">1<small>folder</small></span><span class="nx-stat__label">~/RoachNet, as always</span></li>
-          <li class="nx-stat"><span class="nx-stat__value">0.2.0</span><span class="nx-stat__label">iOS companion it pairs with</span></li>
+        <ul class="nx-stats nx-reveal" aria-label="1.1 by the numbers">
+          <li class="nx-stat"><span class="nx-stat__value"><span data-count="221" data-suffix=" MB">221 MB</span></span><span class="nx-stat__label">Installer, down from 376</span></li>
+          <li class="nx-stat"><span class="nx-stat__value"><span data-count="0">0</span><small>Ollama inside</small></span><span class="nx-stat__label">Models on RoachInference</span></li>
+          <li class="nx-stat"><span class="nx-stat__value"><span data-count="31">31</span><small>themes</small></span><span class="nx-stat__label">Built in, plus packs</span></li>
+          <li class="nx-stat"><span class="nx-stat__value">0.3.0</span><span class="nx-stat__label">iOS companion it pairs with</span></li>
         </ul>
-        <div class="nx-grid nx-grid--4 nx-mt-24" role="list">
+        <div class="nx-grid nx-grid--3 nx-mt-24" role="list">
           <article class="nx-card nx-reveal" role="listitem">
-            <p class="nx-card__eyebrow">Native runtime</p>
-            <h3 class="nx-card__title">The engine is now a native Swift program.</h3>
-            <p class="nx-card__body">No bundled Node, nothing extra to update behind your back.</p>
+            <p class="nx-card__eyebrow">RoachInference</p>
+            <h3 class="nx-card__title">Models run on hand-written Metal.</h3>
+            <p class="nx-card__body">It speaks the Ollama, OpenAI and Anthropic APIs, with tools and structured output, and answers several requests at once. Models you already pulled with Ollama load in place.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
-            <p class="nx-card__eyebrow">Security patch</p>
-            <h3 class="nx-card__title">Only your own Mac gets in.</h3>
-            <p class="nx-card__body">1.0.6 could be reached through a look-alike <code>127.</code> web address. 1.0.7 accepts real local addresses only and refuses requests from other sites.</p>
+            <p class="nx-card__eyebrow">Your agents</p>
+            <h3 class="nx-card__title">Claude Code and Codex join your Org.</h3>
+            <p class="nx-card__body">So can Gemini CLI, OpenCode and Cursor. They pick up issues, comment and hand work to each other, signed in as you. Your Claude and ChatGPT plans also work as models.</p>
           </article>
           <article class="nx-card nx-reveal" role="listitem">
-            <p class="nx-card__eyebrow">Phone pairing</p>
-            <h3 class="nx-card__title">RoachNet iOS 0.2.0 works with the new engine.</h3>
-            <p class="nx-card__body">RoachTail pairing, RoachClaw chat and service controls from your phone.</p>
+            <p class="nx-card__eyebrow">RoachTrace</p>
+            <h3 class="nx-card__title">Every run, traced on your Mac.</h3>
+            <p class="nx-card__body">Tokens, cost, latency and speed for each agent step, chat and model call. Send them to Langfuse or any OpenTelemetry collector if you want.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">RoachNet Cluster</p>
+            <h3 class="nx-card__title">One model, several Macs.</h3>
+            <p class="nx-card__body">Pair your Macs with a code, and a model too big for one runs across them over encrypted links.</p>
+          </article>
+          <article class="nx-card nx-reveal" role="listitem">
+            <p class="nx-card__eyebrow">Themes</p>
+            <h3 class="nx-card__title">31 themes, 13 snippets and an editor.</h3>
+            <p class="nx-card__body">Every color, font, corner and background is yours to change. Theme packs install from the store, and your iPhone follows along.</p>
           </article>
           <article class="nx-card nx-card--signal nx-reveal" role="listitem">
-            <p class="nx-card__eyebrow nx-card__eyebrow--amber">In the workshop: 1.1</p>
-            <h3 class="nx-card__title">RoachClaw on its own engine, and an app that installs only what you use.</h3>
-            <p class="nx-card__body">Models on hand-written Metal with no Ollama inside, RoachClaw Org approvals from your phone, and feature packs so the core download stays small. No date until it's ready.</p>
+            <p class="nx-card__eyebrow nx-card__eyebrow--amber">Security</p>
+            <h3 class="nx-card__title">The local API wants a token now.</h3>
+            <p class="nx-card__body">RoachNet passes it for you. A script of yours needs a RoachClaw API token from Settings. Includes every 1.0.7 fix.</p>
           </article>
         </div>
       </section>
@@ -363,8 +373,8 @@
         <div class="nx-grid nx-grid--2 nx-downloads">
           <button class="nx-card nx-card--feature nx-card--clickable download-hero-card nx-reveal" data-platform="mac" type="button">
             <p class="nx-card__eyebrow">macOS · Apple Silicon</p>
-            <h3 class="nx-card__title">Download RoachNet 1.0.7. It all lands in <code>~/RoachNet</code>.</h3>
-            <p class="nx-card__body">RoachNet-Setup-macOS.dmg · 376 MB · not Apple-notarized yet, so macOS asks once.</p>
+            <h3 class="nx-card__title">Download RoachNet 1.1. It all lands in <code>~/RoachNet</code>.</h3>
+            <p class="nx-card__body">RoachNet-Setup-macOS.dmg · 221 MB · not Apple-notarized yet, so macOS asks once.</p>
             <p class="nx-card__foot nx-link nx-link--arrow">Download the DMG</p>
           </button>
           <div class="nx-console nx-reveal">
@@ -379,7 +389,7 @@
           </div>
           <a class="nx-card nx-card--clickable nx-reveal" href="https://roachnet.org/ios/">
             <p class="nx-card__eyebrow">iPhone &amp; iPad · SideStore + AltStore</p>
-            <h3 class="nx-card__title">RoachNet iOS 0.2.0</h3>
+            <h3 class="nx-card__title">RoachNet iOS 0.3.0</h3>
             <p class="nx-card__body">RoachClaw, your vault, app installs and a live look at the Mac, over your own RoachTail link.</p>
             <p class="nx-card__foot nx-link nx-link--arrow">Install on iOS</p>
           </a>
@@ -394,7 +404,7 @@
           Mac only. Browsers can't open Terminal, so Install with Homebrew downloads a small helper that runs there, adds Homebrew if it's missing, then installs RoachNet. Read it before you run it; it's short.
         </p>
         <div class="nx-actions nx-mt-24">
-          <button class="nx-btn nx-btn--primary" id="downloads-primary" type="button">Download RoachNet 1.0.7 for macOS</button>
+          <button class="nx-btn nx-btn--primary" id="downloads-primary" type="button">Download RoachNet 1.1 for macOS</button>
           <button class="nx-btn" data-homebrew-install type="button">Install with Homebrew</button>
           <a class="nx-btn" href="https://roachnet.org/ios/">RoachNet iOS</a>
         </div>
@@ -465,8 +475,8 @@
             href="https://github.com/RoachWares/RoachNet/releases/latest"
             target="_blank"
             rel="noreferrer"
-            aria-label="Latest RoachNet release v1.0.7"
-          >v1.0.7</a>
+            aria-label="Latest RoachNet release v1.1.0"
+          >v1.1.0</a>
           <span>© 2026 RoachWares LLC</span>
         </div>
         <a class="nx-netlify" href="https://www.netlify.com" target="_blank" rel="noreferrer" aria-label="Proudly powered by Netlify">
