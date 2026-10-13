@@ -208,11 +208,23 @@ function confirmationRedirect(env) {
   }
 }
 
+// Supabase's auth server gives up on a request after 10 seconds, and its gateway
+// may try it again, so a slow sign-up can take half a minute to fail. Past this
+// limit the person is told plainly that it's slow on our side, instead of the
+// browser giving up with what looks like a connection problem.
+const SIGNUP_TIMEOUT_MS = 15000
+const SIGNUP_SLOW_MESSAGE =
+  "Sign-up is slow on our side right now and didn't finish. Wait a few minutes, then try again. If a confirmation email arrives first, use that."
+const SIGNUP_EMAIL_FAILED_MESSAGE =
+  "The confirmation email couldn't be sent, so the account wasn't created. Try again in a few minutes."
+const SIGNUP_UNAVAILABLE_MESSAGE = 'The account service is having trouble right now. Try again in a few minutes.'
+
 export function createRegistrationHandler({
   env = process.env,
   fetchImpl = globalThis.fetch,
   getRateLimitStore = () => getStore('roachnet-registration-rate-limits'),
   now = Date.now,
+  signupTimeoutMs = SIGNUP_TIMEOUT_MS,
 } = {}) {
   return async (request) => {
     if (!isAllowedRequestOrigin(request, env)) {
@@ -436,6 +448,9 @@ export function createRegistrationHandler({
     signupUrl.searchParams.set('redirect_to', confirmationRedirect(env))
 
     let createResponse
+    let responseBody
+    const signupController = new AbortController()
+    const signupTimer = setTimeout(() => signupController.abort(), signupTimeoutMs)
     try {
       createResponse = await fetchImpl(signupUrl, {
         method: 'POST',
@@ -449,20 +464,39 @@ export function createRegistrationHandler({
           password,
           data: userData,
         }),
+        signal: signupController.signal,
       })
+      responseBody = await createResponse.json().catch(() => ({}))
     } catch {
+      if (signupController.signal.aborted) {
+        console.warn(`register-account: Supabase sign-up took longer than ${signupTimeoutMs} ms; gave up.`)
+        return withCors(request, json({ ok: false, code: 'signup_slow', message: SIGNUP_SLOW_MESSAGE }, 504))
+      }
       return withCors(
         request,
         json({ ok: false, message: "Sign-up couldn't reach the account service. Try again in a few minutes." }, 503)
       )
+    } finally {
+      clearTimeout(signupTimer)
     }
-
-    const responseBody = await createResponse.json().catch(() => ({}))
 
     if (!createResponse.ok) {
       const code = String(responseBody?.error_code || responseBody?.code || '')
       const message = String(responseBody?.msg || responseBody?.message || responseBody?.error || '')
       const lowered = `${code} ${message}`.toLowerCase()
+
+      // Supabase's own failures aren't the person's to fix, and their wording
+      // isn't written for them. Say what happened instead; the account wasn't kept.
+      if (createResponse.status >= 500) {
+        console.warn(`register-account: Supabase sign-up answered ${createResponse.status}${code ? ` (${code})` : ''}.`)
+        if (createResponse.status === 504 || lowered.includes('request_timeout')) {
+          return withCors(request, json({ ok: false, code: 'signup_slow', message: SIGNUP_SLOW_MESSAGE }, 504))
+        }
+        if (lowered.includes('confirmation email') || lowered.includes('sending email') || lowered.includes('smtp')) {
+          return withCors(request, json({ ok: false, code: 'signup_email_failed', message: SIGNUP_EMAIL_FAILED_MESSAGE }, 503))
+        }
+        return withCors(request, json({ ok: false, code: 'signup_unavailable', message: SIGNUP_UNAVAILABLE_MESSAGE }, 503))
+      }
 
       // Answer an existing address exactly like a new one, so sign-up can't be
       // used to find out who has an account. Supabase does the same when email

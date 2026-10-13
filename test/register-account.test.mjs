@@ -61,7 +61,7 @@ function registrationRequest({
   })
 }
 
-function createHarness({ env = productionEnv, store = new MemoryRateLimitStore(), fetchImpl } = {}) {
+function createHarness({ env = productionEnv, store = new MemoryRateLimitStore(), fetchImpl, signupTimeoutMs } = {}) {
   const calls = []
   const fetchStub = fetchImpl || (async (url, options) => {
     calls.push({ url: String(url), options })
@@ -78,6 +78,7 @@ function createHarness({ env = productionEnv, store = new MemoryRateLimitStore()
       fetchImpl: fetchStub,
       getRateLimitStore: () => store,
       now: () => Date.parse('2026-08-22T12:00:00.000Z'),
+      ...(signupTimeoutMs ? { signupTimeoutMs } : {}),
     }),
     store,
   }
@@ -314,4 +315,66 @@ test('with a ticket secret, sign-up sends a ticket the database hook can verify'
   assert.equal(Number(expires), Math.floor(Date.parse('2026-08-22T12:00:00.000Z') / 1000) + 600)
   assert.equal(mac, createHmac('sha256', secret).update(`v1|person@example.com|${expires}`).digest('hex'))
   assert.equal(data.display_name, 'Person')
+})
+
+// The human check and the breach check pass; `answer` plays Supabase's sign-up.
+function signupAnswering(answer) {
+  return async (url, options) => {
+    const host = new URL(String(url)).hostname
+    if (host === 'challenges.cloudflare.com') return Response.json({ success: true })
+    if (host === 'api.pwnedpasswords.com') return new Response('')
+    return answer(url, options)
+  }
+}
+
+test('a sign-up Supabase sits on is answered plainly, with CORS, before the browser gives up', async () => {
+  const { handler } = createHarness({
+    signupTimeoutMs: 30,
+    fetchImpl: signupAnswering(
+      (url, options) =>
+        new Promise((resolve, reject) => {
+          const fallback = setTimeout(() => resolve(Response.json({ id: 'too-late' })), 2000)
+          options.signal.addEventListener('abort', () => {
+            clearTimeout(fallback)
+            reject(new DOMException('The operation was aborted.', 'AbortError'))
+          })
+        })
+    ),
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 504)
+  assert.equal(response.headers.get('access-control-allow-origin'), 'https://accounts.roachnet.org')
+  const result = await body(response)
+  assert.equal(result.ok, false)
+  assert.equal(result.code, 'signup_slow')
+  assert.match(result.message, /slow on our side/)
+})
+
+test("Supabase's own failures get a plain answer, not its wording", async () => {
+  const cases = [
+    [Response.json({ message: 'An invalid response was received from the upstream server' }, { status: 504 }), 504, 'signup_slow'],
+    [Response.json({ code: 504, error_code: 'request_timeout', msg: 'Processing this request timed out' }, { status: 504 }), 504, 'signup_slow'],
+    [Response.json({ code: 500, error_code: 'unexpected_failure', msg: 'Error sending confirmation email' }, { status: 500 }), 503, 'signup_email_failed'],
+    [new Response('<html>bad gateway</html>', { status: 502 }), 503, 'signup_unavailable'],
+  ]
+  for (const [answer, status, code] of cases) {
+    const { handler } = createHarness({ fetchImpl: signupAnswering(async () => answer.clone()) })
+    const response = await handler(registrationRequest())
+    assert.equal(response.status, status)
+    assert.equal(response.headers.get('access-control-allow-origin'), 'https://accounts.roachnet.org')
+    const result = await body(response)
+    assert.equal(result.code, code)
+    assert.doesNotMatch(result.message, /upstream|unexpected|Error sending|bad gateway|timed out/i)
+  }
+})
+
+test("the database hook's refusal reaches the person as it was written", async () => {
+  const { handler } = createHarness({
+    fetchImpl: signupAnswering(async () =>
+      Response.json({ code: 403, error_code: 'unexpected_failure', msg: 'Create your account at accounts.roachnet.org.' }, { status: 403 })
+    ),
+  })
+  const response = await handler(registrationRequest())
+  assert.equal(response.status, 403)
+  assert.equal((await body(response)).message, 'Create your account at accounts.roachnet.org.')
 })

@@ -42,6 +42,44 @@ So turn it on and test it in one sitting:
 5. Check that the hook really ran: `pg_stat_statements` should show calls of `hook_require_signup_ticket` by `supabase_auth_admin`, and `auth.users` one more row.
 6. Optional negative check: a direct `POST /auth/v1/signup` with the public key and no ticket should return 403 with that same message, and create no user.
 
+#### Result, 2026-10-13
+
+The hook was turned on at 01:36 UTC and works.
+
+- Between 01:38 and 01:39 the auth server saw 8 sign-up attempts from `register-account`. Supabase's gateway retries a request that times out, so they came from fewer clicks.
+- For each attempt, the auth log says the hook ran and let it through, and `pg_stat_statements` shows the 8 calls by `supabase_auth_admin` (6 ms on average).
+- So the Netlify and database ticket secrets match, and the ticket arrives in `user.user_metadata`.
+
+The sign-ups themselves didn't finish, for a reason that has nothing to do with the hook:
+
+- Each attempt's database work took milliseconds: the user and identity rows were written.
+- Six of the eight then ran into Supabase's 10-second limit (504 `request_timeout`); the other two ended just past it. None of the accounts was kept: `auth.users` has no new rows.
+- With the gateway's retries, a click took about 35 seconds to fail. The browser showed "Could not reach the sign-in service."
+
+The wait comes after the database work. In a sign-up, that's when the confirmation email goes out, so email delivery is the likely cause; see [Email delivery](#email-delivery). The hook stays on. It finishes in milliseconds, so turning it off wouldn't help.
+
+On `site/mission-palettes` (not deployed yet), `register-account` gives up on Supabase after 15 seconds. It answers plainly ("Sign-up is slow on our side right now…") instead of leaving the browser to time out, and it turns Supabase's 5xx wording into messages written for people.
+
+## Email delivery
+
+Public sign-ups need email that works. The confirmation email is sent inside the sign-up, so when sending stalls or fails, the account isn't created.
+
+Supabase's built-in email service is not meant for production ([Send emails with custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)):
+
+- It only delivers to the addresses of the project's team members.
+- It allows a few messages an hour.
+- It has no delivery guarantee.
+
+Before launch:
+
+1. Check Dashboard › Authentication › Emails › SMTP Settings. Either custom SMTP is off (the built-in service), or a configured server isn't answering.
+2. Set up a custom SMTP sender for the roachnet.org domain:
+   - choose a provider (Supabase lists Resend, AWS SES, Postmark and others);
+   - add its SPF and DKIM DNS records;
+   - put its SMTP host, port, user and password in that screen, with a `no-reply@` From address.
+3. Raise the email rate limit under Authentication › Rate Limits to fit.
+4. Sign up once more and check that the confirmation email arrives and its link works.
+
 ## What the Free plan doesn't give us
 
 | Missing on Free | Effect | What we do instead | Still not covered |
@@ -128,6 +166,7 @@ Then delete the throwaway project.
 | Date (UTC) | Kind | Checked | Off-site |
 | --- | --- | --- | --- |
 | 2026-10-13 01:23 | First manual backup, before turning on the sign-up hook: roles, schema and data (60 KB) | `SHA256SUMS` verifies. `auth.users` has the same row count as the live project. The schema has the hook function, row-level security on the same 7 tables, and the same 21 policies. `roles.sql` holds no role passwords | Not yet |
+| 2026-10-13 01:47 | Manual, checking the re-stored Keychain item (password only) after the reset (60 KB) | `SHA256SUMS` verifies, `auth.users` matches live, 21 policies | Not yet |
 
 ## Checking it
 
