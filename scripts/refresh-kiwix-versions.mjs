@@ -23,7 +23,7 @@ const files = {
   wikipedia: path.join(repoRoot, 'collections', 'wikipedia.json'),
 }
 
-const zimPattern = /^(https:\/\/download\.kiwix\.org\/zim\/[^/]+\/)([A-Za-z0-9._-]+?)_(\d{4}-\d{2})\.zim$/
+const zimPattern = /^(https:\/\/download\.kiwix\.org\/zim\/[^/]+\/)([A-Za-z0-9._-]+?)_(\d{4}-\d{2})[a-z]?\.zim$/
 
 // Kiwix's library names a book without its flavour: `wikipedia_en_all_maxi_2026-02.zim`
 // is name `wikipedia_en_all`, flavour `maxi`.
@@ -76,7 +76,8 @@ async function lookup(name, flavour = '') {
         || /<link[^>]*href="([^"]+\.zim\.meta4)"[^>]*length="(\d+)"/.exec(entry)
       if (!link) return null
       const href = link[1].replace(/\.meta4$/, '').replace('https://lb.download.kiwix.org/', 'https://download.kiwix.org/')
-      const version = /_(\d{4}-\d{2})\.zim$/.exec(href)?.[1] || null
+      // A rebuilt month carries a letter (`_2026-09b.zim`); the version is still the month.
+      const version = /_(\d{4}-\d{2})[a-z]?\.zim$/.exec(href)?.[1] || null
       return { url: href, version, bytes: Number(link[2]) }
     }
     return null

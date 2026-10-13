@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-11T18:08:21.349Z",
+  "updatedAt": "2026-10-13T06:34:15.490Z",
   "featuredId": "base-atlas",
   "artifactOrigin": {
     "provider": "Apps.RoachNet.org",
@@ -1216,7 +1216,7 @@
       "includes": [
         "How medicines work, dosages, side effects, and interactions",
         "Part of the essential medicine shelf",
-        "Version 2025-12"
+        "Version 2026-09"
       ],
       "installLabel": "Install to RoachNet",
       "detailLabel": "Open manifest",
@@ -3184,7 +3184,7 @@
       "includes": [
         "A kid-friendly general encyclopedia sized for fast installs and easy offline browsing",
         "Part of the essential kids & family shelf",
-        "Version 2026-03"
+        "Version 2026-09"
       ],
       "installLabel": "Install to RoachNet",
       "detailLabel": "Open manifest",
@@ -3703,6 +3703,47 @@
       "iconMonogram": "EW"
     },
     {
+      "id": "course-matheducators.stackexchange.com_en_all",
+      "title": "Math Educators Q&A",
+      "subtitle": "Teaching math, curriculum structure, and explaining hard concepts clearly",
+      "category": "Essential",
+      "section": "Math & Problem Solving",
+      "size": "58 MB",
+      "status": "Good first install",
+      "source": "Stack Exchange via Kiwix",
+      "summary": "Real questions, voted answers and practical fixes from people who got there first. Math Educators Q&A gets its own math shelf in RoachNet and works offline.",
+      "accent": "violet",
+      "machineFit": "Any supported Mac. It’s small.",
+      "includes": [
+        "Teaching math, curriculum structure, and explaining hard concepts clearly",
+        "Part of the essential math & problem solving shelf",
+        "Version 2026-08"
+      ],
+      "installLabel": "Install to RoachNet",
+      "detailLabel": "Open manifest",
+      "detailUrl": "./collections/kiwix-categories.json",
+      "installIntent": {
+        "action": "education-resource",
+        "category": "math-logic",
+        "resource": "matheducators.stackexchange.com_en_all"
+      },
+      "artifact": {
+        "provider": "Apps.RoachNet.org",
+        "engine": "Static descriptors + open distribution sources",
+        "key": "content/zim/matheducators.stackexchange.com_en_all_2026-08.json",
+        "url": "https://apps.roachnet.org/downloads/content/zim/matheducators.stackexchange.com_en_all_2026-08.json",
+        "status": "source-with-managed-mirror",
+        "sourceUrl": "https://download.kiwix.org/zim/stack_exchange/matheducators.stackexchange.com_en_all_2026-08.zim",
+        "checksumUrl": null,
+        "mirrorPolicy": "canonical-source-first",
+        "note": "The source library remains visible; RoachNet can prefer an Apps descriptor once that object is staged."
+      },
+      "iconBand": "Stack",
+      "iconFamily": "math",
+      "iconAsset": "./assets/app-icons/course-matheducators.stackexchange.com_en_all.svg",
+      "iconMonogram": "ME"
+    },
+    {
       "id": "course-math.stackexchange.com_en_all",
       "title": "Mathematics Q&A",
       "subtitle": "A huge applied-and-pure math shelf for proofs, examples, edge cases, and worked intuition",
@@ -3742,47 +3783,6 @@
       "iconFamily": "math",
       "iconAsset": "./assets/app-icons/course-math.stackexchange.com_en_all.svg",
       "iconMonogram": "MATH"
-    },
-    {
-      "id": "course-matheducators.stackexchange.com_en_all",
-      "title": "Math Educators Q&A",
-      "subtitle": "Teaching math, curriculum structure, and explaining hard concepts clearly",
-      "category": "Standard",
-      "section": "Math & Problem Solving",
-      "size": "58 MB",
-      "status": "Good next install",
-      "source": "Stack Exchange via Kiwix",
-      "summary": "Real questions, voted answers and practical fixes from people who got there first. Math Educators Q&A gets its own math shelf in RoachNet and works offline.",
-      "accent": "violet",
-      "machineFit": "Any supported Mac. It’s small.",
-      "includes": [
-        "Teaching math, curriculum structure, and explaining hard concepts clearly",
-        "Part of the standard math & problem solving shelf",
-        "Version 2026-08"
-      ],
-      "installLabel": "Install to RoachNet",
-      "detailLabel": "Open manifest",
-      "detailUrl": "./collections/kiwix-categories.json",
-      "installIntent": {
-        "action": "education-resource",
-        "category": "math-logic",
-        "resource": "matheducators.stackexchange.com_en_all"
-      },
-      "artifact": {
-        "provider": "Apps.RoachNet.org",
-        "engine": "Static descriptors + open distribution sources",
-        "key": "content/zim/matheducators.stackexchange.com_en_all_2026-08.json",
-        "url": "https://apps.roachnet.org/downloads/content/zim/matheducators.stackexchange.com_en_all_2026-08.json",
-        "status": "source-with-managed-mirror",
-        "sourceUrl": "https://download.kiwix.org/zim/stack_exchange/matheducators.stackexchange.com_en_all_2026-08.zim",
-        "checksumUrl": null,
-        "mirrorPolicy": "canonical-source-first",
-        "note": "The source library remains visible; RoachNet can prefer an Apps descriptor once that object is staged."
-      },
-      "iconBand": "Stack",
-      "iconFamily": "math",
-      "iconAsset": "./assets/app-icons/course-matheducators.stackexchange.com_en_all.svg",
-      "iconMonogram": "ME"
     },
     {
       "id": "course-mathoverflow.net_en_all",
@@ -5070,7 +5070,7 @@
       "includes": [
         "Printers, slicers, materials, tolerances, and fabrication troubleshooting",
         "Part of the standard maker & electronics shelf",
-        "Version 2026-02"
+        "Version 2026-07"
       ],
       "installLabel": "Install to RoachNet",
       "detailLabel": "Open manifest",
@@ -6136,7 +6136,7 @@
       "includes": [
         "The official Python documentation mirrored for offline reference inside RoachNet.",
         "Part of the essential software development shelf",
-        "Version 2025-09"
+        "Version 2026-08"
       ],
       "installLabel": "Install to RoachNet",
       "detailLabel": "Open manifest",
