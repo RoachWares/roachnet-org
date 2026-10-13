@@ -21,6 +21,25 @@ Nothing here makes the Free plan equal to Pro. Where a Pro-only control is missi
 
 The sign-up hook does nothing until it is switched on: Dashboard › Authentication › Hooks › Before User Created › Postgres function `public.hook_require_signup_ticket`. Switch it on only after `ROACHNET_SIGNUP_TICKET_SECRET` is set on the roachnet.org Netlify site and that deploy is live, or every sign-up is refused.
 
+### Turning the sign-up hook on
+
+Checked on 2026-10-12, before turning it on:
+
+- The live roachnet.org deploy carries the ticket code: `register-account` answers 403 to another origin and 400 to an empty form.
+- `private.signup_ticket_secret` has one row of at least 32 characters. Only `supabase_auth_admin` can read it, and only it can run the hook; `anon` and `authenticated` can do neither.
+- The hook was run directly on ten made-up events:
+  - a valid ticket passes, including when the email is typed in capitals;
+  - it refuses a ticket for another email, no ticket, an expired ticket, an expiry more than 15 minutes ahead, a ticket signed with another key, a ticket with one hex digit changed, a non-email provider, and a malformed ticket.
+
+Not checked, because it needs a real account: that Supabase hands the hook the `signup_ticket` that `register-account` puts in the sign-up's `data` (it should arrive as `user.user_metadata`). Nor whether the Netlify secret and the database secret are the same value; neither can be read back.
+
+So turn it on and test it in one sitting:
+
+1. Dashboard › Authentication › Hooks › **Before User Created** › Postgres, function `public.hook_require_signup_ticket` › Enable.
+2. Create an account at accounts.roachnet.org with an address you control. It should succeed and send the confirmation email. Delete the test account afterwards if you don't want it.
+3. If step 2 says "Create your account at accounts.roachnet.org.", the ticket didn't match. Turn the hook off again (same screen), and sign-ups work as before while it's looked at.
+4. Optional negative check: a direct `POST /auth/v1/signup` with the public key and no ticket should return 403 with that same message, and create no user.
+
 ## What the Free plan doesn't give us
 
 | Missing on Free | Effect | What we do instead | Still not covered |
@@ -36,22 +55,45 @@ Supabase Auth's own CAPTCHA setting isn't turned on. Turnstile is checked in `re
 
 ## Manual backup
 
-This follows Supabase's [Backup and Restore using the CLI](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore) guide. It needs the Supabase CLI, Docker Desktop running, and the database password (Dashboard › Project Settings › Database). Keep the output outside every git repo.
+Supabase backs up only Pro, Team and Enterprise projects. For Free projects it recommends regular `supabase db dump` exports kept off-site ([Database Backups](https://supabase.com/docs/guides/platform/backups)). `scripts/supabase-backup.sh` does that, following Supabase's [Backup and Restore using the CLI](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore) guide.
+
+### Schedule
+
+| When | What |
+| --- | --- |
+| Every Monday | `scripts/supabase-backup.sh --keep 8` (eight weeks of dumps) |
+| Before every migration, and before changing auth hooks or settings | `scripts/supabase-backup.sh` |
+| First Monday of the month | Copy the newest dump to the encrypted off-site location, and keep twelve monthly copies there |
+| Every three months | Restore the newest dump into a throwaway project and check that the accounts and chats are there (below) |
+
+### Running it
+
+It needs the Supabase CLI (`brew install supabase/tap/supabase`), Docker Desktop running, and the session-pooler connection string from the dashboard's Connect panel. Store that string once in the login Keychain:
 
 ```sh
-mkdir -p ~/RoachNet-Backups/supabase && cd ~/RoachNet-Backups/supabase
-stamp=$(date -u +%Y%m%dT%H%M%SZ)
-supabase db dump --db-url "$SUPABASE_DB_URL" -f "roles-$stamp.sql" --role-only
-supabase db dump --db-url "$SUPABASE_DB_URL" -f "schema-$stamp.sql"
-supabase db dump --db-url "$SUPABASE_DB_URL" -f "data-$stamp.sql" --use-copy --data-only \
-  -x "storage.buckets_vectors" -x "storage.vector_indexes"
+security add-generic-password -a "$USER" -s roachnet-supabase-db-url -w
 ```
 
-`SUPABASE_DB_URL` is the session-pooler connection string from the dashboard's Connect panel. Set it in the shell for that session only; don't save it in a file.
+Then:
 
-The data dump holds account emails, password hashes, chat history and the sign-up ticket secret. Store it encrypted (an encrypted APFS volume or disk image), keep it off-site, and delete old dumps on a schedule. Before trusting a dump, check that it contains `auth.users` rows.
+```sh
+scripts/supabase-backup.sh --keep 8        # writes ~/RoachNet-Backups/supabase/<UTC stamp>/
+scripts/supabase-backup.sh --to /Volumes/EncryptedBackups/supabase
+```
 
-To restore, create a new project and run:
+What the script does:
+
+- It reads the connection string from `$SUPABASE_DB_URL`, the Keychain item, or a hidden prompt. It never writes the string to a file.
+- It refuses to write inside a git repository. Files are owner-only, and it warns when FileVault is off.
+- It dumps the roles, the schema and the data.
+- It fails if any file is empty or the data has no `auth.users` rows, and writes `SHA256SUMS`.
+- With `--keep N`, it removes its own dated folders past the newest N.
+
+The data dump holds account emails, password hashes, chat history and the sign-up ticket secret. Keep it on an encrypted volume, and keep the off-site copy encrypted too.
+
+### Restoring
+
+To restore, create a new project and run (`psql` comes with `brew install libpq`):
 
 ```sh
 psql --single-transaction --variable ON_ERROR_STOP=1 \
@@ -61,6 +103,19 @@ psql --single-transaction --variable ON_ERROR_STOP=1 \
 ```
 
 Dashboard settings aren't in the dump. After a restore, set the Before User Created hook, the auth URLs and the rate limits again, and point the Netlify env at the new project. Test a restore at least once before relying on it.
+
+For the quarterly test, restore into a throwaway Free project rather than the live one. A Free organization can hold two active projects. Check:
+
+- `select count(*) from auth.users` matches the live count;
+- a recent chat thread is there.
+
+Then delete the throwaway project.
+
+### Backup log
+
+| Date (UTC) | Kind | Checked | Off-site |
+| --- | --- | --- | --- |
+| — | No backup yet | — | — |
 
 ## Checking it
 
