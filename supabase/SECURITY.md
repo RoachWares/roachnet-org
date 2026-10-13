@@ -56,29 +56,37 @@ The sign-ups themselves didn't finish, for a reason that has nothing to do with 
 - Six of the eight then ran into Supabase's 10-second limit (504 `request_timeout`); the other two ended just past it. None of the accounts was kept: `auth.users` has no new rows.
 - With the gateway's retries, a click took about 35 seconds to fail. The browser showed "Could not reach the sign-in service."
 
-The wait comes after the database work. In a sign-up, that's when the confirmation email goes out, so email delivery is the likely cause; see [Email delivery](#email-delivery). The hook stays on. It finishes in milliseconds, so turning it off wouldn't help.
+The wait comes after the database work, which is when the confirmation email goes out. The hook stayed on: it finishes in milliseconds, so turning it off wouldn't have helped.
 
-On `site/mission-palettes` (not deployed yet), `register-account` gives up on Supabase after 15 seconds. It answers plainly ("Sign-up is slow on our side right now…") instead of leaving the browser to time out, and it turns Supabase's 5xx wording into messages written for people.
+**Fixed at 02:20 UTC.** The SMTP port was moved from 465 to 587 (see [Email delivery](#email-delivery)). Then a sign-up from accounts.roachnet.org worked end to end:
+
+- The hook ran (its 9th call) and let it through.
+- `/signup` answered 200 in 0.8 seconds, and the confirmation email went out at once.
+- The link in it confirmed the address 13 seconds later.
+- The new account has its `profiles` and `user_settings` rows, and password sign-in works.
+
+The used ticket stays in the account's `user_metadata`. It has expired, is bound to that one address, and doesn't reveal the secret, so it's harmless.
+
+Since the roachnet.org deploy of 2026-10-13 02:35 UTC (`6acd98dc`), `register-account` gives up on Supabase after 15 seconds. It answers plainly ("Sign-up is slow on our side right now…") instead of leaving the browser to time out, and it turns Supabase's 5xx wording into messages written for people.
 
 ## Email delivery
 
 Public sign-ups need email that works. The confirmation email is sent inside the sign-up, so when sending stalls or fails, the account isn't created.
 
-Supabase's built-in email service is not meant for production ([Send emails with custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)):
+Account email goes through custom SMTP: the roachwares.org mail provider (Fastmail), sending as the company's contact address.
 
-- It only delivers to the addresses of the project's team members.
+- **Use port 587 (STARTTLS), not 465.** On 465, Supabase's mailer stalled until the 10-second limit on every attempt, although the same login and sender worked from a Mac over 465. On 587 a sign-up's email goes out in under a second.
+- The SMTP password must be an app password from the mail provider, not the account's login password. When it's rotated, paste the new one into that screen.
+- roachwares.org has MX, SPF and DKIM records for that provider. On 2026-10-13 a second, conflicting DMARC record was removed. Mail servers ignore DMARC when a domain has two, so now its one `p=quarantine` policy, with relaxed alignment, applies.
+- With custom SMTP, Supabase allows 30 emails an hour by default (Authentication › Rate Limits). Raise it before a launch brings in many sign-ups at once.
+
+Supabase's built-in email service isn't an option for production ([Send emails with custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)):
+
+- It only delivers to the project's team members.
 - It allows a few messages an hour.
 - It has no delivery guarantee.
 
-Before launch:
-
-1. Check Dashboard › Authentication › Emails › SMTP Settings. Either custom SMTP is off (the built-in service), or a configured server isn't answering.
-2. Set up a custom SMTP sender for the roachnet.org domain:
-   - choose a provider (Supabase lists Resend, AWS SES, Postmark and others);
-   - add its SPF and DKIM DNS records;
-   - put its SMTP host, port, user and password in that screen, with a `no-reply@` From address.
-3. Raise the email rate limit under Authentication › Rate Limits to fit.
-4. Sign up once more and check that the confirmation email arrives and its link works.
+After any change to the SMTP settings, sign up once and check that the confirmation email arrives and its link works.
 
 ## What the Free plan doesn't give us
 
