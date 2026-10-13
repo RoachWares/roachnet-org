@@ -30,7 +30,14 @@ done
 [[ "$keep" == <-> ]] || { print -u2 -- "--keep takes a number"; exit 2 }
 
 command -v supabase >/dev/null || { print -u2 "Install the Supabase CLI first: brew install supabase/tap/supabase"; exit 1 }
-docker info >/dev/null 2>&1 || { print -u2 "Start Docker Desktop first (the Supabase CLI dumps through it)."; exit 1 }
+# The CLI runs pg_dump in a container. OrbStack's socket is used directly when
+# the current Docker context points somewhere that isn't running.
+if ! docker info >/dev/null 2>&1; then
+  if [[ -z "${DOCKER_HOST:-}" && -S "$HOME/.orbstack/run/docker.sock" ]]; then
+    export DOCKER_HOST="unix://$HOME/.orbstack/run/docker.sock"
+  fi
+  docker info >/dev/null 2>&1 || { print -u2 "Start Docker (OrbStack or Docker Desktop) first; the Supabase CLI dumps through it."; exit 1 }
+fi
 
 probe=${dest:a}
 while [[ ! -d "$probe" ]]; do probe=${probe:h}; done
@@ -57,22 +64,33 @@ fi
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 out="$dest/$stamp"
 mkdir -m 700 "$out"
+# A run that stops part-way leaves no half-written dump of account data behind.
+fail() {
+  print -u2 -- "$1"
+  rm -rf -- "$out"
+  print -u2 "Removed the incomplete backup folder."
+  exit 1
+}
+trap 'fail "Interrupted."' INT TERM HUP
 print "Backing up to $out"
-supabase db dump --db-url "$db_url" -f "$out/roles.sql" --role-only
-supabase db dump --db-url "$db_url" -f "$out/schema.sql"
-supabase db dump --db-url "$db_url" -f "$out/data.sql" --use-copy --data-only \
-  -x "storage.buckets_vectors" -x "storage.vector_indexes"
+# The CLI's own messages can quote the connection string; the password never reaches the terminal or a log.
+dump() {
+  supabase db dump --db-url "$db_url" "$@" 2>&1 | sed -E 's#(postgres(ql)?://[^:/@[:space:]]+):[^@[:space:]]*@#\1:[password]@#g'
+}
+dump -f "$out/roles.sql" --role-only || fail "The roles dump failed."
+dump -f "$out/schema.sql" || fail "The schema dump failed."
+dump -f "$out/data.sql" --use-copy --data-only -x "storage.buckets_vectors" -x "storage.vector_indexes" || fail "The data dump failed."
 unset db_url
 
 # A dump without the accounts in it is not a backup.
 for file in roles schema data; do
-  [[ -s "$out/$file.sql" ]] || { print -u2 "$file.sql is empty; this backup failed."; exit 1 }
+  [[ -s "$out/$file.sql" ]] || fail "$file.sql is empty; this backup failed."
 done
-grep -q '^COPY "auth"."users"' "$out/data.sql" || grep -q '^COPY auth.users' "$out/data.sql" || {
-  print -u2 "data.sql has no auth.users rows; this backup failed."; exit 1
-}
-(cd "$out" && shasum -a 256 roles.sql schema.sql data.sql > SHA256SUMS)
+grep -q '^COPY "auth"."users"' "$out/data.sql" || grep -q '^COPY auth.users' "$out/data.sql" ||
+  fail "data.sql has no auth.users rows; this backup failed."
+(cd "$out" && shasum -a 256 roles.sql schema.sql data.sql > SHA256SUMS) || fail "Couldn't write SHA256SUMS."
 chmod 600 "$out"/*
+trap - INT TERM HUP
 print "Done: $(du -sh "$out" | cut -f1). Checksums are in SHA256SUMS."
 
 if (( keep > 0 )); then
