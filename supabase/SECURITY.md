@@ -35,10 +35,12 @@ Not checked, because it needs a real account: that Supabase hands the hook the `
 
 So turn it on and test it in one sitting:
 
-1. Dashboard › Authentication › Hooks › **Before User Created** › Postgres, function `public.hook_require_signup_ticket` › Enable.
-2. Create an account at accounts.roachnet.org with an address you control. It should succeed and send the confirmation email. Delete the test account afterwards if you don't want it.
-3. If step 2 says "Create your account at accounts.roachnet.org.", the ticket didn't match. Turn the hook off again (same screen), and sign-ups work as before while it's looked at.
-4. Optional negative check: a direct `POST /auth/v1/signup` with the public key and no ticket should return 403 with that same message, and create no user.
+1. Take a backup first (`scripts/supabase-backup.sh`, below); the schedule asks for one before any change to auth hooks.
+2. Dashboard › Authentication › Hooks › add **Before User Created**: switch it on, hook type Postgres, schema `public`, function `hook_require_signup_ticket`, then **Create hook**.
+3. Create an account at accounts.roachnet.org with an address you control. It should succeed and send the confirmation email. Delete the test account afterwards if you don't want it.
+4. If step 3 says "Create your account at accounts.roachnet.org.", the ticket didn't match. Turn the hook off again (same screen), and sign-ups work as before while it's looked at.
+5. Check that the hook really ran: `pg_stat_statements` should show calls of `hook_require_signup_ticket` by `supabase_auth_admin`, and `auth.users` one more row.
+6. Optional negative check: a direct `POST /auth/v1/signup` with the public key and no ticket should return 403 with that same message, and create no user.
 
 ## What the Free plan doesn't give us
 
@@ -72,15 +74,17 @@ You need three things:
 
 - The Supabase CLI (`brew install supabase/tap/supabase`).
 - Docker running (OrbStack or Docker Desktop).
-- The **whole** session-pooler connection string from the dashboard's Connect panel. It starts with `postgresql://postgres.<project ref>:` and ends in `pooler.supabase.com:5432/postgres`. Put your database password where it says `[YOUR-PASSWORD]`.
+- The database password, stored once in the login Keychain.
 
-Store the string once in the login Keychain. `-U` replaces an existing item; paste the string at the prompt:
+To store it, or to replace it after a reset (`-U` replaces the old one), run this and paste the password at the prompt. Paste it only there, never into a chat, an issue or a file:
 
 ```sh
 security add-generic-password -U -a "$USER" -s roachnet-supabase-db-url -w
 ```
 
-The database password itself should be long and random. Supabase's **Reset database password** can generate one. The Supabase CLI and this script are the only things that need it; the sites use API keys, not the database password.
+The script builds the session-pooler connection string itself. The item can hold the whole string from the dashboard's Connect panel instead, with the password in place of `[YOUR-PASSWORD]`.
+
+The database password should be long and random. Supabase's **Reset database password** can generate one. The Supabase CLI and this script are the only things that need it; the sites use API keys, not the database password.
 
 Then:
 
@@ -91,7 +95,7 @@ scripts/supabase-backup.sh --to /Volumes/EncryptedBackups/supabase
 
 What the script does:
 
-- It reads the connection string from `$SUPABASE_DB_URL`, the Keychain item, or a hidden prompt. It never writes the string to a file.
+- It takes a connection string from `$SUPABASE_DB_URL`, or else the password (or the whole string) from the Keychain item or a hidden prompt. It never prints the password or writes it to a file, and it filters the CLI's messages so the password can't reach the terminal or a log.
 - It refuses to write inside a git repository. Files are owner-only, and it warns when FileVault is off.
 - It dumps the roles, the schema and the data.
 - It fails if any file is empty or the data has no `auth.users` rows, and writes `SHA256SUMS`.
@@ -123,7 +127,7 @@ Then delete the throwaway project.
 
 | Date (UTC) | Kind | Checked | Off-site |
 | --- | --- | --- | --- |
-| — | No backup yet | — | — |
+| 2026-10-13 01:23 | First manual backup, before turning on the sign-up hook: roles, schema and data (60 KB) | `SHA256SUMS` verifies. `auth.users` has the same row count as the live project. The schema has the hook function, row-level security on the same 7 tables, and the same 21 policies. `roles.sql` holds no role passwords | Not yet |
 
 ## Checking it
 
