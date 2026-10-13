@@ -113,13 +113,16 @@ async function refreshResource(resource, where) {
     }
     delete resource.unavailable
     const sizeMb = Math.max(1, Math.round(latest.bytes / 1_000_000))
-    if (latest.url === resource.url && resource.size_mb === sizeMb) {
+    // The recorded version counts too: a rebuilt month (`_2026-09b.zim`) can
+    // match the URL and size while the version still names an older month.
+    const version = latest.version || resource.version
+    if (latest.url === resource.url && resource.size_mb === sizeMb && resource.version === version) {
       report.current.push(`${where}: ${parsed.fullName} ${parsed.version}`)
       return
     }
-    report.updated.push(`${where}: ${parsed.fullName} ${parsed.version} → ${latest.version} (${sizeMb} MB)`)
+    report.updated.push(`${where}: ${parsed.fullName} ${resource.version || parsed.version} → ${version} (${sizeMb} MB)`)
     resource.url = latest.url
-    if (latest.version) resource.version = latest.version
+    if (version) resource.version = version
     resource.size_mb = sizeMb
   } catch (error) {
     report.errors.push(`${where}: ${parsed.fullName}: ${error.message}`)

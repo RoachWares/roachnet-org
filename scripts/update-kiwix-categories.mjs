@@ -577,6 +577,16 @@ const tierAdds = [
       recommended: true,
     },
     resources: [
+      // In Essential so the recommended tier always has a book Kiwix still
+      // serves (the Avanti courses below have dropped out of the library).
+      {
+        id: 'matheducators.stackexchange.com_en_all',
+        version: '2026-08',
+        title: 'Math Educators Q&A',
+        description: 'Teaching math, curriculum structure, and explaining hard concepts clearly',
+        url: 'https://download.kiwix.org/zim/stack_exchange/matheducators.stackexchange.com_en_all_2026-08.zim',
+        size: '58M',
+      },
       {
         id: 'avanti-fundamentals-of-mathematics',
         version: '2025-09',
@@ -611,14 +621,6 @@ const tierAdds = [
         description: 'A huge applied-and-pure math shelf for proofs, examples, edge cases, and worked intuition',
         url: 'https://download.kiwix.org/zim/stack_exchange/math.stackexchange.com_en_all_2026-02.zim',
         size: '6.9G',
-      },
-      {
-        id: 'matheducators.stackexchange.com_en_all',
-        version: '2026-02',
-        title: 'Math Educators Q&A',
-        description: 'Teaching math, curriculum structure, and explaining hard concepts clearly',
-        url: 'https://download.kiwix.org/zim/stack_exchange/matheducators.stackexchange.com_en_all_2026-02.zim',
-        size: '55M',
       },
       {
         id: 'avanti-binomial-theorem',
@@ -3251,6 +3253,8 @@ const cleanupRemovals = [
   { category: 'it-infrastructure', tier: 'it-infrastructure-standard', ids: ['cloudflare.com_en_learning-center', 'devdocs_en_apache-http-server'] },
   { category: 'it-infrastructure', tier: 'it-infrastructure-essential', ids: ['archlinux_en_all_maxi', 'alpinelinux_en_all_maxi'] },
   { category: 'it-infrastructure', tier: 'it-infrastructure-comprehensive', ids: ['security.stackexchange.com_en_all'] },
+  // Moved to math-logic-essential; Standard still includes it through includesTier.
+  { category: 'math-logic', tier: 'math-logic-standard', ids: ['matheducators.stackexchange.com_en_all'] },
 ]
 
 for (const cleanup of cleanupRemovals) {
@@ -3300,6 +3304,7 @@ for (const category of data.categories) {
   })
 }
 
-data.spec_version = '2026-04-05'
+// The manifest's revision is the day it was written, as refresh-kiwix-versions.mjs stamps it.
+data.spec_version = new Date().toISOString().slice(0, 10)
 await writeFile(file, JSON.stringify(data, null, 2) + '\n', 'utf8')
 console.log(`Updated ${file.pathname}`)
