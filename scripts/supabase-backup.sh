@@ -59,7 +59,14 @@ if [[ -z "$db_url" ]]; then
   read -rs "db_url?Supabase session-pooler connection string: "
   print
 fi
-[[ "$db_url" == postgres*://* ]] || { print -u2 "That doesn't look like a postgres:// connection string."; exit 1 }
+if [[ "$db_url" != postgres*://* ]]; then
+  # Never echo the value: if it isn't a URL it is most likely the bare password.
+  print -u2 "That isn't a postgres:// connection string. Store the whole session-pooler string from the dashboard's"
+  print -u2 "Connect panel, with your database password in place of [YOUR-PASSWORD]:"
+  print -u2 '  security add-generic-password -U -a "$USER" -s roachnet-supabase-db-url -w'
+  exit 1
+fi
+[[ "$db_url" != *"YOUR-PASSWORD"* ]] || { print -u2 "The connection string still has the [YOUR-PASSWORD] placeholder in it."; exit 1 }
 
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 out="$dest/$stamp"

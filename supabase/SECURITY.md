@@ -68,11 +68,19 @@ Supabase backs up only Pro, Team and Enterprise projects. For Free projects it r
 
 ### Running it
 
-It needs the Supabase CLI (`brew install supabase/tap/supabase`), Docker Desktop running, and the session-pooler connection string from the dashboard's Connect panel. Store that string once in the login Keychain:
+You need three things:
+
+- The Supabase CLI (`brew install supabase/tap/supabase`).
+- Docker running (OrbStack or Docker Desktop).
+- The **whole** session-pooler connection string from the dashboard's Connect panel. It starts with `postgresql://postgres.<project ref>:` and ends in `pooler.supabase.com:5432/postgres`. Put your database password where it says `[YOUR-PASSWORD]`.
+
+Store the string once in the login Keychain. `-U` replaces an existing item; paste the string at the prompt:
 
 ```sh
-security add-generic-password -a "$USER" -s roachnet-supabase-db-url -w
+security add-generic-password -U -a "$USER" -s roachnet-supabase-db-url -w
 ```
+
+The database password itself should be long and random. Supabase's **Reset database password** can generate one. The Supabase CLI and this script are the only things that need it; the sites use API keys, not the database password.
 
 Then:
 
