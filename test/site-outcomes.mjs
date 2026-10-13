@@ -279,7 +279,8 @@ const iosScript = await source('ios/ios-install.js')
 const pageIpas = new Set([...iosPage.matchAll(/data-ipa-download href="([^"]+)"/g)].map(([, href]) => href))
 assert.equal(pageIpas.size, 1, 'every IPA button on the iOS page uses one URL')
 const [pageIpa] = pageIpas
-assert.match(pageIpa, /RoachNetiOS-v0\.3\.0-unsigned\.ipa$/)
+// Pinned to its release tag, so a later release can't turn the link into a 404.
+assert.match(pageIpa, /^https:\/\/github\.com\/RoachWares\/RoachNet-iOS\/releases\/download\/v0\.3\.1\/RoachNetiOS-v0\.3\.1-unsigned\.ipa$/)
 for (const [ipa] of iosScript.matchAll(/https:\/\/[^'"\s]+\.ipa/g)) {
   assert.equal(ipa, pageIpa, 'ios-install.js must not override the page with a different IPA')
 }

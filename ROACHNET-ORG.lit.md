@@ -7407,7 +7407,7 @@ This root is reconciled byte-for-byte from the current production source.
           <li class="nx-stat"><span class="nx-stat__value"><span data-count="221" data-suffix=" MB">221 MB</span></span><span class="nx-stat__label">Installer, down from 376</span></li>
           <li class="nx-stat"><span class="nx-stat__value"><span data-count="0">0</span><small>Ollama inside</small></span><span class="nx-stat__label">Models on RoachInference</span></li>
           <li class="nx-stat"><span class="nx-stat__value"><span data-count="31">31</span><small>themes</small></span><span class="nx-stat__label">Built in, plus packs</span></li>
-          <li class="nx-stat"><span class="nx-stat__value">0.3.0</span><span class="nx-stat__label">iOS companion it pairs with</span></li>
+          <li class="nx-stat"><span class="nx-stat__value">0.3.1</span><span class="nx-stat__label">iOS companion it pairs with</span></li>
         </ul>
         <div class="nx-grid nx-grid--3 nx-mt-24" role="list">
           <article class="nx-card nx-reveal" role="listitem">
@@ -7468,7 +7468,7 @@ This root is reconciled byte-for-byte from the current production source.
           </div>
           <a class="nx-card nx-card--clickable nx-reveal" href="https://roachnet.org/ios/">
             <p class="nx-card__eyebrow">iPhone &amp; iPad · SideStore + AltStore</p>
-            <h3 class="nx-card__title">RoachNet iOS 0.3.0</h3>
+            <h3 class="nx-card__title">RoachNet iOS 0.3.1</h3>
             <p class="nx-card__body">RoachClaw, your vault, app installs and a live look at the Mac, over your own RoachTail link.</p>
             <p class="nx-card__foot nx-link nx-link--arrow">Install on iOS</p>
           </a>
@@ -8004,7 +8004,7 @@ This root is reconciled byte-for-byte from the current production source.
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RoachNet iOS: RoachNet in your pocket</title>
-    <meta name="description" content="RoachNet iOS 0.3.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="description" content="RoachNet iOS 0.3.1 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
     <meta name="theme-color" content="#05060a" />
     <link rel="canonical" href="https://roachnet.org/ios/" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -8013,12 +8013,12 @@ This root is reconciled byte-for-byte from the current production source.
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="RoachNet iOS: RoachNet in your pocket" />
-    <meta property="og:description" content="RoachNet iOS 0.3.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta property="og:description" content="RoachNet iOS 0.3.1 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
     <meta property="og:url" content="https://roachnet.org/ios/" />
     <meta property="og:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="RoachNet iOS: RoachNet in your pocket" />
-    <meta name="twitter:description" content="RoachNet iOS 0.3.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
+    <meta name="twitter:description" content="RoachNet iOS 0.3.1 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link." />
     <meta name="twitter:image" content="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var.v1.woff2" crossorigin />
     <link rel="preload" as="image" href="../assets/screens/roachnet-ios-020-home.webp" />
@@ -8042,7 +8042,7 @@ This root is reconciled byte-for-byte from the current production source.
         <a class="nx-nav__brand" href="https://roachnet.org/" aria-label="RoachNet landing page">
           <span class="nx-nav__dot" aria-hidden="true"></span>
           <span>RoachNet</span>
-          <span class="nx-nav__sub">iOS · v0.3.0</span>
+          <span class="nx-nav__sub">iOS · v0.3.1</span>
         </a>
         <button class="nx-nav__burger" type="button" aria-expanded="false" aria-controls="nx-primary-nav" aria-label="Open menu">
           <span aria-hidden="true"></span>
@@ -8066,17 +8066,17 @@ This root is reconciled byte-for-byte from the current production source.
     <main id="top" class="nx-main" tabindex="-1">
       <section class="nx-hero" aria-labelledby="hero-title">
         <div class="nx-hero__copy">
-          <p class="nx-overline">RoachNet iOS 0.3.0 · iPhone &amp; iPad</p>
+          <p class="nx-overline">RoachNet iOS 0.3.1 · iPhone &amp; iPad</p>
           <h1 class="nx-display nx-display--xl" id="hero-title">RoachNet <span class="nx-accent">in your pocket.</span></h1>
           <p class="nx-lede">
             Your Mac's RoachClaw, library and vault on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
           </p>
           <div class="nx-actions">
-            <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.3.0-unsigned.ipa">Download RoachNet iOS 0.3.0</a>
+            <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/download/v0.3.1/RoachNetiOS-v0.3.1-unsigned.ipa">Download RoachNet iOS 0.3.1</a>
             <a class="nx-btn" href="#install">Install with SideStore or AltStore</a>
           </div>
           <p class="nx-hero__meta">
-            <span>v0.3.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.1 for Mac</span>
+            <span>v0.3.1</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.1 for Mac</span>
           </p>
           <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store, no RoachNet account, nobody in the middle.</p>
           <ul class="nx-chips" aria-label="What's in the app">
@@ -8172,9 +8172,9 @@ This root is reconciled byte-for-byte from the current production source.
 
       <section class="nx-section" id="features" aria-labelledby="features-title">
         <div class="nx-section__head">
-          <p class="nx-overline">What's in 0.3.0</p>
+          <p class="nx-overline">What's in 0.3.1</p>
           <h2 class="nx-h2" id="features-title">Your Mac's colors, and a token that stays home.</h2>
-          <p class="nx-lede">0.3.0 wears the theme you picked on the Mac with RoachNet 1.1. It still works with 1.0.7, minus the theme.</p>
+          <p class="nx-lede">0.3.1 wears the theme you picked on the Mac with RoachNet 1.1. It still works with 1.0.7, minus the theme.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--feature nx-reveal" role="listitem">
@@ -8233,7 +8233,7 @@ This root is reconciled byte-for-byte from the current production source.
             <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
             <div class="nx-actions nx-mt-16">
               <a class="nx-btn nx-btn--primary" data-sidestore-source href="sidestore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
-              <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.3.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/download/v0.3.1/RoachNetiOS-v0.3.1-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
             </div>
             <p class="nx-card__body" data-sidestore-note>Opens SideStore with the RoachNet source ready to add. Or download the IPA and share it to SideStore.</p>
@@ -8250,7 +8250,7 @@ This root is reconciled byte-for-byte from the current production source.
             <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
             <div class="nx-actions nx-mt-16">
               <a class="nx-btn nx-btn--primary" data-altstore-source href="altstore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
-              <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.3.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/download/v0.3.1/RoachNetiOS-v0.3.1-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
             </div>
             <p class="nx-card__body" data-altstore-note>Opens AltStore with the same source ready to add. Or download the IPA and import it from Files.</p>
@@ -22600,7 +22600,7 @@ This root is reconciled byte-for-byte from the current production source.
           <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
           <ul class="nx-status" aria-label="Current versions">
             <li data-state="online">macOS v1.1.0</li>
-            <li data-state="online">iOS v0.3.0</li>
+            <li data-state="online">iOS v0.3.1</li>
           </ul>
         </div>
       </section>
@@ -25356,7 +25356,8 @@ const iosScript = await source('ios/ios-install.js')
 const pageIpas = new Set([...iosPage.matchAll(/data-ipa-download href="([^"]+)"/g)].map(([, href]) => href))
 assert.equal(pageIpas.size, 1, 'every IPA button on the iOS page uses one URL')
 const [pageIpa] = pageIpas
-assert.match(pageIpa, /RoachNetiOS-v0\.3\.0-unsigned\.ipa$/)
+// Pinned to its release tag, so a later release can't turn the link into a 404.
+assert.match(pageIpa, /^https:\/\/github\.com\/RoachWares\/RoachNet-iOS\/releases\/download\/v0\.3\.1\/RoachNetiOS-v0\.3\.1-unsigned\.ipa$/)
 for (const [ipa] of iosScript.matchAll(/https:\/\/[^'"\s]+\.ipa/g)) {
   assert.equal(ipa, pageIpa, 'ios-install.js must not override the page with a different IPA')
 }

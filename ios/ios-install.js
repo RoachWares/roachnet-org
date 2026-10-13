@@ -23,7 +23,7 @@
   // The page's own download link is the source of truth for the IPA URL.
   const ipaURL =
     downloadCTA?.getAttribute('href') ||
-    'https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.3.0-unsigned.ipa'
+    'https://github.com/RoachWares/RoachNet-iOS/releases/download/v0.3.1/RoachNetiOS-v0.3.1-unsigned.ipa'
 
   if (isIOS) {
     if (sideStoreSourceCTA) {

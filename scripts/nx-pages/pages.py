@@ -4,17 +4,17 @@ IOS_BODY = '''
     <main id="top" class="nx-main" tabindex="-1">
       <section class="nx-hero" aria-labelledby="hero-title">
         <div class="nx-hero__copy">
-          <p class="nx-overline">RoachNet iOS 0.3.0 · iPhone &amp; iPad</p>
+          <p class="nx-overline">RoachNet iOS 0.3.1 · iPhone &amp; iPad</p>
           <h1 class="nx-display nx-display--xl" id="hero-title">RoachNet <span class="nx-accent">in your pocket.</span></h1>
           <p class="nx-lede">
             Your Mac's RoachClaw, library and vault on your iPhone or iPad. The Mac does the heavy lifting; the phone keeps you in the loop, even when the Mac is asleep.
           </p>
           <div class="nx-actions">
-            <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.3.0-unsigned.ipa">Download RoachNet iOS 0.3.0</a>
+            <a class="nx-btn nx-btn--primary" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/download/v0.3.1/RoachNetiOS-v0.3.1-unsigned.ipa">Download RoachNet iOS 0.3.1</a>
             <a class="nx-btn" href="#install">Install with SideStore or AltStore</a>
           </div>
           <p class="nx-hero__meta">
-            <span>v0.3.0</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.1 for Mac</span>
+            <span>v0.3.1</span><span aria-hidden="true">·</span><span>iOS 17 or later</span><span aria-hidden="true">·</span><span>pairs with RoachNet 1.1 for Mac</span>
           </p>
           <p class="nx-prose">An unsigned IPA that SideStore or AltStore signs with your own Apple ID. No App Store, no RoachNet account, nobody in the middle.</p>
           <ul class="nx-chips" aria-label="What's in the app">
@@ -110,9 +110,9 @@ IOS_BODY = '''
 
       <section class="nx-section" id="features" aria-labelledby="features-title">
         <div class="nx-section__head">
-          <p class="nx-overline">What's in 0.3.0</p>
+          <p class="nx-overline">What's in 0.3.1</p>
           <h2 class="nx-h2" id="features-title">Your Mac's colors, and a token that stays home.</h2>
-          <p class="nx-lede">0.3.0 wears the theme you picked on the Mac with RoachNet 1.1. It still works with 1.0.7, minus the theme.</p>
+          <p class="nx-lede">0.3.1 wears the theme you picked on the Mac with RoachNet 1.1. It still works with 1.0.7, minus the theme.</p>
         </div>
         <div class="nx-grid nx-grid--3" role="list">
           <article class="nx-card nx-card--feature nx-reveal" role="listitem">
@@ -171,7 +171,7 @@ IOS_BODY = '''
             <p class="nx-card__body">The source keeps you on the latest build without hunting for files. The IPA is there when you want the file itself.</p>
             <div class="nx-actions nx-mt-16">
               <a class="nx-btn nx-btn--primary" data-sidestore-source href="sidestore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to SideStore</a>
-              <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.3.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-btn" data-ipa-download href="https://github.com/RoachWares/RoachNet-iOS/releases/download/v0.3.1/RoachNetiOS-v0.3.1-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://docs.sidestore.io/" target="_blank" rel="noreferrer">First time with SideStore?</a>
             </div>
             <p class="nx-card__body" data-sidestore-note>Opens SideStore with the RoachNet source ready to add. Or download the IPA and share it to SideStore.</p>
@@ -188,7 +188,7 @@ IOS_BODY = '''
             <p class="nx-card__body">The same source works in AltStore and always points at the current IPA.</p>
             <div class="nx-actions nx-mt-16">
               <a class="nx-btn nx-btn--primary" data-altstore-source href="altstore://source?url=https://raw.githubusercontent.com/RoachWares/RoachNet-SideStore/main/apps.json">Add source to AltStore</a>
-              <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/latest/download/RoachNetiOS-v0.3.0-unsigned.ipa">Download IPA</a>
+              <a class="nx-btn" href="https://github.com/RoachWares/RoachNet-iOS/releases/download/v0.3.1/RoachNetiOS-v0.3.1-unsigned.ipa">Download IPA</a>
               <a class="nx-link nx-link--arrow" href="https://altstore.io/" target="_blank" rel="noreferrer">First time with AltStore?</a>
             </div>
             <p class="nx-card__body" data-altstore-note>Opens AltStore with the same source ready to add. Or download the IPA and import it from Files.</p>
@@ -394,7 +394,7 @@ SITEMAP_BODY = '''
           <p class="nx-lede">Pages, downloads, docs, release notes, all of it laid out flat. Nobody needs another little maze dressed up as navigation.</p>
           <ul class="nx-status" aria-label="Current versions">
             <li data-state="online">macOS v1.1.0</li>
-            <li data-state="online">iOS v0.3.0</li>
+            <li data-state="online">iOS v0.3.1</li>
           </ul>
         </div>
       </section>
@@ -451,12 +451,12 @@ def build(page):
     page(
         "ios/index.html",
         title="RoachNet iOS: RoachNet in your pocket",
-        description="RoachNet iOS 0.3.0 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link.",
+        description="RoachNet iOS 0.3.1 puts your Mac's RoachClaw, library and vault on your iPhone or iPad. Sideload with SideStore or AltStore and pair over your own RoachTail link.",
         canonical="https://roachnet.org/ios/",
         image="https://roachnet.org/assets/screens/roachnet-ios-020-home.webp",
         rel="../",
         current="ios",
-        sub="iOS · v0.3.0",
+        sub="iOS · v0.3.1",
         body=IOS_BODY,
         scripts='    <script src="../app.js" type="module"></script>\n    <script src="../nx.js" type="module"></script>\n    <script src="./ios-install.js"></script>\n',
         extra_head='    <link rel="preload" as="image" href="../assets/screens/roachnet-ios-020-home.webp" />\n',
