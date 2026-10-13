@@ -24788,11 +24788,12 @@ test('a password found in a breach is refused before sign-up, and only a hash pr
   const response = await handler(registrationRequest())
   assert.equal(response.status, 400)
   assert.equal((await body(response)).code, 'password_breached')
-  const range = calls.find(({ url }) => url.includes('api.pwnedpasswords.com'))
+  const isRangeApi = (url) => new URL(url).hostname === 'api.pwnedpasswords.com'
+  const range = calls.find(({ url }) => isRangeApi(url))
   assert.equal(range.url, `https://api.pwnedpasswords.com/range/${digest.slice(0, 5)}`)
   assert.equal(range.options.headers['add-padding'], 'true')
   assert.equal(calls.some(({ url }) => url.includes('/auth/v1/signup')), false)
-  assert.equal(calls.some(({ url, options }) => url.includes(digest.slice(5)) || String(options?.body || '').includes('long-enough-password') && url.includes('pwned')), false)
+  assert.equal(calls.some(({ url, options }) => url.includes(digest.slice(5)) || (isRangeApi(url) && String(options?.body || '').includes('long-enough-password'))), false)
 })
 
 test('sign-up carries on when the breach check is unavailable', async () => {
