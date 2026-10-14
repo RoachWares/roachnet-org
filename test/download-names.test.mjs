@@ -1,13 +1,17 @@
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { mkdir, mkdtemp, readdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 
-import { checkDownloadNames, DESCRIPTOR_SCHEMA, downloadNameProblem, INDEX_SCHEMA, MAX_NAME_LENGTH } from '../scripts/download-names.mjs'
+import {
+  checkDownloadNames, derivedDescriptorUrl, descriptorDownload, descriptorFile, DESCRIPTOR_SCHEMA, downloadNameProblem, INDEX_SCHEMA, MAX_NAME_LENGTH, webUrl,
+} from '../scripts/download-names.mjs'
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const char = (code) => String.fromCharCode(code)
 
 // RoachNet 1.1.1's own rule (safeFileName in RoachClawStatus.swift): the name
 // it saves `value` under, or null when it uses a generated name instead.
@@ -20,8 +24,8 @@ function roachNetName(value) {
 const unsafe = [
   '', '.', '..', '...',
   '../x.zim', 'a/b.zim', 'a\\b.zim', '/x.zim',
-  'x\u0000.zim', 'x\n.zim', 'x\t.zim',
-  ' x.zim', 'x.zim ', 'x y.zim', 'caf\u00e9.zim', 'cafe\u0301.zim', 'x\u200b.zim', '%2e%2e', 'x:y.zim',
+  `x${char(0)}.zim`, 'x\n.zim', 'x\t.zim',
+  ' x.zim', 'x.zim ', 'x y.zim', `caf${char(0xe9)}.zim`, `cafe${char(0x301)}.zim`, `x${char(0x200b)}.zim`, '%2e%2e', 'x:y.zim',
   'a'.repeat(MAX_NAME_LENGTH + 1),
   '.hidden.zim', '.DS_Store',
   'x.part', 'x.PART', 'map.pmtiles.part', 'x.part.json', 'X.Part.Json',
@@ -41,7 +45,7 @@ test('each refusal says why', () => {
   assert.match(downloadNameProblem(null), /is missing/)
   assert.match(downloadNameProblem('..'), /only of dots/)
   assert.match(downloadNameProblem('a/b.zim'), /path separator/)
-  assert.match(downloadNameProblem('x\u0000.zim'), /control character/)
+  assert.match(downloadNameProblem(`x${char(0)}.zim`), /control character/)
   assert.match(downloadNameProblem('x y.zim'), /character RoachNet replaces/)
   assert.match(downloadNameProblem('a'.repeat(MAX_NAME_LENGTH + 1)), /longer than 160/)
   assert.match(downloadNameProblem('.hidden.zim'), /hidden file/)
@@ -57,7 +61,7 @@ test('a download name RoachNet saves exactly as given is accepted', () => {
 
 test('every accepted name is one RoachNet saves unchanged', () => {
   // Every string of up to three characters from the characters that matter.
-  const alphabet = ['a', 'Z', '0', '.', '-', '_', ' ', '/', '\\', '\u0000', '\u00e9', '%', 'p']
+  const alphabet = ['a', 'Z', '0', '.', '-', '_', ' ', '/', '\\', char(0), char(0xe9), '%', 'p']
   let accepted = 0
   const visit = (name, depth) => {
     if (downloadNameProblem(name) === null) {
@@ -68,6 +72,44 @@ test('every accepted name is one RoachNet saves unchanged', () => {
   }
   visit('', 0)
   assert.ok(accepted > 100, `only ${accepted} names accepted`)
+})
+
+test('a descriptor is a .json file under the Apps downloads folder, on exactly that origin', () => {
+  const file = (url) => descriptorFile(webUrl(url))
+  assert.equal(file('https://apps.roachnet.org/downloads/maps/pmtiles/a.json'), 'downloads/maps/pmtiles/a.json')
+  assert.equal(file('  https://apps.roachnet.org/downloads/a.json?x=1  '), 'downloads/a.json')
+  assert.equal(file('HTTPS://APPS.ROACHNET.ORG/downloads/a.json'), 'downloads/a.json')
+  for (const other of [
+    'http://apps.roachnet.org/downloads/a.json', 'https://apps.roachnet.org:8443/downloads/a.json', 'https://example.org/downloads/a.json',
+    'https://apps.roachnet.org/downloadsx/a.json', 'https://apps.roachnet.org/collections/a.json', 'https://apps.roachnet.org/downloads/a.zip',
+    'ftp://apps.roachnet.org/downloads/a.json', 'not a url',
+  ]) {
+    assert.equal(file(other), null, other)
+  }
+})
+
+test('a collection resource leads RoachNet to the descriptor named after its file', () => {
+  const derive = (url, prefix) => derivedDescriptorUrl(new URL(url), prefix)
+  assert.equal(derive('https://download.kiwix.org/zim/x/fine_2026-01.zim', 'content/zim'), 'https://apps.roachnet.org/downloads/content/zim/fine_2026-01.json')
+  assert.equal(derive('https://mirror.example.org/a/fine_2026-01.ZIM?download=1', 'content/zim'), 'https://apps.roachnet.org/downloads/content/zim/fine_2026-01.json')
+  assert.equal(derive('https://github.com/o/r/releases/download/t/ohio_2026-10.pmtiles', 'maps/pmtiles'), 'https://apps.roachnet.org/downloads/maps/pmtiles/ohio_2026-10.json')
+  assert.equal(derive('https://example.org/files/noext', 'content/zim'), 'https://apps.roachnet.org/downloads/content/zim/noext')
+  assert.equal(derive('https://example.org/', 'content/zim'), null)
+})
+
+test('RoachNet downloads a descriptor\'s usable parts, else its first usable source', () => {
+  const self = 'https://apps.roachnet.org/downloads/model-packs/x.json'
+  const parts = [{ url: 'https://archive.org/download/i/x.rnpart0001', bytes: 4 }]
+  const partsSource = (status) => ({ type: 'internet-archive-parts', url: 'https://archive.org/details/i', status })
+  assert.equal(descriptorDownload({ sources: [partsSource('published-after-upload')], parts }, self), self)
+  // Parts not yet published, or listed without a size, aren't used.
+  assert.equal(descriptorDownload({ sources: [partsSource('upload-required'), { type: 'internet-archive', url: 'https://archive.org/download/i/x.zip', status: 'single-object-pending' }], parts, url: 'https://example.org/x.zip' }, self), 'https://example.org/x.zip')
+  assert.equal(descriptorDownload({ sources: [partsSource('published')], parts: [{ url: 'https://archive.org/p1' }] }, self), null)
+  // Pending, required, blocked and failed sources are skipped, whatever their case.
+  assert.equal(descriptorDownload({ sources: [{ type: 'internet-archive', url: 'https://archive.org/a', status: 'mirror-PENDING' }, { type: 'public-source', url: ' https://example.org/b ', status: 'active' }] }, self), 'https://example.org/b')
+  assert.equal(descriptorDownload({ sources: [{ type: 'github-release', url: 'https://example.org/c', status: 'Blocked' }], url: 'https://example.org/d' }, self), 'https://example.org/d')
+  assert.equal(descriptorDownload({ sources: [], downloadUrl: 'https://example.org/e' }, self), 'https://example.org/e')
+  assert.equal(descriptorDownload({ sources: [{ type: 'public-source', url: 'ftp://example.org/f' }] }, self), null)
 })
 
 async function countJsonFiles(directory) {
@@ -82,14 +124,24 @@ async function countJsonFiles(directory) {
 test('this checkout publishes only safe download names', async () => {
   const { counts, problems } = await checkDownloadNames(repoRoot)
   assert.deepEqual(problems, [])
-  // Every JSON file under downloads/ was read, and every kind of source was checked.
+  // Every JSON file under downloads/ was read, and every kind of install was checked.
   assert.equal(counts.files, await countJsonFiles(path.join(repoRoot, 'downloads')))
   for (const kind of ['descriptors', 'indexEntries', 'collectionResources', 'packResources', 'catalogUrls', 'savedNames']) {
     assert.ok(counts[kind] > 0, `no ${kind} checked`)
   }
 })
 
-const descriptor = (filename, extra = {}) => ({ schema: DESCRIPTOR_SCHEMA, id: filename, action: 'direct-download', kind: 'pmtiles', filename, sources: [], parts: [], ...extra })
+const APPS = 'https://apps.roachnet.org/downloads'
+const KIWIX = 'https://download.kiwix.org/zim/other'
+const sha = (text) => createHash('sha256').update(text).digest('hex')
+const descriptor = (filename, extra = {}) => ({ schema: DESCRIPTOR_SCHEMA, filename, sources: [], parts: [], ...extra })
+const source = (url, status = 'active', type = 'public-source') => ({ type, url, status })
+const mapDescriptor = (filename, url, digest = 'a'.repeat(64), extra = {}) => descriptor(filename, { url, sha256: digest, bytes: 10, ...extra })
+const chunked = (filename, part, digest) => descriptor(filename, {
+  sha256: digest, bytes: 5, sources: [source('https://archive.org/details/i', 'published-after-upload', 'internet-archive-parts')], parts: [{ url: part, bytes: 5 }],
+})
+const direct = (id, filetype, url) => ({ id, installIntent: { action: 'direct-download', filetype, url } })
+const speech = (id, pack, url) => ({ id, installIntent: { action: 'roachspeech-pack', pack, kind: 'roachVoice', url } })
 
 async function fixture(files) {
   const root = await mkdtemp(path.join(tmpdir(), 'download-names-'))
@@ -102,40 +154,109 @@ async function fixture(files) {
   return root
 }
 
-test('unsafe names, names two downloads share, and files the check can\'t read are each reported', async (t) => {
-  const kiwix = 'https://download.kiwix.org/zim/other'
+const empty = {
+  'collections/maps.json': { collections: [] },
+  'collections/kiwix-categories.json': { categories: [] },
+  'collections/wikipedia.json': { options: [] },
+  'collections/packs.json': { packs: [] },
+  'app-store-catalog.json': { items: [] },
+}
+
+test('the World Atlas RoachNet 1.1 queues on its own must be in the catalog', async (t) => {
+  const root = await fixture({ ...empty, 'downloads/maps/pmtiles/ohio_2026-10.json': mapDescriptor('ohio_2026-10.pmtiles', 'https://example.org/m/ohio_2026-10.pmtiles') })
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const { problems } = await checkDownloadNames(root)
+  assert.deepEqual(problems, [{ where: 'the World Atlas RoachNet 1.1 queues', problem: 'RoachNet looks for downloads/maps/pmtiles/global-min_2026-10.json, which this checkout doesn\'t have' }])
+})
+
+test('each unsafe name, shared name, missing checksum and unreadable file is reported, as RoachNet would resolve it', async (t) => {
+  const themeZip = 'theme zip bytes'
   const root = await fixture({
     'downloads/broken.json': '{',
+    'downloads/odd.json': [1, 2],
     'downloads/future.json': { schema: 'org.roachnet.apps.download-descriptor.v2', filename: 'x.zim' },
-    'downloads/content/stacks/manifest-a.json': descriptor('manifest.bin', { action: 'education-tier', kind: null }),
-    'downloads/content/stacks/manifest-b.json': descriptor('manifest.bin', { action: 'education-tier', kind: null }),
-    'downloads/content/zim/partial.json': descriptor('fine_2026-01.zim.part', { action: 'education-resource', kind: null, sources: [{ type: 'public-source', url: `${kiwix}/fine_2026-01.zim` }] }),
-    'downloads/maps/pmtiles/ok_2026-10.json': descriptor('ok_2026-10.pmtiles', { url: 'https://example.org/a/ok_2026-10.pmtiles', sha256: 'a'.repeat(64) }),
-    'downloads/maps/pmtiles/dots.json': descriptor('..', { url: 'https://example.org/a/x.pmtiles' }),
+    // Never downloaded (no source), so they may share a name.
+    'downloads/content/stacks/a/manifest.json': descriptor('manifest.bin'),
+    'downloads/content/stacks/b/manifest.json': descriptor('manifest.bin'),
+    'downloads/content/zim/fine_2026-01.json': descriptor('fine_2026-01.zim', { sources: [source(`${KIWIX}/fine_2026-01.zim`)] }),
+    'downloads/content/zim/partial.json': descriptor('fine_2026-01.zim.part', { sources: [source(`${KIWIX}/x.zim`)] }),
+    // RoachNet reaches this index through a resource named index.zim; it never looks at the schema.
+    'downloads/content/zim/index.json': { schema: INDEX_SCHEMA, filename: '..', sources: [source(`${KIWIX}/index.zim`)], descriptors: [{ filename: 'ok.zim' }, { filename: 'pack/../x.zip' }] },
+    'downloads/content/zim/wikipedia-selection.json': descriptor('wikipedia-selection.json', { sources: [source(`${KIWIX}/wikipedia-selection.zim`)] }),
+    // No filename: RoachNet names the download after the address it downloads from.
+    'downloads/content/zim/unnamed_2026-01.json': descriptor(undefined, { sources: [source(`${KIWIX}/unnamed_2026-01.zim`)] }),
+    // Wikipedia options have descriptors of their own: this one gives the Kiwix book's name another source.
+    'downloads/content/wikipedia/fine_2026-01.json': descriptor('fine_2026-01.zim', { sources: [source('https://mirror.example.org/zim/fine_2026-01.zim')] }),
+    'downloads/content/wikipedia/other_2026-01.json': descriptor('other_2026-01.zim', { sources: [source(`${KIWIX}/other_2026-01.zim`)] }),
+    'downloads/maps/pmtiles/global-min_2026-10.json': mapDescriptor('global-min_2026-10.pmtiles', 'https://example.org/m/global-min_2026-10.pmtiles'),
+    'downloads/maps/pmtiles/ok_2026-10.json': mapDescriptor('ok_2026-10.pmtiles', 'https://example.org/m/ok_2026-10.pmtiles'),
+    'downloads/maps/pmtiles/dots.json': mapDescriptor('..', 'https://example.org/m/x.pmtiles'),
     'downloads/maps/pmtiles/link.json': { linkTo: 'ok_2026-10.json' },
-    'downloads/maps/pmtiles/case-lower.json': descriptor('case_2026-10.pmtiles', { url: 'https://example.org/e/case_2026-10.pmtiles' }),
-    'downloads/maps/pmtiles/case-upper.json': descriptor('CASE_2026-10.pmtiles', { url: 'https://example.org/f/CASE_2026-10.pmtiles' }),
-    'downloads/maps/pmtiles/two.json': descriptor('two_2026-10.pmtiles', { url: 'https://example.org/c/two_2026-10.pmtiles', sha256: 'c'.repeat(64) }),
-    'downloads/model-packs/index.json': { schema: INDEX_SCHEMA, descriptors: [{ filename: 'pack.zip' }, { filename: 'pack/../x.zip' }] },
+    'downloads/maps/pmtiles/nosum_2026-10.json': descriptor('nosum_2026-10.pmtiles', { url: 'https://example.org/m/nosum_2026-10.pmtiles' }),
+    'downloads/maps/pmtiles/two_2026-10.json': mapDescriptor('two_2026-10.pmtiles', 'https://example.org/m/two_2026-10.pmtiles', 'c'.repeat(64)),
+    'downloads/maps/pmtiles/case-lower.json': mapDescriptor('case_2026-10.pmtiles', 'https://example.org/e/case_2026-10.pmtiles'),
+    'downloads/maps/pmtiles/case-upper.json': mapDescriptor('CASE_2026-10.pmtiles', 'https://example.org/f/CASE_2026-10.pmtiles'),
+    // One url, but RoachNet downloads each one's first source.
+    'downloads/maps/pmtiles/src-a.json': mapDescriptor('src_2026-10.pmtiles', 'https://example.org/m/src_2026-10.pmtiles', 'b'.repeat(64), { sources: [source('https://a.example.org/src_2026-10.pmtiles')] }),
+    'downloads/maps/pmtiles/src-b.json': mapDescriptor('src_2026-10.pmtiles', 'https://example.org/m/src_2026-10.pmtiles', 'b'.repeat(64), { sources: [source('https://b.example.org/src_2026-10.pmtiles')] }),
+    // One name and one address, but two checksums.
+    'downloads/maps/pmtiles/sum-a.json': mapDescriptor('sum_2026-10.pmtiles', 'https://example.org/m/sum_2026-10.pmtiles', 'e'.repeat(64)),
+    'downloads/maps/pmtiles/sum-b.json': mapDescriptor('sum_2026-10.pmtiles', 'https://example.org/m/sum_2026-10.pmtiles', 'f'.repeat(64)),
+    // A pending mirror comes first, so RoachNet downloads the release: the file the copy names.
+    'downloads/maps/pmtiles/pending_2026-10.json': mapDescriptor('pending_2026-10.pmtiles', null, 'a'.repeat(64), { sources: [source('https://archive.org/m/pending_2026-10.pmtiles', 'mirror-pending', 'internet-archive'), source('https://example.org/m/pending_2026-10.pmtiles')] }),
+    'downloads/maps/pmtiles/pending-copy.json': mapDescriptor('pending_2026-10.pmtiles', 'https://example.org/m/pending_2026-10.pmtiles'),
+    // Chunked: RoachNet downloads the parts each lists, so these are two different files.
+    'downloads/model-packs/voice.json': chunked('voice.zip', 'https://archive.org/download/i/voice.zip.rnpart0001', sha('voice')),
+    'downloads/model-packs/voice-copy.json': chunked('voice.zip', 'https://archive.org/download/i/voice-copy.zip.rnpart0001', sha('voice')),
+    'downloads/packs/theme.zip': themeZip,
+    'downloads/packs/theme2.zip': 'something else',
     'collections/maps.json': { collections: [{ slug: 'region', resources: [
-      { id: 'ok', url: 'https://example.org/a/ok_2026-10.pmtiles', sha256: 'a'.repeat(64) },
-      { id: 'stale', url: 'https://example.org/c/two_2026-10.pmtiles', sha256: 'd'.repeat(64) },
-      { id: 'encoded', url: 'https://example.org/maps/..%2F..%2Fx.pmtiles' },
+      { id: 'ok', url: 'https://example.org/m/ok_2026-10.pmtiles', sha256: 'a'.repeat(64) },
+      { id: 'stale', url: 'https://example.org/m/two_2026-10.pmtiles', sha256: 'd'.repeat(64) },
+      { id: 'pending', url: 'https://example.org/m/pending_2026-10.pmtiles' },
+      { id: 'withdrawn', url: 'https://example.org/m/gone_2026-10.pmtiles', unavailable: true },
+      { id: 'nameless', url: 'https://example.org/' },
     ] }] },
-    'collections/kiwix-categories.json': { categories: [{ slug: 'cat', tiers: [{ slug: 'tier', resources: [
-      { id: 'fine', url: `${kiwix}/fine_2026-01.zim` },
-      { id: 'other', url: `${kiwix}/other_2026-01.zim` },
-      { id: 'hidden', url: `${kiwix}/.hidden.zim` },
-    ] }] }] },
+    'collections/kiwix-categories.json': { categories: [{ slug: 'cat', tiers: [
+      { slug: 'one', resources: [
+        { id: 'fine', url: `${KIWIX}/fine_2026-01.zim` },
+        { id: 'index', url: `${KIWIX}/index.zim` },
+        { id: 'state', url: `${KIWIX}/wikipedia-selection.zim` },
+        { id: 'missing', url: `${KIWIX}/gone_2026-01.zim` },
+        { id: 'unnamed', url: `${KIWIX}/unnamed_2026-01.zim` },
+      ] },
+      // The same book from a mirror: the same descriptor, so the same file.
+      { slug: 'two', resources: [{ id: 'fine', url: 'https://mirror.example.org/zim/fine_2026-01.zim' }] },
+    ] }] },
     'collections/wikipedia.json': { options: [
       { id: 'none' },
-      { id: 'same', url: `${kiwix}/other_2026-01.zim` },
-      { id: 'mirror', url: 'https://mirror.example.org/zim/fine_2026-01.zim' },
+      { id: 'other', url: `${KIWIX}/other_2026-01.zim` },
+      { id: 'fine', url: 'https://mirror.example.org/zim/fine_2026-01.zim' },
     ] },
-    'collections/packs.json': { packs: [{ id: 'theme', resources: [{ path: '../escape.zip', url: 'https://apps.roachnet.org/downloads/packs/missing.zip' }] }] },
+    'collections/packs.json': { packs: [
+      { id: 'escape', resources: [{ path: '../escape.zip', url: `${APPS}/packs/missing.zip`, sha256: sha('x'), bytes: 1 }] },
+      { id: 'theme', resources: [{ path: 'themes/theme.zip', url: `${APPS}/packs/theme.zip`, sha256: sha(themeZip), bytes: themeZip.length }] },
+      { id: 'swapped', resources: [{ path: 'theme2.zip', url: `${APPS}/packs/theme2.zip`, sha256: sha(themeZip), bytes: themeZip.length }] },
+      { id: 'voice', resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice.json`, sha256: sha('voice'), bytes: 5 }] },
+      { id: 'voice-stale', resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice-copy.json`, sha256: sha('older'), bytes: 5 }] },
+      { id: 'elsewhere', resources: [{ path: 'x.zip', url: 'https://cdn.example.org/x.zip', sha256: sha('x'), bytes: 1 }] },
+    ] },
     'app-store-catalog.json': { items: [
-      { id: 'ok', installIntent: { action: 'direct-download', filetype: 'pmtiles', url: 'https://apps.roachnet.org/downloads/maps/pmtiles/ok_2026-10.json' } },
-      { id: 'gone', installIntent: { action: 'direct-download', filetype: 'pmtiles', url: 'https://apps.roachnet.org/downloads/maps/pmtiles/gone.json' } },
+      direct('ok', 'map', `${APPS}/maps/pmtiles/ok_2026-10.json`),
+      direct('gone', 'map', `${APPS}/maps/pmtiles/gone.json`),
+      direct('case-lower', 'pmtiles', `${APPS}/maps/pmtiles/case-lower.json`),
+      direct('case-upper', 'map', `${APPS}/maps/pmtiles/case-upper.json`),
+      direct('src-a', 'map', `${APPS}/maps/pmtiles/src-a.json`),
+      direct('src-b', 'map', `${APPS}/maps/pmtiles/src-b.json`),
+      direct('pending-copy', 'map', `${APPS}/maps/pmtiles/pending-copy.json`),
+      direct('sum-a', 'map', `${APPS}/maps/pmtiles/sum-a.json`),
+      direct('sum-b', 'map', `${APPS}/maps/pmtiles/sum-b.json`),
+      direct('zim', 'zim', `${APPS}/content/zim/fine_2026-01.json`),
+      direct('raw', 'knowledge', `${KIWIX}/raw_2026-01.zim`),
+      direct('exe', 'exe', `${APPS}/maps/pmtiles/ok_2026-10.json`),
+      speech('voice', 'voice-pack', `${APPS}/model-packs/voice.json`),
+      speech('voice-dup', 'voice-pack', `${APPS}/model-packs/voice-copy.json`),
+      speech('bad-pack', '..', `${APPS}/model-packs/voice.json`),
     ] },
   })
   t.after(() => rm(root, { recursive: true, force: true }))
@@ -144,28 +265,38 @@ test('unsafe names, names two downloads share, and files the check can\'t read a
   const listed = problems.map(({ where, problem }) => `${where}: ${problem}`).join('\n')
   const expected = [
     [['downloads/broken.json'], 'is not valid JSON'],
+    [['downloads/odd.json'], 'is not a JSON object'],
     [['downloads/future.json'], 'which this check doesn\'t know'],
     [['downloads/content/zim/partial.json'], '".part"'],
+    [['downloads/content/zim/unnamed_2026-01.json'], 'filename null is missing'],
+    [['downloads/content/zim/index.json'], 'filename ".." is made only of dots'],
+    [['downloads/content/zim/index.json › descriptors[1]'], 'path separator'],
     [['downloads/maps/pmtiles/dots.json'], 'made only of dots'],
     [['downloads/maps/pmtiles/link.json'], 'is a link'],
-    [['downloads/model-packs/index.json › descriptors[1]'], 'path separator'],
-    [['collections/maps.json › region › encoded'], 'character RoachNet replaces'],
-    [['collections/kiwix-categories.json › cat › tier › hidden'], 'hidden file'],
-    [['collections/packs.json › theme'], 'resource path "../escape.zip"'],
-    [['collections/packs.json › theme'], 'downloads/packs/missing.zip'],
+    [['downloads/maps/pmtiles/nosum_2026-10.json'], 'no SHA-256'],
+    [['collections/maps.json › region › stale'], 'but downloads/maps/pmtiles/two_2026-10.json has cccccccccccc'],
+    [['collections/maps.json › region › nameless'], 'names no file'],
+    [['collections/kiwix-categories.json › cat › one › state'], 'a file RoachNet keeps there itself'],
+    [['collections/kiwix-categories.json › cat › one › missing'], 'downloads/content/zim/gone_2026-01.json'],
+    [['collections/packs.json › escape'], 'part ".."'],
+    [['collections/packs.json › escape'], 'downloads/packs/missing.zip'],
+    [['collections/packs.json › swapped'], 'but downloads/packs/theme2.zip is'],
+    [['collections/packs.json › voice-stale'], 'but downloads/model-packs/voice-copy.json has'],
     [['app-store-catalog.json › gone'], 'downloads/maps/pmtiles/gone.json'],
+    [['app-store-catalog.json › exe'], 'file type "exe"'],
+    [['app-store-catalog.json › bad-pack'], 'pack id ".."'],
     // Names that differ only in case are one file on a Mac.
-    [['downloads/maps/pmtiles/case-lower.json', 'downloads/maps/pmtiles/case-upper.json'], 'maps/pmtiles/case_2026-10.pmtiles'],
-    // One name, one address, two checksums.
-    [['downloads/maps/pmtiles/two.json', 'collections/maps.json › region › stale'], 'maps/pmtiles/two_2026-10.pmtiles'],
-    // One name from two addresses.
-    [['collections/kiwix-categories.json › cat › tier › fine', 'collections/wikipedia.json › mirror'], 'zim/fine_2026-01.zim'],
+    [['app-store-catalog.json › case-lower', 'app-store-catalog.json › case-upper'], 'maps/pmtiles/case_2026-10.pmtiles'],
+    [['app-store-catalog.json › src-a', 'app-store-catalog.json › src-b'], 'maps/pmtiles/src_2026-10.pmtiles'],
+    [['app-store-catalog.json › sum-a', 'app-store-catalog.json › sum-b'], 'maps/pmtiles/sum_2026-10.pmtiles'],
+    [['collections/kiwix-categories.json › cat › one › fine', 'collections/wikipedia.json › fine'], 'zim/fine_2026-01.zim'],
+    [['app-store-catalog.json › voice', 'app-store-catalog.json › voice-dup'], 'roachVoice/voice-pack/voice.zip'],
   ]
   for (const [places, text] of expected) {
     assert.ok(problems.some(({ where, problem }) => places.every((place) => where.includes(place)) && problem.includes(text)), `not reported: ${places.join(', ')}: ${text}\n${listed}`)
   }
   assert.equal(problems.length, expected.length, listed)
-  // A name shared only by descriptors RoachNet never downloads, and one name
-  // reached from several places at one address, are fine.
-  assert.doesNotMatch(listed, /manifest|ok_2026-10|other_2026-01/)
+  // Names never downloaded, one file reached from several places, a pending
+  // mirror, a withdrawn resource and a pack hosted elsewhere are all fine.
+  assert.doesNotMatch(listed, /manifest|ok_2026-10|other_2026-01|pending|raw_2026-01|withdrawn|global-min|elsewhere|› theme:/)
 })

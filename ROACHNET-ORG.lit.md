@@ -23450,20 +23450,23 @@ This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="scripts-download-names-mjs" file="scripts/download-names.mjs"}
 #!/usr/bin/env node
-// Download names: the file names RoachNet gives App Store downloads, checked
-// before this catalog publishes them (ROA-95).
+// Download names: the files RoachNet saves from this catalog, checked before
+// the catalog publishes them (ROA-95).
 //
-// RoachNet saves a download under its descriptor's `filename`, or, when a
-// collection resource has no descriptor, under the last segment of the
-// resource's URL. Releases before 1.1.1 used that name as given: "." or ".."
-// made the download's path its destination folder, which the download's
-// cleanup then removed, and a failed download removed a file already at its
-// path. RoachNet 1.1.1 refuses such names itself. This check keeps the catalog
-// from publishing one, so releases that still use names as given never receive
-// one. It adds to the app's own checks and never replaces them.
+// RoachNet saves an App Store download under the `filename` of the
+// descriptor it resolves (JSON under downloads/). For a collection resource
+// it derives that descriptor from the resource URL's last segment, the way
+// descriptorUrlForSource does in RoachNet 1.1. Releases before 1.1.1 used the
+// name as given: "." made the download's path its destination folder, ".."
+// the folder above it, and the download's cleanup then removed that folder;
+// a failed download also removed a file already at its path. RoachNet 1.1.1
+// refuses such names itself. This check keeps the catalog from publishing
+// one, so releases that still use names as given never receive one. It adds
+// to the app's own checks and never replaces them.
 //
-//   node scripts/download-names.mjs [checkout]   exits 1 when a name is unsafe
+//   node scripts/download-names.mjs [checkout]   exits 1 on a problem
 
+import { createHash } from 'node:crypto'
 import { lstat, readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -23473,8 +23476,18 @@ export const INDEX_SCHEMA = 'org.roachnet.apps.download-index.v1'
 /** RoachNet shortens a longer name. */
 export const MAX_NAME_LENGTH = 160
 
-// The folder RoachNet saves a direct download in, by its file type.
-const FOLDERS = { map: 'maps/pmtiles', pmtiles: 'maps/pmtiles', zim: 'zim', knowledge: 'zim', education: 'zim' }
+const APPS_ORIGIN = 'https://apps.roachnet.org'
+// Where RoachNet saves each kind of download, under its storage folder.
+const MAPS = 'maps/pmtiles'
+const ZIM = 'zim'
+// A direct download's folder, by its file type (handleCompanionInstall).
+const DIRECT_FOLDERS = { map: MAPS, pmtiles: MAPS, zim: ZIM, knowledge: ZIM, education: ZIM }
+// Files RoachNet keeps in a download folder itself.
+const RESERVED = { [ZIM]: ['wikipedia-selection.json'] }
+// The descriptor RoachNet 1.1 queues for the World Atlas (base-map-assets).
+const WORLD_ATLAS = 'downloads/maps/pmtiles/global-min_2026-10.json'
+// Descriptors of first-party files, which always carry their SHA-256.
+const CHECKSUMMED = ['downloads/maps/pmtiles/', 'downloads/model-packs/']
 
 /**
  * Why `name` is unsafe as a download's file name, or null when RoachNet saves
@@ -23485,7 +23498,7 @@ export function downloadNameProblem(name) {
   if (typeof name !== 'string' || name === '') return 'is missing'
   if (/^\.+$/.test(name)) return 'is made only of dots, so it names a folder'
   if (/[/\\]/.test(name)) return 'contains a path separator'
-  if (/[\u0000-\u001f\u007f]/.test(name)) return 'contains a control character'
+  if ([...name].some((character) => character.charCodeAt(0) < 0x20 || character.charCodeAt(0) === 0x7f)) return 'contains a control character'
   if (!/^[A-Za-z0-9._-]+$/.test(name)) return 'has a character RoachNet replaces (use letters, digits, ".", "_" and "-")'
   if (name.length > MAX_NAME_LENGTH) return `is longer than ${MAX_NAME_LENGTH} characters, so RoachNet shortens it`
   if (name.startsWith('.')) return 'starts with a dot, which makes it a hidden file'
@@ -23499,28 +23512,60 @@ export function describeProblems(problems) {
 }
 
 const relativeTo = (root, file) => path.relative(root, file).split(path.sep).join('/')
-const httpUrl = (value) => typeof value === 'string' && /^https?:\/\//.test(value)
+const isDigest = (value) => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
 
-/** The descriptor's download URL: its own, or its first web source. */
-function downloadUrl(descriptor) {
-  if (httpUrl(descriptor.url)) return descriptor.url
-  return (Array.isArray(descriptor.sources) ? descriptor.sources : []).find((source) => httpUrl(source?.url))?.url ?? null
+// How RoachNet 1.1 reads a catalog URL (parseDownloadUrl): trimmed, web only.
+export function webUrl(value) {
+  if (typeof value !== 'string') return null
+  try {
+    const parsed = new URL(value.trim())
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed : null
+  } catch {
+    return null
+  }
 }
 
-/** The folder RoachNet saves this descriptor's download in, or null when it saves none there. */
-function descriptorFolder(descriptor) {
-  const downloadable = downloadUrl(descriptor) !== null || (Array.isArray(descriptor.parts) && descriptor.parts.length > 0)
-  if (!downloadable) return null
-  if (descriptor.action === 'direct-download') return FOLDERS[String(descriptor.kind || '').toLowerCase()] ?? null
-  if (descriptor.action === 'education-resource' || descriptor.action === 'wikipedia-option') return 'zim'
-  // A RoachSpeech pack downloads into a folder of its own.
-  return null
-}
-
-/** The checkout path an apps.roachnet.org download URL serves, or null for any other URL. */
-function appsDownloadPath(parsed) {
-  if (parsed.protocol !== 'https:' || parsed.hostname !== 'apps.roachnet.org' || !parsed.pathname.startsWith('/downloads/')) return null
+// The checkout file behind a descriptor URL RoachNet opens and follows
+// (isAppsDownloadDescriptorUrl): a .json file under the Apps downloads base,
+// on exactly that origin. Any other URL downloads as the file it names.
+export function descriptorFile(parsed) {
+  if (!parsed || parsed.origin !== APPS_ORIGIN || !parsed.pathname.startsWith('/downloads/') || !parsed.pathname.endsWith('.json')) return null
   return `downloads/${parsed.pathname.slice('/downloads/'.length)}`
+}
+
+// The descriptor URL RoachNet derives for a collection resource
+// (descriptorUrlForSource): the URL's last segment, extension made .json,
+// under downloads/<prefix>/. Null when the URL has no last segment.
+export function derivedDescriptorUrl(url, prefix) {
+  const name = path.posix.basename(url.pathname)
+  return name === '' ? null : `${APPS_ORIGIN}/downloads/${prefix}/${name.replace(/\.[^/.]+$/i, '.json')}`
+}
+
+// What RoachNet downloads for a descriptor (pickDescriptorSource and
+// descriptorParts): its chunked parts when a parts source is usable, else
+// its first usable web source, else its own url. Null when it has none.
+export function descriptorDownload(descriptor, descriptorUrl) {
+  const unusable = /(pending|required|blocked|failed)/i
+  const sources = Array.isArray(descriptor.sources) ? descriptor.sources : []
+  const status = (source) => (source?.status ? String(source.status) : '')
+  const partsSource = sources.some((source) => source?.type === 'internet-archive-parts' && status(source) !== '' && !unusable.test(status(source)))
+  const parts = Array.isArray(descriptor.parts) ? descriptor.parts : []
+  if (partsSource && parts.length > 0 && parts.every((part) => webUrl(part?.url) && Number.isSafeInteger(part?.bytes) && part.bytes > 0)) {
+    return descriptorUrl
+  }
+  for (const source of sources) {
+    if (source?.type === 'internet-archive-parts' || unusable.test(status(source))) continue
+    const parsed = webUrl(source?.url)
+    if (parsed) return parsed.href
+  }
+  return (webUrl(descriptor.url) || webUrl(descriptor.downloadUrl) || webUrl(descriptor.archiveUrl))?.href ?? null
+}
+
+// The name RoachNet saves a descriptor's download under: its filename, or
+// without one, the last segment of the address it downloads from.
+function savedName(descriptor, address) {
+  if (descriptor.filename) return descriptor.filename
+  return path.posix.basename(new URL(address).pathname)
 }
 
 /** Every .json file under `directory`. Links are reported, not followed. */
@@ -23542,20 +23587,29 @@ async function jsonFiles(directory, root, report) {
   return found
 }
 
-async function isPlainFile(file) {
+/** A checkout file's size and SHA-256, or null when it isn't a plain file. */
+async function fileDigest(file) {
   try {
-    return (await lstat(file)).isFile()
+    if (!(await lstat(file)).isFile()) return null
+    const data = await readFile(file)
+    return { bytes: data.length, sha256: createHash('sha256').update(data).digest('hex') }
   } catch {
-    return false
+    return null
   }
 }
 
+const short = (digest) => (isDigest(digest) ? `${digest.slice(0, 12)}…` : 'none')
+
 /**
- * Checks every download name a checkout publishes: the descriptors and
- * indexes under downloads/, the names RoachNet takes from the URLs in
- * collections/, pack resources, and the catalog's download URLs. Within one
- * destination folder, two different downloads may not share a name, compared
- * case-insensitively as Mac volumes usually compare names.
+ * Checks every file name a checkout gives RoachNet: every JSON file under
+ * downloads/, and what RoachNet saves for each install the catalog offers
+ * (the catalog's direct downloads and speech packs, the World Atlas, and the
+ * resources of collections/maps.json, kiwix-categories.json and
+ * wikipedia.json), resolved the way RoachNet 1.1 resolves them. Within one
+ * folder, two different downloads may not share a name, compared
+ * case-insensitively as Mac volumes usually compare names. First-party
+ * descriptors must keep the SHA-256 RoachNet checks, and pack resources
+ * must match what packs.json lists.
  */
 export async function checkDownloadNames(root) {
   const problems = []
@@ -23566,10 +23620,19 @@ export async function checkDownloadNames(root) {
     if (problem) report(where, `${what} ${JSON.stringify(name ?? null)} ${problem}`)
     return problem === null
   }
-  const descriptors = new Map()
-  const targets = []
+  const readJSON = async (where) => {
+    try {
+      return JSON.parse(await readFile(path.join(root, where), 'utf8'))
+    } catch (error) {
+      report(where, error instanceof SyntaxError ? 'is not valid JSON' : `can't be read (${error.code || error.message})`)
+      return null
+    }
+  }
 
-  // 1. Descriptors and indexes under downloads/.
+  // 1. Every JSON file under downloads/. RoachNet opens whichever of them an
+  //    install points at, whatever its schema, so a filename is checked
+  //    wherever one appears.
+  const documents = new Map()
   for (const file of await jsonFiles(path.join(root, 'downloads'), root, report)) {
     const where = relativeTo(root, file)
     counts.files += 1
@@ -23580,122 +23643,178 @@ export async function checkDownloadNames(root) {
       report(where, 'is not valid JSON')
       continue
     }
-    if (document?.schema === DESCRIPTOR_SCHEMA) {
+    if (document === null || typeof document !== 'object' || Array.isArray(document)) {
+      report(where, 'is not a JSON object')
+      continue
+    }
+    documents.set(where, document)
+    if (document.schema === DESCRIPTOR_SCHEMA) {
       counts.descriptors += 1
-      descriptors.set(where, document)
-      const folder = descriptorFolder(document)
-      if (checkName(where, document.filename) && folder) {
-        targets.push({ where, folder, name: document.filename, url: downloadUrl(document), sha256: document.sha256 || null })
+      checkName(where, document.filename)
+      if (CHECKSUMMED.some((prefix) => where.startsWith(prefix)) && !(isDigest(document.sha256) && Number.isSafeInteger(document.bytes) && document.bytes > 0)) {
+        report(where, 'has no SHA-256 and size, so RoachNet would not check what it downloads')
       }
-    } else if (document?.schema === INDEX_SCHEMA) {
+      continue
+    }
+    if (document.schema === INDEX_SCHEMA) {
       const entries = Array.isArray(document.descriptors) ? document.descriptors : []
       entries.forEach((entry, index) => {
         counts.indexEntries += 1
         checkName(`${where} › descriptors[${index}]`, entry?.filename)
       })
     } else {
-      report(where, `has schema ${JSON.stringify(document?.schema ?? null)}, which this check doesn't know; add it to scripts/download-names.mjs before publishing it`)
+      report(where, `has schema ${JSON.stringify(document.schema ?? null)}, which this check doesn't know; add it to scripts/download-names.mjs before publishing it`)
     }
+    if ('filename' in document) checkName(where, document.filename)
   }
 
-  const readJSON = async (where) => {
-    try {
-      return JSON.parse(await readFile(path.join(root, where), 'utf8'))
-    } catch (error) {
-      report(where, error instanceof SyntaxError ? 'is not valid JSON' : `can't be read (${error.code || error.message})`)
+  // 2. What RoachNet saves for each install, by folder.
+  const targets = []
+  const addTarget = (target) => {
+    if ((RESERVED[target.folder] || []).includes(target.name.toLowerCase())) {
+      report(target.where, `saves ${target.folder}/${target.name}, a file RoachNet keeps there itself`)
       return null
     }
+    targets.push(target)
+    return target
+  }
+  // RoachNet queues `rawUrl` into `folder`: a descriptor on apps.roachnet.org
+  // is opened and followed, any other URL downloads as the file it names.
+  const resolve = (where, folder, rawUrl) => {
+    const parsed = webUrl(rawUrl)
+    if (!parsed) {
+      report(where, `URL ${JSON.stringify(rawUrl ?? null)} is not a web address RoachNet can download`)
+      return null
+    }
+    const file = descriptorFile(parsed)
+    if (!file) {
+      const name = path.posix.basename(parsed.pathname)
+      return checkName(where, name, 'URL name') ? addTarget({ where, folder, name, address: parsed.href, sha256: null, file: null }) : null
+    }
+    const descriptor = documents.get(file)
+    if (!descriptor) {
+      report(where, `RoachNet looks for ${file}, which this checkout doesn't have`)
+      return null
+    }
+    const address = descriptorDownload(descriptor, parsed.href)
+    if (!address) {
+      report(where, `${file} names nothing RoachNet can download`)
+      return null
+    }
+    const name = savedName(descriptor, address)
+    if (downloadNameProblem(name) !== null) {
+      // A descriptor's own unsafe filename is reported once, under its file.
+      if (!descriptor.filename) checkName(where, name, `${file} has no filename, and the name from its address`)
+      return null
+    }
+    return addTarget({ where, folder, name, address, sha256: isDigest(descriptor.sha256) ? descriptor.sha256 : null, file })
   }
 
-  // What RoachNet saves a resource as: a descriptor's filename for a
-  // descriptor on apps.roachnet.org, otherwise the URL's last segment.
-  const resolve = (where, rawUrl, sha256 = null) => {
-    if (typeof rawUrl !== 'string' || rawUrl === '') {
-      report(where, 'has no URL')
-      return null
-    }
-    let parsed
-    try {
-      parsed = new URL(rawUrl)
-    } catch {
-      report(where, `URL ${JSON.stringify(rawUrl)} is not valid`)
-      return null
-    }
-    const served = appsDownloadPath(parsed)
-    if (served?.endsWith('.json')) {
-      const descriptor = descriptors.get(served)
-      if (!descriptor) {
-        report(where, `points at ${served}, which this checkout doesn't have`)
-        return null
-      }
-      // A descriptor's own unsafe name is reported once, under its file.
-      if (downloadNameProblem(descriptor.filename) !== null) return null
-      return { name: descriptor.filename, url: downloadUrl(descriptor), sha256: descriptor.sha256 || sha256 }
-    }
-    const name = path.posix.basename(parsed.pathname)
-    return checkName(where, name, 'URL name') ? { name, url: rawUrl, sha256 } : null
-  }
-  const addResource = (where, folder, resource) => {
+  // 3. Collections. RoachNet ignores a resource's own descriptorUrl and
+  //    checksum: it derives the descriptor from the URL's last segment and
+  //    checks what that descriptor lists. Withdrawn resources aren't offered.
+  const fromCollection = (where, folder, prefix, resource) => {
     counts.collectionResources += 1
-    const target = resolve(where, resource?.descriptorUrl || resource?.url, resource?.sha256 || null)
-    if (target) targets.push({ where, folder, ...target })
+    const parsed = webUrl(resource?.url)
+    if (!parsed) {
+      report(where, `URL ${JSON.stringify(resource?.url ?? null)} is not a web address RoachNet can download`)
+      return
+    }
+    const derived = derivedDescriptorUrl(parsed, prefix)
+    if (!derived) {
+      report(where, `URL ${resource.url} names no file, so RoachNet gives the download a generated name`)
+      return
+    }
+    const target = resolve(where, folder, derived)
+    // The checksum the collection lists is the one its descriptor must carry.
+    if (target && isDigest(resource.sha256) && target.sha256 !== resource.sha256) {
+      report(where, `lists SHA-256 ${short(resource.sha256)}, but ${target.file ?? 'its download'} has ${short(target.sha256)}`)
+    }
   }
-
-  // 2. Collections RoachNet installs from.
+  const offered = (entry) => entry && !entry.unavailable
   const maps = await readJSON('collections/maps.json')
   for (const collection of maps?.collections || []) {
-    for (const resource of collection?.resources || []) {
-      addResource(`collections/maps.json › ${collection.slug} › ${resource?.id}`, 'maps/pmtiles', resource)
+    for (const resource of (collection?.resources || []).filter(offered)) {
+      fromCollection(`collections/maps.json › ${collection.slug} › ${resource.id}`, MAPS, 'maps/pmtiles', resource)
     }
   }
   const kiwix = await readJSON('collections/kiwix-categories.json')
   for (const category of kiwix?.categories || []) {
     for (const tier of category?.tiers || []) {
-      for (const resource of tier?.resources || []) {
-        addResource(`collections/kiwix-categories.json › ${category.slug} › ${tier.slug} › ${resource?.id}`, 'zim', resource)
+      for (const resource of (tier?.resources || []).filter(offered)) {
+        fromCollection(`collections/kiwix-categories.json › ${category.slug} › ${tier.slug} › ${resource.id}`, ZIM, 'content/zim', resource)
       }
     }
   }
   const wikipedia = await readJSON('collections/wikipedia.json')
-  for (const option of wikipedia?.options || []) {
+  for (const option of (wikipedia?.options || []).filter(offered)) {
     // The "none" option downloads nothing.
-    if (!option?.url && !option?.descriptorUrl) continue
-    addResource(`collections/wikipedia.json › ${option.id}`, 'zim', option)
+    if (option.id === 'none' || !option.url) continue
+    fromCollection(`collections/wikipedia.json › ${option.id}`, ZIM, 'content/wikipedia', option)
   }
 
-  // 3. Pack resources: each pack downloads into a folder of its own, under the resource's path.
+  // 4. Pack resources. Each pack downloads into a folder of its own, under
+  //    the resource's path, and checks the size and SHA-256 packs.json lists.
   const packs = await readJSON('collections/packs.json')
   for (const pack of packs?.packs || []) {
     for (const resource of pack?.resources || []) {
       counts.packResources += 1
       const where = `collections/packs.json › ${pack?.id}`
-      checkName(where, resource?.path, 'resource path')
-      let parsed = null
-      try {
-        parsed = new URL(resource?.url)
-      } catch {
-        report(where, `resource URL ${JSON.stringify(resource?.url ?? null)} is not valid`)
+      for (const part of typeof resource?.path === 'string' ? resource.path.split('/') : [null]) {
+        const problem = downloadNameProblem(part)
+        if (problem) {
+          report(where, `resource path ${JSON.stringify(resource?.path ?? null)} has a part ${JSON.stringify(part ?? null)} that ${problem}`)
+          break
+        }
       }
-      const served = parsed ? appsDownloadPath(parsed) : null
-      if (served && !(served.endsWith('.json') ? descriptors.has(served) : await isPlainFile(path.join(root, ...served.split('/'))))) {
-        report(where, `resource points at ${served}, which this checkout doesn't have`)
+      const parsed = webUrl(resource?.url)
+      if (!parsed) {
+        report(where, `resource URL ${JSON.stringify(resource?.url ?? null)} is not a web address RoachNet can download`)
+        continue
+      }
+      if (parsed.origin !== APPS_ORIGIN || !parsed.pathname.startsWith('/downloads/')) continue
+      const file = `downloads/${parsed.pathname.slice('/downloads/'.length)}`
+      const listed = `${short(resource.sha256)}, ${resource.bytes} bytes`
+      if (file.endsWith('.json')) {
+        const descriptor = documents.get(file)
+        if (!descriptor) report(where, `resource points at ${file}, which this checkout doesn't have`)
+        else if (descriptor.sha256 !== resource.sha256 || descriptor.bytes !== resource.bytes) {
+          report(where, `resource lists ${listed}, but ${file} has ${short(descriptor.sha256)}, ${descriptor.bytes} bytes`)
+        }
+      } else {
+        const actual = await fileDigest(path.join(root, ...file.split('/')))
+        if (!actual) report(where, `resource points at ${file}, which this checkout doesn't have`)
+        else if (actual.sha256 !== resource.sha256 || actual.bytes !== resource.bytes) {
+          report(where, `resource lists ${listed}, but ${file} is ${short(actual.sha256)}, ${actual.bytes} bytes`)
+        }
       }
     }
   }
 
-  // 4. The catalog's own download URLs.
+  // 5. The installs RoachNet makes from the catalog, and the World Atlas,
+  //    which RoachNet 1.1 queues on its own for base map assets.
+  resolve('the World Atlas RoachNet 1.1 queues', MAPS, `${APPS_ORIGIN}/${WORLD_ATLAS}`)
   const catalog = await readJSON('app-store-catalog.json')
   for (const item of catalog?.items || []) {
     const intent = item?.installIntent || {}
-    if (!intent.url) continue
-    counts.catalogUrls += 1
-    const where = `app-store-catalog.json › ${item.id}`
-    const target = resolve(where, intent.url)
-    const folder = intent.action === 'direct-download' ? FOLDERS[String(intent.filetype || '').toLowerCase()] : null
-    if (target && folder) targets.push({ where, folder, ...target })
+    const where = `app-store-catalog.json › ${item?.id}`
+    if (intent.action === 'direct-download' && intent.url) {
+      counts.catalogUrls += 1
+      const folder = DIRECT_FOLDERS[String(intent.filetype || '').toLowerCase()]
+      if (folder) resolve(where, folder, intent.url)
+      else report(where, `file type ${JSON.stringify(intent.filetype ?? null)} is not one RoachNet downloads`)
+    } else if ((intent.action === 'roachspeech-pack' || intent.action === 'roachvoice-pack') && intent.url) {
+      counts.catalogUrls += 1
+      // RoachNet makes the pack's download folder from these two.
+      const pack = intent.packID || intent.pack || 'roachspeech-pack'
+      const kind = intent.kind || 'roachVoice'
+      const packSafe = checkName(where, pack, 'pack id')
+      const kindSafe = checkName(where, kind, 'pack kind')
+      if (packSafe && kindSafe) resolve(where, `RoachSpeech/ModelPacks/.downloads/${kind}/${pack}`, intent.url)
+    }
   }
 
-  // 5. One name per file in each folder.
+  // 6. One name per file in each folder.
   counts.savedNames = targets.length
   const byName = new Map()
   for (const target of targets) {
@@ -23704,10 +23823,10 @@ export async function checkDownloadNames(root) {
     byName.get(key).push(target)
   }
   for (const [key, group] of byName) {
-    const urls = new Set(group.map((target) => target.url))
-    const digests = new Set(group.map((target) => target.sha256).filter(Boolean))
-    if (urls.size > 1 || digests.size > 1) {
-      const places = group.map((target) => target.where)
+    const addresses = new Set(group.map((target) => target.address))
+    const digests = new Set(group.map((target) => target.sha256 ?? 'none'))
+    if (addresses.size > 1 || digests.size > 1) {
+      const places = [...new Set(group.map((target) => target.where))]
       const shown = places.length > 4 ? [...places.slice(0, 4), `${places.length - 4} more`] : places
       report(shown.join(', '), `save different files as ${key}; two downloads may not share a name in one folder`)
     }
@@ -23719,12 +23838,12 @@ export async function checkDownloadNames(root) {
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const root = path.resolve(process.argv[2] || path.join(path.dirname(fileURLToPath(import.meta.url)), '..'))
   const { counts, problems } = await checkDownloadNames(root)
-  console.log(`Download names: checked ${counts.descriptors} descriptors, ${counts.indexEntries} index entries, ${counts.collectionResources} collection resources, ${counts.packResources} pack resources and ${counts.catalogUrls} catalog download URLs.`)
+  console.log(`Download names: checked ${counts.files} files under downloads/ (${counts.descriptors} descriptors, ${counts.indexEntries} index entries), ${counts.collectionResources} collection resources, ${counts.packResources} pack resources and ${counts.catalogUrls} catalog downloads, which save ${counts.savedNames} files.`)
   if (problems.length) {
     console.error(`${problems.length} problem(s) (ROA-95):\n${describeProblems(problems)}`)
     process.exitCode = 1
   } else {
-    console.log('Every name is one RoachNet saves as given, and no two downloads share a name in one folder.')
+    console.log('Every name is one RoachNet saves as given, no two downloads share a name in one folder, and every checksum RoachNet checks is in place.')
   }
 }
 ```
@@ -24799,15 +24918,19 @@ This root is reconciled byte-for-byte from the current production source.
 
 ```text {chunk="test-download-names-test-mjs" file="test/download-names.test.mjs"}
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { mkdir, mkdtemp, readdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 
-import { checkDownloadNames, DESCRIPTOR_SCHEMA, downloadNameProblem, INDEX_SCHEMA, MAX_NAME_LENGTH } from '../scripts/download-names.mjs'
+import {
+  checkDownloadNames, derivedDescriptorUrl, descriptorDownload, descriptorFile, DESCRIPTOR_SCHEMA, downloadNameProblem, INDEX_SCHEMA, MAX_NAME_LENGTH, webUrl,
+} from '../scripts/download-names.mjs'
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const char = (code) => String.fromCharCode(code)
 
 // RoachNet 1.1.1's own rule (safeFileName in RoachClawStatus.swift): the name
 // it saves `value` under, or null when it uses a generated name instead.
@@ -24820,8 +24943,8 @@ function roachNetName(value) {
 const unsafe = [
   '', '.', '..', '...',
   '../x.zim', 'a/b.zim', 'a\\b.zim', '/x.zim',
-  'x\u0000.zim', 'x\n.zim', 'x\t.zim',
-  ' x.zim', 'x.zim ', 'x y.zim', 'caf\u00e9.zim', 'cafe\u0301.zim', 'x\u200b.zim', '%2e%2e', 'x:y.zim',
+  `x${char(0)}.zim`, 'x\n.zim', 'x\t.zim',
+  ' x.zim', 'x.zim ', 'x y.zim', `caf${char(0xe9)}.zim`, `cafe${char(0x301)}.zim`, `x${char(0x200b)}.zim`, '%2e%2e', 'x:y.zim',
   'a'.repeat(MAX_NAME_LENGTH + 1),
   '.hidden.zim', '.DS_Store',
   'x.part', 'x.PART', 'map.pmtiles.part', 'x.part.json', 'X.Part.Json',
@@ -24841,7 +24964,7 @@ test('each refusal says why', () => {
   assert.match(downloadNameProblem(null), /is missing/)
   assert.match(downloadNameProblem('..'), /only of dots/)
   assert.match(downloadNameProblem('a/b.zim'), /path separator/)
-  assert.match(downloadNameProblem('x\u0000.zim'), /control character/)
+  assert.match(downloadNameProblem(`x${char(0)}.zim`), /control character/)
   assert.match(downloadNameProblem('x y.zim'), /character RoachNet replaces/)
   assert.match(downloadNameProblem('a'.repeat(MAX_NAME_LENGTH + 1)), /longer than 160/)
   assert.match(downloadNameProblem('.hidden.zim'), /hidden file/)
@@ -24857,7 +24980,7 @@ test('a download name RoachNet saves exactly as given is accepted', () => {
 
 test('every accepted name is one RoachNet saves unchanged', () => {
   // Every string of up to three characters from the characters that matter.
-  const alphabet = ['a', 'Z', '0', '.', '-', '_', ' ', '/', '\\', '\u0000', '\u00e9', '%', 'p']
+  const alphabet = ['a', 'Z', '0', '.', '-', '_', ' ', '/', '\\', char(0), char(0xe9), '%', 'p']
   let accepted = 0
   const visit = (name, depth) => {
     if (downloadNameProblem(name) === null) {
@@ -24868,6 +24991,44 @@ test('every accepted name is one RoachNet saves unchanged', () => {
   }
   visit('', 0)
   assert.ok(accepted > 100, `only ${accepted} names accepted`)
+})
+
+test('a descriptor is a .json file under the Apps downloads folder, on exactly that origin', () => {
+  const file = (url) => descriptorFile(webUrl(url))
+  assert.equal(file('https://apps.roachnet.org/downloads/maps/pmtiles/a.json'), 'downloads/maps/pmtiles/a.json')
+  assert.equal(file('  https://apps.roachnet.org/downloads/a.json?x=1  '), 'downloads/a.json')
+  assert.equal(file('HTTPS://APPS.ROACHNET.ORG/downloads/a.json'), 'downloads/a.json')
+  for (const other of [
+    'http://apps.roachnet.org/downloads/a.json', 'https://apps.roachnet.org:8443/downloads/a.json', 'https://example.org/downloads/a.json',
+    'https://apps.roachnet.org/downloadsx/a.json', 'https://apps.roachnet.org/collections/a.json', 'https://apps.roachnet.org/downloads/a.zip',
+    'ftp://apps.roachnet.org/downloads/a.json', 'not a url',
+  ]) {
+    assert.equal(file(other), null, other)
+  }
+})
+
+test('a collection resource leads RoachNet to the descriptor named after its file', () => {
+  const derive = (url, prefix) => derivedDescriptorUrl(new URL(url), prefix)
+  assert.equal(derive('https://download.kiwix.org/zim/x/fine_2026-01.zim', 'content/zim'), 'https://apps.roachnet.org/downloads/content/zim/fine_2026-01.json')
+  assert.equal(derive('https://mirror.example.org/a/fine_2026-01.ZIM?download=1', 'content/zim'), 'https://apps.roachnet.org/downloads/content/zim/fine_2026-01.json')
+  assert.equal(derive('https://github.com/o/r/releases/download/t/ohio_2026-10.pmtiles', 'maps/pmtiles'), 'https://apps.roachnet.org/downloads/maps/pmtiles/ohio_2026-10.json')
+  assert.equal(derive('https://example.org/files/noext', 'content/zim'), 'https://apps.roachnet.org/downloads/content/zim/noext')
+  assert.equal(derive('https://example.org/', 'content/zim'), null)
+})
+
+test('RoachNet downloads a descriptor\'s usable parts, else its first usable source', () => {
+  const self = 'https://apps.roachnet.org/downloads/model-packs/x.json'
+  const parts = [{ url: 'https://archive.org/download/i/x.rnpart0001', bytes: 4 }]
+  const partsSource = (status) => ({ type: 'internet-archive-parts', url: 'https://archive.org/details/i', status })
+  assert.equal(descriptorDownload({ sources: [partsSource('published-after-upload')], parts }, self), self)
+  // Parts not yet published, or listed without a size, aren't used.
+  assert.equal(descriptorDownload({ sources: [partsSource('upload-required'), { type: 'internet-archive', url: 'https://archive.org/download/i/x.zip', status: 'single-object-pending' }], parts, url: 'https://example.org/x.zip' }, self), 'https://example.org/x.zip')
+  assert.equal(descriptorDownload({ sources: [partsSource('published')], parts: [{ url: 'https://archive.org/p1' }] }, self), null)
+  // Pending, required, blocked and failed sources are skipped, whatever their case.
+  assert.equal(descriptorDownload({ sources: [{ type: 'internet-archive', url: 'https://archive.org/a', status: 'mirror-PENDING' }, { type: 'public-source', url: ' https://example.org/b ', status: 'active' }] }, self), 'https://example.org/b')
+  assert.equal(descriptorDownload({ sources: [{ type: 'github-release', url: 'https://example.org/c', status: 'Blocked' }], url: 'https://example.org/d' }, self), 'https://example.org/d')
+  assert.equal(descriptorDownload({ sources: [], downloadUrl: 'https://example.org/e' }, self), 'https://example.org/e')
+  assert.equal(descriptorDownload({ sources: [{ type: 'public-source', url: 'ftp://example.org/f' }] }, self), null)
 })
 
 async function countJsonFiles(directory) {
@@ -24882,14 +25043,24 @@ async function countJsonFiles(directory) {
 test('this checkout publishes only safe download names', async () => {
   const { counts, problems } = await checkDownloadNames(repoRoot)
   assert.deepEqual(problems, [])
-  // Every JSON file under downloads/ was read, and every kind of source was checked.
+  // Every JSON file under downloads/ was read, and every kind of install was checked.
   assert.equal(counts.files, await countJsonFiles(path.join(repoRoot, 'downloads')))
   for (const kind of ['descriptors', 'indexEntries', 'collectionResources', 'packResources', 'catalogUrls', 'savedNames']) {
     assert.ok(counts[kind] > 0, `no ${kind} checked`)
   }
 })
 
-const descriptor = (filename, extra = {}) => ({ schema: DESCRIPTOR_SCHEMA, id: filename, action: 'direct-download', kind: 'pmtiles', filename, sources: [], parts: [], ...extra })
+const APPS = 'https://apps.roachnet.org/downloads'
+const KIWIX = 'https://download.kiwix.org/zim/other'
+const sha = (text) => createHash('sha256').update(text).digest('hex')
+const descriptor = (filename, extra = {}) => ({ schema: DESCRIPTOR_SCHEMA, filename, sources: [], parts: [], ...extra })
+const source = (url, status = 'active', type = 'public-source') => ({ type, url, status })
+const mapDescriptor = (filename, url, digest = 'a'.repeat(64), extra = {}) => descriptor(filename, { url, sha256: digest, bytes: 10, ...extra })
+const chunked = (filename, part, digest) => descriptor(filename, {
+  sha256: digest, bytes: 5, sources: [source('https://archive.org/details/i', 'published-after-upload', 'internet-archive-parts')], parts: [{ url: part, bytes: 5 }],
+})
+const direct = (id, filetype, url) => ({ id, installIntent: { action: 'direct-download', filetype, url } })
+const speech = (id, pack, url) => ({ id, installIntent: { action: 'roachspeech-pack', pack, kind: 'roachVoice', url } })
 
 async function fixture(files) {
   const root = await mkdtemp(path.join(tmpdir(), 'download-names-'))
@@ -24902,40 +25073,109 @@ async function fixture(files) {
   return root
 }
 
-test('unsafe names, names two downloads share, and files the check can\'t read are each reported', async (t) => {
-  const kiwix = 'https://download.kiwix.org/zim/other'
+const empty = {
+  'collections/maps.json': { collections: [] },
+  'collections/kiwix-categories.json': { categories: [] },
+  'collections/wikipedia.json': { options: [] },
+  'collections/packs.json': { packs: [] },
+  'app-store-catalog.json': { items: [] },
+}
+
+test('the World Atlas RoachNet 1.1 queues on its own must be in the catalog', async (t) => {
+  const root = await fixture({ ...empty, 'downloads/maps/pmtiles/ohio_2026-10.json': mapDescriptor('ohio_2026-10.pmtiles', 'https://example.org/m/ohio_2026-10.pmtiles') })
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const { problems } = await checkDownloadNames(root)
+  assert.deepEqual(problems, [{ where: 'the World Atlas RoachNet 1.1 queues', problem: 'RoachNet looks for downloads/maps/pmtiles/global-min_2026-10.json, which this checkout doesn\'t have' }])
+})
+
+test('each unsafe name, shared name, missing checksum and unreadable file is reported, as RoachNet would resolve it', async (t) => {
+  const themeZip = 'theme zip bytes'
   const root = await fixture({
     'downloads/broken.json': '{',
+    'downloads/odd.json': [1, 2],
     'downloads/future.json': { schema: 'org.roachnet.apps.download-descriptor.v2', filename: 'x.zim' },
-    'downloads/content/stacks/manifest-a.json': descriptor('manifest.bin', { action: 'education-tier', kind: null }),
-    'downloads/content/stacks/manifest-b.json': descriptor('manifest.bin', { action: 'education-tier', kind: null }),
-    'downloads/content/zim/partial.json': descriptor('fine_2026-01.zim.part', { action: 'education-resource', kind: null, sources: [{ type: 'public-source', url: `${kiwix}/fine_2026-01.zim` }] }),
-    'downloads/maps/pmtiles/ok_2026-10.json': descriptor('ok_2026-10.pmtiles', { url: 'https://example.org/a/ok_2026-10.pmtiles', sha256: 'a'.repeat(64) }),
-    'downloads/maps/pmtiles/dots.json': descriptor('..', { url: 'https://example.org/a/x.pmtiles' }),
+    // Never downloaded (no source), so they may share a name.
+    'downloads/content/stacks/a/manifest.json': descriptor('manifest.bin'),
+    'downloads/content/stacks/b/manifest.json': descriptor('manifest.bin'),
+    'downloads/content/zim/fine_2026-01.json': descriptor('fine_2026-01.zim', { sources: [source(`${KIWIX}/fine_2026-01.zim`)] }),
+    'downloads/content/zim/partial.json': descriptor('fine_2026-01.zim.part', { sources: [source(`${KIWIX}/x.zim`)] }),
+    // RoachNet reaches this index through a resource named index.zim; it never looks at the schema.
+    'downloads/content/zim/index.json': { schema: INDEX_SCHEMA, filename: '..', sources: [source(`${KIWIX}/index.zim`)], descriptors: [{ filename: 'ok.zim' }, { filename: 'pack/../x.zip' }] },
+    'downloads/content/zim/wikipedia-selection.json': descriptor('wikipedia-selection.json', { sources: [source(`${KIWIX}/wikipedia-selection.zim`)] }),
+    // No filename: RoachNet names the download after the address it downloads from.
+    'downloads/content/zim/unnamed_2026-01.json': descriptor(undefined, { sources: [source(`${KIWIX}/unnamed_2026-01.zim`)] }),
+    // Wikipedia options have descriptors of their own: this one gives the Kiwix book's name another source.
+    'downloads/content/wikipedia/fine_2026-01.json': descriptor('fine_2026-01.zim', { sources: [source('https://mirror.example.org/zim/fine_2026-01.zim')] }),
+    'downloads/content/wikipedia/other_2026-01.json': descriptor('other_2026-01.zim', { sources: [source(`${KIWIX}/other_2026-01.zim`)] }),
+    'downloads/maps/pmtiles/global-min_2026-10.json': mapDescriptor('global-min_2026-10.pmtiles', 'https://example.org/m/global-min_2026-10.pmtiles'),
+    'downloads/maps/pmtiles/ok_2026-10.json': mapDescriptor('ok_2026-10.pmtiles', 'https://example.org/m/ok_2026-10.pmtiles'),
+    'downloads/maps/pmtiles/dots.json': mapDescriptor('..', 'https://example.org/m/x.pmtiles'),
     'downloads/maps/pmtiles/link.json': { linkTo: 'ok_2026-10.json' },
-    'downloads/maps/pmtiles/case-lower.json': descriptor('case_2026-10.pmtiles', { url: 'https://example.org/e/case_2026-10.pmtiles' }),
-    'downloads/maps/pmtiles/case-upper.json': descriptor('CASE_2026-10.pmtiles', { url: 'https://example.org/f/CASE_2026-10.pmtiles' }),
-    'downloads/maps/pmtiles/two.json': descriptor('two_2026-10.pmtiles', { url: 'https://example.org/c/two_2026-10.pmtiles', sha256: 'c'.repeat(64) }),
-    'downloads/model-packs/index.json': { schema: INDEX_SCHEMA, descriptors: [{ filename: 'pack.zip' }, { filename: 'pack/../x.zip' }] },
+    'downloads/maps/pmtiles/nosum_2026-10.json': descriptor('nosum_2026-10.pmtiles', { url: 'https://example.org/m/nosum_2026-10.pmtiles' }),
+    'downloads/maps/pmtiles/two_2026-10.json': mapDescriptor('two_2026-10.pmtiles', 'https://example.org/m/two_2026-10.pmtiles', 'c'.repeat(64)),
+    'downloads/maps/pmtiles/case-lower.json': mapDescriptor('case_2026-10.pmtiles', 'https://example.org/e/case_2026-10.pmtiles'),
+    'downloads/maps/pmtiles/case-upper.json': mapDescriptor('CASE_2026-10.pmtiles', 'https://example.org/f/CASE_2026-10.pmtiles'),
+    // One url, but RoachNet downloads each one's first source.
+    'downloads/maps/pmtiles/src-a.json': mapDescriptor('src_2026-10.pmtiles', 'https://example.org/m/src_2026-10.pmtiles', 'b'.repeat(64), { sources: [source('https://a.example.org/src_2026-10.pmtiles')] }),
+    'downloads/maps/pmtiles/src-b.json': mapDescriptor('src_2026-10.pmtiles', 'https://example.org/m/src_2026-10.pmtiles', 'b'.repeat(64), { sources: [source('https://b.example.org/src_2026-10.pmtiles')] }),
+    // One name and one address, but two checksums.
+    'downloads/maps/pmtiles/sum-a.json': mapDescriptor('sum_2026-10.pmtiles', 'https://example.org/m/sum_2026-10.pmtiles', 'e'.repeat(64)),
+    'downloads/maps/pmtiles/sum-b.json': mapDescriptor('sum_2026-10.pmtiles', 'https://example.org/m/sum_2026-10.pmtiles', 'f'.repeat(64)),
+    // A pending mirror comes first, so RoachNet downloads the release: the file the copy names.
+    'downloads/maps/pmtiles/pending_2026-10.json': mapDescriptor('pending_2026-10.pmtiles', null, 'a'.repeat(64), { sources: [source('https://archive.org/m/pending_2026-10.pmtiles', 'mirror-pending', 'internet-archive'), source('https://example.org/m/pending_2026-10.pmtiles')] }),
+    'downloads/maps/pmtiles/pending-copy.json': mapDescriptor('pending_2026-10.pmtiles', 'https://example.org/m/pending_2026-10.pmtiles'),
+    // Chunked: RoachNet downloads the parts each lists, so these are two different files.
+    'downloads/model-packs/voice.json': chunked('voice.zip', 'https://archive.org/download/i/voice.zip.rnpart0001', sha('voice')),
+    'downloads/model-packs/voice-copy.json': chunked('voice.zip', 'https://archive.org/download/i/voice-copy.zip.rnpart0001', sha('voice')),
+    'downloads/packs/theme.zip': themeZip,
+    'downloads/packs/theme2.zip': 'something else',
     'collections/maps.json': { collections: [{ slug: 'region', resources: [
-      { id: 'ok', url: 'https://example.org/a/ok_2026-10.pmtiles', sha256: 'a'.repeat(64) },
-      { id: 'stale', url: 'https://example.org/c/two_2026-10.pmtiles', sha256: 'd'.repeat(64) },
-      { id: 'encoded', url: 'https://example.org/maps/..%2F..%2Fx.pmtiles' },
+      { id: 'ok', url: 'https://example.org/m/ok_2026-10.pmtiles', sha256: 'a'.repeat(64) },
+      { id: 'stale', url: 'https://example.org/m/two_2026-10.pmtiles', sha256: 'd'.repeat(64) },
+      { id: 'pending', url: 'https://example.org/m/pending_2026-10.pmtiles' },
+      { id: 'withdrawn', url: 'https://example.org/m/gone_2026-10.pmtiles', unavailable: true },
+      { id: 'nameless', url: 'https://example.org/' },
     ] }] },
-    'collections/kiwix-categories.json': { categories: [{ slug: 'cat', tiers: [{ slug: 'tier', resources: [
-      { id: 'fine', url: `${kiwix}/fine_2026-01.zim` },
-      { id: 'other', url: `${kiwix}/other_2026-01.zim` },
-      { id: 'hidden', url: `${kiwix}/.hidden.zim` },
-    ] }] }] },
+    'collections/kiwix-categories.json': { categories: [{ slug: 'cat', tiers: [
+      { slug: 'one', resources: [
+        { id: 'fine', url: `${KIWIX}/fine_2026-01.zim` },
+        { id: 'index', url: `${KIWIX}/index.zim` },
+        { id: 'state', url: `${KIWIX}/wikipedia-selection.zim` },
+        { id: 'missing', url: `${KIWIX}/gone_2026-01.zim` },
+        { id: 'unnamed', url: `${KIWIX}/unnamed_2026-01.zim` },
+      ] },
+      // The same book from a mirror: the same descriptor, so the same file.
+      { slug: 'two', resources: [{ id: 'fine', url: 'https://mirror.example.org/zim/fine_2026-01.zim' }] },
+    ] }] },
     'collections/wikipedia.json': { options: [
       { id: 'none' },
-      { id: 'same', url: `${kiwix}/other_2026-01.zim` },
-      { id: 'mirror', url: 'https://mirror.example.org/zim/fine_2026-01.zim' },
+      { id: 'other', url: `${KIWIX}/other_2026-01.zim` },
+      { id: 'fine', url: 'https://mirror.example.org/zim/fine_2026-01.zim' },
     ] },
-    'collections/packs.json': { packs: [{ id: 'theme', resources: [{ path: '../escape.zip', url: 'https://apps.roachnet.org/downloads/packs/missing.zip' }] }] },
+    'collections/packs.json': { packs: [
+      { id: 'escape', resources: [{ path: '../escape.zip', url: `${APPS}/packs/missing.zip`, sha256: sha('x'), bytes: 1 }] },
+      { id: 'theme', resources: [{ path: 'themes/theme.zip', url: `${APPS}/packs/theme.zip`, sha256: sha(themeZip), bytes: themeZip.length }] },
+      { id: 'swapped', resources: [{ path: 'theme2.zip', url: `${APPS}/packs/theme2.zip`, sha256: sha(themeZip), bytes: themeZip.length }] },
+      { id: 'voice', resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice.json`, sha256: sha('voice'), bytes: 5 }] },
+      { id: 'voice-stale', resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice-copy.json`, sha256: sha('older'), bytes: 5 }] },
+      { id: 'elsewhere', resources: [{ path: 'x.zip', url: 'https://cdn.example.org/x.zip', sha256: sha('x'), bytes: 1 }] },
+    ] },
     'app-store-catalog.json': { items: [
-      { id: 'ok', installIntent: { action: 'direct-download', filetype: 'pmtiles', url: 'https://apps.roachnet.org/downloads/maps/pmtiles/ok_2026-10.json' } },
-      { id: 'gone', installIntent: { action: 'direct-download', filetype: 'pmtiles', url: 'https://apps.roachnet.org/downloads/maps/pmtiles/gone.json' } },
+      direct('ok', 'map', `${APPS}/maps/pmtiles/ok_2026-10.json`),
+      direct('gone', 'map', `${APPS}/maps/pmtiles/gone.json`),
+      direct('case-lower', 'pmtiles', `${APPS}/maps/pmtiles/case-lower.json`),
+      direct('case-upper', 'map', `${APPS}/maps/pmtiles/case-upper.json`),
+      direct('src-a', 'map', `${APPS}/maps/pmtiles/src-a.json`),
+      direct('src-b', 'map', `${APPS}/maps/pmtiles/src-b.json`),
+      direct('pending-copy', 'map', `${APPS}/maps/pmtiles/pending-copy.json`),
+      direct('sum-a', 'map', `${APPS}/maps/pmtiles/sum-a.json`),
+      direct('sum-b', 'map', `${APPS}/maps/pmtiles/sum-b.json`),
+      direct('zim', 'zim', `${APPS}/content/zim/fine_2026-01.json`),
+      direct('raw', 'knowledge', `${KIWIX}/raw_2026-01.zim`),
+      direct('exe', 'exe', `${APPS}/maps/pmtiles/ok_2026-10.json`),
+      speech('voice', 'voice-pack', `${APPS}/model-packs/voice.json`),
+      speech('voice-dup', 'voice-pack', `${APPS}/model-packs/voice-copy.json`),
+      speech('bad-pack', '..', `${APPS}/model-packs/voice.json`),
     ] },
   })
   t.after(() => rm(root, { recursive: true, force: true }))
@@ -24944,30 +25184,40 @@ test('unsafe names, names two downloads share, and files the check can\'t read a
   const listed = problems.map(({ where, problem }) => `${where}: ${problem}`).join('\n')
   const expected = [
     [['downloads/broken.json'], 'is not valid JSON'],
+    [['downloads/odd.json'], 'is not a JSON object'],
     [['downloads/future.json'], 'which this check doesn\'t know'],
     [['downloads/content/zim/partial.json'], '".part"'],
+    [['downloads/content/zim/unnamed_2026-01.json'], 'filename null is missing'],
+    [['downloads/content/zim/index.json'], 'filename ".." is made only of dots'],
+    [['downloads/content/zim/index.json › descriptors[1]'], 'path separator'],
     [['downloads/maps/pmtiles/dots.json'], 'made only of dots'],
     [['downloads/maps/pmtiles/link.json'], 'is a link'],
-    [['downloads/model-packs/index.json › descriptors[1]'], 'path separator'],
-    [['collections/maps.json › region › encoded'], 'character RoachNet replaces'],
-    [['collections/kiwix-categories.json › cat › tier › hidden'], 'hidden file'],
-    [['collections/packs.json › theme'], 'resource path "../escape.zip"'],
-    [['collections/packs.json › theme'], 'downloads/packs/missing.zip'],
+    [['downloads/maps/pmtiles/nosum_2026-10.json'], 'no SHA-256'],
+    [['collections/maps.json › region › stale'], 'but downloads/maps/pmtiles/two_2026-10.json has cccccccccccc'],
+    [['collections/maps.json › region › nameless'], 'names no file'],
+    [['collections/kiwix-categories.json › cat › one › state'], 'a file RoachNet keeps there itself'],
+    [['collections/kiwix-categories.json › cat › one › missing'], 'downloads/content/zim/gone_2026-01.json'],
+    [['collections/packs.json › escape'], 'part ".."'],
+    [['collections/packs.json › escape'], 'downloads/packs/missing.zip'],
+    [['collections/packs.json › swapped'], 'but downloads/packs/theme2.zip is'],
+    [['collections/packs.json › voice-stale'], 'but downloads/model-packs/voice-copy.json has'],
     [['app-store-catalog.json › gone'], 'downloads/maps/pmtiles/gone.json'],
+    [['app-store-catalog.json › exe'], 'file type "exe"'],
+    [['app-store-catalog.json › bad-pack'], 'pack id ".."'],
     // Names that differ only in case are one file on a Mac.
-    [['downloads/maps/pmtiles/case-lower.json', 'downloads/maps/pmtiles/case-upper.json'], 'maps/pmtiles/case_2026-10.pmtiles'],
-    // One name, one address, two checksums.
-    [['downloads/maps/pmtiles/two.json', 'collections/maps.json › region › stale'], 'maps/pmtiles/two_2026-10.pmtiles'],
-    // One name from two addresses.
-    [['collections/kiwix-categories.json › cat › tier › fine', 'collections/wikipedia.json › mirror'], 'zim/fine_2026-01.zim'],
+    [['app-store-catalog.json › case-lower', 'app-store-catalog.json › case-upper'], 'maps/pmtiles/case_2026-10.pmtiles'],
+    [['app-store-catalog.json › src-a', 'app-store-catalog.json › src-b'], 'maps/pmtiles/src_2026-10.pmtiles'],
+    [['app-store-catalog.json › sum-a', 'app-store-catalog.json › sum-b'], 'maps/pmtiles/sum_2026-10.pmtiles'],
+    [['collections/kiwix-categories.json › cat › one › fine', 'collections/wikipedia.json › fine'], 'zim/fine_2026-01.zim'],
+    [['app-store-catalog.json › voice', 'app-store-catalog.json › voice-dup'], 'roachVoice/voice-pack/voice.zip'],
   ]
   for (const [places, text] of expected) {
     assert.ok(problems.some(({ where, problem }) => places.every((place) => where.includes(place)) && problem.includes(text)), `not reported: ${places.join(', ')}: ${text}\n${listed}`)
   }
   assert.equal(problems.length, expected.length, listed)
-  // A name shared only by descriptors RoachNet never downloads, and one name
-  // reached from several places at one address, are fine.
-  assert.doesNotMatch(listed, /manifest|ok_2026-10|other_2026-01/)
+  // Names never downloaded, one file reached from several places, a pending
+  // mirror, a withdrawn resource and a pack hosted elsewhere are all fine.
+  assert.doesNotMatch(listed, /manifest|ok_2026-10|other_2026-01|pending|raw_2026-01|withdrawn|global-min|elsewhere|› theme:/)
 })
 ```
 
