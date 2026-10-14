@@ -183,6 +183,10 @@ async function descriptorForItem(item) {
   if (item.artifact.status === 'runtime-pull') return null
 
   const descriptorKey = descriptorKeyForItem(item)
+  // An artifact that is the file itself (a theme pack's zip) has no
+  // descriptor, and build-map-packs.mjs writes the map descriptors, with each
+  // pack's SHA-256. Writing either here would replace a published file.
+  if (!descriptorKey.endsWith('.json') || descriptorKey.startsWith('maps/pmtiles/')) return null
   const archiveKey = archiveKeyForItem(item, descriptorKey)
   const filename = path.basename(archiveKey)
   // RoachNet saves the download under this name (ROA-95).
@@ -254,13 +258,20 @@ async function descriptorForItem(item) {
   }
 }
 
+// Every file the stager writes stays inside downloads/.
+function insideDownloads(relative) {
+  const target = path.resolve(downloadsRoot, relative)
+  if (!target.startsWith(`${downloadsRoot}${path.sep}`)) throw new Error(`Refusing to write ${relative}, which is outside downloads/`)
+  return target
+}
+
 async function writeDescriptor(descriptor) {
-  const targetPath = path.join(downloadsRoot, descriptor.descriptorUrl.slice(`${appsBaseUrl}/downloads/`.length))
+  const targetPath = insideDownloads(descriptor.descriptorUrl.slice(`${appsBaseUrl}/downloads/`.length))
   await mkdir(path.dirname(targetPath), { recursive: true })
   await writeFile(targetPath, `${JSON.stringify(descriptor, null, 2)}\n`)
 
   if (descriptor.sha256) {
-    const checksumPath = path.join(downloadsRoot, `${descriptor.key}.sha256`)
+    const checksumPath = insideDownloads(`${descriptor.key}.sha256`)
     await mkdir(path.dirname(checksumPath), { recursive: true })
     await writeFile(checksumPath, `${descriptor.sha256}  ${descriptor.filename}\n`)
   }
@@ -281,8 +292,14 @@ async function main() {
     const descriptor = await descriptorForItem(item)
     if (!descriptor) continue
     descriptors.push(descriptor)
-    await writeDescriptor(descriptor)
   }
+  // Written only once every descriptor is built and checked, so a refused
+  // item leaves the published files as they were.
+  for (const descriptor of descriptors) {
+    insideDownloads(descriptor.descriptorUrl.slice(`${appsBaseUrl}/downloads/`.length))
+    if (descriptor.sha256) insideDownloads(`${descriptor.key}.sha256`)
+  }
+  for (const descriptor of descriptors) await writeDescriptor(descriptor)
 
   const totalBytes = descriptors.reduce((sum, descriptor) => sum + (descriptor.bytes || 0), 0)
   const staticArchives = descriptors.filter((descriptor) => descriptor.sources.some((source) => source.type === 'internet-archive'))
