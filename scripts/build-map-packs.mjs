@@ -12,6 +12,8 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { downloadNameProblem } from './download-names.mjs'
+
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const data = JSON.parse(await readFile(path.join(repoRoot, 'collections/map-packs-2026-10.json'), 'utf8'))
 const mapsPath = path.join(repoRoot, 'collections/maps.json')
@@ -46,6 +48,9 @@ function sourceList(pack) {
 }
 
 function descriptor(pack, { filename, id, title, section, alias = false }) {
+  // RoachNet saves the pack under this name (ROA-95).
+  const problem = downloadNameProblem(filename)
+  if (problem) throw new Error(`Map pack file name ${JSON.stringify(filename)} ${problem}`)
   const name = filename.replace(/\.pmtiles$/, '')
   return {
     schema: 'org.roachnet.apps.download-descriptor.v1',

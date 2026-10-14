@@ -6,6 +6,8 @@ import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { downloadNameProblem } from './download-names.mjs'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..')
@@ -183,6 +185,9 @@ async function descriptorForItem(item) {
   const descriptorKey = descriptorKeyForItem(item)
   const archiveKey = archiveKeyForItem(item, descriptorKey)
   const filename = path.basename(archiveKey)
+  // RoachNet saves the download under this name (ROA-95).
+  const problem = downloadNameProblem(filename)
+  if (problem) throw new Error(`Download name for ${item.id}, ${JSON.stringify(filename)}, ${problem}`)
   const localInfo = await fileInfoForArchiveKey(archiveKey)
   const originalSource = item.artifact.sourceUrl || item.installIntent?.url || null
   const hasLocalArchive = Boolean(localInfo)

@@ -4,6 +4,8 @@ import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { checkDownloadNames, describeProblems } from './download-names.mjs'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..')
@@ -93,6 +95,12 @@ async function validateAppStoreInstallContract() {
   const appStoreSource = await readFile(path.join(repoRoot, 'app-store.js'), 'utf8')
   assertInstallIntent({ id: 'app-store.js' }, appStoreSource.includes('roachnet://install-content'), 'install buttons must open native RoachNet deep links')
   assertInstallIntent({ id: 'app-store.js' }, appStoreSource.includes('attemptNativeInstall'), 'install buttons must use the native install handoff')
+
+  // RoachNet saves each download under the name this catalog gives it (ROA-95).
+  const names = await checkDownloadNames(repoRoot)
+  if (names.problems.length) {
+    throw new Error(`App Store download names failed:\n${describeProblems(names.problems)}`)
+  }
 }
 
 async function main() {
