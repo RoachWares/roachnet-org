@@ -24821,7 +24821,7 @@ const unsafe = [
   '', '.', '..', '...',
   '../x.zim', 'a/b.zim', 'a\\b.zim', '/x.zim',
   'x\u0000.zim', 'x\n.zim', 'x\t.zim',
-  ' x.zim', 'x.zim ', 'x y.zim', 'café.zim', 'café.zim', 'x​.zim', '%2e%2e', 'x:y.zim',
+  ' x.zim', 'x.zim ', 'x y.zim', 'caf\u00e9.zim', 'cafe\u0301.zim', 'x\u200b.zim', '%2e%2e', 'x:y.zim',
   'a'.repeat(MAX_NAME_LENGTH + 1),
   '.hidden.zim', '.DS_Store',
   'x.part', 'x.PART', 'map.pmtiles.part', 'x.part.json', 'X.Part.Json',
@@ -24837,6 +24837,17 @@ test('a download name RoachNet would misread, shorten or change is refused', () 
   for (const name of unsafe) assert.notEqual(downloadNameProblem(name), null, `accepted ${JSON.stringify(name)}`)
 })
 
+test('each refusal says why', () => {
+  assert.match(downloadNameProblem(null), /is missing/)
+  assert.match(downloadNameProblem('..'), /only of dots/)
+  assert.match(downloadNameProblem('a/b.zim'), /path separator/)
+  assert.match(downloadNameProblem('x\u0000.zim'), /control character/)
+  assert.match(downloadNameProblem('x y.zim'), /character RoachNet replaces/)
+  assert.match(downloadNameProblem('a'.repeat(MAX_NAME_LENGTH + 1)), /longer than 160/)
+  assert.match(downloadNameProblem('.hidden.zim'), /hidden file/)
+  assert.match(downloadNameProblem('x.part.json'), /partial file and resume marker/)
+})
+
 test('a download name RoachNet saves exactly as given is accepted', () => {
   for (const name of safe) {
     assert.equal(downloadNameProblem(name), null, JSON.stringify(name))
@@ -24846,7 +24857,7 @@ test('a download name RoachNet saves exactly as given is accepted', () => {
 
 test('every accepted name is one RoachNet saves unchanged', () => {
   // Every string of up to three characters from the characters that matter.
-  const alphabet = ['a', 'Z', '0', '.', '-', '_', ' ', '/', '\\', '\u0000', 'é', '%', 'p']
+  const alphabet = ['a', 'Z', '0', '.', '-', '_', ' ', '/', '\\', '\u0000', '\u00e9', '%', 'p']
   let accepted = 0
   const visit = (name, depth) => {
     if (downloadNameProblem(name) === null) {
