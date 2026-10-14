@@ -181,6 +181,9 @@ async function fileInfoForArchiveKey(archiveKey) {
 async function descriptorForItem(item) {
   if (!item.artifact?.url) return null
   if (item.artifact.status === 'runtime-pull') return null
+  // A pack downloads what collections/packs.json lists: the descriptors of
+  // the speech items and the theme zips, which aren't this item's to write.
+  if (item.installIntent?.action === 'pack') return null
 
   const descriptorKey = descriptorKeyForItem(item)
   // An artifact that is the file itself (a theme pack's zip) has no
