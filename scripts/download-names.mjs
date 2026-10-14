@@ -99,7 +99,8 @@ export function descriptorDownload(descriptor, descriptorUrl) {
   const status = (source) => (source?.status ? String(source.status) : '')
   const partsSource = sources.some((source) => source?.type === 'internet-archive-parts' && status(source) !== '' && !unusable.test(status(source)))
   const parts = Array.isArray(descriptor.parts) ? descriptor.parts : []
-  if (partsSource && parts.length > 0 && parts.every((part) => webUrl(part?.url) && Number.isSafeInteger(part?.bytes) && part.bytes > 0)) {
+  // RoachNet reads a part's size as a number, so "5" counts as 5.
+  if (partsSource && parts.length > 0 && parts.every((part) => webUrl(part?.url) && Number.isSafeInteger(Number(part?.bytes)) && Number(part.bytes) > 0)) {
     return descriptorUrl
   }
   for (const source of sources) {
@@ -200,8 +201,9 @@ export async function checkDownloadNames(root) {
     if (document.schema === DESCRIPTOR_SCHEMA) {
       counts.descriptors += 1
       checkName(where, document.filename)
-      if (CHECKSUMMED.some((prefix) => where.startsWith(prefix)) && !(isDigest(document.sha256) && Number.isSafeInteger(document.bytes) && document.bytes > 0)) {
-        report(where, 'has no SHA-256 and size, so RoachNet would not check what it downloads')
+      if (CHECKSUMMED.some((prefix) => where.startsWith(prefix))) {
+        if (!isDigest(document.sha256)) report(where, 'has no SHA-256, so RoachNet would not check what it downloads')
+        if (!(Number.isSafeInteger(document.bytes) && document.bytes > 0)) report(where, 'has no size, which every first-party descriptor lists')
       }
       continue
     }
@@ -237,6 +239,11 @@ export async function checkDownloadNames(root) {
     }
     const file = descriptorFile(parsed)
     if (!file) {
+      // RoachNet 1.0.6 and earlier open any .json URL as a descriptor.
+      if (parsed.pathname.endsWith('.json')) {
+        report(where, `URL ${parsed.href} is a .json file outside ${APPS_ORIGIN}/downloads/, which RoachNet 1.0.6 would open as a descriptor`)
+        return null
+      }
       const name = path.posix.basename(parsed.pathname)
       return checkName(where, name, 'URL name') ? addTarget({ where, folder, name, address: parsed.href, sha256: null, file: null }) : null
     }
@@ -338,6 +345,14 @@ export async function checkDownloadNames(root) {
         }
       }
     }
+    // A speech pack downloads its first resource as a catalog speech item does.
+    if (pack?.install?.handler === 'roachspeech-pack' && pack.resources?.[0]) {
+      const where = `collections/packs.json › ${pack.id}`
+      const kind = pack.install.kind || 'roachVoice'
+      const idSafe = checkName(where, pack.id, 'pack id')
+      const kindSafe = checkName(where, kind, 'pack kind')
+      if (idSafe && kindSafe) resolve(where, `RoachSpeech/ModelPacks/.downloads/${kind}/${pack.id}`, pack.resources[0].url)
+    }
   }
 
   // 5. The installs RoachNet makes from the catalog, and the World Atlas,
@@ -354,30 +369,37 @@ export async function checkDownloadNames(root) {
       else report(where, `file type ${JSON.stringify(intent.filetype ?? null)} is not one RoachNet downloads`)
     } else if ((intent.action === 'roachspeech-pack' || intent.action === 'roachvoice-pack') && intent.url) {
       counts.catalogUrls += 1
-      // RoachNet makes the pack's download folder from these two.
-      const pack = intent.packID || intent.pack || 'roachspeech-pack'
+      // The pack id and kind name the download folder. The Mac app reads
+      // `pack` before `packID` and the companion `packID` first, so when
+      // both are given they must agree.
+      const ids = ['pack', 'packID'].filter((field) => intent[field] !== undefined && intent[field] !== null && intent[field] !== '')
+      let safe = ids.map((field) => checkName(where, intent[field], field)).every(Boolean)
+      if (ids.length === 2 && intent.pack !== intent.packID) {
+        report(where, `pack ${JSON.stringify(intent.pack)} and packID ${JSON.stringify(intent.packID)} differ, so the Mac app and the companion would save into different folders`)
+        safe = false
+      }
       const kind = intent.kind || 'roachVoice'
-      const packSafe = checkName(where, pack, 'pack id')
-      const kindSafe = checkName(where, kind, 'pack kind')
-      if (packSafe && kindSafe) resolve(where, `RoachSpeech/ModelPacks/.downloads/${kind}/${pack}`, intent.url)
+      safe = checkName(where, kind, 'pack kind') && safe
+      if (safe) resolve(where, `RoachSpeech/ModelPacks/.downloads/${kind}/${intent.pack || intent.packID || 'roachspeech-pack'}`, intent.url)
     }
   }
 
-  // 6. One name per file in each folder.
+  // 6. One name per file in each folder, folders and names compared as a Mac
+  //    volume usually compares them.
   counts.savedNames = targets.length
   const byName = new Map()
   for (const target of targets) {
-    const key = `${target.folder}/${target.name.toLowerCase()}`
+    const key = `${target.folder}/${target.name}`.toLowerCase()
     if (!byName.has(key)) byName.set(key, [])
     byName.get(key).push(target)
   }
-  for (const [key, group] of byName) {
+  for (const group of byName.values()) {
     const addresses = new Set(group.map((target) => target.address))
     const digests = new Set(group.map((target) => target.sha256 ?? 'none'))
     if (addresses.size > 1 || digests.size > 1) {
       const places = [...new Set(group.map((target) => target.where))]
       const shown = places.length > 4 ? [...places.slice(0, 4), `${places.length - 4} more`] : places
-      report(shown.join(', '), `save different files as ${key}; two downloads may not share a name in one folder`)
+      report(shown.join(', '), `save different files as ${group[0].folder}/${group[0].name}; two downloads may not share a name in one folder`)
     }
   }
 

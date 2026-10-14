@@ -105,6 +105,8 @@ test('RoachNet downloads a descriptor\'s usable parts, else its first usable sou
   // Parts not yet published, or listed without a size, aren't used.
   assert.equal(descriptorDownload({ sources: [partsSource('upload-required'), { type: 'internet-archive', url: 'https://archive.org/download/i/x.zip', status: 'single-object-pending' }], parts, url: 'https://example.org/x.zip' }, self), 'https://example.org/x.zip')
   assert.equal(descriptorDownload({ sources: [partsSource('published')], parts: [{ url: 'https://archive.org/p1' }] }, self), null)
+  // RoachNet reads a size given as a string as a number.
+  assert.equal(descriptorDownload({ sources: [partsSource('published')], parts: [{ url: 'https://archive.org/p1', bytes: '4' }] }, self), self)
   // Pending, required, blocked and failed sources are skipped, whatever their case.
   assert.equal(descriptorDownload({ sources: [{ type: 'internet-archive', url: 'https://archive.org/a', status: 'mirror-PENDING' }, { type: 'public-source', url: ' https://example.org/b ', status: 'active' }] }, self), 'https://example.org/b')
   assert.equal(descriptorDownload({ sources: [{ type: 'github-release', url: 'https://example.org/c', status: 'Blocked' }], url: 'https://example.org/d' }, self), 'https://example.org/d')
@@ -141,7 +143,7 @@ const chunked = (filename, part, digest) => descriptor(filename, {
   sha256: digest, bytes: 5, sources: [source('https://archive.org/details/i', 'published-after-upload', 'internet-archive-parts')], parts: [{ url: part, bytes: 5 }],
 })
 const direct = (id, filetype, url) => ({ id, installIntent: { action: 'direct-download', filetype, url } })
-const speech = (id, pack, url) => ({ id, installIntent: { action: 'roachspeech-pack', pack, kind: 'roachVoice', url } })
+const speech = (id, intent) => ({ id, installIntent: { action: 'roachspeech-pack', kind: 'roachVoice', ...intent } })
 
 async function fixture(files) {
   const root = await mkdtemp(path.join(tmpdir(), 'download-names-'))
@@ -182,7 +184,13 @@ test('each unsafe name, shared name, missing checksum and unreadable file is rep
     'downloads/content/zim/partial.json': descriptor('fine_2026-01.zim.part', { sources: [source(`${KIWIX}/x.zim`)] }),
     // RoachNet reaches this index through a resource named index.zim; it never looks at the schema.
     'downloads/content/zim/index.json': { schema: INDEX_SCHEMA, filename: '..', sources: [source(`${KIWIX}/index.zim`)], descriptors: [{ filename: 'ok.zim' }, { filename: 'pack/../x.zip' }] },
-    'downloads/content/zim/wikipedia-selection.json': descriptor('wikipedia-selection.json', { sources: [source(`${KIWIX}/wikipedia-selection.zim`)] }),
+    'downloads/content/zim/wikipedia-selection.json': descriptor('Wikipedia-Selection.json', { sources: [source(`${KIWIX}/wikipedia-selection.zim`)] }),
+    // One name and one address, but only one of them is checked.
+    'downloads/content/zim/half-a.json': descriptor('half_2026-01.zim', { sha256: 'e'.repeat(64), sources: [source(`${KIWIX}/half_2026-01.zim`)] }),
+    'downloads/content/zim/half-b.json': descriptor('half_2026-01.zim', { sources: [source(`${KIWIX}/half_2026-01.zim`)] }),
+    'downloads/content/zim/nothing.json': descriptor('nothing_2026-01.zim'),
+    'downloads/content/zim/addr.json': descriptor(undefined, { sources: [source('https://example.org/zim/.hidden.zim')] }),
+    'downloads/model-packs/nosum.json': descriptor('nosum.zip', { bytes: 5, sources: [source('https://example.org/nosum.zip')] }),
     // No filename: RoachNet names the download after the address it downloads from.
     'downloads/content/zim/unnamed_2026-01.json': descriptor(undefined, { sources: [source(`${KIWIX}/unnamed_2026-01.zim`)] }),
     // Wikipedia options have descriptors of their own: this one gives the Kiwix book's name another source.
@@ -239,6 +247,9 @@ test('each unsafe name, shared name, missing checksum and unreadable file is rep
       { id: 'swapped', resources: [{ path: 'theme2.zip', url: `${APPS}/packs/theme2.zip`, sha256: sha(themeZip), bytes: themeZip.length }] },
       { id: 'voice', resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice.json`, sha256: sha('voice'), bytes: 5 }] },
       { id: 'voice-stale', resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice-copy.json`, sha256: sha('older'), bytes: 5 }] },
+      { id: 'voice-size', resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice.json`, sha256: sha('voice'), bytes: 6 }] },
+      { id: 'solo', install: { handler: 'roachspeech-pack', kind: 'roachVoice' }, resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice.json`, sha256: sha('voice'), bytes: 5 }] },
+      { id: '.hidden-pack', install: { handler: 'roachspeech-pack' }, resources: [{ path: 'voice.zip', url: `${APPS}/model-packs/voice.json`, sha256: sha('voice'), bytes: 5 }] },
       { id: 'elsewhere', resources: [{ path: 'x.zip', url: 'https://cdn.example.org/x.zip', sha256: sha('x'), bytes: 1 }] },
     ] },
     'app-store-catalog.json': { items: [
@@ -254,9 +265,25 @@ test('each unsafe name, shared name, missing checksum and unreadable file is rep
       direct('zim', 'zim', `${APPS}/content/zim/fine_2026-01.json`),
       direct('raw', 'knowledge', `${KIWIX}/raw_2026-01.zim`),
       direct('exe', 'exe', `${APPS}/maps/pmtiles/ok_2026-10.json`),
-      speech('voice', 'voice-pack', `${APPS}/model-packs/voice.json`),
-      speech('voice-dup', 'voice-pack', `${APPS}/model-packs/voice-copy.json`),
-      speech('bad-pack', '..', `${APPS}/model-packs/voice.json`),
+      direct('partial-url', 'zim', 'https://example.org/x/x.zim.part'),
+      direct('evil', 'zim', 'https://example.org/evil.json'),
+      direct('port', 'map', 'https://apps.roachnet.org:8443/downloads/maps/pmtiles/port_2026-10.json'),
+      direct('half-a', 'zim', `${APPS}/content/zim/half-a.json`),
+      direct('half-b', 'zim', `${APPS}/content/zim/half-b.json`),
+      direct('nothing', 'zim', `${APPS}/content/zim/nothing.json`),
+      direct('addr', 'zim', `${APPS}/content/zim/addr.json`),
+      speech('voice', { pack: 'voice-pack', url: `${APPS}/model-packs/voice.json` }),
+      speech('voice-dup', { pack: 'voice-pack', url: `${APPS}/model-packs/voice-copy.json` }),
+      speech('bad-pack', { pack: '..', url: `${APPS}/model-packs/voice.json` }),
+      speech('bad-kind', { pack: 'kind-pack', kind: '..', url: `${APPS}/model-packs/voice.json` }),
+      speech('mixed', { pack: 'fine-pack', packID: '..', url: `${APPS}/model-packs/voice.json` }),
+      speech('differ', { pack: 'a-pack', packID: 'b-pack', url: `${APPS}/model-packs/voice.json` }),
+      // Folders that differ only in case are one folder on a Mac.
+      speech('case-pack-1', { pack: 'Case-Pack', url: `${APPS}/model-packs/voice.json` }),
+      speech('case-pack-2', { pack: 'case-pack', url: `${APPS}/model-packs/voice-copy.json` }),
+      // The packs.json speech pack "solo" downloads into the same folder.
+      speech('solo', { pack: 'solo', url: `${APPS}/model-packs/voice-copy.json` }),
+      { id: 'alias', installIntent: { action: 'roachvoice-pack', kind: 'roachVoice', pack: '.hidden', url: `${APPS}/model-packs/voice.json` } },
     ] },
   })
   t.after(() => rm(root, { recursive: true, force: true }))
@@ -269,6 +296,9 @@ test('each unsafe name, shared name, missing checksum and unreadable file is rep
     [['downloads/future.json'], 'which this check doesn\'t know'],
     [['downloads/content/zim/partial.json'], '".part"'],
     [['downloads/content/zim/unnamed_2026-01.json'], 'filename null is missing'],
+    [['downloads/content/zim/addr.json'], 'filename null is missing'],
+    [['downloads/model-packs/nosum.json'], 'no SHA-256'],
+    [['downloads/maps/pmtiles/nosum_2026-10.json'], 'has no size'],
     [['downloads/content/zim/index.json'], 'filename ".." is made only of dots'],
     [['downloads/content/zim/index.json › descriptors[1]'], 'path separator'],
     [['downloads/maps/pmtiles/dots.json'], 'made only of dots'],
@@ -284,7 +314,23 @@ test('each unsafe name, shared name, missing checksum and unreadable file is rep
     [['collections/packs.json › voice-stale'], 'but downloads/model-packs/voice-copy.json has'],
     [['app-store-catalog.json › gone'], 'downloads/maps/pmtiles/gone.json'],
     [['app-store-catalog.json › exe'], 'file type "exe"'],
-    [['app-store-catalog.json › bad-pack'], 'pack id ".."'],
+    [['app-store-catalog.json › bad-pack'], 'pack ".."'],
+    [['app-store-catalog.json › bad-kind'], 'pack kind ".."'],
+    [['app-store-catalog.json › mixed'], 'packID ".."'],
+    [['app-store-catalog.json › mixed'], 'differ, so the Mac app'],
+    [['app-store-catalog.json › differ'], 'differ, so the Mac app'],
+    [['app-store-catalog.json › alias'], 'pack ".hidden"'],
+    [['app-store-catalog.json › partial-url'], 'URL name "x.zim.part"'],
+    [['app-store-catalog.json › evil'], 'which RoachNet 1.0.6 would open as a descriptor'],
+    [['app-store-catalog.json › port'], 'which RoachNet 1.0.6 would open as a descriptor'],
+    [['app-store-catalog.json › nothing'], 'names nothing RoachNet can download'],
+    [['app-store-catalog.json › addr'], 'has no filename, and the name from its address ".hidden.zim"'],
+    [['collections/packs.json › voice-size'], '6 bytes, but downloads/model-packs/voice.json has'],
+    [['collections/packs.json › .hidden-pack'], 'pack id ".hidden-pack"'],
+    // A missing checksum is a different checksum.
+    [['app-store-catalog.json › half-a', 'app-store-catalog.json › half-b'], 'zim/half_2026-01.zim'],
+    [['app-store-catalog.json › case-pack-1', 'app-store-catalog.json › case-pack-2'], 'roachVoice/Case-Pack/voice.zip'],
+    [['collections/packs.json › solo', 'app-store-catalog.json › solo'], 'roachVoice/solo/voice.zip'],
     // Names that differ only in case are one file on a Mac.
     [['app-store-catalog.json › case-lower', 'app-store-catalog.json › case-upper'], 'maps/pmtiles/case_2026-10.pmtiles'],
     [['app-store-catalog.json › src-a', 'app-store-catalog.json › src-b'], 'maps/pmtiles/src_2026-10.pmtiles'],
